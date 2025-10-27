@@ -218,18 +218,21 @@ public class AssetTypeMongo : BaseEntityMongo
     [BsonElement("procurementNotes")]
     public string? ProcurementNotes { get; set; }
 
-    // Navigation properties (stored as references)
-    [BsonElement("parent")]
+    // Navigation properties (NOT stored in MongoDB - use references instead)
+    [BsonIgnore]
     public AssetTypeMongo? Parent { get; set; }
 
-    [BsonElement("children")]
+    [BsonIgnore]
     public List<AssetTypeMongo> Children { get; set; } = new();
 
+    // Reference IDs for related entities (stored)
     [BsonElement("modelIds")]
-    public List<long> ModelIds { get; set; } = new();
+    [BsonIgnoreIfNull]
+    public List<long>? ModelIds { get; set; }
 
     [BsonElement("assetIds")]
-    public List<long> AssetIds { get; set; } = new();
+    [BsonIgnoreIfNull]
+    public List<long>? AssetIds { get; set; }
 
     public AssetTypeMongo() { }
 

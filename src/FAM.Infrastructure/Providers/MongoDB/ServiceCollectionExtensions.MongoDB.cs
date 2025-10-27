@@ -2,7 +2,9 @@ using FAM.Application.Abstractions;
 using FAM.Application.DTOs.Users;
 using FAM.Domain.Abstractions;
 using FAM.Infrastructure.Common.Options;
+using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.Providers.MongoDB.Repositories;
+using FAM.Infrastructure.Providers.MongoDB.Seeders;
 using FAM.Infrastructure.Providers.MongoDB.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,6 +37,13 @@ public static class ServiceCollectionExtensions
         // Register Query Services (for Filter DSL)
         services.AddScoped<IQueryService<UserDto>, MongoUserQueryService>();
 
+        // Register Data Seeders
+        services.AddScoped<IDataSeeder, MongoDbUserSeeder>();
+        services.AddScoped<IDataSeeder, MongoDbAssetCategorySeeder>();
+
+        // Register Seed History Repository
+        services.AddScoped<ISeedHistoryRepository, SeedHistoryRepositoryMongo>();
+
         return services;
     }
 
@@ -50,6 +59,13 @@ public static class ServiceCollectionExtensions
 
         // Register Query Services (for Filter DSL)
         services.AddScoped<IQueryService<UserDto>, MongoUserQueryService>();
+
+        // Register Data Seeders
+        services.AddScoped<IDataSeeder, MongoDbUserSeeder>();
+        services.AddScoped<IDataSeeder, MongoDbAssetCategorySeeder>();
+
+        // Register Seed History Repository
+        services.AddScoped<ISeedHistoryRepository, SeedHistoryRepositoryMongo>();
 
         return services;
     }

@@ -2,6 +2,7 @@ using FAM.Application.Common.Mappings;
 using FAM.Domain.Abstractions;
 using FAM.Infrastructure.Common.Mapping;
 using FAM.Infrastructure.Common.Options;
+using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.Providers.MongoDB;
 using FAM.Infrastructure.Providers.PostgreSQL;
 using Microsoft.Extensions.Configuration;
@@ -43,6 +44,9 @@ public static class InfrastructureModule
             cfg.AddProfile<DomainToMongoProfile>();
             cfg.AddProfile<UserMappingProfile>();
         });
+
+        // Register Data Seeder Orchestrator
+        services.AddScoped<DataSeederOrchestrator>();
 
         // Configure based on provider
         switch (databaseOptions.Provider)
@@ -89,6 +93,9 @@ public static class InfrastructureModule
             cfg.AddProfile<DomainToMongoProfile>();
             cfg.AddProfile<UserMappingProfile>();
         });
+
+        // Register Data Seeder Orchestrator
+        services.AddScoped<DataSeederOrchestrator>();
 
         switch (databaseOptions.Provider)
         {
