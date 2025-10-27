@@ -14,9 +14,10 @@ public class UserTests
         // Arrange
         var username = "john_doe";
         var email = "john.doe@example.com";
+        var password = "MySecurePass123!";
 
         // Act
-        var user = User.Create(username, email);
+        var user = User.Create(username, email, password);
 
         // Assert
         user.Should().NotBeNull();
@@ -24,6 +25,7 @@ public class UserTests
         user.Username.Value.Should().Be(username);
         user.Email.Should().NotBeNull();
         user.Email.Value.Should().Be(email);
+        user.Password.Should().NotBeNull();
     }
 
     [Fact]
@@ -32,29 +34,32 @@ public class UserTests
         // Arrange
         var username = "jane_smith";
         var email = "jane.smith@example.com";
-        var fullName = "Jane Smith";
+        var password = "MySecurePass123!";
+        var firstName = "Jane";
+        var lastName = "Smith";
 
         // Act
-        var user = User.Create(username, email, fullName);
+        var user = User.Create(username, email, password, firstName, lastName, null);
 
         // Assert
         user.Username.Value.Should().Be(username);
         user.Email.Value.Should().Be(email);
-        user.FullName.Should().Be(fullName);
+        user.FullName.Should().Be("Jane Smith");
     }
 
     [Fact]
-    public void Create_WithNullFullName_ShouldCreateUserWithNullFullName()
+    public void Create_WithNullFullName_ShouldCreateUserWithUsernameAsFullName()
     {
         // Arrange
         var username = "test_user";
         var email = "test@example.com";
+        var password = "MySecurePass123!";
 
         // Act
-        var user = User.Create(username, email, null);
+        var user = User.Create(username, email, password, null, null, null);
 
         // Assert
-        user.FullName.Should().BeNull();
+        user.FullName.Should().Be(username);
     }
 
     [Fact]
@@ -65,7 +70,7 @@ public class UserTests
         var email = "test@example.com";
 
         // Act & Assert
-        Assert.Throws<DomainException>(() => User.Create(invalidUsername, email));
+        Assert.Throws<DomainException>(() => User.Create(invalidUsername, email, "MySecurePass123!"));
     }
 
     [Fact]
@@ -76,6 +81,6 @@ public class UserTests
         var invalidEmail = "invalid-email";
 
         // Act & Assert
-        Assert.Throws<DomainException>(() => User.Create(username, invalidEmail));
+        Assert.Throws<DomainException>(() => User.Create(username, invalidEmail, "MySecurePass123!"));
     }
 }

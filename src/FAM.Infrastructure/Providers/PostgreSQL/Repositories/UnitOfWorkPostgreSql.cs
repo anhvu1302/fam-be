@@ -12,24 +12,16 @@ public class UnitOfWorkPostgreSql : IUnitOfWork
 
     public UnitOfWorkPostgreSql(
         PostgreSqlDbContext context,
-        ICompanyRepository companyRepository,
-        IUserRepository userRepository
-        /*IAssetRepository assetRepository,
-        ILocationRepository locationRepository*/)
+        IUserRepository userRepository,
+        IUserDeviceRepository userDeviceRepository)
     {
         _context = context;
-        Companies = companyRepository;
         Users = userRepository;
-        /*Assets = assetRepository;
-        Locations = locationRepository;*/
+        UserDevices = userDeviceRepository;
     }
 
-    /*public IAssetRepository Assets { get; }
-    public ILocationRepository Locations { get; }*/
-    public IAssetRepository Assets => throw new NotImplementedException("Asset repository not implemented yet");
-    public ILocationRepository Locations => throw new NotImplementedException("Location repository not implemented yet");
-    public ICompanyRepository Companies { get; }
     public IUserRepository Users { get; }
+    public IUserDeviceRepository UserDevices { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

@@ -19,10 +19,20 @@ public static class ServiceCollectionExtensions
         services.AddScoped<PostgreSqlDbContext>(_ => new PostgreSqlDbContext(options));
 
         // Register repositories
-        services.AddScoped<ICompanyRepository, CompanyRepositoryPostgreSql>();
         services.AddScoped<IUserRepository, UserRepositoryPostgreSql>();
-        // services.AddScoped<IAssetRepository, AssetRepositoryPostgreSql>(); // TODO: Implement missing methods
-        // services.AddScoped<ILocationRepository, LocationRepositoryPostgreSql>(); // TODO: Implement missing methods
+        services.AddScoped<IUserDeviceRepository, UserDeviceRepositoryPostgreSql>();
+
+        // Authorization repositories
+        services.AddScoped<IPermissionRepository, PermissionRepositoryPostgreSql>();
+        services.AddScoped<IRoleRepository, RoleRepositoryPostgreSql>();
+        services.AddScoped<IResourceRepository, ResourceRepositoryPostgreSql>();
+        services.AddScoped<IRolePermissionRepository, RolePermissionRepositoryPostgreSql>();
+        services.AddScoped<IUserNodeRoleRepository, UserNodeRoleRepositoryPostgreSql>();
+
+        // Organizations repositories
+        services.AddScoped<IOrgNodeRepository, OrgNodeRepositoryPostgreSql>();
+        services.AddScoped<ICompanyDetailsRepository, CompanyDetailsRepositoryPostgreSql>();
+        services.AddScoped<IDepartmentDetailsRepository, DepartmentDetailsRepositoryPostgreSql>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWorkPostgreSql>();

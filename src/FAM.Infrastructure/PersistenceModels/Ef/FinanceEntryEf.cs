@@ -1,12 +1,20 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace FAM.Infrastructure.PersistenceModels.Ef;
 
 /// <summary>
-/// EF persistence model for FinanceEntry
+/// EF-specific persistence model for FinanceEntry
 /// </summary>
+[Table("finance_entries")]
 public class FinanceEntryEf : EntityEf
 {
-    public string Description { get; set; } = string.Empty;
+    public long AssetId { get; set; }
+    public DateTime Period { get; set; }
+    public string EntryType { get; set; } = string.Empty;
     public decimal Amount { get; set; }
-    public long UserId { get; set; }
-    public UserEf? User { get; set; }
+    public decimal? BookValueAfter { get; set; }
+
+    // Navigation properties
+    public AssetEf Asset { get; set; } = null!;
+    public UserEf? Creator { get; set; }
 }

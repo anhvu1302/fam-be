@@ -37,7 +37,6 @@ public class UserRepositoryPostgreSql : IUserRepository
 
     public async Task<IEnumerable<User>> FindAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        // Convert domain predicate to EF predicate - simplified for now
         var allEntities = await _context.Users.ToListAsync(cancellationToken);
         var allUsers = _mapper.Map<IEnumerable<User>>(allEntities);
         return allUsers.Where(predicate.Compile());

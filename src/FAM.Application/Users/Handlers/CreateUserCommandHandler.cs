@@ -3,6 +3,7 @@ using FAM.Application.DTOs.Users;
 using FAM.Application.Users.Commands;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
+using FAM.Domain.ValueObjects;
 using MediatR;
 
 namespace FAM.Application.Users.Handlers;
@@ -38,7 +39,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
         }
 
         // Create user
-        var user = User.Create(request.Username, request.Email, request.FullName);
+        var user = User.Create(request.Username, request.Email, request.Password, null, null, null);
         // User does not have CreatedById as per requirements
 
         await _unitOfWork.Users.AddAsync(user, cancellationToken);

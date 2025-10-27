@@ -2,6 +2,7 @@ using AutoMapper;
 using FAM.Application.DTOs.Users;
 using FAM.Application.Users.Commands;
 using FAM.Domain.Abstractions;
+using FAM.Domain.ValueObjects;
 using MediatR;
 
 namespace FAM.Application.Users.Handlers;
@@ -45,7 +46,9 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
         // Update user properties
         // Note: In a real implementation, you'd have an Update method on the User entity
         // For now, we'll create a new user with updated values
-        var updatedUser = FAM.Domain.Users.User.Create(request.Username, request.Email, request.FullName);
+        var password = string.IsNullOrEmpty(request.Password) ? user.Password : Password.Create(request.Password);
+
+        var updatedUser = FAM.Domain.Users.User.Create(request.Username, request.Email, password.Hash, password.Salt, null, null, null);
         // Copy the ID and audit fields
         typeof(FAM.Domain.Users.User).GetProperty("Id")?.SetValue(updatedUser, request.Id);
         updatedUser.CreatedAt = user.CreatedAt;

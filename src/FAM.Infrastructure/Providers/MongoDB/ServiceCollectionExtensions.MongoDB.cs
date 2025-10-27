@@ -26,10 +26,8 @@ public static class ServiceCollectionExtensions
         await MongoIndexes.CreateIndexesAsync(context.Database);
 
         // Register repositories
-        services.AddScoped<ICompanyRepository, CompanyRepositoryMongo>();
         services.AddScoped<IUserRepository, UserRepositoryMongo>();
-        // services.AddScoped<IAssetRepository, AssetRepositoryMongo>(); // TODO: Implement missing methods
-        // services.AddScoped<ILocationRepository, LocationRepositoryMongo>(); // TODO: Implement missing methods
+        services.AddScoped<IUserDeviceRepository, UserDeviceRepositoryMongo>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWorkMongo>();
@@ -46,10 +44,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<MongoDbContext>(_ => new MongoDbContext(options));
         MongoClassMaps.Register();
 
-        services.AddScoped<ICompanyRepository, CompanyRepositoryMongo>();
         services.AddScoped<IUserRepository, UserRepositoryMongo>();
-        // services.AddScoped<IAssetRepository, AssetRepositoryMongo>(); // TODO: Implement missing methods
-        // services.AddScoped<ILocationRepository, LocationRepositoryMongo>(); // TODO: Implement missing methods
+        services.AddScoped<IUserDeviceRepository, UserDeviceRepositoryMongo>();
         services.AddScoped<IUnitOfWork, UnitOfWorkMongo>();
 
         // Register Query Services (for Filter DSL)

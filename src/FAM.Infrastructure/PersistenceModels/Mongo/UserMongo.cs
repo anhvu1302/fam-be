@@ -15,6 +15,12 @@ public class UserMongo : BaseEntityMongo
     [BsonElement("email")]
     public string Email { get; set; } = string.Empty;
 
+    [BsonElement("passwordHash")]
+    public string PasswordHash { get; set; } = string.Empty;
+
+    [BsonElement("passwordSalt")]
+    public string PasswordSalt { get; set; } = string.Empty;
+
     [BsonElement("fullName")]
     public string? FullName { get; set; }
 
