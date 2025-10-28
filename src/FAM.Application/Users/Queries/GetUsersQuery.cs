@@ -14,6 +14,7 @@ public class GetUsersQuery : IRequest<PageResult<UserDto>>
     public int Page { get; set; } = 1;
     public int PageSize { get; set; } = 10;
     public string[]? Fields { get; set; }
+    public string? Include { get; set; }
 
     /// <summary>
     /// Convert to QueryRequest
@@ -24,7 +25,8 @@ public class GetUsersQuery : IRequest<PageResult<UserDto>>
         Sort = Sort,
         Page = Page,
         PageSize = PageSize,
-        Fields = Fields
+        Fields = Fields,
+        Include = Include
     };
 }
 

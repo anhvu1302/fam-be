@@ -42,6 +42,8 @@ public static class InfrastructureModule
         {
             cfg.AddProfile<DomainToEfProfile>();
             cfg.AddProfile<DomainToMongoProfile>();
+            cfg.AddProfile<EfToDtoProfile>();
+            cfg.AddProfile<MongoToDtoProfile>();
             cfg.AddProfile<UserMappingProfile>();
         });
 
@@ -91,6 +93,8 @@ public static class InfrastructureModule
         {
             cfg.AddProfile<DomainToEfProfile>();
             cfg.AddProfile<DomainToMongoProfile>();
+            cfg.AddProfile<EfToDtoProfile>();
+            cfg.AddProfile<MongoToDtoProfile>();
             cfg.AddProfile<UserMappingProfile>();
         });
 

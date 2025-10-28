@@ -6,16 +6,15 @@ using FAM.Application.Querying.Binding;
 using FAM.Application.Querying.Extensions;
 using FAM.Application.Querying.Parsing;
 using FAM.Application.Querying.Validation;
+using FAM.Application.Users;
 using FAM.Infrastructure.PersistenceModels.Mongo;
 using FAM.Infrastructure.Providers.MongoDB.Querying;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
 namespace FAM.Infrastructure.Providers.MongoDB.Services;
 
-/// <summary>
-/// MongoDB implementation of IQueryService for Users
-/// Uses Filter DSL to generate MongoDB queries
-/// </summary>
 public class MongoUserQueryService : IQueryService<UserDto>
 {
     private readonly MongoDbContext _context;
@@ -34,16 +33,12 @@ public class MongoUserQueryService : IQueryService<UserDto>
         var fieldMap = MongoUserFieldMap.Instance;
         var collection = _context.GetCollection<UserMongo>("users");
 
-        // Build filter from DSL
         var filterDefinition = BuildMongoFilter(request.Filter, fieldMap);
 
-        // Start find with filter
         var find = collection.Find(filterDefinition);
 
-        // Get total count AFTER filter
         var total = await find.CountDocumentsAsync(cancellationToken);
 
-        // Apply sorting
         if (!string.IsNullOrWhiteSpace(request.Sort))
         {
             var sortDefinition = BuildMongoSort(request.Sort, fieldMap);
@@ -51,26 +46,24 @@ public class MongoUserQueryService : IQueryService<UserDto>
         }
         else
         {
-            // Default sort by CreatedAt descending
             find = find.SortByDescending(u => u.CreatedAt);
         }
 
-        // Apply paging
         const int maxPageSize = 100;
         var pageSize = Math.Min(request.PageSize, maxPageSize);
         var skip = (request.Page - 1) * pageSize;
         find = find.Skip(skip).Limit(pageSize);
 
-        // Execute query on MongoDB documents
         var mongoDocs = await find.ToListAsync(cancellationToken);
 
-        // Map MongoDB documents → Domain entities → DTOs
-        var domainUsers = _mapper.Map<List<FAM.Domain.Users.User>>(mongoDocs);
-        var userDtos = _mapper.Map<List<UserDto>>(domainUsers);
+        var userDtos = _mapper.Map<List<UserDto>>(mongoDocs);
 
         return new PageResult<UserDto>(userDtos, request.Page, pageSize, total);
     }
 
+    /// <summary>
+    /// Build MongoDB filter from DSL filter string
+    /// </summary>
     private FilterDefinition<UserMongo> BuildMongoFilter(string? filter, FieldMap<UserMongo> fieldMap)
     {
         if (string.IsNullOrWhiteSpace(filter))
@@ -80,6 +73,9 @@ public class MongoUserQueryService : IQueryService<UserDto>
         return MongoFilterBinder<UserMongo>.Bind(ast, fieldMap);
     }
 
+    /// <summary>
+    /// Build MongoDB sort definition from sort string
+    /// </summary>
     private SortDefinition<UserMongo> BuildMongoSort(string? sort, FieldMap<UserMongo> fieldMap)
     {
         if (string.IsNullOrWhiteSpace(sort))

@@ -9,4 +9,9 @@ namespace FAM.Application.Users.Queries;
 public class GetUserByIdQuery : IRequest<UserDto?>
 {
     public long Id { get; set; }
+    
+    /// <summary>
+    /// Include relationships (ví dụ: "userNodeRoles,userDevices")
+    /// </summary>
+    public string? Include { get; set; }
 }

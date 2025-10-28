@@ -30,6 +30,7 @@ public class UsersController : ControllerBase
     /// <param name="page">Page number (default: 1)</param>
     /// <param name="pageSize">Page size (default: 10)</param>
     /// <param name="fields">Fields to return (comma-separated, e.g., "id,username,email"). If not specified, returns all fields.</param>
+    /// <param name="include">Include related entities (comma-separated, e.g., "userDevices,userNodeRoles" or "userNodeRoles.role")</param>
     [HttpGet]
     [ProducesResponseType(typeof(PageResult<UserDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(PageResult<Dictionary<string, object?>>), StatusCodes.Status200OK)]
@@ -38,7 +39,8 @@ public class UsersController : ControllerBase
         [FromQuery] string? sort = null,
         [FromQuery] int? page = 1,
         [FromQuery] int? pageSize = 10,
-        [FromQuery] string? fields = null)
+        [FromQuery] string? fields = null,
+        [FromQuery] string? include = null)
     {
         var query = new GetUsersQuery
         {
@@ -46,7 +48,8 @@ public class UsersController : ControllerBase
             Sort = sort,
             Page = page ?? 1,
             PageSize = pageSize ?? 10,
-            Fields = string.IsNullOrWhiteSpace(fields) ? null : fields.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            Fields = string.IsNullOrWhiteSpace(fields) ? null : fields.Split(',', StringSplitOptions.RemoveEmptyEntries),
+            Include = include
         };
 
         var result = await _mediator.Send(query);
@@ -64,12 +67,18 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Get user by ID
     /// </summary>
+    /// <param name="id">User ID</param>
+    /// <param name="include">Include related entities (comma-separated, e.g., "userDevices,userNodeRoles" or "userNodeRoles.role")</param>
     [HttpGet("{id:long}")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetUserById(long id)
+    public async Task<IActionResult> GetUserById(long id, [FromQuery] string? include = null)
     {
-        var query = new GetUserByIdQuery { Id = id };
+        var query = new GetUserByIdQuery 
+        { 
+            Id = id,
+            Include = include
+        };
         var result = await _mediator.Send(query);
 
         if (result == null)
