@@ -39,7 +39,7 @@ public static class ServiceCollectionExtensions
 
         // Register Data Seeders
         services.AddScoped<IDataSeeder, MongoDbUserSeeder>();
-        services.AddScoped<IDataSeeder, MongoDbAssetCategorySeeder>();
+        services.AddScoped<IDataSeeder, MongoDbRoleSeeder>();
 
         // Register Seed History Repository
         services.AddScoped<ISeedHistoryRepository, SeedHistoryRepositoryMongo>();
@@ -62,7 +62,7 @@ public static class ServiceCollectionExtensions
 
         // Register Data Seeders
         services.AddScoped<IDataSeeder, MongoDbUserSeeder>();
-        services.AddScoped<IDataSeeder, MongoDbAssetCategorySeeder>();
+        services.AddScoped<IDataSeeder, MongoDbRoleSeeder>();
 
         // Register Seed History Repository
         services.AddScoped<ISeedHistoryRepository, SeedHistoryRepositoryMongo>();

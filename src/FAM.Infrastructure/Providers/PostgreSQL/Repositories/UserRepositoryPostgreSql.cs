@@ -51,7 +51,29 @@ public class UserRepositoryPostgreSql : IUserRepository
     public void Update(User entity)
     {
         var efEntity = _mapper.Map<UserEf>(entity);
-        _context.Users.Update(efEntity);
+
+        // Check if the entity is already being tracked
+        var existingEntry = _context.ChangeTracker.Entries<UserEf>()
+            .FirstOrDefault(e => e.Entity.Id == efEntity.Id);
+
+        if (existingEntry != null)
+        {
+            // Entity is already tracked, update its properties (excluding navigation properties)
+            _context.Entry(existingEntry.Entity).CurrentValues.SetValues(efEntity);
+            existingEntry.State = EntityState.Modified;
+        }
+        else
+        {
+            // Entity is not tracked, attach and update (but don't track UserDevices collection)
+            _context.Users.Attach(efEntity);
+            _context.Entry(efEntity).State = EntityState.Modified;
+            
+            // Don't cascade to UserDevices - they should be managed separately
+            foreach (var device in efEntity.UserDevices)
+            {
+                _context.Entry(device).State = EntityState.Unchanged;
+            }
+        }
     }
 
     public void Delete(User entity)
@@ -91,12 +113,27 @@ public class UserRepositoryPostgreSql : IUserRepository
 
     public async Task<bool> IsEmailTakenAsync(string email, long? excludeUserId = null, CancellationToken cancellationToken = default)
     {
-        var query = _context.Users.Where(u => u.Email == email);
+        var query = _context.Users.Where(u => u.Email.ToLower() == email.ToLower() && !u.IsDeleted);
         if (excludeUserId.HasValue)
         {
             query = query.Where(u => u.Id != excludeUserId.Value);
         }
         return await query.AnyAsync(cancellationToken);
+    }
+
+    public async Task<User?> FindByUsernameAsync(string username, CancellationToken cancellationToken = default)
+    {
+        var entity = await _context.Users
+            .Include(u => u.UserDevices)
+            .FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower() && !u.IsDeleted, cancellationToken);
+        return entity != null ? _mapper.Map<User>(entity) : null;
+    }
+
+    public async Task<User?> FindByEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        var entity = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() && !u.IsDeleted, cancellationToken);
+        return entity != null ? _mapper.Map<User>(entity) : null;
     }
 
     /// <summary>

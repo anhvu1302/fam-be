@@ -51,7 +51,7 @@ public class MongoToDtoProfile : Profile
         CreateMap<RoleMongo, RoleDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.DomainId))  // Use DomainId
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Name)); // Use Name as Description since Description doesn't exist
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
 
         // OrgNodeMongo to OrgNodeDto
         CreateMap<OrgNodeMongo, OrgNodeDto>()

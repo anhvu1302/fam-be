@@ -23,6 +23,7 @@ public class RoleEf : BaseEntityEf
 {
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
     public int Rank { get; set; }
 
     // Navigation properties

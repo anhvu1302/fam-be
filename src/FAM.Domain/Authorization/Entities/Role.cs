@@ -10,6 +10,7 @@ public class Role : BaseEntity
 {
     public RoleCode Code { get; private set; } = null!;
     public string Name { get; private set; } = string.Empty;
+    public string? Description { get; private set; }
     public int Rank { get; private set; }
 
     // Navigation properties
@@ -18,7 +19,7 @@ public class Role : BaseEntity
 
     private Role() { }
 
-    public static Role Create(string code, string name, int rank)
+    public static Role Create(string code, string name, int rank, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Role name cannot be empty");
@@ -27,16 +28,18 @@ public class Role : BaseEntity
         {
             Code = RoleCode.Create(code),
             Name = name.Trim(),
+            Description = description?.Trim(),
             Rank = rank
         };
     }
 
-    public void Update(string name, int rank)
+    public void Update(string name, int rank, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Role name cannot be empty");
 
         Name = name.Trim();
+        Description = description?.Trim();
         Rank = rank;
     }
 }

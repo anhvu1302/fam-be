@@ -12,16 +12,18 @@ public class RoleTests
         // Arrange
         var code = "admin";
         var name = "Administrator";
+        var description = "System administrator role";
         var rank = 1;
 
         // Act
-        var role = Role.Create(code, name, rank);
+        var role = Role.Create(code, name, rank, description);
 
         // Assert
         role.Should().NotBeNull();
         string codeValue = role.Code;
         codeValue.Should().Be("ADMIN");
         role.Name.Should().Be(name);
+        role.Description.Should().Be(description);
         role.Rank.Should().Be(rank);
     }
 
@@ -63,13 +65,15 @@ public class RoleTests
         // Arrange
         var role = Role.Create("admin", "Administrator", 1);
         var newName = "Super Admin";
+        var newDescription = "Super administrator role";
         var newRank = 2;
 
         // Act
-        role.Update(newName, newRank);
+        role.Update(newName, newRank, newDescription);
 
         // Assert
         role.Name.Should().Be(newName);
+        role.Description.Should().Be(newDescription);
         role.Rank.Should().Be(newRank);
     }
 

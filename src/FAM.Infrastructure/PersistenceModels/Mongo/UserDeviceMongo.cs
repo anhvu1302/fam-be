@@ -4,10 +4,10 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace FAM.Infrastructure.PersistenceModels.Mongo;
 
 /// <summary>
-/// MongoDB document model for UserDevice
+/// MongoDB document model for UserDevice (uses GUID as domain ID for scalability)
 /// </summary>
 [BsonCollection("userDevices")]
-public class UserDeviceMongo : BaseEntityMongo
+public class UserDeviceMongo : BaseEntityMongoGuid
 {
     [BsonElement("userId")]
     public long UserId { get; set; }
@@ -56,5 +56,5 @@ public class UserDeviceMongo : BaseEntityMongo
 
     public UserDeviceMongo() : base() { }
 
-    public UserDeviceMongo(long domainId) : base(domainId) { }
+    public UserDeviceMongo(Guid domainId) : base(domainId) { }
 }

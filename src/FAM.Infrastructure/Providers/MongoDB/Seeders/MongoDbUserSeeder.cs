@@ -47,32 +47,8 @@ public class MongoDbUserSeeder : BaseDataSeeder
                 Username = "admin",
                 Email = "admin@fam.local",
                 FullName = "System Administrator",
-                PasswordHash = "", // TODO: Set proper password hash
-                PasswordSalt = "", // TODO: Set proper password salt
-                IsDeleted = false,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            },
-            new UserMongo
-            {
-                DomainId = 2,
-                Username = "manager",
-                Email = "manager@fam.local",
-                FullName = "Asset Manager",
-                PasswordHash = "", // TODO: Set proper password hash
-                PasswordSalt = "", // TODO: Set proper password salt
-                IsDeleted = false,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            },
-            new UserMongo
-            {
-                DomainId = 3,
-                Username = "user",
-                Email = "user@fam.local",
-                FullName = "Regular User",
-                PasswordHash = "", // TODO: Set proper password hash
-                PasswordSalt = "", // TODO: Set proper password salt
+                PasswordHash = "RlI1JkKTEVI6+RhcU/dLzeKshHhDwe3NpWd6Z3BIFtY=", // Hash for Admin@123
+                PasswordSalt = "6eb1ccfd64a94810bd3398067dff13f5", // Salt for Admin@123
                 IsDeleted = false,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow

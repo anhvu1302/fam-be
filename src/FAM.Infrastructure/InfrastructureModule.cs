@@ -1,14 +1,17 @@
 using FAM.Application.Common.Mappings;
+using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
 using FAM.Infrastructure.Common.Mapping;
 using FAM.Infrastructure.Common.Options;
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.Providers.MongoDB;
 using FAM.Infrastructure.Providers.PostgreSQL;
+using FAM.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using AutoMapper;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace FAM.Infrastructure;
 
@@ -49,6 +52,9 @@ public static class InfrastructureModule
 
         // Register Data Seeder Orchestrator
         services.AddScoped<DataSeederOrchestrator>();
+
+        // Register Location Service with HttpClient
+        services.AddHttpClient<ILocationService, IpApiLocationService>();
 
         // Configure based on provider
         switch (databaseOptions.Provider)
@@ -100,6 +106,9 @@ public static class InfrastructureModule
 
         // Register Data Seeder Orchestrator
         services.AddScoped<DataSeederOrchestrator>();
+
+        // Register Location Service with HttpClient
+        services.AddHttpClient<ILocationService, IpApiLocationService>();
 
         switch (databaseOptions.Provider)
         {

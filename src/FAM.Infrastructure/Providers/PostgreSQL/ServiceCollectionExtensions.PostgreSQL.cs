@@ -43,9 +43,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IQueryService<UserDto>, UserQueryService>();
 
         // Register Data Seeders
-        services.AddScoped<IDataSeeder, PostgreSqlUserSeeder>();
-        services.AddScoped<IDataSeeder, PostgreSqlCountrySeeder>();
-        services.AddScoped<IDataSeeder, PostgreSqlAssetCategorySeeder>();
+        services.AddScoped<IDataSeeder, PostgreSqlAdminUserSeeder>();
+        services.AddScoped<IDataSeeder, PostgreSqlRoleSeeder>();
 
         // Register Seed History Repository
         services.AddScoped<ISeedHistoryRepository, SeedHistoryRepositoryPostgreSql>();

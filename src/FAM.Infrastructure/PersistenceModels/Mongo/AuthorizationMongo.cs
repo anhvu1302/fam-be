@@ -30,6 +30,9 @@ public class RoleMongo : BaseEntityMongo
     [BsonElement("name")]
     public string Name { get; set; } = string.Empty;
 
+    [BsonElement("description")]
+    public string? Description { get; set; }
+
     [BsonElement("rank")]
     public int Rank { get; set; }
 

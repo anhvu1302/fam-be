@@ -268,6 +268,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
                     rank = table.Column<int>(type: "integer", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -520,8 +521,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 name: "user_devices",
                 columns: table => new
                 {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
                     user_id = table.Column<long>(type: "bigint", nullable: false),
                     device_id = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     device_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
@@ -2092,9 +2092,14 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 filter: "is_deleted = false");
 
             migrationBuilder.CreateIndex(
-                name: "ix_user_devices_device_id",
+                name: "ix_user_devices_created_at",
                 table: "user_devices",
-                column: "device_id",
+                column: "created_at");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_devices_device_user",
+                table: "user_devices",
+                columns: new[] { "device_id", "user_id" },
                 unique: true,
                 filter: "is_deleted = false");
 

@@ -5,8 +5,9 @@ namespace FAM.Domain.Users.Entities;
 
 /// <summary>
 /// Thiết bị đăng nhập của người dùng
+/// Uses GUID as primary key for better scalability with high volume of records
 /// </summary>
-public class UserDevice : BaseEntity
+public class UserDevice : BaseEntityGuid
 {
     public long UserId { get; private set; }
     public string DeviceId { get; private set; } = string.Empty;
@@ -73,10 +74,32 @@ public class UserDevice : BaseEntity
             Location = location;
     }
 
+    /// <summary>
+    /// Record a new login event - updates LastLoginAt
+    /// </summary>
+    public void RecordLogin(string? ipAddress = null, string? location = null)
+    {
+        LastLoginAt = DateTime.UtcNow;
+        LastActivityAt = DateTime.UtcNow;
+        if (!string.IsNullOrEmpty(ipAddress))
+            IpAddress = IPAddress.Create(ipAddress);
+        if (!string.IsNullOrEmpty(location))
+            Location = location;
+    }
+
     public void SetRefreshToken(string refreshToken, DateTime expiresAt)
     {
         RefreshToken = refreshToken;
         RefreshTokenExpiresAt = expiresAt;
+    }
+
+    /// <summary>
+    /// Update refresh token - combines SetRefreshToken and RecordLogin
+    /// </summary>
+    public void UpdateRefreshToken(string refreshToken, DateTime expiresAt, string? ipAddress = null, string? location = null)
+    {
+        SetRefreshToken(refreshToken, expiresAt);
+        RecordLogin(ipAddress, location);
     }
 
     public void ClearRefreshToken()

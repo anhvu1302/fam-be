@@ -23,7 +23,7 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
         _mapper = mapper;
     }
 
-    public async Task<UserDevice?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
+    public async Task<UserDevice?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var entity = await _context.UserDevices.FindAsync(new object[] { id }, cancellationToken);
         return entity != null ? _mapper.Map<UserDevice>(entity) : null;
@@ -51,7 +51,22 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
     public void Update(UserDevice entity)
     {
         var efEntity = _mapper.Map<UserDeviceEf>(entity);
-        _context.UserDevices.Update(efEntity);
+
+        // Check if the entity is already being tracked
+        var existingEntry = _context.ChangeTracker.Entries<UserDeviceEf>()
+            .FirstOrDefault(e => e.Entity.Id == efEntity.Id);
+
+        if (existingEntry != null)
+        {
+            // Entity is already tracked, update its properties
+            _mapper.Map(entity, existingEntry.Entity);
+            existingEntry.State = EntityState.Modified;
+        }
+        else
+        {
+            // Entity is not tracked, attach and update
+            _context.UserDevices.Update(efEntity);
+        }
     }
 
     public void Delete(UserDevice entity)
@@ -60,7 +75,7 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
         _context.UserDevices.Remove(efEntity);
     }
 
-    public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _context.UserDevices.AnyAsync(d => d.Id == id, cancellationToken);
     }
@@ -88,7 +103,7 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
         return _mapper.Map<IEnumerable<UserDevice>>(entities);
     }
 
-    public async Task<bool> IsDeviceIdTakenAsync(string deviceId, long? excludeDeviceId = null, CancellationToken cancellationToken = default)
+    public async Task<bool> IsDeviceIdTakenAsync(string deviceId, Guid? excludeDeviceId = null, CancellationToken cancellationToken = default)
     {
         var query = _context.UserDevices.Where(d => d.DeviceId == deviceId);
         if (excludeDeviceId.HasValue)
@@ -98,7 +113,7 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
         return await query.AnyAsync(cancellationToken);
     }
 
-    public async Task DeactivateDeviceAsync(long deviceId, CancellationToken cancellationToken = default)
+    public async Task DeactivateDeviceAsync(Guid deviceId, CancellationToken cancellationToken = default)
     {
         var entity = await _context.UserDevices.FindAsync(new object[] { deviceId }, cancellationToken);
         if (entity != null)
@@ -110,15 +125,19 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
         }
     }
 
-    public async Task DeactivateAllUserDevicesAsync(long userId, long? excludeDeviceId = null, CancellationToken cancellationToken = default)
+    public async Task DeactivateAllUserDevicesAsync(long userId, string? excludeDeviceId = null, CancellationToken cancellationToken = default)
     {
-        var query = _context.UserDevices.Where(d => d.UserId == userId);
-        if (excludeDeviceId.HasValue)
+        var query = _context.UserDevices
+            .Where(d => d.UserId == userId && !d.IsDeleted);
+
+        // Exclude device by DeviceId (fingerprint string), not by Guid ID
+        if (!string.IsNullOrEmpty(excludeDeviceId))
         {
-            query = query.Where(d => d.Id != excludeDeviceId.Value);
+            query = query.Where(d => d.DeviceId != excludeDeviceId);
         }
 
         var entities = await query.ToListAsync(cancellationToken);
+
         foreach (var entity in entities)
         {
             entity.IsActive = false;
@@ -127,6 +146,17 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
         }
         _context.UserDevices.UpdateRange(entities);
     }
+
+    public async Task<UserDevice?> FindByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+    {
+        var entity = await _context.UserDevices
+            .Include(d => d.User)
+            .FirstOrDefaultAsync(d => d.RefreshToken == refreshToken && !d.IsDeleted, cancellationToken);
+        return entity != null ? _mapper.Map<UserDevice>(entity) : null;
+    }
+
+    /// <summary>
+    /// Get IQueryable for EF entities (not domain) - for advanced filtering
 
     /// <summary>
     /// Get IQueryable for EF entities (not domain) - for advanced filtering

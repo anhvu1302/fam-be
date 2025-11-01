@@ -9,11 +9,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
 /// <summary>
 /// Seeds initial users data for PostgreSQL
 /// </summary>
-public class PostgreSqlUserSeeder : BaseDataSeeder
+public class PostgreSqlAdminUserSeeder : BaseDataSeeder
 {
     private readonly PostgreSqlDbContext _dbContext;
 
-    public PostgreSqlUserSeeder(PostgreSqlDbContext dbContext, ILogger<PostgreSqlUserSeeder> logger) 
+    public PostgreSqlAdminUserSeeder(PostgreSqlDbContext dbContext, ILogger<PostgreSqlAdminUserSeeder> logger) 
         : base(logger)
     {
         _dbContext = dbContext;
@@ -41,37 +41,13 @@ public class PostgreSqlUserSeeder : BaseDataSeeder
                 Username = "admin",
                 Email = "admin@fam.local",
                 FullName = "System Administrator",
-                PasswordHash = "", // TODO: Set proper password hash
-                PasswordSalt = "", // TODO: Set proper password salt
+                PasswordHash = "RlI1JkKTEVI6+RhcU/dLzeKshHhDwe3NpWd6Z3BIFtY=", // Hash for Admin@123
+                PasswordSalt = "6eb1ccfd64a94810bd3398067dff13f5", // Salt for Admin@123
                 IsActive = true,
                 IsDeleted = false,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             },
-            new UserEf
-            {
-                Username = "manager",
-                Email = "manager@fam.local",
-                FullName = "Asset Manager",
-                PasswordHash = "", // TODO: Set proper password hash
-                PasswordSalt = "", // TODO: Set proper password salt
-                IsActive = true,
-                IsDeleted = false,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            },
-            new UserEf
-            {
-                Username = "user",
-                Email = "user@fam.local",
-                FullName = "Regular User",
-                PasswordHash = "", // TODO: Set proper password hash
-                PasswordSalt = "", // TODO: Set proper password salt
-                IsActive = true,
-                IsDeleted = false,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            }
         };
 
         await _dbContext.Users.AddRangeAsync(users, cancellationToken);

@@ -4,9 +4,10 @@ namespace FAM.Infrastructure.PersistenceModels.Ef;
 
 /// <summary>
 /// EF-specific persistence model for UserDevice
+/// Uses GUID as primary key for better scalability with high volume of records
 /// </summary>
 [Table("user_devices")]
-public class UserDeviceEf : BaseEntityEf
+public class UserDeviceEf : BaseEntityEfGuid
 {
     public long UserId { get; set; }
     public string DeviceId { get; set; } = string.Empty;

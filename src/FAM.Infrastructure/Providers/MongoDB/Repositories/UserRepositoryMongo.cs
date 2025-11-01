@@ -136,4 +136,18 @@ public class UserRepositoryMongo : IUserRepository
         var count = await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         return count > 0;
     }
+
+    public async Task<User?> FindByUsernameAsync(string username, CancellationToken cancellationToken = default)
+    {
+        var document = await _collection.Find(d => d.Username.ToLower() == username.ToLower() && !d.IsDeleted)
+            .FirstOrDefaultAsync(cancellationToken);
+        return document != null ? _mapper.Map<User>(document) : null;
+    }
+
+    public async Task<User?> FindByEmailAsync(string email, CancellationToken cancellationToken = default)
+    {
+        var document = await _collection.Find(d => d.Email.ToLower() == email.ToLower() && !d.IsDeleted)
+            .FirstOrDefaultAsync(cancellationToken);
+        return document != null ? _mapper.Map<User>(document) : null;
+    }
 }

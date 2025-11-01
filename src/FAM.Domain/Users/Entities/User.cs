@@ -119,7 +119,7 @@ public class User : BaseEntity
         Password = Password.FromHash(newPasswordHash, newPasswordSalt);
     }
 
-    public void EnableTwoFactor(string secret, string backupCodes)
+    public void EnableTwoFactor(string secret, string? backupCodes = null)
     {
         TwoFactorEnabled = true;
         TwoFactorSecret = secret;
@@ -162,6 +162,65 @@ public class User : BaseEntity
         {
             LockoutEnd = DateTime.UtcNow.AddMinutes(15);
         }
+    }
+
+    /// <summary>
+    /// Get existing device or create new one for authentication
+    /// </summary>
+    public UserDevice GetOrCreateDevice(
+        string deviceId, 
+        string deviceName, 
+        string deviceType,
+        string? userAgent = null,
+        string? ipAddress = null,
+        string? location = null)
+    {
+        var existingDevice = UserDevices.FirstOrDefault(d => d.DeviceId == deviceId);
+        
+        if (existingDevice != null)
+        {
+            existingDevice.UpdateActivity(ipAddress, location);
+            return existingDevice;
+        }
+
+        var newDevice = UserDevice.Create(
+            this.Id,
+            deviceId,
+            deviceName,
+            deviceType,
+            userAgent,
+            ipAddress,
+            location
+        );
+
+        UserDevices.Add(newDevice);
+        return newDevice;
+    }
+
+    /// <summary>
+    /// Reset failed login attempts (used after successful login)
+    /// </summary>
+    public void ResetFailedLoginAttempts()
+    {
+        FailedLoginAttempts = 0;
+        LockoutEnd = null;
+    }
+
+    /// <summary>
+    /// Lock account for security reasons
+    /// </summary>
+    public void LockAccount(int minutes = 15)
+    {
+        LockoutEnd = DateTime.UtcNow.AddMinutes(minutes);
+    }
+
+    /// <summary>
+    /// Unlock account manually (admin action)
+    /// </summary>
+    public void UnlockAccount()
+    {
+        LockoutEnd = null;
+        FailedLoginAttempts = 0;
     }
 
     public void UpdatePreferences(string? preferredLanguage, string? timeZone, bool? receiveNotifications, bool? receiveMarketingEmails)

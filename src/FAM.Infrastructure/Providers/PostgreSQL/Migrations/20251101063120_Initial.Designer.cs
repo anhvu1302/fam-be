@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 {
     [DbContext(typeof(PostgreSqlDbContext))]
-    [Migration("20251027075329_Initial")]
+    [Migration("20251101063120_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -2931,6 +2931,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -3666,12 +3670,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
             modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserDeviceEf", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("Browser")
                         .HasMaxLength(100)
@@ -3770,16 +3773,19 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasKey("Id")
                         .HasName("pk_user_devices");
 
-                    b.HasIndex("DeviceId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_user_devices_device_id")
-                        .HasFilter("is_deleted = false");
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("ix_user_devices_created_at");
 
                     b.HasIndex("LastLoginAt")
                         .HasDatabaseName("ix_user_devices_last_login");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_user_devices_user_id");
+
+                    b.HasIndex("DeviceId", "UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_user_devices_device_user")
+                        .HasFilter("is_deleted = false");
 
                     b.HasIndex("UserId", "IsActive")
                         .HasDatabaseName("ix_user_devices_user_active");

@@ -52,7 +52,7 @@ public class EfToDtoProfile : Profile
         CreateMap<RoleEf, RoleDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Name)); // Using Name as Description
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
 
         // OrgNodeEf to OrgNodeDto
         CreateMap<OrgNodeEf, OrgNodeDto>()

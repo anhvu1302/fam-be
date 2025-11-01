@@ -102,6 +102,11 @@ public class PostgreSqlDbContext : DbContext
         modelBuilder.Entity<UserDeviceEf>(entity =>
         {
             entity.HasKey(ud => ud.Id);
+            
+            // Configure UUID generation
+            entity.Property(ud => ud.Id)
+                .HasDefaultValueSql("gen_random_uuid()");
+            
             entity.Property(ud => ud.UserId).IsRequired();
             entity.Property(ud => ud.DeviceId).IsRequired().HasMaxLength(255);
             entity.Property(ud => ud.DeviceName).IsRequired().HasMaxLength(200);
@@ -118,11 +123,15 @@ public class PostgreSqlDbContext : DbContext
 
             entity.HasQueryFilter(ud => !ud.IsDeleted);
 
-            // Indexes
-            entity.HasIndex(ud => ud.DeviceId).IsUnique().HasFilter("is_deleted = false").HasDatabaseName("ix_user_devices_device_id");
+            // Indexes - DeviceId should be unique per user
+            entity.HasIndex(ud => new { ud.DeviceId, ud.UserId })
+                .IsUnique()
+                .HasFilter("is_deleted = false")
+                .HasDatabaseName("ix_user_devices_device_user");
             entity.HasIndex(ud => ud.UserId).HasDatabaseName("ix_user_devices_user_id");
             entity.HasIndex(ud => new { ud.UserId, ud.IsActive }).HasDatabaseName("ix_user_devices_user_active");
             entity.HasIndex(ud => ud.LastLoginAt).HasDatabaseName("ix_user_devices_last_login");
+            entity.HasIndex(ud => ud.CreatedAt).HasDatabaseName("ix_user_devices_created_at");
 
             // Relationships
             entity.HasOne(ud => ud.User)
