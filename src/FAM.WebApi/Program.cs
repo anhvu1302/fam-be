@@ -2,6 +2,7 @@ using FAM.Application.Common.Mappings;
 using FAM.Application.Common.Options;
 using FAM.Application.Querying.Parsing;
 using FAM.Application.Auth.Services;
+using FAM.Application.Settings;
 using FAM.Infrastructure;
 using FAM.Infrastructure.Auth;
 using FAM.WebApi.Configuration;
@@ -42,6 +43,17 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     
     // Limit to 1 proxy hop (adjust based on your infrastructure)
     options.ForwardLimit = 2;
+});
+
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
 });
 
 // Add services to the container.
@@ -136,6 +148,14 @@ builder.Services.Configure<PagingOptions>(options =>
     options.MaxPageSize = appConfig.MaxPageSize;
 });
 
+// Bind MinIO settings from configuration
+builder.Services.Configure<MinioSettings>(
+    builder.Configuration.GetSection(MinioSettings.SectionName));
+
+// Bind File Upload settings from configuration
+builder.Services.Configure<FileUploadSettings>(
+    builder.Configuration.GetSection(FileUploadSettings.SectionName));
+
 var app = builder.Build();
 
 // Log configuration on startup
@@ -164,6 +184,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(); // Enable CORS
 app.UseAuthentication(); // Add authentication middleware
 app.UseAuthorization();
 app.MapControllers();

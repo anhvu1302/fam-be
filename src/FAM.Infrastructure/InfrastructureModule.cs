@@ -1,3 +1,4 @@
+using FAM.Application.Abstractions;
 using FAM.Application.Common.Mappings;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
@@ -8,6 +9,7 @@ using FAM.Infrastructure.Providers.MongoDB;
 using FAM.Infrastructure.Providers.PostgreSQL;
 using FAM.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Minio;
 
 namespace FAM.Infrastructure;
 
@@ -92,6 +94,25 @@ public static class InfrastructureModule
 
         // Register Location Service with HttpClient
         services.AddHttpClient<ILocationService, IpApiLocationService>();
+
+        // Register MinIO Client
+        services.AddSingleton<IMinioClient>(sp =>
+        {
+            var minioEndpoint = Environment.GetEnvironmentVariable("MINIO_ENDPOINT") ?? "localhost:9000";
+            var minioAccessKey = Environment.GetEnvironmentVariable("MINIO_ROOT_USER") ?? "minioadmin";
+            var minioSecretKey = Environment.GetEnvironmentVariable("MINIO_ROOT_PASSWORD") ?? "minioadmin";
+            var minioUseSsl = bool.Parse(Environment.GetEnvironmentVariable("MINIO_USE_SSL") ?? "false");
+
+            return new MinioClient()
+                .WithEndpoint(minioEndpoint)
+                .WithCredentials(minioAccessKey, minioSecretKey)
+                .WithSSL(minioUseSsl)
+                .Build();
+        });
+
+        // Register Storage Services
+        services.AddScoped<IStorageService, MinioStorageService>();
+        services.AddScoped<IFileValidator, Application.Storage.FileValidator>();
 
         // Register only the selected database provider
         switch (provider)
