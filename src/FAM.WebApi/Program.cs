@@ -4,6 +4,7 @@ using FAM.Application.Querying.Parsing;
 using FAM.Application.Auth.Services;
 using FAM.Infrastructure;
 using FAM.Infrastructure.Auth;
+using FAM.WebApi.Configuration;
 using FAM.WebApi.Controllers;
 using FAM.WebApi.Middleware;
 using MediatR;
@@ -13,7 +14,17 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
+// Load environment variables from .env file
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+DotEnvLoader.LoadForEnvironment(environment);
+
+// Load and validate configuration
+var appConfig = new AppConfiguration();
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Register AppConfiguration as singleton
+builder.Services.AddSingleton(appConfig);
 
 // Configure forwarded headers for proxy scenarios (Nginx, Load Balancer, Cloudflare, etc.)
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -89,8 +100,7 @@ builder.Services.AddSingleton<IFilterParser, PrattFilterParser>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 // Add JWT Authentication
-var jwtSettings = builder.Configuration.GetSection("Authentication");
-var secretKey = jwtSettings["JwtSecret"] ?? throw new InvalidOperationException("JwtSecret is not configured");
+var secretKey = appConfig.JwtSecret;
 
 builder.Services.AddAuthentication(options =>
 {
@@ -101,15 +111,15 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer(options =>
 {
     options.SaveToken = true;
-    options.RequireHttpsMetadata = false; // Set to true in production
+    options.RequireHttpsMetadata = appConfig.Environment == "Production";
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["JwtIssuer"],
-        ValidAudience = jwtSettings["JwtAudience"],
+        ValidIssuer = appConfig.JwtIssuer,
+        ValidAudience = appConfig.JwtAudience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
         ClockSkew = TimeSpan.Zero // Remove default 5 minute tolerance
     };
@@ -117,13 +127,20 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Add infrastructure (database provider) - includes AutoMapper registration
-builder.Services.AddInfrastructure(builder.Configuration);
+// Add infrastructure (database provider) - no longer needs IConfiguration
+builder.Services.AddInfrastructure();
 
-// Bind paging options from configuration
-builder.Services.Configure<PagingOptions>(builder.Configuration.GetSection("Paging"));
+// Bind paging options from AppConfiguration
+builder.Services.Configure<PagingOptions>(options =>
+{
+    options.MaxPageSize = appConfig.MaxPageSize;
+});
 
 var app = builder.Build();
+
+// Log configuration on startup
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+appConfig.LogConfiguration(logger);
 
 // Configure the HTTP request pipeline.
 

@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: fam-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-Admin@123}
+      POSTGRES_DB: ${DB_NAME:-fam_db}
+    ports:
+      - "${DB_PORT:-8432}:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

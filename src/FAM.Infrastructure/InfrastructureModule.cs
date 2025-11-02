@@ -7,11 +7,7 @@ using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.Providers.MongoDB;
 using FAM.Infrastructure.Providers.PostgreSQL;
 using FAM.Infrastructure.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using AutoMapper;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace FAM.Infrastructure;
 
@@ -20,77 +16,64 @@ namespace FAM.Infrastructure;
 /// </summary>
 public static class InfrastructureModule
 {
-    public static async Task<IServiceCollection> AddInfrastructureAsync(
-        this IServiceCollection services,
-        IConfiguration configuration)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        // Configure database options
-        var databaseOptionsSection = configuration.GetSection(DatabaseOptions.SectionName);
-        var databaseOptions = new DatabaseOptions
+        // Get database provider from environment or default to PostgreSQL
+        var providerStr = Environment.GetEnvironmentVariable("DB_PROVIDER") ?? "PostgreSQL";
+        
+        // Validate provider
+        if (!Enum.TryParse<DatabaseProvider>(providerStr, ignoreCase: true, out var provider))
         {
-            Provider = Enum.Parse<DatabaseProvider>(databaseOptionsSection["Provider"] ?? "PostgreSQL"),
-            PostgreSql = new PostgreSqlOptions
-            {
-                ConnectionString = databaseOptionsSection.GetSection("PostgreSql")["ConnectionString"] ?? ""
-            },
-            MongoDb = new MongoDbOptions
-            {
-                ConnectionString = databaseOptionsSection.GetSection("MongoDb")["ConnectionString"] ?? "",
-                DatabaseName = databaseOptionsSection.GetSection("MongoDb")["DatabaseName"] ?? ""
-            }
-        };
-
-        // Register AutoMapper with specific profiles
-        services.AddAutoMapper(cfg =>
-        {
-            cfg.AddProfile<DomainToEfProfile>();
-            cfg.AddProfile<DomainToMongoProfile>();
-            cfg.AddProfile<EfToDtoProfile>();
-            cfg.AddProfile<MongoToDtoProfile>();
-            cfg.AddProfile<UserMappingProfile>();
-        });
-
-        // Register Data Seeder Orchestrator
-        services.AddScoped<DataSeederOrchestrator>();
-
-        // Register Location Service with HttpClient
-        services.AddHttpClient<ILocationService, IpApiLocationService>();
-
-        // Configure based on provider
-        switch (databaseOptions.Provider)
+            throw new InvalidOperationException(
+                $"Invalid DB_PROVIDER value: '{providerStr}'. Valid values are: 'PostgreSQL', 'MongoDB'");
+        }
+        
+        // Get shared database connection parameters
+        var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
+        var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? (provider == DatabaseProvider.MongoDB ? "27017" : "5432");
+        var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "fam_db";
+        var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "";
+        var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "";
+        
+        // Build connection strings based on provider
+        string postgresConnection = "";
+        string mongoConnection = "";
+        
+        switch (provider)
         {
             case DatabaseProvider.PostgreSQL:
-                services.AddPostgreSql(databaseOptions.PostgreSql);
+                // Only build PostgreSQL connection string
+                postgresConnection = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
                 break;
-
+                
             case DatabaseProvider.MongoDB:
-                await services.AddMongoDbAsync(databaseOptions.MongoDb);
+                // Only build MongoDB connection string
+                // Format: mongodb://[username:password@]host[:port]/[database]
+                var escapedUser = !string.IsNullOrEmpty(dbUser) ? Uri.EscapeDataString(dbUser) : "";
+                var escapedPassword = !string.IsNullOrEmpty(dbPassword) ? Uri.EscapeDataString(dbPassword) : "";
+                
+                if (!string.IsNullOrEmpty(escapedUser) && !string.IsNullOrEmpty(escapedPassword))
+                {
+                    mongoConnection = $"mongodb://{escapedUser}:{escapedPassword}@{dbHost}:{dbPort}";
+                }
+                else
+                {
+                    mongoConnection = $"mongodb://{dbHost}:{dbPort}";
+                }
                 break;
-
-            default:
-                throw new InvalidOperationException($"Unsupported database provider: {databaseOptions.Provider}");
         }
-
-        return services;
-    }
-
-    public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        // Synchronous version
-        var databaseOptionsSection = configuration.GetSection(DatabaseOptions.SectionName);
+        
         var databaseOptions = new DatabaseOptions
         {
-            Provider = Enum.Parse<DatabaseProvider>(databaseOptionsSection["Provider"] ?? "PostgreSQL"),
+            Provider = provider,
             PostgreSql = new PostgreSqlOptions
             {
-                ConnectionString = databaseOptionsSection.GetSection("PostgreSql")["ConnectionString"] ?? ""
+                ConnectionString = postgresConnection
             },
             MongoDb = new MongoDbOptions
             {
-                ConnectionString = databaseOptionsSection.GetSection("MongoDb")["ConnectionString"] ?? "",
-                DatabaseName = databaseOptionsSection.GetSection("MongoDb")["DatabaseName"] ?? ""
+                ConnectionString = mongoConnection,
+                DatabaseName = dbName
             }
         };
 
@@ -110,7 +93,8 @@ public static class InfrastructureModule
         // Register Location Service with HttpClient
         services.AddHttpClient<ILocationService, IpApiLocationService>();
 
-        switch (databaseOptions.Provider)
+        // Register only the selected database provider
+        switch (provider)
         {
             case DatabaseProvider.PostgreSQL:
                 services.AddPostgreSql(databaseOptions.PostgreSql);
@@ -121,7 +105,7 @@ public static class InfrastructureModule
                 break;
 
             default:
-                throw new InvalidOperationException($"Unsupported database provider: {databaseOptions.Provider}");
+                throw new InvalidOperationException($"Unsupported database provider: {provider}");
         }
 
         return services;

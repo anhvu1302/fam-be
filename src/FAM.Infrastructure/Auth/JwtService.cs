@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using System.Text;
 using FAM.Application.Auth.DTOs;
 using FAM.Application.Auth.Services;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 namespace FAM.Infrastructure.Auth;
@@ -14,23 +13,26 @@ namespace FAM.Infrastructure.Auth;
 /// </summary>
 public class JwtService : IJwtService
 {
-    private readonly IConfiguration _configuration;
     private readonly string _secret;
     private readonly string _issuer;
     private readonly string _audience;
     private readonly int _accessTokenExpiryMinutes;
 
-    public JwtService(IConfiguration configuration)
+    public JwtService()
     {
-        _configuration = configuration;
-        _secret = configuration["Authentication:JwtSecret"] 
-            ?? throw new InvalidOperationException("JWT Secret not configured");
-        _issuer = configuration["Authentication:JwtIssuer"] ?? "FAM-API";
-        _audience = configuration["Authentication:JwtAudience"] ?? "FAM-Client";
-        _accessTokenExpiryMinutes = int.Parse(configuration["Authentication:AccessTokenExpiryMinutes"] ?? "15");
+        // Load from environment variables
+        _secret = Environment.GetEnvironmentVariable("JWT_SECRET") 
+            ?? throw new InvalidOperationException("JWT_SECRET environment variable not configured");
+        _issuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "FAM.API";
+        _audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "FAM.Client";
+        
+        var expiryMinutesStr = Environment.GetEnvironmentVariable("ACCESS_TOKEN_EXPIRATION_MINUTES");
+        _accessTokenExpiryMinutes = !string.IsNullOrEmpty(expiryMinutesStr) && int.TryParse(expiryMinutesStr, out var minutes) 
+            ? minutes 
+            : 60;
 
         if (_secret.Length < 32)
-            throw new InvalidOperationException("JWT Secret must be at least 32 characters");
+            throw new InvalidOperationException("JWT_SECRET must be at least 32 characters");
     }
 
     public string GenerateAccessToken(long userId, string username, string email, IEnumerable<string> roles)

@@ -21,3 +21,21 @@ used queries
 
 # JetBrains Rider settings
 .idea/
+
+# Docker Mount Volumes
+data/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+postgres-data-17/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# PostgreSQL data
+postgres-data/
+postgres-data-17/

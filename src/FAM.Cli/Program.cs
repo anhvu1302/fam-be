@@ -1,6 +1,5 @@
 using FAM.Infrastructure;
 using FAM.Infrastructure.Common.Seeding;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,6 +12,9 @@ class Program
     {
         try
         {
+            // Load .env file before anything else
+            LoadDotEnv();
+            
             var host = CreateHostBuilder(args).Build();
 
             if (args.Length == 0)
@@ -79,55 +81,10 @@ class Program
 
     static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration((context, config) =>
-            {
-                // Use shared appsettings.json from WebApi project
-                // Handle both running from CLI folder and from root
-                var currentDir = Directory.GetCurrentDirectory();
-                string webApiPath;
-                
-                // If running from FAM.Cli folder (dotnet run)
-                if (currentDir.EndsWith("FAM.Cli"))
-                {
-                    webApiPath = Path.Combine(currentDir, "..", "FAM.WebApi");
-                }
-                // If running from root folder (make seed)
-                else
-                {
-                    webApiPath = Path.Combine(currentDir, "src", "FAM.WebApi");
-                }
-                
-                // Resolve to absolute path
-                webApiPath = Path.GetFullPath(webApiPath);
-                
-                if (!Directory.Exists(webApiPath))
-                {
-                    throw new DirectoryNotFoundException(
-                        $"Cannot find WebApi directory at: {webApiPath}\n" +
-                        $"Current directory: {currentDir}");
-                }
-                
-                // Clear default configuration to have full control
-                config.Sources.Clear();
-                
-                // Load from WebApi's appsettings files (shared configuration)
-                config.SetBasePath(webApiPath);
-                config.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                config.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true);
-                
-                // Environment variables can override
-                config.AddEnvironmentVariables();
-                
-                // Command line arguments have highest priority
-                if (args != null)
-                {
-                    config.AddCommandLine(args);
-                }
-            })
             .ConfigureServices((context, services) =>
             {
-                // Add infrastructure (database providers and seeders)
-                services.AddInfrastructure(context.Configuration);
+                // Add infrastructure (uses environment variables loaded from .env)
+                services.AddInfrastructure();
             })
             .ConfigureLogging((context, logging) =>
             {
@@ -135,6 +92,75 @@ class Program
                 logging.AddConsole();
                 logging.SetMinimumLevel(LogLevel.Information);
             });
+
+    static void LoadDotEnv()
+    {
+        // Find the solution root directory (where .env is located)
+        var currentDir = Directory.GetCurrentDirectory();
+        var solutionRoot = FindSolutionRoot(currentDir);
+        
+        if (solutionRoot == null)
+        {
+            Console.WriteLine("Warning: Could not find solution root. Skipping .env file loading.");
+            return;
+        }
+
+        var envFile = Path.Combine(solutionRoot, ".env");
+        
+        if (!File.Exists(envFile))
+        {
+            Console.WriteLine($"Warning: .env file not found at '{envFile}'.");
+            return;
+        }
+
+        foreach (var line in File.ReadAllLines(envFile))
+        {
+            var trimmedLine = line.Trim();
+
+            // Skip empty lines and comments
+            if (string.IsNullOrWhiteSpace(trimmedLine) || trimmedLine.StartsWith("#"))
+                continue;
+
+            var parts = trimmedLine.Split('=', 2, StringSplitOptions.None);
+            if (parts.Length != 2)
+                continue;
+
+            var key = parts[0].Trim();
+            var value = parts[1].Trim();
+
+            // Remove quotes if present
+            if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
+                (value.StartsWith("'") && value.EndsWith("'")))
+            {
+                value = value[1..^1];
+            }
+
+            // Only set if not already set (system env vars take precedence)
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(key)))
+            {
+                Environment.SetEnvironmentVariable(key, value);
+            }
+        }
+    }
+
+    static string? FindSolutionRoot(string startDirectory)
+    {
+        var current = new DirectoryInfo(startDirectory);
+        
+        while (current != null)
+        {
+            // Look for .sln file or docker-compose.yml as indicators of solution root
+            if (current.GetFiles("*.sln").Length > 0 || 
+                current.GetFiles("docker-compose.yml").Length > 0)
+            {
+                return current.FullName;
+            }
+            
+            current = current.Parent;
+        }
+        
+        return null;
+    }
 
     static async Task<int> RunSeedCommand(IHost host, string[] flags)
     {
