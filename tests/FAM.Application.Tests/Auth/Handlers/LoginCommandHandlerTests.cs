@@ -1,0 +1,322 @@
+using FAM.Application.Auth.Commands;
+using FAM.Application.Auth.Handlers;
+using FAM.Application.Auth.Services;
+using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+using FAM.Domain.Users.Entities;
+using FAM.Domain.ValueObjects;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
+
+namespace FAM.Application.Tests.Auth.Handlers;
+
+public class LoginCommandHandlerTests
+{
+    private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly Mock<IUserDeviceRepository> _mockUserDeviceRepository;
+    private readonly Mock<IJwtService> _mockJwtService;
+    private readonly Mock<ILogger<LoginCommandHandler>> _mockLogger;
+    private readonly LoginCommandHandler _handler;
+
+    public LoginCommandHandlerTests()
+    {
+        _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _mockUserRepository = new Mock<IUserRepository>();
+        _mockUserDeviceRepository = new Mock<IUserDeviceRepository>();
+        _mockJwtService = new Mock<IJwtService>();
+        _mockLogger = new Mock<ILogger<LoginCommandHandler>>();
+
+        _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
+        _mockUnitOfWork.Setup(x => x.UserDevices).Returns(_mockUserDeviceRepository.Object);
+
+        _handler = new LoginCommandHandler(_mockUnitOfWork.Object, _mockJwtService.Object, _mockLogger.Object);
+    }
+
+    [Fact]
+    public async Task Handle_WithValidCredentialsAndNo2FA_ShouldReturnTokens()
+    {
+        // Arrange
+        var plainPassword = "SecurePass123!";
+        // User.Create with plain password will hash it internally
+        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: plainPassword);
+        typeof(User).GetProperty("Id")?.SetValue(user, 1L);
+
+        var command = new LoginCommand
+        {
+            Username = "testuser",
+            Password = plainPassword, // Same plain password will verify correctly
+            DeviceId = "device123",
+            DeviceName = "Chrome Browser",
+            DeviceType = "browser",
+            RememberMe = false
+        };
+
+        _mockUserRepository
+            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        _mockUserDeviceRepository
+            .Setup(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((UserDevice?)null);
+
+        _mockUserDeviceRepository
+            .Setup(x => x.AddAsync(It.IsAny<UserDevice>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _mockUserRepository
+            .Setup(x => x.Update(It.IsAny<User>()));
+
+        _mockUnitOfWork
+            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        _mockJwtService
+            .Setup(x => x.GenerateAccessToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<List<string>>()))
+            .Returns("access_token");
+
+        _mockJwtService
+            .Setup(x => x.GenerateRefreshToken())
+            .Returns("refresh_token");
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.AccessToken.Should().Be("access_token");
+        result.RefreshToken.Should().Be("refresh_token");
+        result.RequiresTwoFactor.Should().BeFalse();
+        result.User.Should().NotBeNull();
+        result.User.Username.Should().Be("testuser");
+        result.User.Email.Should().Be("test@example.com");
+
+        _mockUserRepository.Verify(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()), Times.Once);
+        _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once);
+        _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WithNonExistentUser_ShouldThrowUnauthorizedException()
+    {
+        // Arrange
+        var command = new LoginCommand
+        {
+            Username = "nonexistent",
+            Password = "SecurePass123!",
+            DeviceId = "device123"
+        };
+
+        _mockUserRepository
+            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        // Act
+        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+            .WithMessage("Invalid username or password");
+
+        _mockUserRepository.Verify(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()), Times.Once);
+        _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_WithInvalidPassword_ShouldThrowUnauthorizedException()
+    {
+        // Arrange
+        var password = Password.Create("CorrectPass123!");
+        var user = User.Create("testuser", "test@example.com", password.Hash, password.Salt, null, null);
+        typeof(User).GetProperty("Id")?.SetValue(user, 1L);
+
+        var command = new LoginCommand
+        {
+            Username = "testuser",
+            Password = "WrongPassword123!",
+            DeviceId = "device123"
+        };
+
+        _mockUserRepository
+            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        _mockUserRepository
+            .Setup(x => x.Update(It.IsAny<User>()));
+
+        _mockUnitOfWork
+            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        // Act
+        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+            .WithMessage("Invalid username or password");
+
+        _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once); // Failed login recorded
+        _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WithInactiveUser_ShouldThrowUnauthorizedException()
+    {
+        // Arrange
+        var password = Password.Create("SecurePass123!");
+        var user = User.Create("testuser", "test@example.com", password.Hash, password.Salt, null, null);
+        typeof(User).GetProperty("Id")?.SetValue(user, 1L);
+        user.Deactivate(); // Deactivate user
+
+        var command = new LoginCommand
+        {
+            Username = "testuser",
+            Password = "SecurePass123!",
+            DeviceId = "device123"
+        };
+
+        _mockUserRepository
+            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        // Act
+        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+            .WithMessage("Account is inactive");
+    }
+
+    [Fact]
+    public async Task Handle_WithLockedOutUser_ShouldThrowUnauthorizedException()
+    {
+        // Arrange
+        var password = Password.Create("SecurePass123!");
+        var user = User.Create("testuser", "test@example.com", password.Hash, password.Salt, null, null);
+        typeof(User).GetProperty("Id")?.SetValue(user, 1L);
+        
+        // Lock user account
+        user.RecordFailedLogin();
+        user.RecordFailedLogin();
+        user.RecordFailedLogin();
+        user.RecordFailedLogin();
+        user.RecordFailedLogin(); // 5 failed attempts -> locked
+
+        var command = new LoginCommand
+        {
+            Username = "testuser",
+            Password = "SecurePass123!",
+            DeviceId = "device123"
+        };
+
+        _mockUserRepository
+            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        // Act
+        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+            .WithMessage("Account is locked*");
+    }
+
+    [Fact]
+    public async Task Handle_With2FAEnabled_ShouldReturnSessionToken()
+    {
+        // Arrange
+        var plainPassword = "SecurePass123!";
+        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: plainPassword);
+        typeof(User).GetProperty("Id")?.SetValue(user, 1L);
+        user.EnableTwoFactor("secret", "{\"codes\":[\"code1\",\"code2\"]}");
+
+        var command = new LoginCommand
+        {
+            Username = "testuser",
+            Password = plainPassword,
+            DeviceId = "device123"
+        };
+
+        _mockUserRepository
+            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        _mockJwtService
+            .Setup(x => x.GenerateAccessToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<List<string>>()))
+            .Returns("2fa_session_token");
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.RequiresTwoFactor.Should().BeTrue();
+        result.TwoFactorSessionToken.Should().Be("2fa_session_token");
+        result.AccessToken.Should().BeNullOrEmpty(); // Either null or empty string
+        result.RefreshToken.Should().BeNullOrEmpty();
+        result.User.IsTwoFactorEnabled.Should().BeTrue();
+
+        _mockJwtService.Verify(x => x.GenerateRefreshToken(), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_WithRememberMe_ShouldSetLongerRefreshTokenExpiry()
+    {
+        // Arrange
+        var plainPassword = "SecurePass123!";
+        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: plainPassword);
+        typeof(User).GetProperty("Id")?.SetValue(user, 1L);
+
+        var command = new LoginCommand
+        {
+            Username = "testuser",
+            Password = plainPassword,
+            DeviceId = "device123",
+            RememberMe = true // Remember me enabled
+        };
+
+        UserDevice? capturedDevice = null;
+
+        _mockUserRepository
+            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        _mockUserDeviceRepository
+            .Setup(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((UserDevice?)null);
+
+        _mockUserDeviceRepository
+            .Setup(x => x.AddAsync(It.IsAny<UserDevice>(), It.IsAny<CancellationToken>()))
+            .Callback<UserDevice, CancellationToken>((device, _) => capturedDevice = device)
+            .Returns(Task.CompletedTask);
+
+        _mockUserRepository
+            .Setup(x => x.Update(It.IsAny<User>()));
+
+        _mockUnitOfWork
+            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        _mockJwtService
+            .Setup(x => x.GenerateAccessToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<List<string>>()))
+            .Returns("access_token");
+
+        _mockJwtService
+            .Setup(x => x.GenerateRefreshToken())
+            .Returns("refresh_token");
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.AccessToken.Should().NotBeNull();
+        capturedDevice.Should().NotBeNull();
+        
+        // With RememberMe, refresh token should expire in ~30 days
+        var expectedExpiry = DateTime.UtcNow.AddDays(30);
+        capturedDevice!.RefreshTokenExpiresAt.Should().BeCloseTo(expectedExpiry, TimeSpan.FromMinutes(1));
+    }
+}

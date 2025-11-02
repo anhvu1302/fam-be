@@ -35,6 +35,11 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+// Add global exception handler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -71,7 +76,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Register MediatR
+// Register MediatR (no validation pipeline - validation is at Web API layer)
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(FAM.Application.Users.Commands.CreateUserCommand).Assembly);
@@ -122,6 +127,9 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
+// Add global exception handler (must be early in pipeline)
+app.UseExceptionHandler();
+
 // IMPORTANT: Use forwarded headers BEFORE any other middleware
 // This ensures that HttpContext.Connection.RemoteIpAddress is set correctly
 app.UseForwardedHeaders();
@@ -144,3 +152,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// Make the Program class accessible to integration tests
+public partial class Program { }

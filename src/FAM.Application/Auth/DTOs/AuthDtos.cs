@@ -75,6 +75,5 @@ public class ChangePasswordRequest
 {
     public string CurrentPassword { get; set; } = string.Empty;
     public string NewPassword { get; set; } = string.Empty;
-    public bool LogoutAllDevices { get; set; }
-    public long? CurrentDeviceId { get; set; }
+    public bool LogoutAllDevices { get; set; } = false;
 }

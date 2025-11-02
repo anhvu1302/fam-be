@@ -92,6 +92,66 @@ public class User : BaseEntity
         return Create(username, email, password.Hash, password.Salt, firstName, lastName, phoneNumber);
     }
 
+    /// <summary>
+    /// Factory method for loading User from database storage
+    /// Used by AutoMapper to hydrate domain entity from EF persistence model
+    /// </summary>
+    public static User CreateFromStorage(
+        long id,
+        string username,
+        string email,
+        string passwordHash,
+        string passwordSalt,
+        string? fullName,
+        string? firstName,
+        string? lastName,
+        string? phoneNumber,
+        bool twoFactorEnabled,
+        string? twoFactorSecret,
+        string? twoFactorBackupCodes,
+        bool isActive,
+        bool isEmailVerified,
+        int failedLoginAttempts,
+        DateTime? lockoutEnd,
+        string? preferredLanguage,
+        string? timeZone,
+        bool receiveNotifications,
+        bool receiveMarketingEmails,
+        DateTime createdAt,
+        DateTime updatedAt)
+    {
+        var user = new User
+        {
+            Id = id,
+            Username = Username.Create(username),
+            Email = Email.Create(email),
+            Password = Password.FromHash(passwordHash, passwordSalt),
+            FullName = fullName,
+            FirstName = firstName,
+            LastName = lastName,
+            TwoFactorEnabled = twoFactorEnabled,
+            TwoFactorSecret = twoFactorSecret,
+            TwoFactorBackupCodes = twoFactorBackupCodes,
+            IsActive = isActive,
+            IsEmailVerified = isEmailVerified,
+            FailedLoginAttempts = failedLoginAttempts,
+            LockoutEnd = lockoutEnd,
+            PreferredLanguage = preferredLanguage ?? "en",
+            TimeZone = timeZone ?? "UTC",
+            ReceiveNotifications = receiveNotifications,
+            ReceiveMarketingEmails = receiveMarketingEmails,
+            CreatedAt = createdAt,
+            UpdatedAt = updatedAt
+        };
+
+        if (!string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            user.PhoneNumber = PhoneNumber.Create(phoneNumber, "VN");
+        }
+
+        return user;
+    }
+
     public void UpdatePersonalInfo(string? firstName, string? lastName, string? avatar, string? bio, DateTime? dateOfBirth)
     {
         FirstName = firstName;

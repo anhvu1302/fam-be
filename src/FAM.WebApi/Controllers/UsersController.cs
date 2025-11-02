@@ -5,11 +5,12 @@ using FAM.Application.Users.Queries;
 using FAM.Application.DTOs.Users;
 using FAM.Application.Querying;
 using FAM.Application.Querying.Extensions;
+using FAM.WebApi.Models.Users;
 
 namespace FAM.WebApi.Controllers;
 
 /// <summary>
-/// Users API Controller
+/// Users API Controller - Web API layer validates shape/format before delegating to Application
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -95,8 +96,23 @@ public class UsersController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserCommand command)
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestModel request)
     {
+        // Web API validation: ModelState checks DataAnnotations
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        // Map Web API model → Application Command
+        var command = new CreateUserCommand
+        {
+            Username = request.Username,
+            Email = request.Email,
+            Password = request.Password,
+            FullName = request.FullName
+        };
+
         var result = await _mediator.Send(command);
         return CreatedAtAction(nameof(GetUserById), new { id = result.Id }, result);
     }
@@ -108,12 +124,23 @@ public class UsersController : ControllerBase
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateUser(long id, [FromBody] UpdateUserCommand command)
+    public async Task<IActionResult> UpdateUser(long id, [FromBody] UpdateUserRequestModel request)
     {
-        if (id != command.Id)
+        // Web API validation: ModelState checks DataAnnotations
+        if (!ModelState.IsValid)
         {
-            return BadRequest("ID mismatch");
+            return BadRequest(ModelState);
         }
+
+        // Map Web API model → Application Command
+        var command = new UpdateUserCommand
+        {
+            Id = id,
+            Username = request.Username,
+            Email = request.Email,
+            Password = request.Password,
+            FullName = request.FullName
+        };
 
         var result = await _mediator.Send(command);
         return Ok(result);

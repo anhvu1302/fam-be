@@ -23,6 +23,13 @@ public sealed class IPAddress : ValueObject
 
         ipAddress = ipAddress.Trim();
 
+        // Handle "Unknown" IP (e.g., in testing or when IP detection fails)
+        if (ipAddress.Equals("Unknown", StringComparison.OrdinalIgnoreCase))
+        {
+            // Default to localhost for unknown IPs
+            ipAddress = "127.0.0.1";
+        }
+
         var type = DetermineType(ipAddress);
         if (type == IPAddressType.Invalid)
             throw new DomainException($"Invalid IP address format: {ipAddress}");

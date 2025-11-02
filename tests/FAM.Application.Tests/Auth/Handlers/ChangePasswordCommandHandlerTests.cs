@@ -1,0 +1,241 @@
+using FAM.Application.Auth.Commands;
+using FAM.Application.Auth.Handlers;
+using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+using FAM.Domain.ValueObjects;
+using FluentAssertions;
+using Moq;
+using Xunit;
+
+namespace FAM.Application.Tests.Auth.Handlers;
+
+public class ChangePasswordCommandHandlerTests
+{
+    private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly Mock<IUserDeviceRepository> _mockUserDeviceRepository;
+    private readonly ChangePasswordCommandHandler _handler;
+
+    public ChangePasswordCommandHandlerTests()
+    {
+        _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _mockUserRepository = new Mock<IUserRepository>();
+        _mockUserDeviceRepository = new Mock<IUserDeviceRepository>();
+
+        _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
+        _mockUnitOfWork.Setup(x => x.UserDevices).Returns(_mockUserDeviceRepository.Object);
+
+        _handler = new ChangePasswordCommandHandler(_mockUnitOfWork.Object);
+    }
+
+    [Fact]
+    public async Task Handle_WithValidCurrentPassword_ShouldChangePassword()
+    {
+        // Arrange
+        var userId = 1L;
+        var currentPlainPassword = "OldPass123!";
+        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: currentPlainPassword);
+        typeof(User).GetProperty("Id")?.SetValue(user, userId);
+
+        var command = new ChangePasswordCommand
+        {
+            UserId = userId,
+            CurrentPassword = currentPlainPassword, // Use same plain password
+            NewPassword = "NewSecurePass123!",
+            LogoutAllDevices = false
+        };
+
+        _mockUserRepository
+            .Setup(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        _mockUserRepository
+            .Setup(x => x.Update(It.IsAny<User>()));
+
+        _mockUnitOfWork
+            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        
+        _mockUserRepository.Verify(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
+        _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once);
+        _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockUserDeviceRepository.Verify(
+            x => x.DeactivateAllUserDevicesAsync(It.IsAny<long>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()), 
+            Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_WithNonExistentUser_ShouldThrowKeyNotFoundException()
+    {
+        // Arrange
+        var userId = 999L;
+        var command = new ChangePasswordCommand
+        {
+            UserId = userId,
+            CurrentPassword = "OldPass123!",
+            NewPassword = "NewSecurePass123!"
+        };
+
+        _mockUserRepository
+            .Setup(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        // Act
+        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<KeyNotFoundException>()
+            .WithMessage($"User with ID {userId} not found");
+
+        _mockUserRepository.Verify(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
+        _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_WithIncorrectCurrentPassword_ShouldThrowUnauthorizedException()
+    {
+        // Arrange
+        var userId = 1L;
+        var currentPassword = Password.Create("CorrectOldPass123!");
+        var user = User.Create("testuser", "test@example.com", currentPassword.Hash, currentPassword.Salt, null, null);
+        typeof(User).GetProperty("Id")?.SetValue(user, userId);
+
+        var command = new ChangePasswordCommand
+        {
+            UserId = userId,
+            CurrentPassword = "WrongOldPass123!", // Wrong password
+            NewPassword = "NewSecurePass123!"
+        };
+
+        _mockUserRepository
+            .Setup(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        // Act
+        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+            .WithMessage("Current password is incorrect");
+
+        _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_WithLogoutAllDevices_ShouldDeactivateDevices()
+    {
+        // Arrange
+        var userId = 1L;
+        var currentDeviceId = "device123";
+        var currentPlainPassword = "OldPass123!";
+        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: currentPlainPassword);
+        typeof(User).GetProperty("Id")?.SetValue(user, userId);
+
+        var command = new ChangePasswordCommand
+        {
+            UserId = userId,
+            CurrentPassword = currentPlainPassword,
+            NewPassword = "NewSecurePass123!",
+            LogoutAllDevices = true,
+            CurrentDeviceId = currentDeviceId
+        };
+
+        _mockUserRepository
+            .Setup(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        _mockUserRepository
+            .Setup(x => x.Update(It.IsAny<User>()));
+
+        _mockUserDeviceRepository
+            .Setup(x => x.DeactivateAllUserDevicesAsync(userId, currentDeviceId, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _mockUnitOfWork
+            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        
+        _mockUserDeviceRepository.Verify(
+            x => x.DeactivateAllUserDevicesAsync(userId, currentDeviceId, It.IsAny<CancellationToken>()), 
+            Times.Once);
+        _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WithWeakNewPassword_ShouldThrowDomainException()
+    {
+        // Arrange
+        var userId = 1L;
+        var currentPlainPassword = "OldPass123!";
+        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: currentPlainPassword);
+        typeof(User).GetProperty("Id")?.SetValue(user, userId);
+
+        var command = new ChangePasswordCommand
+        {
+            UserId = userId,
+            CurrentPassword = currentPlainPassword,
+            NewPassword = "weak", // Weak password - no uppercase, no number, no special char, too short
+            LogoutAllDevices = false
+        };
+
+        _mockUserRepository
+            .Setup(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        // Act
+        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<FAM.Domain.Common.DomainException>();
+
+        _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_WithSamePasswordAsOld_ShouldStillSucceed()
+    {
+        // Arrange
+        var userId = 1L;
+        var samePlainPassword = "SamePass123!";
+        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: samePlainPassword);
+        typeof(User).GetProperty("Id")?.SetValue(user, userId);
+
+        var command = new ChangePasswordCommand
+        {
+            UserId = userId,
+            CurrentPassword = samePlainPassword,
+            NewPassword = samePlainPassword, // Same as old - should still work
+            LogoutAllDevices = false
+        };
+
+        _mockUserRepository
+            .Setup(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        _mockUserRepository
+            .Setup(x => x.Update(It.IsAny<User>()));
+
+        _mockUnitOfWork
+            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once);
+    }
+}

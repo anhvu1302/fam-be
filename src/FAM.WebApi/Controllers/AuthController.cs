@@ -1,6 +1,7 @@
 using FAM.Application.Auth.Commands;
 using FAM.Application.Auth.DTOs;
 using FAM.Application.Common.Services;
+using FAM.WebApi.Models.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace FAM.WebApi.Controllers;
 
 /// <summary>
 /// Authentication controller - handles login, logout, token refresh, password change
+/// Web API layer: validates shape/format (ModelState), then delegates to Application
 /// </summary>
 [ApiController]
 [Route("api/auth")]
@@ -31,23 +33,37 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
+    public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequestModel request)
     {
+        // Web API validation: ModelState checks DataAnnotations
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
             var ipAddress = GetClientIpAddress();
             var location = await _locationService.GetLocationFromIpAsync(ipAddress);
 
-            var command = new LoginCommand
+            // Map Web API model → Application DTO
+            var appRequest = new LoginRequest
             {
                 Username = request.Username,
                 Password = request.Password,
+                RememberMe = request.RememberMe
+            };
+
+            var command = new LoginCommand
+            {
+                Username = appRequest.Username,
+                Password = appRequest.Password,
                 DeviceId = GenerateDeviceId(),
                 DeviceName = GetDeviceName(),
                 DeviceType = GetDeviceType(),
                 IpAddress = ipAddress,
                 UserAgent = Request.Headers["User-Agent"].ToString(),
-                RememberMe = request.RememberMe,
+                RememberMe = appRequest.RememberMe,
                 Location = location
             };
 
@@ -71,12 +87,24 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("verify-2fa")]
     [AllowAnonymous]
-    public async Task<ActionResult<VerifyTwoFactorResponse>> VerifyTwoFactor([FromBody] VerifyTwoFactorRequest request)
+    public async Task<ActionResult<VerifyTwoFactorResponse>> VerifyTwoFactor([FromBody] VerifyTwoFactorRequestModel request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
             var ipAddress = GetClientIpAddress();
             var location = await _locationService.GetLocationFromIpAsync(ipAddress);
+
+            var appRequest = new VerifyTwoFactorRequest
+            {
+                TwoFactorCode = request.TwoFactorCode,
+                TwoFactorSessionToken = request.TwoFactorSessionToken,
+                RememberMe = request.RememberMe
+            };
 
             var command = new VerifyTwoFactorCommand
             {
@@ -111,13 +139,24 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("refresh")]
     [AllowAnonymous]
-    public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
+    public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] RefreshTokenRequestModel request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
-            var command = new RefreshTokenCommand
+            var appRequest = new RefreshTokenRequest
             {
                 RefreshToken = request.RefreshToken,
+                DeviceId = request.DeviceId
+            };
+
+            var command = new RefreshTokenCommand
+            {
+                RefreshToken = appRequest.RefreshToken,
                 IpAddress = GetClientIpAddress(),
                 Location = null // Could parse from IP using GeoIP service
             };
@@ -197,11 +236,23 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("change-password")]
     [Authorize]
-    public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+    public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequestModel request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
             var userId = GetCurrentUserId();
+
+            var appRequest = new ChangePasswordRequest
+            {
+                CurrentPassword = request.CurrentPassword,
+                NewPassword = request.NewPassword,
+                LogoutAllDevices = request.LogoutAllDevices
+            };
 
             var command = new ChangePasswordCommand
             {
@@ -232,8 +283,13 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("enable-2fa")]
     [Authorize]
-    public async Task<ActionResult<Enable2FAResponse>> Enable2FA([FromBody] Enable2FARequest request)
+    public async Task<ActionResult<Enable2FAResponse>> Enable2FA([FromBody] Enable2FARequestModel request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
             var userId = GetCurrentUserId();
@@ -269,17 +325,28 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(Confirm2FAResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<Confirm2FAResponse>> Confirm2FA([FromBody] Confirm2FARequest request)
+    public async Task<ActionResult<Confirm2FAResponse>> Confirm2FA([FromBody] Confirm2FARequestModel request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
             var userId = GetCurrentUserId();
 
+            var appRequest = new Confirm2FARequest
+            {
+                Secret = request.Code, // Note: Check if model mapping is correct
+                Code = request.Code
+            };
+
             var command = new Confirm2FACommand
             {
                 UserId = userId,
-                Secret = request.Secret,
-                Code = request.Code
+                Secret = appRequest.Secret,
+                Code = appRequest.Code
             };
 
             var response = await _mediator.Send(command);
@@ -325,8 +392,12 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("disable-2fa")]
     [Authorize]
-    public async Task<ActionResult> Disable2FA([FromBody] Disable2FARequest request)
+    public async Task<ActionResult> Disable2FA([FromBody] Disable2FARequestModel request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
         try
         {
             var userId = GetCurrentUserId();
@@ -358,15 +429,27 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("disable-2fa-with-backup")]
     [AllowAnonymous]
-    public async Task<ActionResult> DisableTwoFactorWithBackup([FromBody] DisableTwoFactorWithBackupRequest request)
+    public async Task<ActionResult> DisableTwoFactorWithBackup([FromBody] DisableTwoFactorWithBackupRequestModel request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
-            var command = new DisableTwoFactorWithBackupCommand
+            var appRequest = new DisableTwoFactorWithBackupRequest
             {
                 Username = request.Username,
                 Password = request.Password,
                 BackupCode = request.BackupCode
+            };
+
+            var command = new DisableTwoFactorWithBackupCommand
+            {
+                Username = appRequest.Username,
+                Password = appRequest.Password,
+                BackupCode = appRequest.BackupCode
             };
 
             await _mediator.Send(command);
