@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using FAM.Application.Users.Commands;
 using FAM.Application.Users.Queries;
 using FAM.Application.DTOs.Users;
@@ -157,5 +158,87 @@ public class UsersController : ControllerBase
         var command = new DeleteUserCommand { Id = id };
         await _mediator.Send(command);
         return NoContent();
+    }
+
+    /// <summary>
+    /// Update user avatar using upload session pattern
+    /// Step 2 after client has uploaded file to presigned URL
+    /// </summary>
+    [HttpPut("{id:long}/avatar")]
+    [ProducesResponseType(typeof(UpdateAvatarResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UpdateAvatar(long id, [FromBody] UpdateAvatarRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        try
+        {
+            var command = new UpdateAvatarCommand
+            {
+                UserId = id,
+                UploadId = request.UploadId
+            };
+
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { Error = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { Error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Upload user avatar directly (single-step upload with transaction safety)
+    /// Uploads file to storage, then updates user avatar atomically
+    /// If DB update fails, uploaded file is automatically cleaned up
+    /// </summary>
+    [HttpPost("{id:long}/avatar/upload")]
+    [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB max for avatars
+    [RequestFormLimits(MultipartBodyLengthLimit = 10 * 1024 * 1024)]
+    [ProducesResponseType(typeof(UploadAvatarDirectResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> UploadAvatarDirect(long id, IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { Error = "File is required" });
+        }
+
+        try
+        {
+            var command = new UploadAvatarDirectCommand
+            {
+                UserId = id,
+                FileStream = file.OpenReadStream(),
+                FileName = file.FileName,
+                ContentType = file.ContentType,
+                FileSize = file.Length
+            };
+
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { Error = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { Error = ex.Message });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { Error = "An error occurred while uploading the avatar" });
+        }
     }
 }

@@ -1,8 +1,11 @@
 using FAM.Application.Abstractions;
+using FAM.Application.Storage.Commands;
 using FAM.Contracts.Storage;
 using FAM.Domain.Common.Enums;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using InitUploadSessionResponse = FAM.Application.Storage.Commands.InitUploadSessionResponse;
 
 namespace FAM.WebApi.Controllers;
 
@@ -16,16 +19,64 @@ public class StorageController : ControllerBase
 {
     private readonly IStorageService _storageService;
     private readonly IFileValidator _fileValidator;
+    private readonly IMediator _mediator;
     private readonly ILogger<StorageController> _logger;
 
     public StorageController(
         IStorageService storageService,
         IFileValidator fileValidator,
+        IMediator mediator,
         ILogger<StorageController> logger)
     {
         _storageService = storageService;
         _fileValidator = fileValidator;
+        _mediator = mediator;
         _logger = logger;
+    }
+
+    /// <summary>
+    /// Initialize upload session (Step 1: Get presigned URL for temporary upload)
+    /// </summary>
+    [HttpPost("sessions/init")]
+    [ProducesResponseType(typeof(InitUploadSessionResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> InitUploadSession([FromBody] InitUploadSessionRequest request)
+    {
+        try
+        {
+            // Get userId from claims
+            var userIdClaim = User.FindFirst("sub") ?? User.FindFirst("userId");
+            if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
+            {
+                return Unauthorized(new { Error = "User not authenticated" });
+            }
+
+            var command = new InitUploadSessionCommand
+            {
+                FileName = request.FileName,
+                ContentType = request.ContentType,
+                FileSize = request.FileSize,
+                UserId = userId,
+                IdempotencyKey = request.IdempotencyKey
+            };
+
+            var response = await _mediator.Send(command);
+
+            return Ok(response);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { Error = ex.Message });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { Error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error initializing upload session for {FileName}", request.FileName);
+            return StatusCode(500, new { Error = "An error occurred while initializing upload session" });
+        }
     }
 
     /// <summary>

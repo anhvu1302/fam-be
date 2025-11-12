@@ -1,11 +1,13 @@
 using FAM.Application.Abstractions;
 using FAM.Application.DTOs.Users;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Abstractions.Repositories;
 using FAM.Infrastructure.Common.Options;
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 using FAM.Infrastructure.Providers.PostgreSQL.Seeders;
 using FAM.Infrastructure.Providers.PostgreSQL.Services;
+using FAM.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL;
@@ -35,6 +37,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IOrgNodeRepository, OrgNodeRepositoryPostgreSql>();
         services.AddScoped<ICompanyDetailsRepository, CompanyDetailsRepositoryPostgreSql>();
         services.AddScoped<IDepartmentDetailsRepository, DepartmentDetailsRepositoryPostgreSql>();
+
+        // Storage repositories
+        services.AddScoped<IUploadSessionRepository, UploadSessionRepository>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWorkPostgreSql>();

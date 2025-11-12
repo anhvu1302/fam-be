@@ -1,3 +1,4 @@
+using FAM.Domain.Storage;
 using FAM.Infrastructure.Common.Options;
 using FAM.Infrastructure.PersistenceModels.Ef;
 using Microsoft.EntityFrameworkCore;
@@ -47,6 +48,9 @@ public class PostgreSqlDbContext : DbContext
     public DbSet<LifecycleStatusEf> LifecycleStatuses { get; set; }
     public DbSet<AssetEventTypeEf> AssetEventTypes { get; set; }
     public DbSet<AssetConditionEf> AssetConditions { get; set; }
+
+    // Storage entities
+    public DbSet<UploadSession> UploadSessions { get; set; }
 
     // Geography & Location
     public DbSet<CountryEf> Countries { get; set; }

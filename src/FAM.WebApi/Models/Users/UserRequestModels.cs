@@ -46,3 +46,12 @@ public class UpdateUserRequestModel
     [StringLength(200, ErrorMessage = "Full name must not exceed 200 characters")]
     public string? FullName { get; set; }
 }
+
+/// <summary>
+/// Request to update user avatar with upload session
+/// </summary>
+public class UpdateAvatarRequest
+{
+    [Required(ErrorMessage = "Upload ID is required")]
+    public string UploadId { get; set; } = string.Empty;
+}

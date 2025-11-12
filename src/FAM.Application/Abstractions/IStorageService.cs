@@ -105,6 +105,43 @@ public interface IStorageService
         int expiryInSeconds = 3600);
 
     /// <summary>
+    /// Tạo presigned PUT URL để upload trực tiếp (dùng cho upload session pattern)
+    /// </summary>
+    /// <param name="objectKey">Storage key (e.g., "tmp/uuid")</param>
+    /// <param name="contentType">Content type</param>
+    /// <param name="expiryInSeconds">Thời gian hết hạn (giây)</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Presigned PUT URL</returns>
+    Task<string> GetPresignedPutUrlAsync(
+        string objectKey,
+        string contentType,
+        int expiryInSeconds = 3600,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Move/Copy object từ key này sang key khác (dùng cho finalization)
+    /// </summary>
+    Task MoveObjectAsync(
+        string sourceKey,
+        string destKey,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Copy object từ key này sang key khác
+    /// </summary>
+    Task CopyObjectAsync(
+        string sourceKey,
+        string destKey,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Xóa nhiều files cùng lúc (batch delete cho GC)
+    /// </summary>
+    Task DeleteObjectsAsync(
+        IEnumerable<string> objectKeys,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Xóa file
     /// </summary>
     Task DeleteFileAsync(

@@ -399,4 +399,112 @@ public class MinioStorageService : IStorageService
         var sanitized = string.Join("_", fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries));
         return sanitized.Length > 50 ? sanitized[..50] : sanitized;
     }
+
+    public async Task<string> GetPresignedPutUrlAsync(
+        string objectKey,
+        string contentType,
+        int expiryInSeconds = 3600,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await EnsureBucketExistsAsync(cancellationToken);
+
+            var args = new PresignedPutObjectArgs()
+                .WithBucket(_settings.BucketName)
+                .WithObject(objectKey)
+                .WithExpiry(expiryInSeconds);
+
+            var url = await _minioClient.PresignedPutObjectAsync(args);
+
+            _logger.LogDebug("Generated presigned PUT URL for {ObjectKey}, expires in {Seconds}s", objectKey, expiryInSeconds);
+            return url;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error generating presigned PUT URL for {ObjectKey}", objectKey);
+            throw;
+        }
+    }
+
+    public async Task MoveObjectAsync(
+        string sourceKey,
+        string destKey,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // MinIO doesn't have native "move", so we copy then delete
+            await CopyObjectAsync(sourceKey, destKey, cancellationToken);
+            await DeleteFileAsync(sourceKey, cancellationToken);
+
+            _logger.LogInformation("Moved object from {Source} to {Dest}", sourceKey, destKey);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error moving object from {Source} to {Dest}", sourceKey, destKey);
+            throw;
+        }
+    }
+
+    public async Task CopyObjectAsync(
+        string sourceKey,
+        string destKey,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var copySourceArgs = new CopySourceObjectArgs()
+                .WithBucket(_settings.BucketName)
+                .WithObject(sourceKey);
+
+            var copyObjectArgs = new CopyObjectArgs()
+                .WithBucket(_settings.BucketName)
+                .WithObject(destKey)
+                .WithCopyObjectSource(copySourceArgs);
+
+            await _minioClient.CopyObjectAsync(copyObjectArgs, cancellationToken);
+
+            _logger.LogDebug("Copied object from {Source} to {Dest}", sourceKey, destKey);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error copying object from {Source} to {Dest}", sourceKey, destKey);
+            throw;
+        }
+    }
+
+    public async Task DeleteObjectsAsync(
+        IEnumerable<string> objectKeys,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var keysList = objectKeys.ToList();
+            if (!keysList.Any())
+                return;
+
+            // MinIO batch delete - returns list of errors
+            var removeObjectsArgs = new RemoveObjectsArgs()
+                .WithBucket(_settings.BucketName)
+                .WithObjects(keysList);
+
+            var errors = await _minioClient.RemoveObjectsAsync(removeObjectsArgs, cancellationToken);
+
+            if (errors?.Any() == true)
+            {
+                _logger.LogWarning("Errors during batch delete: {ErrorCount}", errors.Count);
+            }
+            else
+            {
+                _logger.LogInformation("Deleted {Count} objects", keysList.Count);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting multiple objects");
+            throw;
+        }
+    }
 }
+
