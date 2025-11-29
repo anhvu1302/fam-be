@@ -15,12 +15,12 @@ public static class UserEfFieldMap
     private static FieldMap<UserEf> CreateFieldMap()
     {
         return new FieldMap<UserEf>()
-            .Add("id", x => x.Id, canFilter: true, canSort: true)
-            .Add("username", x => x.Username, canFilter: true, canSort: true)
-            .Add("email", x => x.Email, canFilter: true, canSort: true)
-            .Add("fullname", x => x.FullName, canFilter: true, canSort: true)
-            .Add("createdAt", x => x.CreatedAt, canFilter: true, canSort: true)
-            .Add("updatedAt", x => x.UpdatedAt, canFilter: true, canSort: true)
-            .Add("isDeleted", x => x.IsDeleted, canFilter: true, canSort: true);
+            .Add("id", x => x.Id, true, true)
+            .Add("username", x => x.Username, true, true)
+            .Add("email", x => x.Email, true, true)
+            .Add("fullname", x => x.FullName, true, true)
+            .Add("createdAt", x => x.CreatedAt, true, true)
+            .Add("updatedAt", x => x.UpdatedAt, true, true)
+            .Add("isDeleted", x => x.IsDeleted, true, true);
     }
 }

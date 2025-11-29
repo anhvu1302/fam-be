@@ -183,7 +183,7 @@ public class UrlTests
         var urlString = "https://www.example.com";
 
         // Act
-        Url url = (Url)urlString;
+        var url = (Url)urlString;
 
         // Assert
         url.Value.Should().Be(urlString);

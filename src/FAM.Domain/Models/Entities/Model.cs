@@ -14,12 +14,12 @@ public class Model : Entity
     public string? SKU { get; private set; } // Stock Keeping Unit
     public string? PartNumber { get; private set; } // Part/Article number
     public string? Description { get; private set; }
-    
+
     // Relationships
     public int? ManufacturerId { get; private set; }
     public int? CategoryId { get; private set; }
     public int? TypeId { get; private set; } // Asset Type
-    
+
     // Product Information
     public string? ProductFamily { get; private set; } // e.g., "ThinkPad", "MacBook", "Surface"
     public string? Generation { get; private set; } // Gen 11, 2023, etc.
@@ -27,7 +27,7 @@ public class Model : Entity
     public DateTime? ReleaseDate { get; private set; }
     public DateTime? DiscontinuedDate { get; private set; }
     public string? LifecycleStatus { get; private set; } // Current, Legacy, Discontinued, EOL
-    
+
     // Technical Specifications (JSONB stored as string)
     public string? TechnicalSpecs { get; private set; } // Full JSON specs
     public string? Processor { get; private set; } // CPU info
@@ -36,7 +36,7 @@ public class Model : Entity
     public string? Display { get; private set; } // Display specs
     public string? Graphics { get; private set; } // GPU info
     public string? OperatingSystem { get; private set; } // Default OS
-    
+
     // Physical Specifications
     public decimal? Weight { get; private set; } // in kg
     public string? WeightUnit { get; private set; } // kg, lbs
@@ -44,26 +44,26 @@ public class Model : Entity
     public string? DimensionUnit { get; private set; } // cm, inches
     public string? Color { get; private set; }
     public string? Material { get; private set; }
-    
+
     // Power & Environmental
     public string? PowerRequirements { get; private set; } // Voltage, wattage
     public decimal? PowerConsumption { get; private set; } // Watts
     public string? EnergyRating { get; private set; } // Energy Star, etc.
     public string? OperatingTemperature { get; private set; } // Temperature range
     public string? Humidity { get; private set; } // Humidity range
-    
+
     // Connectivity & Ports
     public string? Connectivity { get; private set; } // JSON array: WiFi, Bluetooth, Ethernet, etc.
     public string? Ports { get; private set; } // JSON array: USB-C, HDMI, etc.
     public string? NetworkInterfaces { get; private set; }
-    
+
     // Warranty & Support
     public int? StandardWarrantyMonths { get; private set; }
     public string? WarrantyType { get; private set; } // Onsite, Mail-in, Depot
     public Url? SupportDocumentUrl { get; private set; }
     public Url? UserManualUrl { get; private set; }
     public Url? QuickStartGuideUrl { get; private set; }
-    
+
     // Pricing & Availability
     public decimal? MSRP { get; private set; } // Manufacturer's Suggested Retail Price
     public string? MSRPCurrency { get; private set; }
@@ -71,67 +71,69 @@ public class Model : Entity
     public string? CostCurrency { get; private set; }
     public bool IsAvailable { get; private set; } = true;
     public string? AvailabilityStatus { get; private set; } // In Stock, Back Order, Discontinued
-    
+
     // Compliance & Certifications
     public string? Certifications { get; private set; } // JSON array: CE, FCC, RoHS, etc.
     public string? ComplianceStandards { get; private set; } // JSON array
     public bool IsRoHSCompliant { get; private set; }
     public bool IsEnergyStarCertified { get; private set; }
     public bool IsEPEATCertified { get; private set; }
-    
+
     // Depreciation & Lifecycle
     public int? UsefulLifeMonths { get; private set; } // Expected useful life
     public string? DepreciationMethod { get; private set; } // Straight Line, Declining Balance
     public decimal? ResidualValuePercentage { get; private set; } // % of original cost
-    
+
     // Software & Licensing (for software models)
     public string? LicenseType { get; private set; } // Perpetual, Subscription, Volume
     public int? LicenseDurationMonths { get; private set; }
     public bool RequiresActivation { get; private set; }
     public int? MaxInstallations { get; private set; }
-    
+
     // Accessories & Bundles
     public string? IncludedAccessories { get; private set; } // JSON array
     public string? OptionalAccessories { get; private set; } // JSON array
     public string? RequiredAccessories { get; private set; } // JSON array
     public string? CompatibleModels { get; private set; } // JSON array of compatible model IDs
-    
+
     // Media & Resources
     public Url? ImageUrl { get; private set; }
     public Url? ThumbnailUrl { get; private set; }
     public Url? ProductPageUrl { get; private set; }
     public Url? DatasheetUrl { get; private set; }
     public Url? VideoUrl { get; private set; }
-    
+
     // Status & Flags
     public bool IsActive { get; private set; } = true;
     public bool IsDepreciable { get; private set; } = true;
     public bool IsTangible { get; private set; } = true;
     public bool RequiresLicense { get; private set; }
     public bool RequiresMaintenance { get; private set; } = true;
-    
+
     // Internal Management
     public string? InternalNotes { get; private set; }
     public string? ProcurementNotes { get; private set; }
     public int? ReorderLevel { get; private set; }
     public int? CurrentStock { get; private set; }
     public DateTime? LastOrderDate { get; private set; }
-    
+
     // SEO & Search
     public string? Tags { get; private set; } // JSON array for search/filtering
     public string? Keywords { get; private set; }
-    
+
     // Navigation properties
     public Manufacturers.Manufacturer? Manufacturer { get; set; }
     public Categories.AssetCategory? Category { get; set; }
     public Types.AssetType? Type { get; set; }
     public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
 
-    private Model() { }
+    private Model()
+    {
+    }
 
     public static Model Create(
-        string name, 
-        int? manufacturerId = null, 
+        string name,
+        int? manufacturerId = null,
         int? categoryId = null,
         string? modelNumber = null)
     {
@@ -313,7 +315,8 @@ public class Model : Entity
         if (usefulLifeMonths.HasValue && usefulLifeMonths.Value < 0)
             throw new DomainException("Useful life months cannot be negative");
 
-        if (residualValuePercentage.HasValue && (residualValuePercentage.Value < 0 || residualValuePercentage.Value > 100))
+        if (residualValuePercentage.HasValue &&
+            (residualValuePercentage.Value < 0 || residualValuePercentage.Value > 100))
             throw new DomainException("Residual value percentage must be between 0 and 100");
 
         UsefulLifeMonths = usefulLifeMonths;
@@ -407,8 +410,16 @@ public class Model : Entity
         ProcurementNotes = procurementNotes;
     }
 
-    public void Activate() => IsActive = true;
-    public void Deactivate() => IsActive = false;
+    public void Activate()
+    {
+        IsActive = true;
+    }
+
+    public void Deactivate()
+    {
+        IsActive = false;
+    }
+
     public void Discontinue(DateTime? discontinuedDate = null)
     {
         IsAvailable = false;
@@ -416,6 +427,13 @@ public class Model : Entity
         DiscontinuedDate = discontinuedDate ?? DateTime.UtcNow;
     }
 
-    public bool IsEndOfLife() => LifecycleStatus == "EOL" || LifecycleStatus == "Discontinued";
-    public bool NeedsReorder() => ReorderLevel.HasValue && CurrentStock.HasValue && CurrentStock.Value <= ReorderLevel.Value;
+    public bool IsEndOfLife()
+    {
+        return LifecycleStatus == "EOL" || LifecycleStatus == "Discontinued";
+    }
+
+    public bool NeedsReorder()
+    {
+        return ReorderLevel.HasValue && CurrentStock.HasValue && CurrentStock.Value <= ReorderLevel.Value;
+    }
 }

@@ -24,7 +24,7 @@ public class CompanyDetailsTests
         taxCodeValue.Should().Be("1234567890");
         string domainValue = details.Domain!;
         domainValue.Should().Be("example.com");
-        string addressValue = details.Address!.ToString();
+        var addressValue = details.Address!.ToString();
         addressValue.Should().Be("123 Main St, City, Country, Unknown, VN");
         details.EstablishedOn.Should().Be(establishedOn);
     }
@@ -61,7 +61,7 @@ public class CompanyDetailsTests
         taxCodeValue.Should().Be("1234567890");
         string domainValue = details.Domain!;
         domainValue.Should().Be("example.com");
-        string addressValue = details.Address!.ToString();
+        var addressValue = details.Address!.ToString();
         addressValue.Should().Be("123 Main St, City, Country, Unknown, VN");
         details.EstablishedOn.Should().Be(establishedOn);
     }

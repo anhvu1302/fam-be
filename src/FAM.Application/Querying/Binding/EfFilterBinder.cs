@@ -104,9 +104,7 @@ public static class EfFilterBinder<T>
 
         // Handle nullable types
         if (IsNullableType(left.Type) && right is ConstantExpression { Value: null })
-        {
             return Expression.Equal(left, Expression.Constant(null, left.Type));
-        }
 
         return Expression.Equal(left, right);
     }
@@ -133,7 +131,7 @@ public static class EfFilterBinder<T>
         var nullCheck = Expression.NotEqual(target, Expression.Constant(null, target.Type));
 
         var method = typeof(string).GetMethod(methodName, new[] { typeof(string) })
-            ?? throw new InvalidOperationException($"Method {methodName} not found on string");
+                     ?? throw new InvalidOperationException($"Method {methodName} not found on string");
 
         var call = Expression.Call(target, method, ConvertIfNeeded(arg, typeof(string)));
 
@@ -150,10 +148,8 @@ public static class EfFilterBinder<T>
 
         // Build: target == value1 || target == value2 || ...
         var condition = BuildEqual(target, convertedValues[0]);
-        for (int i = 1; i < convertedValues.Count; i++)
-        {
+        for (var i = 1; i < convertedValues.Count; i++)
             condition = Expression.OrElse(condition, BuildEqual(target, convertedValues[i]));
-        }
 
         return condition;
     }
@@ -180,10 +176,8 @@ public static class EfFilterBinder<T>
                 return Expression.Constant(false);
 
             var condition = BuildStringMethod(target, values[0], nameof(string.Contains));
-            for (int i = 1; i < values.Count; i++)
-            {
+            for (var i = 1; i < values.Count; i++)
                 condition = Expression.OrElse(condition, BuildStringMethod(target, values[i], nameof(string.Contains)));
-            }
             return condition;
         }
 
@@ -205,7 +199,8 @@ public static class EfFilterBinder<T>
                 return Expression.Constant(null, targetType);
 
             // Convert constant value
-            var convertedValue = Convert.ChangeType(constant.Value, underlyingTargetType, System.Globalization.CultureInfo.InvariantCulture);
+            var convertedValue = Convert.ChangeType(constant.Value, underlyingTargetType,
+                System.Globalization.CultureInfo.InvariantCulture);
             return Expression.Constant(convertedValue, targetType);
         }
 

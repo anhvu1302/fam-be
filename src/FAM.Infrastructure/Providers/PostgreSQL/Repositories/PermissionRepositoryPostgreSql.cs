@@ -35,7 +35,8 @@ public class PermissionRepositoryPostgreSql : IPermissionRepository
         return _mapper.Map<IEnumerable<Permission>>(entities);
     }
 
-    public async Task<IEnumerable<Permission>> FindAsync(Expression<Func<Permission, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Permission>> FindAsync(Expression<Func<Permission, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         var allEntities = await _context.Permissions.ToListAsync(cancellationToken);
         var allPermissions = _mapper.Map<IEnumerable<Permission>>(allEntities);
@@ -65,14 +66,16 @@ public class PermissionRepositoryPostgreSql : IPermissionRepository
         return await _context.Permissions.AnyAsync(p => p.Id == id, cancellationToken);
     }
 
-    public async Task<Permission?> GetByResourceAndActionAsync(string resource, string action, CancellationToken cancellationToken = default)
+    public async Task<Permission?> GetByResourceAndActionAsync(string resource, string action,
+        CancellationToken cancellationToken = default)
     {
         var entity = await _context.Permissions
             .FirstOrDefaultAsync(p => p.Resource == resource && p.Action == action, cancellationToken);
         return entity != null ? _mapper.Map<Permission>(entity) : null;
     }
 
-    public async Task<IEnumerable<Permission>> GetByResourceAsync(string resource, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Permission>> GetByResourceAsync(string resource,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.Permissions
             .Where(p => p.Resource == resource)
@@ -80,7 +83,8 @@ public class PermissionRepositoryPostgreSql : IPermissionRepository
         return _mapper.Map<IEnumerable<Permission>>(entities);
     }
 
-    public async Task<bool> ExistsByResourceAndActionAsync(string resource, string action, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsByResourceAndActionAsync(string resource, string action,
+        CancellationToken cancellationToken = default)
     {
         return await _context.Permissions
             .AnyAsync(p => p.Resource == resource && p.Action == action, cancellationToken);

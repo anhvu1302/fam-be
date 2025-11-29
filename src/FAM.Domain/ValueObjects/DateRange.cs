@@ -29,9 +29,15 @@ public sealed class DateRange : ValueObject
         return new DateRange(startDate, startDate.AddDays(durationInDays));
     }
 
-    public int GetDurationInDays() => (EndDate - StartDate).Days;
+    public int GetDurationInDays()
+    {
+        return (EndDate - StartDate).Days;
+    }
 
-    public bool Contains(DateTime date) => date >= StartDate && date <= EndDate;
+    public bool Contains(DateTime date)
+    {
+        return date >= StartDate && date <= EndDate;
+    }
 
     public bool Overlaps(DateRange other)
     {
@@ -44,5 +50,8 @@ public sealed class DateRange : ValueObject
         yield return EndDate;
     }
 
-    public override string ToString() => $"{StartDate:yyyy-MM-dd} to {EndDate:yyyy-MM-dd}";
+    public override string ToString()
+    {
+        return $"{StartDate:yyyy-MM-dd} to {EndDate:yyyy-MM-dd}";
+    }
 }

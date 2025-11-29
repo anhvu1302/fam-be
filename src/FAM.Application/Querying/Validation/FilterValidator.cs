@@ -143,7 +143,8 @@ public static class FilterValidator
             case FilterOperator.LessThanOrEqual:
             case FilterOperator.Between:
                 if (!isNumeric && !isDateTime)
-                    throw new InvalidOperationException($"Operator '{op}' can only be used with numeric or date fields");
+                    throw new InvalidOperationException(
+                        $"Operator '{op}' can only be used with numeric or date fields");
                 break;
 
             case FilterOperator.Equal:
@@ -165,16 +166,16 @@ public static class FilterValidator
     {
         var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
         return underlyingType == typeof(int)
-            || underlyingType == typeof(long)
-            || underlyingType == typeof(short)
-            || underlyingType == typeof(byte)
-            || underlyingType == typeof(uint)
-            || underlyingType == typeof(ulong)
-            || underlyingType == typeof(ushort)
-            || underlyingType == typeof(sbyte)
-            || underlyingType == typeof(float)
-            || underlyingType == typeof(double)
-            || underlyingType == typeof(decimal);
+               || underlyingType == typeof(long)
+               || underlyingType == typeof(short)
+               || underlyingType == typeof(byte)
+               || underlyingType == typeof(uint)
+               || underlyingType == typeof(ulong)
+               || underlyingType == typeof(ushort)
+               || underlyingType == typeof(sbyte)
+               || underlyingType == typeof(float)
+               || underlyingType == typeof(double)
+               || underlyingType == typeof(decimal);
     }
 
     private static int CountNodes(FilterNode node)

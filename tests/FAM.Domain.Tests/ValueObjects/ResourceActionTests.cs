@@ -68,7 +68,7 @@ public class ResourceActionTests
         var value = "read";
 
         // Act
-        ResourceAction resourceAction = (ResourceAction)value;
+        var resourceAction = (ResourceAction)value;
 
         // Assert
         resourceAction.Value.Should().Be(value);

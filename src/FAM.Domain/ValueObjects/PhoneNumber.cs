@@ -39,14 +39,17 @@ public sealed class PhoneNumber : ValueObject
         yield return CountryCode;
     }
 
-    public override string ToString() => $"{CountryCode}{Value}";
+    public override string ToString()
+    {
+        return $"{CountryCode}{Value}";
+    }
 
     public string ToFormattedString()
     {
         // Format for Vietnamese phone: 0xxx xxx xxx
         if (Value.Length == 10 && Value.StartsWith("0"))
             return $"{Value.Substring(0, 4)} {Value.Substring(4, 3)} {Value.Substring(7)}";
-        
+
         return Value;
     }
 }

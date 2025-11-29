@@ -15,7 +15,11 @@ public abstract class EntityEf : BaseEntityEf
     public UserEf? UpdatedBy { get; set; }
     public UserEf? DeletedBy { get; set; }
 
-    protected EntityEf() { }
+    protected EntityEf()
+    {
+    }
 
-    protected EntityEf(long id) : base(id) { }
+    protected EntityEf(long id) : base(id)
+    {
+    }
 }

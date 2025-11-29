@@ -11,6 +11,7 @@ public sealed record ChangePasswordCommand : IRequest<Unit>
     public string CurrentPassword { get; init; } = string.Empty;
     public string NewPassword { get; init; } = string.Empty;
     public bool LogoutAllDevices { get; init; }
+
     /// <summary>
     /// Current device ID (fingerprint string) to keep logged in
     /// </summary>

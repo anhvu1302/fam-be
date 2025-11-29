@@ -24,10 +24,10 @@ public sealed class Dimensions : ValueObject
     {
         if (length <= 0)
             throw new DomainException("Length must be positive");
-        
+
         if (width <= 0)
             throw new DomainException("Width must be positive");
-        
+
         if (height <= 0)
             throw new DomainException("Height must be positive");
 
@@ -55,7 +55,6 @@ public sealed class Dimensions : ValueObject
         if (decimal.TryParse(parts[0].Trim(), out var length) &&
             decimal.TryParse(parts[1].Trim(), out var width) &&
             decimal.TryParse(heightStr, out var height))
-        {
             try
             {
                 return Create(length, width, height, unit);
@@ -64,12 +63,14 @@ public sealed class Dimensions : ValueObject
             {
                 return null;
             }
-        }
 
         return null;
     }
 
-    public decimal Volume() => Length * Width * Height;
+    public decimal Volume()
+    {
+        return Length * Width * Height;
+    }
 
     public Dimensions ConvertTo(string targetUnit)
     {
@@ -116,5 +117,8 @@ public sealed class Dimensions : ValueObject
         yield return Unit;
     }
 
-    public override string ToString() => $"{Length} x {Width} x {Height} {Unit}";
+    public override string ToString()
+    {
+        return $"{Length} x {Width} x {Height} {Unit}";
+    }
 }

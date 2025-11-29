@@ -18,10 +18,7 @@ public static class ModelBuilderExtensions
                 entity.SetTableName(ToSnakeCase(tableName));
 
             // columns
-            foreach (var property in entity.GetProperties())
-            {
-                property.SetColumnName(ToSnakeCase(property.Name));
-            }
+            foreach (var property in entity.GetProperties()) property.SetColumnName(ToSnakeCase(property.Name));
 
             // keys
             foreach (var key in entity.GetKeys())
@@ -55,7 +52,7 @@ public static class ModelBuilderExtensions
             return name;
 
         var sb = new System.Text.StringBuilder();
-        for (int i = 0; i < name.Length; i++)
+        for (var i = 0; i < name.Length; i++)
         {
             var c = name[i];
             if (char.IsUpper(c))

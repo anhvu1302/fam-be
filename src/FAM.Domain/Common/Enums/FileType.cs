@@ -9,12 +9,12 @@ public enum FileType
     /// Image files (jpg, png, gif, webp, bmp)
     /// </summary>
     Image = 1,
-    
+
     /// <summary>
     /// Media files (video, audio)
     /// </summary>
     Media = 2,
-    
+
     /// <summary>
     /// Document files (pdf, doc, xls, ppt, txt, csv)
     /// </summary>

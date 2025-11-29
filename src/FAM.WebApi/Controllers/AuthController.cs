@@ -36,10 +36,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequestModel request)
     {
         // Web API validation: ModelState checks DataAnnotations
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -87,12 +84,10 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("verify-2fa")]
     [AllowAnonymous]
-    public async Task<ActionResult<VerifyTwoFactorResponse>> VerifyTwoFactor([FromBody] VerifyTwoFactorRequestModel request)
+    public async Task<ActionResult<VerifyTwoFactorResponse>> VerifyTwoFactor(
+        [FromBody] VerifyTwoFactorRequestModel request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -141,10 +136,7 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] RefreshTokenRequestModel request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -214,7 +206,7 @@ public class AuthController : ControllerBase
         {
             var userId = GetCurrentUserId();
             var currentDeviceId = GenerateDeviceId();
-            
+
             var command = new LogoutAllDevicesCommand
             {
                 UserId = userId,
@@ -238,10 +230,7 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequestModel request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -285,10 +274,7 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<ActionResult<Enable2FAResponse>> Enable2FA([FromBody] Enable2FARequestModel request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -327,10 +313,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<Confirm2FAResponse>> Confirm2FA([FromBody] Confirm2FARequestModel request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -350,7 +333,7 @@ public class AuthController : ControllerBase
             };
 
             var response = await _mediator.Send(command);
-            
+
             // Return structured response with clear format
             return Ok(new
             {
@@ -364,7 +347,8 @@ public class AuthController : ControllerBase
                     {
                         title = "⚠️ Save Your Backup Codes",
                         message = "These codes are shown only once and cannot be recovered.",
-                        usage = "Each code can be used once to recover your account if you lose access to your authenticator app.",
+                        usage =
+                            "Each code can be used once to recover your account if you lose access to your authenticator app.",
                         format = "Example: 881eb-53018"
                     }
                 }
@@ -394,10 +378,7 @@ public class AuthController : ControllerBase
     [Authorize]
     public async Task<ActionResult> Disable2FA([FromBody] Disable2FARequestModel request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
         try
         {
             var userId = GetCurrentUserId();
@@ -429,12 +410,10 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("disable-2fa-with-backup")]
     [AllowAnonymous]
-    public async Task<ActionResult> DisableTwoFactorWithBackup([FromBody] DisableTwoFactorWithBackupRequestModel request)
+    public async Task<ActionResult> DisableTwoFactorWithBackup(
+        [FromBody] DisableTwoFactorWithBackupRequestModel request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -453,8 +432,10 @@ public class AuthController : ControllerBase
             };
 
             await _mediator.Send(command);
-            return Ok(new { 
-                message = "Two-factor authentication has been disabled successfully using backup code. You can now login without 2FA.",
+            return Ok(new
+            {
+                message =
+                    "Two-factor authentication has been disabled successfully using backup code. You can now login without 2FA.",
                 recommendation = "For security, we recommend re-enabling 2FA after logging in."
             });
         }
@@ -465,7 +446,8 @@ public class AuthController : ControllerBase
         }
         catch (InvalidOperationException ex)
         {
-            _logger.LogWarning(ex, "Invalid operation during disable 2FA with backup for username: {Username}", request.Username);
+            _logger.LogWarning(ex, "Invalid operation during disable 2FA with backup for username: {Username}",
+                request.Username);
             return BadRequest(new { message = ex.Message });
         }
         catch (Exception ex)
@@ -503,9 +485,7 @@ public class AuthController : ControllerBase
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
-        {
             throw new UnauthorizedAccessException("User ID not found in token");
-        }
         return userId;
     }
 
@@ -521,24 +501,15 @@ public class AuthController : ControllerBase
 
         // Cloudflare header (most reliable when using Cloudflare)
         var cfConnectingIp = Request.Headers["CF-Connecting-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(cfConnectingIp))
-        {
-            return cfConnectingIp.Trim();
-        }
+        if (!string.IsNullOrEmpty(cfConnectingIp)) return cfConnectingIp.Trim();
 
         // Cloudflare Enterprise header
         var trueClientIp = Request.Headers["True-Client-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(trueClientIp))
-        {
-            return trueClientIp.Trim();
-        }
+        if (!string.IsNullOrEmpty(trueClientIp)) return trueClientIp.Trim();
 
         // X-Real-IP from Nginx or other reverse proxy
         var realIp = Request.Headers["X-Real-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(realIp))
-        {
-            return realIp.Trim();
-        }
+        if (!string.IsNullOrEmpty(realIp)) return realIp.Trim();
 
         // X-Forwarded-For (can contain multiple IPs: client, proxy1, proxy2)
         // Take the first IP which is the original client
@@ -550,35 +521,23 @@ public class AuthController : ControllerBase
             {
                 var clientIp = ips[0];
                 // Validate it's a proper IP address
-                if (System.Net.IPAddress.TryParse(clientIp, out _))
-                {
-                    return clientIp;
-                }
+                if (System.Net.IPAddress.TryParse(clientIp, out _)) return clientIp;
             }
         }
 
         // X-Client-IP header
         var clientIp2 = Request.Headers["X-Client-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(clientIp2))
-        {
-            return clientIp2.Trim();
-        }
+        if (!string.IsNullOrEmpty(clientIp2)) return clientIp2.Trim();
 
         // Fallback to RemoteIpAddress (direct connection, no proxy)
         var remoteIp = HttpContext.Connection.RemoteIpAddress;
         if (remoteIp != null)
         {
             // Handle IPv6 loopback (::1) and map it to IPv4
-            if (remoteIp.IsIPv4MappedToIPv6)
-            {
-                remoteIp = remoteIp.MapToIPv4();
-            }
-            
+            if (remoteIp.IsIPv4MappedToIPv6) remoteIp = remoteIp.MapToIPv4();
+
             // Convert IPv6 loopback to IPv4
-            if (remoteIp.ToString() == "::1")
-            {
-                return "127.0.0.1";
-            }
+            if (remoteIp.ToString() == "::1") return "127.0.0.1";
 
             return remoteIp.ToString();
         }
@@ -599,7 +558,7 @@ public class AuthController : ControllerBase
     private string GetDeviceName()
     {
         var userAgent = Request.Headers["User-Agent"].ToString();
-        
+
         // Simple device name extraction from User-Agent
         if (userAgent.Contains("Chrome") && !userAgent.Contains("Edg"))
             return "Chrome Browser";
@@ -613,20 +572,20 @@ public class AuthController : ControllerBase
             return "Postman";
         if (userAgent.Contains("curl"))
             return "curl";
-        
+
         return "Unknown Device";
     }
 
     private string GetDeviceType()
     {
         var userAgent = Request.Headers["User-Agent"].ToString();
-        
+
         // Determine device type from User-Agent
         if (userAgent.Contains("Mobile") || userAgent.Contains("Android") || userAgent.Contains("iPhone"))
             return "mobile";
         if (userAgent.Contains("Tablet") || userAgent.Contains("iPad"))
             return "tablet";
-        
+
         return "desktop";
     }
 

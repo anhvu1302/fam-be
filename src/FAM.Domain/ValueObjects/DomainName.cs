@@ -28,7 +28,8 @@ public sealed class DomainName : ValueObject
             throw new DomainException("Domain cannot exceed 253 characters");
 
         // Basic domain validation
-        if (!System.Text.RegularExpressions.Regex.IsMatch(domain, @"^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$"))
+        if (!System.Text.RegularExpressions.Regex.IsMatch(domain,
+                @"^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$"))
             throw new DomainException("Invalid domain format");
 
         return new DomainName(domain);
@@ -37,17 +38,26 @@ public sealed class DomainName : ValueObject
     /// <summary>
     /// Implicit conversion từ DomainName sang string
     /// </summary>
-    public static implicit operator string(DomainName domainName) => domainName.Value;
+    public static implicit operator string(DomainName domainName)
+    {
+        return domainName.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ string sang DomainName
     /// </summary>
-    public static explicit operator DomainName(string domain) => Create(domain);
+    public static explicit operator DomainName(string domain)
+    {
+        return Create(domain);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 }

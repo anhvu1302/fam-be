@@ -49,14 +49,20 @@ public sealed class WarrantyInfo : ValueObject
         if (endDate < startDate)
             throw new DomainException("End date must be after start date");
 
-        var months = ((endDate.Year - startDate.Year) * 12) + endDate.Month - startDate.Month;
+        var months = (endDate.Year - startDate.Year) * 12 + endDate.Month - startDate.Month;
         return new WarrantyInfo(startDate, endDate, months, terms, provider);
     }
 
-    public bool IsActive() => EndDate.HasValue && EndDate.Value >= DateTime.UtcNow;
-    
-    public bool IsExpired() => EndDate.HasValue && EndDate.Value < DateTime.UtcNow;
-    
+    public bool IsActive()
+    {
+        return EndDate.HasValue && EndDate.Value >= DateTime.UtcNow;
+    }
+
+    public bool IsExpired()
+    {
+        return EndDate.HasValue && EndDate.Value < DateTime.UtcNow;
+    }
+
     public int? DaysRemaining()
     {
         if (!EndDate.HasValue) return null;
@@ -73,8 +79,10 @@ public sealed class WarrantyInfo : ValueObject
         yield return Provider;
     }
 
-    public override string ToString() =>
-        EndDate.HasValue 
-            ? $"Warranty until {EndDate.Value:yyyy-MM-dd}" 
+    public override string ToString()
+    {
+        return EndDate.HasValue
+            ? $"Warranty until {EndDate.Value:yyyy-MM-dd}"
             : "No warranty";
+    }
 }

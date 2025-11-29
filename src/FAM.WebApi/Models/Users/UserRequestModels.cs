@@ -9,7 +9,8 @@ public class CreateUserRequestModel
 {
     [Required(ErrorMessage = "Username is required")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 50 characters")]
-    [RegularExpression(@"^[a-zA-Z0-9._-]+$", ErrorMessage = "Username can only contain letters, numbers, dots, underscores, and hyphens")]
+    [RegularExpression(@"^[a-zA-Z0-9._-]+$",
+        ErrorMessage = "Username can only contain letters, numbers, dots, underscores, and hyphens")]
     public string Username { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Email is required")]
@@ -32,7 +33,8 @@ public class UpdateUserRequestModel
 {
     [Required(ErrorMessage = "Username is required")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 50 characters")]
-    [RegularExpression(@"^[a-zA-Z0-9._-]+$", ErrorMessage = "Username can only contain letters, numbers, dots, underscores, and hyphens")]
+    [RegularExpression(@"^[a-zA-Z0-9._-]+$",
+        ErrorMessage = "Username can only contain letters, numbers, dots, underscores, and hyphens")]
     public string Username { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Email is required")]

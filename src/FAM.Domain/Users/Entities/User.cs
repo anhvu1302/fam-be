@@ -55,7 +55,9 @@ public class User : BaseEntity
     public ICollection<Authorization.UserNodeRole> UserNodeRoles { get; set; } = new List<Authorization.UserNodeRole>();
     public ICollection<UserDevice> UserDevices { get; set; } = new List<UserDevice>();
 
-    private User() { }
+    private User()
+    {
+    }
 
     public static User Create(string username, string email, string passwordHash, string passwordSalt,
         string? firstName = null, string? lastName = null, string? phoneNumber = null)
@@ -74,9 +76,7 @@ public class User : BaseEntity
         };
 
         if (!string.IsNullOrWhiteSpace(phoneNumber))
-        {
             user.PhoneNumber = PhoneNumber.Create(phoneNumber, "VN"); // Default to Vietnam
-        }
 
         user.UpdateFullName();
         return user;
@@ -144,15 +144,13 @@ public class User : BaseEntity
             UpdatedAt = updatedAt
         };
 
-        if (!string.IsNullOrWhiteSpace(phoneNumber))
-        {
-            user.PhoneNumber = PhoneNumber.Create(phoneNumber, "VN");
-        }
+        if (!string.IsNullOrWhiteSpace(phoneNumber)) user.PhoneNumber = PhoneNumber.Create(phoneNumber, "VN");
 
         return user;
     }
 
-    public void UpdatePersonalInfo(string? firstName, string? lastName, string? avatar, string? bio, DateTime? dateOfBirth)
+    public void UpdatePersonalInfo(string? firstName, string? lastName, string? avatar, string? bio,
+        DateTime? dateOfBirth)
     {
         FirstName = firstName;
         LastName = lastName;
@@ -165,13 +163,9 @@ public class User : BaseEntity
     public void UpdateContactInfo(string? phoneNumber, string? countryCode = "VN")
     {
         if (!string.IsNullOrWhiteSpace(phoneNumber))
-        {
             PhoneNumber = PhoneNumber.Create(phoneNumber, countryCode);
-        }
         else
-        {
             PhoneNumber = null;
-        }
     }
 
     public void UpdatePassword(string newPasswordHash, string newPasswordSalt)
@@ -219,24 +213,22 @@ public class User : BaseEntity
     {
         FailedLoginAttempts++;
         if (FailedLoginAttempts >= 5) // Lock account after 5 failed attempts
-        {
             LockoutEnd = DateTime.UtcNow.AddMinutes(15);
-        }
     }
 
     /// <summary>
     /// Get existing device or create new one for authentication
     /// </summary>
     public UserDevice GetOrCreateDevice(
-        string deviceId, 
-        string deviceName, 
+        string deviceId,
+        string deviceName,
         string deviceType,
         string? userAgent = null,
         string? ipAddress = null,
         string? location = null)
     {
         var existingDevice = UserDevices.FirstOrDefault(d => d.DeviceId == deviceId);
-        
+
         if (existingDevice != null)
         {
             existingDevice.UpdateActivity(ipAddress, location);
@@ -244,7 +236,7 @@ public class User : BaseEntity
         }
 
         var newDevice = UserDevice.Create(
-            this.Id,
+            Id,
             deviceId,
             deviceName,
             deviceType,
@@ -283,7 +275,8 @@ public class User : BaseEntity
         FailedLoginAttempts = 0;
     }
 
-    public void UpdatePreferences(string? preferredLanguage, string? timeZone, bool? receiveNotifications, bool? receiveMarketingEmails)
+    public void UpdatePreferences(string? preferredLanguage, string? timeZone, bool? receiveNotifications,
+        bool? receiveMarketingEmails)
     {
         if (!string.IsNullOrWhiteSpace(preferredLanguage))
             PreferredLanguage = preferredLanguage;
@@ -315,9 +308,6 @@ public class User : BaseEntity
     private void UpdateFullName()
     {
         FullName = $"{FirstName} {LastName}".Trim();
-        if (string.IsNullOrWhiteSpace(FullName))
-        {
-            FullName = Username.Value;
-        }
+        if (string.IsNullOrWhiteSpace(FullName)) FullName = Username.Value;
     }
 }

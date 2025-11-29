@@ -35,7 +35,8 @@ public class ResourceRepositoryPostgreSql : IResourceRepository
         return _mapper.Map<IEnumerable<Resource>>(entities);
     }
 
-    public async Task<IEnumerable<Resource>> FindAsync(Expression<Func<Resource, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Resource>> FindAsync(Expression<Func<Resource, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         var allEntities = await _context.Resources.ToListAsync(cancellationToken);
         var allResources = _mapper.Map<IEnumerable<Resource>>(allEntities);
@@ -65,14 +66,16 @@ public class ResourceRepositoryPostgreSql : IResourceRepository
         return await _context.Resources.AnyAsync(r => r.Id == id, cancellationToken);
     }
 
-    public async Task<Resource?> GetByTypeAndNodeIdAsync(string type, long nodeId, CancellationToken cancellationToken = default)
+    public async Task<Resource?> GetByTypeAndNodeIdAsync(string type, long nodeId,
+        CancellationToken cancellationToken = default)
     {
         var entity = await _context.Resources
             .FirstOrDefaultAsync(r => r.Type == type && r.NodeId == nodeId, cancellationToken);
         return entity != null ? _mapper.Map<Resource>(entity) : null;
     }
 
-    public async Task<IEnumerable<Resource>> GetByNodeIdAsync(long nodeId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Resource>> GetByNodeIdAsync(long nodeId,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.Resources
             .Where(r => r.NodeId == nodeId)

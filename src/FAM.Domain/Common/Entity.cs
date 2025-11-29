@@ -10,9 +10,13 @@ public abstract class Entity : BaseEntity
     public new long? UpdatedById { get; set; }
     public new long? DeletedById { get; set; }
 
-    protected Entity() { }
+    protected Entity()
+    {
+    }
 
-    protected Entity(long id) : base(id) { }
+    protected Entity(long id) : base(id)
+    {
+    }
 
     public override void SoftDelete(long? deletedById = null)
     {

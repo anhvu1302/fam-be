@@ -32,10 +32,7 @@ public sealed class PrattFilterParser : IFilterParser
     {
         var left = ParsePrefix();
 
-        while (!IsAtEnd() && precedence < GetPrecedence(CurrentToken))
-        {
-            left = ParseInfix(left);
-        }
+        while (!IsAtEnd() && precedence < GetPrecedence(CurrentToken)) left = ParseInfix(left);
 
         return left;
     }
@@ -135,10 +132,7 @@ public sealed class PrattFilterParser : IFilterParser
         }
 
         // Function-like operators: @contains, @startswith, @in, @between, etc.
-        if (op.StartsWith("@"))
-        {
-            return ParseCallOperator(left, op);
-        }
+        if (op.StartsWith("@")) return ParseCallOperator(left, op);
 
         throw new FormatException($"Unknown operator '{op}' at position {token.Position}");
     }
@@ -165,10 +159,7 @@ public sealed class PrattFilterParser : IFilterParser
         };
 
         // Nullary operators: @isnull, @notnull - no arguments needed
-        if (filterOp is FilterOperator.IsNull or FilterOperator.NotNull)
-        {
-            return new UnaryNode(filterOp, target);
-        }
+        if (filterOp is FilterOperator.IsNull or FilterOperator.NotNull) return new UnaryNode(filterOp, target);
 
         // All other operators require parentheses (standard function call syntax)
         Expect(FilterTokenType.LeftParen, $"Expected '(' after {op}. Use {op}('value') for function call syntax.");
@@ -177,7 +168,6 @@ public sealed class PrattFilterParser : IFilterParser
 
         // Parse comma-separated arguments
         if (CurrentToken.Type != FilterTokenType.RightParen)
-        {
             do
             {
                 arguments.Add(ParseExpression(0));
@@ -186,9 +176,7 @@ public sealed class PrattFilterParser : IFilterParser
                     Advance();
                 else
                     break;
-            }
-            while (CurrentToken.Type != FilterTokenType.RightParen);
-        }
+            } while (CurrentToken.Type != FilterTokenType.RightParen);
 
         Expect(FilterTokenType.RightParen, "Expected ')'");
 
@@ -214,7 +202,10 @@ public sealed class PrattFilterParser : IFilterParser
 
     private FilterToken CurrentToken => _tokens[_current];
 
-    private bool IsAtEnd() => _current >= _tokens.Count || CurrentToken.Type == FilterTokenType.EndOfInput;
+    private bool IsAtEnd()
+    {
+        return _current >= _tokens.Count || CurrentToken.Type == FilterTokenType.EndOfInput;
+    }
 
     private void Advance()
     {

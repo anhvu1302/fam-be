@@ -119,7 +119,7 @@ public class MinioStorageService : IStorageService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error uploading part {PartNumber} for uploadId {UploadId}", 
+            _logger.LogError(ex, "Error uploading part {PartNumber} for uploadId {UploadId}",
                 partNumber, uploadId);
             throw;
         }
@@ -139,18 +139,15 @@ public class MinioStorageService : IStorageService
             // Use GetObjectAsync and PutObjectAsync to merge parts
             // This is a simplified approach - for production, consider using MinIO's actual multipart APIs
             using var memoryStream = new MemoryStream();
-            
+
             foreach (var partNumber in eTags.Keys.OrderBy(k => k))
             {
                 var tempObjectName = $"temp/{uploadId}/part-{partNumber}";
-                
+
                 var getArgs = new GetObjectArgs()
                     .WithBucket(_settings.BucketName)
                     .WithObject(tempObjectName)
-                    .WithCallbackStream(async (stream, ct) =>
-                    {
-                        await stream.CopyToAsync(memoryStream, ct);
-                    });
+                    .WithCallbackStream(async (stream, ct) => { await stream.CopyToAsync(memoryStream, ct); });
 
                 await _minioClient.GetObjectAsync(getArgs, cancellationToken);
             }
@@ -201,9 +198,7 @@ public class MinioStorageService : IStorageService
                 .WithRecursive(true);
 
             await foreach (var obj in _minioClient.ListObjectsEnumAsync(listArgs, cancellationToken))
-            {
                 await DeleteFileAsync(obj.Key, cancellationToken);
-            }
 
             _logger.LogInformation(
                 "Aborted multipart upload for uploadId {UploadId}",
@@ -357,10 +352,7 @@ public class MinioStorageService : IStorageService
                 var makeBucketArgs = new MakeBucketArgs()
                     .WithBucket(_settings.BucketName);
 
-                if (!string.IsNullOrEmpty(_settings.Region))
-                {
-                    makeBucketArgs.WithLocation(_settings.Region);
-                }
+                if (!string.IsNullOrEmpty(_settings.Region)) makeBucketArgs.WithLocation(_settings.Region);
 
                 await _minioClient.MakeBucketAsync(makeBucketArgs, cancellationToken);
 
@@ -417,7 +409,8 @@ public class MinioStorageService : IStorageService
 
             var url = await _minioClient.PresignedPutObjectAsync(args);
 
-            _logger.LogDebug("Generated presigned PUT URL for {ObjectKey}, expires in {Seconds}s", objectKey, expiryInSeconds);
+            _logger.LogDebug("Generated presigned PUT URL for {ObjectKey}, expires in {Seconds}s", objectKey,
+                expiryInSeconds);
             return url;
         }
         catch (Exception ex)
@@ -492,13 +485,9 @@ public class MinioStorageService : IStorageService
             var errors = await _minioClient.RemoveObjectsAsync(removeObjectsArgs, cancellationToken);
 
             if (errors?.Any() == true)
-            {
                 _logger.LogWarning("Errors during batch delete: {ErrorCount}", errors.Count);
-            }
             else
-            {
                 _logger.LogInformation("Deleted {Count} objects", keysList.Count);
-            }
         }
         catch (Exception ex)
         {
@@ -507,4 +496,3 @@ public class MinioStorageService : IStorageService
         }
     }
 }
-

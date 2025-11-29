@@ -21,7 +21,9 @@ public class AssetEvent : Entity
     public Statuses.AssetEventType EventType { get; set; } = null!;
     public Users.User? Actor { get; set; }
 
-    private AssetEvent() { }
+    private AssetEvent()
+    {
+    }
 
     public static AssetEvent Create(
         long assetId,

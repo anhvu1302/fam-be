@@ -18,7 +18,8 @@ public sealed record VerifyTwoFactorCommand : IRequest<VerifyTwoFactorResponse>
     public string? Location { get; init; }
     public bool RememberMe { get; init; }
 
-    public static VerifyTwoFactorCommand From(VerifyTwoFactorRequest request, string deviceId, string deviceName, string deviceType, string? ipAddress, string? userAgent, string? location)
+    public static VerifyTwoFactorCommand From(VerifyTwoFactorRequest request, string deviceId, string deviceName,
+        string deviceType, string? ipAddress, string? userAgent, string? location)
     {
         return new VerifyTwoFactorCommand
         {

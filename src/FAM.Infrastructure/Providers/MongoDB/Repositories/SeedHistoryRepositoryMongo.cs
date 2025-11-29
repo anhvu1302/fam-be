@@ -16,7 +16,7 @@ public class SeedHistoryRepositoryMongo : ISeedHistoryRepository
     public async Task<bool> HasBeenExecutedAsync(string seederName, CancellationToken cancellationToken = default)
     {
         var collection = _dbContext.GetCollection<SeedHistoryMongo>(CollectionName);
-        
+
         var filter = Builders<SeedHistoryMongo>.Filter.And(
             Builders<SeedHistoryMongo>.Filter.Eq(h => h.SeederName, seederName),
             Builders<SeedHistoryMongo>.Filter.Eq(h => h.Success, true)
@@ -29,7 +29,7 @@ public class SeedHistoryRepositoryMongo : ISeedHistoryRepository
     public async Task RecordExecutionAsync(SeedHistory history, CancellationToken cancellationToken = default)
     {
         var collection = _dbContext.GetCollection<SeedHistoryMongo>(CollectionName);
-        
+
         var mongoHistory = new SeedHistoryMongo
         {
             SeederName = history.SeederName,
@@ -47,7 +47,7 @@ public class SeedHistoryRepositoryMongo : ISeedHistoryRepository
     public async Task<List<SeedHistory>> GetAllHistoryAsync(CancellationToken cancellationToken = default)
     {
         var collection = _dbContext.GetCollection<SeedHistoryMongo>(CollectionName);
-        
+
         var sort = Builders<SeedHistoryMongo>.Sort.Descending(h => h.ExecutedAt);
         var mongoHistories = await collection.Find(FilterDefinition<SeedHistoryMongo>.Empty)
             .Sort(sort)

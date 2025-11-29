@@ -11,19 +11,13 @@ namespace FAM.Infrastructure.PersistenceModels.Ef;
 [Table("lifecycle_statuses")]
 public class LifecycleStatusEf : BaseEntityEf
 {
-    [Required]
-    [MaxLength(20)]
-    public string Code { get; set; } = string.Empty;
+    [Required] [MaxLength(20)] public string Code { get; set; } = string.Empty;
 
-    [Required]
-    [MaxLength(100)]
-    public string Name { get; set; } = string.Empty;
+    [Required] [MaxLength(100)] public string Name { get; set; } = string.Empty;
 
-    [MaxLength(500)]
-    public string? Description { get; set; }
+    [MaxLength(500)] public string? Description { get; set; }
 
-    [MaxLength(20)]
-    public string? Color { get; set; }
+    [MaxLength(20)] public string? Color { get; set; }
 
     public int? OrderNo { get; set; }
 

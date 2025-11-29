@@ -243,7 +243,7 @@ public class RatingTests
         var value = 4;
 
         // Act
-        Rating rating = (Rating)value;
+        var rating = (Rating)value;
 
         // Assert
         rating.Value.Should().Be(4);

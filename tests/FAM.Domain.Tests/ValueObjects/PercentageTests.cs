@@ -314,7 +314,7 @@ public class PercentageTests
         var decimalValue = 75m;
 
         // Act
-        Percentage percentage = (Percentage)decimalValue;
+        var percentage = (Percentage)decimalValue;
 
         // Assert
         percentage.Value.Should().Be(75m);

@@ -39,7 +39,8 @@ public class PermissionRepositoryMongo : IPermissionRepository
         return _mapper.Map<IEnumerable<Permission>>(documents);
     }
 
-    public async Task<IEnumerable<Permission>> FindAsync(Expression<Func<Permission, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Permission>> FindAsync(Expression<Func<Permission, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         var allDocuments = await _collection.Find(d => !d.IsDeleted)
             .ToListAsync(cancellationToken);
@@ -83,21 +84,24 @@ public class PermissionRepositoryMongo : IPermissionRepository
         return count > 0;
     }
 
-    public async Task<Permission?> GetByResourceAndActionAsync(string resource, string action, CancellationToken cancellationToken = default)
+    public async Task<Permission?> GetByResourceAndActionAsync(string resource, string action,
+        CancellationToken cancellationToken = default)
     {
         var document = await _collection.Find(d => d.Resource == resource && d.Action == action && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? _mapper.Map<Permission>(document) : null;
     }
 
-    public async Task<IEnumerable<Permission>> GetByResourceAsync(string resource, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Permission>> GetByResourceAsync(string resource,
+        CancellationToken cancellationToken = default)
     {
         var documents = await _collection.Find(d => d.Resource == resource && !d.IsDeleted)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<Permission>>(documents);
     }
 
-    public async Task<bool> ExistsByResourceAndActionAsync(string resource, string action, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsByResourceAndActionAsync(string resource, string action,
+        CancellationToken cancellationToken = default)
     {
         var count = await _collection.CountDocumentsAsync(
             d => d.Resource == resource && d.Action == action && !d.IsDeleted, cancellationToken: cancellationToken);

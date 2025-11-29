@@ -28,12 +28,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
     {
         // Find user by username
         var user = await _unitOfWork.Users.FindByUsernameAsync(request.Username, cancellationToken);
-        
+
         if (user == null)
-        {
             // TODO: Raise UserLoginFailedEvent
             throw new UnauthorizedAccessException("Invalid username or password");
-        }
 
         // Check if account is locked
         if (user.IsLockedOut())
@@ -44,23 +42,20 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         }
 
         // Check if account is active
-        if (!user.IsActive)
-        {
-            throw new UnauthorizedAccessException("Account is inactive");
-        }
+        if (!user.IsActive) throw new UnauthorizedAccessException("Account is inactive");
 
         // Verify password
         var isPasswordValid = user.Password.Verify(request.Password);
-        
+
         if (!isPasswordValid)
         {
             // Record failed login attempt
             user.RecordFailedLogin();
             _unitOfWork.Users.Update(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            
+
             // TODO: Raise UserLoginFailedEvent
-            
+
             throw new UnauthorizedAccessException("Invalid username or password");
         }
 
@@ -111,10 +106,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
         // Update device with refresh token
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiresAt, request.IpAddress);
-        
+
         // Update last login info
         user.RecordLogin(request.IpAddress);
-        
+
         // Save device separately to avoid tracking conflicts
         // Check if device already exists in database
         var existingDevice = await _unitOfWork.UserDevices.GetByIdAsync(device.Id, cancellationToken);
@@ -130,7 +125,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             // Add new device
             await _unitOfWork.UserDevices.AddAsync(device, cancellationToken);
         }
-        
+
         // Update user without devices
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -13,24 +13,21 @@ public abstract class BaseEntityMongo
     public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
     // Domain ID mapping (for cross-references with relational DB)
-    [BsonElement("domainId")]
-    public long DomainId { get; set; }
+    [BsonElement("domainId")] public long DomainId { get; set; }
 
     // Audit fields (timestamps)
-    [BsonElement("createdAt")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    [BsonElement("createdAt")] public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    [BsonElement("updatedAt")]
-    public DateTime? UpdatedAt { get; set; }
+    [BsonElement("updatedAt")] public DateTime? UpdatedAt { get; set; }
 
     // Soft delete
-    [BsonElement("isDeleted")]
-    public bool IsDeleted { get; set; } = false;
+    [BsonElement("isDeleted")] public bool IsDeleted { get; set; } = false;
 
-    [BsonElement("deletedAt")]
-    public DateTime? DeletedAt { get; set; }
+    [BsonElement("deletedAt")] public DateTime? DeletedAt { get; set; }
 
-    protected BaseEntityMongo() { }
+    protected BaseEntityMongo()
+    {
+    }
 
     protected BaseEntityMongo(long domainId)
     {

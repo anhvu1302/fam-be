@@ -38,14 +38,22 @@ public sealed class InsuranceInfo : ValueObject
         return new InsuranceInfo(policyNumber, insuredValue, expiryDate, null, null);
     }
 
-    public bool IsActive() => ExpiryDate.HasValue && ExpiryDate.Value >= DateTime.UtcNow;
-    
-    public bool IsExpired() => ExpiryDate.HasValue && ExpiryDate.Value < DateTime.UtcNow;
-    
-    public bool IsExpiringSoon(int daysThreshold = 30) =>
-        ExpiryDate.HasValue &&
-        ExpiryDate.Value <= DateTime.UtcNow.AddDays(daysThreshold) &&
-        ExpiryDate.Value > DateTime.UtcNow;
+    public bool IsActive()
+    {
+        return ExpiryDate.HasValue && ExpiryDate.Value >= DateTime.UtcNow;
+    }
+
+    public bool IsExpired()
+    {
+        return ExpiryDate.HasValue && ExpiryDate.Value < DateTime.UtcNow;
+    }
+
+    public bool IsExpiringSoon(int daysThreshold = 30)
+    {
+        return ExpiryDate.HasValue &&
+               ExpiryDate.Value <= DateTime.UtcNow.AddDays(daysThreshold) &&
+               ExpiryDate.Value > DateTime.UtcNow;
+    }
 
     protected override IEnumerable<object?> GetEqualityComponents()
     {
@@ -56,5 +64,8 @@ public sealed class InsuranceInfo : ValueObject
         yield return CoverageType;
     }
 
-    public override string ToString() => $"Policy {PolicyNumber}, Insured: {InsuredValue:N2}";
+    public override string ToString()
+    {
+        return $"Policy {PolicyNumber}, Insured: {InsuredValue:N2}";
+    }
 }

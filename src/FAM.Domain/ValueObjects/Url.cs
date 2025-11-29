@@ -84,27 +84,42 @@ public sealed class Url : ValueObject
     /// <summary>
     /// Kiểm tra có phải HTTPS không
     /// </summary>
-    public bool IsHttps() => GetScheme() == Uri.UriSchemeHttps;
+    public bool IsHttps()
+    {
+        return GetScheme() == Uri.UriSchemeHttps;
+    }
 
     /// <summary>
     /// Kiểm tra có phải HTTP không
     /// </summary>
-    public bool IsHttp() => GetScheme() == Uri.UriSchemeHttp;
+    public bool IsHttp()
+    {
+        return GetScheme() == Uri.UriSchemeHttp;
+    }
 
     /// <summary>
     /// Implicit conversion từ Url sang string
     /// </summary>
-    public static implicit operator string(Url url) => url.Value;
+    public static implicit operator string(Url url)
+    {
+        return url.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ string sang Url
     /// </summary>
-    public static explicit operator Url(string url) => Create(url);
+    public static explicit operator Url(string url)
+    {
+        return Create(url);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 }

@@ -15,9 +15,12 @@ public class CompanyDetails : Entity
     public Address? Address { get; private set; }
     public DateTime? EstablishedOn { get; private set; }
 
-    private CompanyDetails() { }
+    private CompanyDetails()
+    {
+    }
 
-    public static CompanyDetails Create(string? taxCode = null, string? domain = null, string? address = null, DateTime? establishedOn = null)
+    public static CompanyDetails Create(string? taxCode = null, string? domain = null, string? address = null,
+        DateTime? establishedOn = null)
     {
         return new CompanyDetails
         {

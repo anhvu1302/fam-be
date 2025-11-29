@@ -15,9 +15,9 @@ public abstract class BaseDataSeeder : IDataSeeder
     }
 
     public abstract Task SeedAsync(CancellationToken cancellationToken = default);
-    
+
     public abstract int Order { get; }
-    
+
     public abstract string Name { get; }
 
     protected void LogInfo(string message)

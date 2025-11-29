@@ -55,11 +55,21 @@ public sealed class MACAddress : ValueObject
         return MACAddressFormat.Invalid;
     }
 
-    public bool IsMulticast() => Value.Length >= 2 && (Value[1] == '1' || Value[1] == '3' || Value[1] == '5' || Value[1] == '7' || Value[1] == '9' || Value[1] == 'B' || Value[1] == 'D' || Value[1] == 'F');
+    public bool IsMulticast()
+    {
+        return Value.Length >= 2 && (Value[1] == '1' || Value[1] == '3' || Value[1] == '5' || Value[1] == '7' ||
+                                     Value[1] == '9' || Value[1] == 'B' || Value[1] == 'D' || Value[1] == 'F');
+    }
 
-    public bool IsUnicast() => !IsMulticast();
+    public bool IsUnicast()
+    {
+        return !IsMulticast();
+    }
 
-    public bool IsLocallyAdministered() => Value.Length >= 2 && (Value[1] == '2' || Value[1] == '6' || Value[1] == 'A' || Value[1] == 'E');
+    public bool IsLocallyAdministered()
+    {
+        return Value.Length >= 2 && (Value[1] == '2' || Value[1] == '6' || Value[1] == 'A' || Value[1] == 'E');
+    }
 
     public string GetNormalizedFormat()
     {
@@ -72,16 +82,22 @@ public sealed class MACAddress : ValueObject
         yield return Value.ToUpperInvariant();
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 
-    public static implicit operator string(MACAddress macAddress) => macAddress.Value;
+    public static implicit operator string(MACAddress macAddress)
+    {
+        return macAddress.Value;
+    }
 }
 
 public enum MACAddressFormat
 {
     Invalid,
-    ColonSeparated,    // 00:11:22:33:44:55
-    HyphenSeparated,   // 00-11-22-33-44-55
-    DotSeparated,      // 0011.2233.4455
-    NoSeparators       // 001122334455
+    ColonSeparated, // 00:11:22:33:44:55
+    HyphenSeparated, // 00-11-22-33-44-55
+    DotSeparated, // 0011.2233.4455
+    NoSeparators // 001122334455
 }

@@ -1,7 +1,6 @@
-using AutoMapper;
-using FAM.Application.DTOs.Users;
-using FAM.Application.Users.Commands;
-using FAM.Application.Users.Handlers;
+using FAM.Application.Common;
+using FAM.Application.Users.Commands.CreateUser;
+using FAM.Application.Users.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
 using FluentAssertions;
@@ -14,31 +13,29 @@ public class CreateUserCommandHandlerTests
 {
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
     private readonly Mock<IUserRepository> _mockUserRepository;
-    private readonly Mock<IMapper> _mockMapper;
     private readonly CreateUserCommandHandler _handler;
 
     public CreateUserCommandHandlerTests()
     {
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockUserRepository = new Mock<IUserRepository>();
-        _mockMapper = new Mock<IMapper>();
 
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
 
-        _handler = new CreateUserCommandHandler(_mockUnitOfWork.Object, _mockMapper.Object);
+        _handler = new CreateUserCommandHandler(_mockUnitOfWork.Object);
     }
 
     [Fact]
-    public async Task Handle_WithValidCommand_ShouldCreateUser()
+    public async Task Handle_WithValidCommand_ShouldReturnSuccessResult()
     {
         // Arrange
-        var command = new CreateUserCommand
-        {
-            Username = "testuser",
-            Email = "test@example.com",
-            Password = "SecurePass123!",
-            FullName = "Test User"
-        };
+        var command = new CreateUserCommand(
+            "testuser",
+            "test@example.com",
+            "SecurePass123!",
+            "Test",
+            "User"
+        );
 
         _mockUserRepository
             .Setup(x => x.IsUsernameTakenAsync(command.Username, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
@@ -56,86 +53,70 @@ public class CreateUserCommandHandlerTests
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
-        var expectedDto = new UserDto
-        {
-            Id = 1,
-            Username = command.Username,
-            Email = command.Email,
-            FullName = command.FullName
-        };
-
-        _mockMapper
-            .Setup(x => x.Map<UserDto>(It.IsAny<User>()))
-            .Returns(expectedDto);
-
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Username.Should().Be(command.Username);
-        result.Email.Should().Be(command.Email);
-        result.FullName.Should().Be(command.FullName);
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Should().NotBeNull();
+        result.Value!.User.Username.Should().Be(command.Username);
+        result.Value!.User.Email.Should().Be(command.Email);
 
         _mockUserRepository.Verify(
-            x => x.IsUsernameTakenAsync(command.Username, It.IsAny<long?>(), It.IsAny<CancellationToken>()), 
+            x => x.IsUsernameTakenAsync(command.Username, It.IsAny<long?>(), It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUserRepository.Verify(
-            x => x.IsEmailTakenAsync(command.Email, It.IsAny<long?>(), It.IsAny<CancellationToken>()), 
+            x => x.IsEmailTakenAsync(command.Email, It.IsAny<long?>(), It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUserRepository.Verify(
-            x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), 
+            x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUnitOfWork.Verify(
-            x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), 
+            x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
     [Fact]
-    public async Task Handle_WithTakenUsername_ShouldThrowInvalidOperationException()
+    public async Task Handle_WithTakenUsername_ShouldReturnFailureResult()
     {
         // Arrange
-        var command = new CreateUserCommand
-        {
-            Username = "existinguser",
-            Email = "test@example.com",
-            Password = "SecurePass123!",
-            FullName = "Test User"
-        };
+        var command = new CreateUserCommand(
+            "existinguser",
+            "test@example.com",
+            "SecurePass123!"
+        );
 
         _mockUserRepository
             .Setup(x => x.IsUsernameTakenAsync(command.Username, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
         // Act
-        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Username is already taken");
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be("Username is already taken");
 
         _mockUserRepository.Verify(
-            x => x.IsUsernameTakenAsync(command.Username, It.IsAny<long?>(), It.IsAny<CancellationToken>()), 
+            x => x.IsUsernameTakenAsync(command.Username, It.IsAny<long?>(), It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUserRepository.Verify(
-            x => x.IsEmailTakenAsync(It.IsAny<string>(), It.IsAny<long?>(), It.IsAny<CancellationToken>()), 
+            x => x.IsEmailTakenAsync(It.IsAny<string>(), It.IsAny<long?>(), It.IsAny<CancellationToken>()),
             Times.Never);
         _mockUserRepository.Verify(
-            x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), 
+            x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
     [Fact]
-    public async Task Handle_WithTakenEmail_ShouldThrowInvalidOperationException()
+    public async Task Handle_WithTakenEmail_ShouldReturnFailureResult()
     {
         // Arrange
-        var command = new CreateUserCommand
-        {
-            Username = "testuser",
-            Email = "existing@example.com",
-            Password = "SecurePass123!",
-            FullName = "Test User"
-        };
+        var command = new CreateUserCommand(
+            "testuser",
+            "existing@example.com",
+            "SecurePass123!"
+        );
 
         _mockUserRepository
             .Setup(x => x.IsUsernameTakenAsync(command.Username, It.IsAny<long?>(), It.IsAny<CancellationToken>()))
@@ -146,20 +127,20 @@ public class CreateUserCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act
-        Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("Email is already taken");
+        result.IsSuccess.Should().BeFalse();
+        result.Error.Should().Be("Email is already taken");
 
         _mockUserRepository.Verify(
-            x => x.IsUsernameTakenAsync(command.Username, It.IsAny<long?>(), It.IsAny<CancellationToken>()), 
+            x => x.IsUsernameTakenAsync(command.Username, It.IsAny<long?>(), It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUserRepository.Verify(
-            x => x.IsEmailTakenAsync(command.Email, It.IsAny<long?>(), It.IsAny<CancellationToken>()), 
+            x => x.IsEmailTakenAsync(command.Email, It.IsAny<long?>(), It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUserRepository.Verify(
-            x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), 
+            x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 }

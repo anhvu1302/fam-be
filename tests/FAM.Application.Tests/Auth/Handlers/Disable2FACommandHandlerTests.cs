@@ -31,9 +31,9 @@ public class Disable2FACommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
 
         // Enable 2FA first
@@ -71,9 +71,9 @@ public class Disable2FACommandHandlerTests
         var plainPassword = "SecurePass123!";
         var wrongPassword = "WrongPassword123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
@@ -128,9 +128,9 @@ public class Disable2FACommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
         // User has no 2FA enabled
 

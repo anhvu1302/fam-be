@@ -18,6 +18,7 @@ public sealed record LogoutCommand : IRequest<Unit>
 public sealed record LogoutAllDevicesCommand : IRequest<Unit>
 {
     public long UserId { get; init; }
+
     /// <summary>
     /// Device ID to keep logged in (usually current device)
     /// This is the DeviceId string (fingerprint), not the database Guid

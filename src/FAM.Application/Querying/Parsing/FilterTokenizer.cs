@@ -101,6 +101,7 @@ public sealed class FilterTokenizer
             {
                 value.Append(_input[_position]);
             }
+
             _position++;
         }
 
@@ -148,10 +149,7 @@ public sealed class FilterTokenizer
         }
 
         // Single character operators: >, <
-        if (_input[_position] is '>' or '<')
-        {
-            return FilterToken.Operator(_input[_position++].ToString(), start);
-        }
+        if (_input[_position] is '>' or '<') return FilterToken.Operator(_input[_position++].ToString(), start);
 
         throw new FormatException($"Invalid operator at position {_position}");
     }

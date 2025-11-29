@@ -49,9 +49,9 @@ public class AvailableAssetSpecification : Specification<Asset>
 {
     public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
     {
-        return asset => 
-            asset.UsageCode == "available" && 
-            asset.LifecycleCode == "active" && 
+        return asset =>
+            asset.UsageCode == "available" &&
+            asset.LifecycleCode == "active" &&
             !asset.IsDeleted;
     }
 }

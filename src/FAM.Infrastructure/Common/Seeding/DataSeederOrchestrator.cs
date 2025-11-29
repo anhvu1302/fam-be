@@ -24,7 +24,7 @@ public class DataSeederOrchestrator
     public async Task SeedAllAsync(bool forceReseed = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("=== Starting Data Seeding ===");
-        
+
         var seeders = _serviceProvider.GetServices<IDataSeeder>()
             .OrderBy(s => s.Order)
             .ToList();
@@ -37,11 +37,9 @@ public class DataSeederOrchestrator
 
         // Get seed history repository
         var historyRepo = _serviceProvider.GetService<ISeedHistoryRepository>();
-        
+
         if (historyRepo != null && !forceReseed)
-        {
             _logger.LogInformation("Seed tracking is enabled. Checking execution history...");
-        }
 
         _logger.LogInformation("Found {Count} seeder(s) to execute", seeders.Count);
 
@@ -68,17 +66,17 @@ public class DataSeederOrchestrator
                 await seeder.SeedAsync(cancellationToken);
                 stopwatch.Stop();
                 success = true;
-                _logger.LogInformation("✓ Completed: {SeederName} ({Duration}ms)", seeder.Name, stopwatch.ElapsedMilliseconds);
+                _logger.LogInformation("✓ Completed: {SeederName} ({Duration}ms)", seeder.Name,
+                    stopwatch.ElapsedMilliseconds);
             }
             catch (Exception ex)
             {
                 stopwatch.Stop();
                 errorMessage = ex.Message;
                 _logger.LogError(ex, "✗ Failed to execute seeder: {SeederName}", seeder.Name);
-                
+
                 // Record failure
                 if (historyRepo != null)
-                {
                     await historyRepo.RecordExecutionAsync(new SeedHistory
                     {
                         SeederName = seeder.Name,
@@ -88,14 +86,12 @@ public class DataSeederOrchestrator
                         ErrorMessage = errorMessage,
                         Duration = stopwatch.Elapsed
                     }, cancellationToken);
-                }
-                
+
                 throw;
             }
 
             // Record success
             if (historyRepo != null && success)
-            {
                 await historyRepo.RecordExecutionAsync(new SeedHistory
                 {
                     SeederName = seeder.Name,
@@ -104,7 +100,6 @@ public class DataSeederOrchestrator
                     Success = true,
                     Duration = stopwatch.Elapsed
                 }, cancellationToken);
-            }
         }
 
         _logger.LogInformation("=== Data Seeding Completed Successfully ===");

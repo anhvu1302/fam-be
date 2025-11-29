@@ -14,7 +14,9 @@ public class Resource : BaseEntity
     public OrgNode Node { get; private set; } = null!;
     public string Name { get; private set; } = string.Empty;
 
-    private Resource() { }
+    private Resource()
+    {
+    }
 
     public static Resource Create(string type, OrgNode node, string name)
     {

@@ -27,7 +27,10 @@ public sealed class Money : ValueObject
         return new Money(amount, currency.ToUpperInvariant());
     }
 
-    public static Money Zero(string currency = "VND") => new Money(0, currency);
+    public static Money Zero(string currency = "VND")
+    {
+        return new Money(0, currency);
+    }
 
     public Money Add(Money other)
     {
@@ -45,7 +48,10 @@ public sealed class Money : ValueObject
         return new Money(Amount - other.Amount, Currency);
     }
 
-    public Money Multiply(decimal multiplier) => new Money(Amount * multiplier, Currency);
+    public Money Multiply(decimal multiplier)
+    {
+        return new Money(Amount * multiplier, Currency);
+    }
 
     public Money Divide(decimal divisor)
     {
@@ -61,5 +67,8 @@ public sealed class Money : ValueObject
         yield return Currency;
     }
 
-    public override string ToString() => $"{Amount:N2} {Currency}";
+    public override string ToString()
+    {
+        return $"{Amount:N2} {Currency}";
+    }
 }

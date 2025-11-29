@@ -114,7 +114,10 @@ public sealed class CountryCode : ValueObject
     /// </summary>
     public bool IsAsian()
     {
-        var asianCodes = new[] { "VN", "CN", "JP", "KR", "SG", "TH", "MY", "ID", "PH", "TW", "HK", "MO", "KP", "MM", "KH", "LA", "BN", "TL" };
+        var asianCodes = new[]
+        {
+            "VN", "CN", "JP", "KR", "SG", "TH", "MY", "ID", "PH", "TW", "HK", "MO", "KP", "MM", "KH", "LA", "BN", "TL"
+        };
         return asianCodes.Contains(Value);
     }
 
@@ -123,7 +126,12 @@ public sealed class CountryCode : ValueObject
     /// </summary>
     public bool IsEuropean()
     {
-        var europeanCodes = new[] { "GB", "DE", "FR", "IT", "ES", "NL", "BE", "AT", "CH", "SE", "NO", "DK", "FI", "PL", "CZ", "SK", "HU", "RO", "BG", "HR", "SI", "EE", "LV", "LT", "MT", "CY", "LU", "IE", "IS", "FO", "GI", "PT", "GR", "TR", "RU", "UA", "BY", "MD", "BA", "ME", "MK", "AL", "RS", "XK" };
+        var europeanCodes = new[]
+        {
+            "GB", "DE", "FR", "IT", "ES", "NL", "BE", "AT", "CH", "SE", "NO", "DK", "FI", "PL", "CZ", "SK", "HU", "RO",
+            "BG", "HR", "SI", "EE", "LV", "LT", "MT", "CY", "LU", "IE", "IS", "FO", "GI", "PT", "GR", "TR", "RU", "UA",
+            "BY", "MD", "BA", "ME", "MK", "AL", "RS", "XK"
+        };
         return europeanCodes.Contains(Value);
     }
 
@@ -132,24 +140,37 @@ public sealed class CountryCode : ValueObject
     /// </summary>
     public bool IsAmerican()
     {
-        var americanCodes = new[] { "US", "CA", "MX", "BR", "AR", "CL", "CO", "PE", "VE", "EC", "UY", "PY", "BO", "GY", "SR", "FK", "GS", "AQ", "BV", "HM", "IO", "TF", "UM" };
+        var americanCodes = new[]
+        {
+            "US", "CA", "MX", "BR", "AR", "CL", "CO", "PE", "VE", "EC", "UY", "PY", "BO", "GY", "SR", "FK", "GS", "AQ",
+            "BV", "HM", "IO", "TF", "UM"
+        };
         return americanCodes.Contains(Value);
     }
 
     /// <summary>
     /// Implicit conversion từ CountryCode sang string
     /// </summary>
-    public static implicit operator string(CountryCode countryCode) => countryCode.Value;
+    public static implicit operator string(CountryCode countryCode)
+    {
+        return countryCode.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ string sang CountryCode
     /// </summary>
-    public static explicit operator CountryCode(string countryCode) => Create(countryCode);
+    public static explicit operator CountryCode(string countryCode)
+    {
+        return Create(countryCode);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 }

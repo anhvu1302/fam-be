@@ -30,8 +30,10 @@ public class DomainToEfProfile : Profile
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
             .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.Avatar))
-            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber != null ? src.PhoneNumber.Value : null))
-            .ForMember(dest => dest.PhoneCountryCode, opt => opt.MapFrom(src => src.PhoneNumber != null ? src.PhoneNumber.CountryCode : null))
+            .ForMember(dest => dest.PhoneNumber,
+                opt => opt.MapFrom(src => src.PhoneNumber != null ? src.PhoneNumber.Value : null))
+            .ForMember(dest => dest.PhoneCountryCode,
+                opt => opt.MapFrom(src => src.PhoneNumber != null ? src.PhoneNumber.CountryCode : null))
             .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
             .ForMember(dest => dest.Bio, opt => opt.MapFrom(src => src.Bio))
             .ForMember(dest => dest.TwoFactorEnabled, opt => opt.MapFrom(src => src.TwoFactorEnabled))
@@ -60,12 +62,17 @@ public class DomainToEfProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Username, opt => opt.MapFrom(src => Username.Create(src.Username)))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => Email.Create(src.Email)))
-            .ForMember(dest => dest.Password, opt => opt.MapFrom(src => Password.FromHash(src.PasswordHash, src.PasswordSalt)))
+            .ForMember(dest => dest.Password,
+                opt => opt.MapFrom(src => Password.FromHash(src.PasswordHash, src.PasswordSalt)))
             .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
             .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.Avatar))
-            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.PhoneNumber) ? PhoneNumber.Create(src.PhoneNumber, src.PhoneCountryCode) : null))
+            .ForMember(dest => dest.PhoneNumber,
+                opt => opt.MapFrom(src =>
+                    !string.IsNullOrEmpty(src.PhoneNumber)
+                        ? PhoneNumber.Create(src.PhoneNumber, src.PhoneCountryCode)
+                        : null))
             .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
             .ForMember(dest => dest.Bio, opt => opt.MapFrom(src => src.Bio))
             .ForMember(dest => dest.TwoFactorEnabled, opt => opt.MapFrom(src => src.TwoFactorEnabled))
@@ -103,8 +110,8 @@ public class DomainToEfProfile : Profile
 
         CreateMap<PermissionEf, Permission>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Resource, opt => opt.MapFrom(src => FAM.Domain.ValueObjects.ResourceType.Create(src.Resource)))
-            .ForMember(dest => dest.Action, opt => opt.MapFrom(src => FAM.Domain.ValueObjects.ResourceAction.Create(src.Action)))
+            .ForMember(dest => dest.Resource, opt => opt.MapFrom(src => ResourceType.Create(src.Resource)))
+            .ForMember(dest => dest.Action, opt => opt.MapFrom(src => ResourceAction.Create(src.Action)))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
             .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
@@ -123,7 +130,7 @@ public class DomainToEfProfile : Profile
 
         CreateMap<RoleEf, Role>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Code, opt => opt.MapFrom(src => FAM.Domain.ValueObjects.RoleCode.Create(src.Code)))
+            .ForMember(dest => dest.Code, opt => opt.MapFrom(src => RoleCode.Create(src.Code)))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
             .ForMember(dest => dest.Rank, opt => opt.MapFrom(src => src.Rank))
@@ -144,7 +151,7 @@ public class DomainToEfProfile : Profile
 
         CreateMap<ResourceEf, Resource>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => FAM.Domain.ValueObjects.ResourceType.Create(src.Type)))
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => ResourceType.Create(src.Type)))
             .ForMember(dest => dest.NodeId, opt => opt.MapFrom(src => src.NodeId))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
@@ -216,7 +223,8 @@ public class DomainToEfProfile : Profile
             .ForMember(dest => dest.NodeId, opt => opt.MapFrom(src => src.NodeId))
             .ForMember(dest => dest.TaxCode, opt => opt.MapFrom(src => src.TaxCode != null ? src.TaxCode.Value : null))
             .ForMember(dest => dest.Domain, opt => opt.MapFrom(src => src.Domain != null ? src.Domain.Value : null))
-            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address != null ? src.Address.ToString() : null))
+            .ForMember(dest => dest.Address,
+                opt => opt.MapFrom(src => src.Address != null ? src.Address.ToString() : null))
             .ForMember(dest => dest.EstablishedOn, opt => opt.MapFrom(src => src.EstablishedOn))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
@@ -226,9 +234,12 @@ public class DomainToEfProfile : Profile
         CreateMap<CompanyDetailsEf, CompanyDetails>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.NodeId, opt => opt.MapFrom(src => src.NodeId))
-            .ForMember(dest => dest.TaxCode, opt => opt.MapFrom(src => src.TaxCode != null ? FAM.Domain.ValueObjects.TaxCode.Create(src.TaxCode) : null))
-            .ForMember(dest => dest.Domain, opt => opt.MapFrom(src => src.Domain != null ? FAM.Domain.ValueObjects.DomainName.Create(src.Domain) : null))
-            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => (FAM.Domain.ValueObjects.Address?)null)) // TODO: Implement proper address parsing
+            .ForMember(dest => dest.TaxCode,
+                opt => opt.MapFrom(src => src.TaxCode != null ? TaxCode.Create(src.TaxCode) : null))
+            .ForMember(dest => dest.Domain,
+                opt => opt.MapFrom(src => src.Domain != null ? DomainName.Create(src.Domain) : null))
+            .ForMember(dest => dest.Address,
+                opt => opt.MapFrom(src => (Address?)null)) // TODO: Implement proper address parsing
             .ForMember(dest => dest.EstablishedOn, opt => opt.MapFrom(src => src.EstablishedOn))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
@@ -238,7 +249,8 @@ public class DomainToEfProfile : Profile
         CreateMap<DepartmentDetails, DepartmentDetailsEf>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.NodeId, opt => opt.MapFrom(src => src.NodeId))
-            .ForMember(dest => dest.CostCenter, opt => opt.MapFrom(src => src.CostCenter != null ? src.CostCenter.Value : null))
+            .ForMember(dest => dest.CostCenter,
+                opt => opt.MapFrom(src => src.CostCenter != null ? src.CostCenter.Value : null))
             .ForMember(dest => dest.Headcount, opt => opt.MapFrom(src => src.Headcount))
             .ForMember(dest => dest.BudgetYear, opt => opt.MapFrom(src => src.BudgetYear))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
@@ -249,7 +261,8 @@ public class DomainToEfProfile : Profile
         CreateMap<DepartmentDetailsEf, DepartmentDetails>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.NodeId, opt => opt.MapFrom(src => src.NodeId))
-            .ForMember(dest => dest.CostCenter, opt => opt.MapFrom(src => src.CostCenter != null ? FAM.Domain.ValueObjects.CostCenter.Create(src.CostCenter) : null))
+            .ForMember(dest => dest.CostCenter,
+                opt => opt.MapFrom(src => src.CostCenter != null ? CostCenter.Create(src.CostCenter) : null))
             .ForMember(dest => dest.Headcount, opt => opt.MapFrom(src => src.Headcount))
             .ForMember(dest => dest.BudgetYear, opt => opt.MapFrom(src => src.BudgetYear))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
@@ -264,7 +277,8 @@ public class DomainToEfProfile : Profile
             .ForMember(dest => dest.DeviceName, opt => opt.MapFrom(src => src.DeviceName))
             .ForMember(dest => dest.DeviceType, opt => opt.MapFrom(src => src.DeviceType))
             .ForMember(dest => dest.UserAgent, opt => opt.MapFrom(src => src.UserAgent))
-            .ForMember(dest => dest.IpAddress, opt => opt.MapFrom(src => src.IpAddress != null ? src.IpAddress.Value : null))
+            .ForMember(dest => dest.IpAddress,
+                opt => opt.MapFrom(src => src.IpAddress != null ? src.IpAddress.Value : null))
             .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location))
             .ForMember(dest => dest.Browser, opt => opt.MapFrom(src => src.Browser))
             .ForMember(dest => dest.OperatingSystem, opt => opt.MapFrom(src => src.OperatingSystem))
@@ -286,7 +300,9 @@ public class DomainToEfProfile : Profile
             .ForMember(dest => dest.DeviceName, opt => opt.MapFrom(src => src.DeviceName))
             .ForMember(dest => dest.DeviceType, opt => opt.MapFrom(src => src.DeviceType))
             .ForMember(dest => dest.UserAgent, opt => opt.MapFrom(src => src.UserAgent))
-            .ForMember(dest => dest.IpAddress, opt => opt.MapFrom(src => !string.IsNullOrEmpty(src.IpAddress) ? IPAddress.Create(src.IpAddress) : null))
+            .ForMember(dest => dest.IpAddress,
+                opt => opt.MapFrom(src =>
+                    !string.IsNullOrEmpty(src.IpAddress) ? IPAddress.Create(src.IpAddress) : null))
             .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location))
             .ForMember(dest => dest.Browser, opt => opt.MapFrom(src => src.Browser))
             .ForMember(dest => dest.OperatingSystem, opt => opt.MapFrom(src => src.OperatingSystem))

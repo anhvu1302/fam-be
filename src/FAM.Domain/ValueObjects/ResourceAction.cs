@@ -33,17 +33,26 @@ public sealed class ResourceAction : ValueObject
     /// <summary>
     /// Implicit conversion từ ResourceAction sang string
     /// </summary>
-    public static implicit operator string(ResourceAction resourceAction) => resourceAction.Value;
+    public static implicit operator string(ResourceAction resourceAction)
+    {
+        return resourceAction.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ string sang ResourceAction
     /// </summary>
-    public static explicit operator ResourceAction(string resourceAction) => Create(resourceAction);
+    public static explicit operator ResourceAction(string resourceAction)
+    {
+        return Create(resourceAction);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 }

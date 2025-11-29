@@ -37,17 +37,26 @@ public sealed class TaxCode : ValueObject
     /// <summary>
     /// Implicit conversion từ TaxCode sang string
     /// </summary>
-    public static implicit operator string(TaxCode taxCode) => taxCode.Value;
+    public static implicit operator string(TaxCode taxCode)
+    {
+        return taxCode.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ string sang TaxCode
     /// </summary>
-    public static explicit operator TaxCode(string taxCode) => Create(taxCode);
+    public static explicit operator TaxCode(string taxCode)
+    {
+        return Create(taxCode);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 }

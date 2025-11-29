@@ -31,5 +31,7 @@ public interface IDepartmentDetailsRepository : IRepository<DepartmentDetails>
 {
     Task<DepartmentDetails?> GetByNodeIdAsync(long nodeId, CancellationToken cancellationToken = default);
     Task<DepartmentDetails?> GetByCostCenterAsync(string costCenter, CancellationToken cancellationToken = default);
-    Task<IEnumerable<DepartmentDetails>> GetByParentNodeIdAsync(long parentNodeId, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<DepartmentDetails>> GetByParentNodeIdAsync(long parentNodeId,
+        CancellationToken cancellationToken = default);
 }

@@ -33,17 +33,26 @@ public sealed class AssetTag : ValueObject
     /// <summary>
     /// Implicit conversion từ AssetTag sang string
     /// </summary>
-    public static implicit operator string(AssetTag assetTag) => assetTag.Value;
+    public static implicit operator string(AssetTag assetTag)
+    {
+        return assetTag.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ string sang AssetTag
     /// </summary>
-    public static explicit operator AssetTag(string assetTag) => Create(assetTag);
+    public static explicit operator AssetTag(string assetTag)
+    {
+        return Create(assetTag);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 }

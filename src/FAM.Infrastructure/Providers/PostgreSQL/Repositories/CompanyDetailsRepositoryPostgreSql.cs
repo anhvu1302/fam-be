@@ -35,7 +35,8 @@ public class CompanyDetailsRepositoryPostgreSql : ICompanyDetailsRepository
         return _mapper.Map<IEnumerable<CompanyDetails>>(entities);
     }
 
-    public async Task<IEnumerable<CompanyDetails>> FindAsync(Expression<Func<CompanyDetails, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<CompanyDetails>> FindAsync(Expression<Func<CompanyDetails, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         var allEntities = await _context.CompanyDetails.ToListAsync(cancellationToken);
         var allCompanyDetails = _mapper.Map<IEnumerable<CompanyDetails>>(allEntities);

@@ -41,10 +41,8 @@ public sealed class DepreciationInfo : ValueObject
     public decimal CalculateMonthlyDepreciation(decimal purchaseCost)
     {
         if (Method.Equals("StraightLine", StringComparison.OrdinalIgnoreCase))
-        {
             return (purchaseCost - ResidualValue) / UsefulLifeMonths;
-        }
-        
+
         // Implement other methods as needed
         return 0;
     }
@@ -56,7 +54,7 @@ public sealed class DepreciationInfo : ValueObject
 
         var monthlyDepreciation = CalculateMonthlyDepreciation(purchaseCost);
         var totalDepreciation = monthlyDepreciation * Math.Min(elapsedMonths, UsefulLifeMonths);
-        
+
         return Math.Max(purchaseCost - totalDepreciation, ResidualValue);
     }
 
@@ -68,5 +66,8 @@ public sealed class DepreciationInfo : ValueObject
         yield return InServiceDate;
     }
 
-    public override string ToString() => $"{Method}, {UsefulLifeMonths} months, Residual: {ResidualValue}";
+    public override string ToString()
+    {
+        return $"{Method}, {UsefulLifeMonths} months, Residual: {ResidualValue}";
+    }
 }

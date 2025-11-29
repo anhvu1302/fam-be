@@ -21,15 +21,16 @@ public class JwtService : IJwtService
     public JwtService()
     {
         // Load from environment variables
-        _secret = Environment.GetEnvironmentVariable("JWT_SECRET") 
-            ?? throw new InvalidOperationException("JWT_SECRET environment variable not configured");
+        _secret = Environment.GetEnvironmentVariable("JWT_SECRET")
+                  ?? throw new InvalidOperationException("JWT_SECRET environment variable not configured");
         _issuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "FAM.API";
         _audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "FAM.Client";
-        
+
         var expiryMinutesStr = Environment.GetEnvironmentVariable("ACCESS_TOKEN_EXPIRATION_MINUTES");
-        _accessTokenExpiryMinutes = !string.IsNullOrEmpty(expiryMinutesStr) && int.TryParse(expiryMinutesStr, out var minutes) 
-            ? minutes 
-            : 60;
+        _accessTokenExpiryMinutes =
+            !string.IsNullOrEmpty(expiryMinutesStr) && int.TryParse(expiryMinutesStr, out var minutes)
+                ? minutes
+                : 60;
 
         if (_secret.Length < 32)
             throw new InvalidOperationException("JWT_SECRET must be at least 32 characters");
@@ -39,25 +40,23 @@ public class JwtService : IJwtService
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-            new Claim(ClaimTypes.Name, username),
-            new Claim(ClaimTypes.Email, email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+            new(ClaimTypes.NameIdentifier, userId.ToString()),
+            new(ClaimTypes.Name, username),
+            new(ClaimTypes.Email, email),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
+                ClaimValueTypes.Integer64)
         };
 
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
+        foreach (var role in roles) claims.Add(new Claim(ClaimTypes.Role, role));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: _issuer,
-            audience: _audience,
-            claims: claims,
+            _issuer,
+            _audience,
+            claims,
             expires: DateTime.UtcNow.AddMinutes(_accessTokenExpiryMinutes),
             signingCredentials: credentials
         );
@@ -108,12 +107,9 @@ public class JwtService : IJwtService
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
             var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            
-            if (long.TryParse(userIdClaim, out var userId))
-            {
-                return userId;
-            }
-            
+
+            if (long.TryParse(userIdClaim, out var userId)) return userId;
+
             throw new InvalidOperationException("User ID not found in token");
         }
         catch (Exception ex)

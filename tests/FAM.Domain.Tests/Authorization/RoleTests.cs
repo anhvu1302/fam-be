@@ -86,7 +86,7 @@ public class RoleTests
         var newRank = 2;
 
         // Act
-        Action act = () => role.Update(newName, newRank);
+        var act = () => role.Update(newName, newRank);
 
         // Assert
         act.Should().Throw<DomainException>()

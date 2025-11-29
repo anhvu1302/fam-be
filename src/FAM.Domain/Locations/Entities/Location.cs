@@ -25,7 +25,9 @@ public class Location : AggregateRoot
     public ICollection<Location> Children { get; set; } = new List<Location>();
     public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
 
-    private Location() { }
+    private Location()
+    {
+    }
 
     public static Location Create(string name, string? code = null, int? companyId = null, int? parentId = null)
     {

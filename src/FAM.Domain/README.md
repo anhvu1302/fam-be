@@ -2,11 +2,13 @@
 
 # FAM.Domain - Domain Layer
 
-Domain layer cho hệ thống Fixed Asset Management, được thiết kế theo Domain-Driven Design (DDD) principles với đầy đủ các tactical patterns và enterprise asset management features.
+Domain layer cho hệ thống Fixed Asset Management, được thiết kế theo Domain-Driven Design (DDD) principles với đầy đủ
+các tactical patterns và enterprise asset management features.
 
 ## 📋 Tổng Quan
 
-Domain layer chứa toàn bộ business logic và domain knowledge của hệ thống quản lý tài sản doanh nghiệp. Được tổ chức theo DDD patterns với:
+Domain layer chứa toàn bộ business logic và domain knowledge của hệ thống quản lý tài sản doanh nghiệp. Được tổ chức
+theo DDD patterns với:
 
 - **Aggregate Roots**: Asset, Location
 - **Entities**: 20+ domain entities
@@ -128,48 +130,57 @@ FAM.Domain/
 Asset entity được thiết kế theo chuẩn doanh nghiệp với:
 
 #### Identification & Tracking
+
 - **Basic**: AssetTag, SerialNo, Name
 - **Extended**: Barcode, QRCode, RFIDTag
 - **Purchase**: PO Number, Invoice, Supplier
 
 #### Financial Management
+
 - **Acquisition**: PurchaseCost, PurchaseDate, Supplier
 - **Depreciation**: CurrentBookValue, AccumulatedDepreciation, DepreciationMethod
 - **Accounting**: AccountingCode, CostCenter, GLAccount
 - **Residual**: ResidualValue, EstimatedValue
 
 #### Insurance & Risk
+
 - **Insurance**: PolicyNo, InsuredValue, ExpiryDate, Provider
 - **Risk**: RiskLevel (Low/Medium/High/Critical)
 - **Coverage**: CoverageType, Premium estimation
 
 #### Maintenance & Support
+
 - **Schedule**: LastMaintenanceDate, NextMaintenanceDate, IntervalDays
 - **Contract**: MaintenanceContractNo, ServiceLevel
 - **Support**: SupportExpiryDate, WarrantyTerms
 
 #### IT Asset Management
+
 - **Network**: IPAddress, MACAddress, Hostname
 - **Software**: OS, SoftwareVersion, LicenseKey
 - **Licensing**: LicenseExpiryDate, LicenseCount
 
 #### Physical Characteristics
+
 - **Dimensions**: Weight, Dimensions (L x W x H)
 - **Appearance**: Color, Material
 - **Energy**: PowerConsumption, EnergyRating
 
 #### Environmental & Sustainability
+
 - **Eco**: IsEnvironmentallyFriendly
 - **Lifecycle**: EndOfLifeDate, DisposalMethod
 - **Compliance**: Environmental standards
 
 #### Compliance & Security
+
 - **Compliance**: ComplianceStatus (Compliant/NonCompliant)
 - **Security**: SecurityClassification (Public/Internal/Confidential/Secret)
 - **Access**: RequiresBackgroundCheck, DataClassification
 - **Audit**: LastAuditDate, NextAuditDate
 
 #### Project & Tracking
+
 - **Project**: ProjectCode, CampaignCode
 - **Funding**: FundingSource
 - **Replacement**: ReplacementCost, EstimatedRemainingLifeMonths
@@ -195,6 +206,7 @@ public abstract class Entity
 ### 3. Value Objects (11 VOs)
 
 **Money** - Tiền tệ với operations
+
 ```csharp
 var price = Money.Create(1000, "USD");
 var discount = price * 0.1m;
@@ -202,12 +214,14 @@ var total = price - discount;
 ```
 
 **Address** - Địa chỉ đầy đủ
+
 ```csharp
 var address = Address.Create("123 Main St", "Hanoi", "Vietnam", "100000");
 var isLocal = address.IsInCountry("Vietnam");
 ```
 
 **WarrantyInfo** - Bảo hành
+
 ```csharp
 var warranty = WarrantyInfo.Create(purchaseDate, 24, terms: "Full coverage");
 var isActive = warranty.IsActive();
@@ -215,18 +229,21 @@ var daysLeft = warranty.DaysRemaining();
 ```
 
 **InsuranceInfo** - Bảo hiểm
+
 ```csharp
 var insurance = InsuranceInfo.Create("POL123", 50000, expiryDate);
 var needsRenewal = insurance.IsExpiringSoon(30);
 ```
 
 **IPAddress** - IP validated
+
 ```csharp
 var ip = IPAddress.Create("192.168.1.100");
 var isPrivate = ip.IsPrivate();
 ```
 
 **Dimensions** - Kích thước
+
 ```csharp
 var dims = Dimensions.Create(50, 30, 20, "cm");
 var volume = dims.Volume();
@@ -236,19 +253,23 @@ var inMeters = dims.ConvertTo("m");
 ### 4. Domain Services (8 Services)
 
 #### IDepreciationService
+
 Tính toán khấu hao theo các phương pháp:
+
 - Straight Line
-- Declining Balance  
+- Declining Balance
 - Double Declining Balance
 - Sum of Years Digits
 
 #### IInsuranceCalculator
+
 - Tính giá trị bảo hiểm đề xuất
 - Estimate phí bảo hiểm
 - Đánh giá risk level
 - Lấy assets cần renew
 
 #### IMaintenanceScheduler
+
 - Lập lịch bảo trì định kỳ
 - Tính next maintenance date
 - Identify urgent maintenance
@@ -256,6 +277,7 @@ Tính toán khấu hao theo các phương pháp:
 - Estimate costs
 
 #### IAssetLifecycleManager
+
 - Tính remaining life
 - Identify end-of-life assets
 - Evaluate asset health
@@ -263,6 +285,7 @@ Tính toán khấu hao theo các phương pháp:
 - Calculate Total Cost of Ownership (TCO)
 
 #### IComplianceManager
+
 - Check compliance
 - Get non-compliant assets
 - Schedule audits
@@ -272,6 +295,7 @@ Tính toán khấu hao theo các phương pháp:
 ### 5. Specifications Pattern (24+ Specs)
 
 **Basic Specifications:**
+
 - `ActiveAssetSpecification` - Assets chưa xóa
 - `AssetByCompanySpecification` - Theo công ty
 - `AvailableAssetSpecification` - Sẵn sàng bàn giao
@@ -281,6 +305,7 @@ Tính toán khấu hao theo các phương pháp:
 - `WarrantyExpiringSoonSpecification` - Bảo hành sắp hết
 
 **Extended Specifications:**
+
 - `MaintenanceDueSpecification` - Cần bảo trì
 - `MaintenanceOverdueSpecification` - Bảo trì quá hạn
 - `WarrantyExpiredSpecification` - Hết bảo hành
@@ -297,6 +322,7 @@ Tính toán khấu hao theo các phương pháp:
 - `CostCenterSpecification` - Theo cost center
 
 **Combinable:**
+
 ```csharp
 var spec = new ActiveAssetSpecification()
     .And(new HighRiskAssetSpecification())
@@ -306,6 +332,7 @@ var spec = new ActiveAssetSpecification()
 ### 6. Repository Pattern
 
 **IRepository<T>** - Generic repository
+
 ```csharp
 Task<T?> GetByIdAsync(Guid id);
 Task<IEnumerable<T>> GetAllAsync();
@@ -316,6 +343,7 @@ void Delete(T entity);
 ```
 
 **IAssetRepository** - 50+ specialized methods
+
 ```csharp
 // Basic queries
 Task<Asset?> GetByAssetTagAsync(string assetTag);
@@ -376,6 +404,7 @@ Events cho business logic triggers:
 ## 🔧 Business Methods trong Asset
 
 ### Asset Creation & Update
+
 ```csharp
 public static Asset Create(
     string name, 
@@ -390,6 +419,7 @@ public void UpdateBasicInfo(
 ```
 
 ### Identification
+
 ```csharp
 public void SetIdentification(
     string? barcode,
@@ -399,6 +429,7 @@ public void SetIdentification(
 ```
 
 ### Financial Management
+
 ```csharp
 public void SetFinanceInfo(
     decimal currentBookValue,
@@ -417,6 +448,7 @@ public bool IsFullyDepreciated()
 ```
 
 ### Insurance
+
 ```csharp
 public void SetInsurance(
     string policyNo,
@@ -432,6 +464,7 @@ public bool IsCriticalAsset()
 ```
 
 ### Maintenance
+
 ```csharp
 public void ScheduleMaintenance(
     DateTime nextMaintenanceDate,
@@ -450,6 +483,7 @@ public int? DaysUntilMaintenance()
 ```
 
 ### IT Asset Management
+
 ```csharp
 public void SetITInfo(
     string? ipAddress,
@@ -470,6 +504,7 @@ public bool IsLicenseExpiringSoon(int daysThreshold = 30)
 ```
 
 ### Compliance & Security
+
 ```csharp
 public void SetCompliance(
     string complianceStatus,
@@ -490,6 +525,7 @@ public bool IsHighSecurity()
 ```
 
 ### Health Status
+
 ```csharp
 public AssetHealthStatus GetHealthStatus()
 // Returns: Healthy, NeedsAttention, Critical
@@ -500,17 +536,20 @@ public AssetHealthStatus GetHealthStatus()
 ## 📊 Enum Types
 
 ### AssetHealthStatus
+
 - `Healthy` - Tất cả OK
 - `NeedsAttention` - Cần chú ý (warranty/license sắp hết, bảo trì sắp đến)
 - `Critical` - Nghiêm trọng (quá hạn bảo trì, hết bảo hiểm, etc.)
 
 ### RiskLevel
+
 - `Low`
 - `Medium`
 - `High`
 - `Critical`
 
 ### AssetHealthStatus (Lifecycle Manager)
+
 - `Excellent`
 - `Good`
 - `Fair`
@@ -518,6 +557,7 @@ public AssetHealthStatus GetHealthStatus()
 - `Critical`
 
 ### AssetActionType
+
 - `None`
 - `Maintenance`
 - `Repair`
@@ -530,6 +570,7 @@ public AssetHealthStatus GetHealthStatus()
 - `Audit`
 
 ### ComplianceSeverity
+
 - `Low`
 - `Medium`
 - `High`
@@ -538,20 +579,24 @@ public AssetHealthStatus GetHealthStatus()
 ## 🏗️ Architecture Patterns
 
 ### Aggregate Pattern
+
 - **Asset Aggregate**: Asset (root) → Assignment, AssetEvent, Attachment
 - **Location Aggregate**: Location (root) → Building, Floor, Room
 
 ### Repository Pattern
+
 - Generic repository với base CRUD operations
 - Specialized repositories với domain-specific queries
 - Unit of Work cho transaction management
 
 ### Specification Pattern
+
 - Reusable query logic
 - Combinable với And, Or, Not
 - Type-safe querying
 
 ### Domain Events
+
 - Decouple business logic
 - Enable side effects
 - Support event sourcing
@@ -569,6 +614,7 @@ public AssetHealthStatus GetHealthStatus()
 ## 🔄 Workflow Examples
 
 ### Tạo Asset Mới
+
 ```csharp
 var asset = Asset.Create("Laptop Dell XPS 15", companyId, "ASSET-001", "admin");
 asset.SetIdentification("BARCODE123", "QR123", null, "admin");
@@ -581,6 +627,7 @@ await unitOfWork.SaveChangesAsync();
 ```
 
 ### Kiểm Tra Health Status
+
 ```csharp
 var asset = await assetRepository.GetByAssetTagAsync("ASSET-001");
 var health = asset.GetHealthStatus();
@@ -592,6 +639,7 @@ if (health == AssetHealthStatus.Critical)
 ```
 
 ### Query với Specifications
+
 ```csharp
 var criticalAssets = new HighRiskAssetSpecification()
     .And(new MaintenanceOverdueSpecification())
@@ -658,7 +706,9 @@ Build succeeded.
 ## Cấu trúc
 
 ### Common/
+
 Base classes và interfaces cho toàn bộ domain:
+
 - `Entity.cs` - Base entity với Id và soft delete
 - `AggregateRoot.cs` - Aggregate root có thể chứa domain events
 - `AuditableEntity.cs` - Entity có audit fields (CreatedAt, UpdatedAt, v.v.)
@@ -667,7 +717,9 @@ Base classes và interfaces cho toàn bộ domain:
 - `IDomainEvent.cs` - Interface cho domain events
 
 ### ValueObjects/
+
 Immutable value objects:
+
 - `Money.cs` - Tiền tệ (Amount + Currency)
 - `Address.cs` - Địa chỉ đầy đủ
 - `DateRange.cs` - Khoảng thời gian
@@ -676,7 +728,9 @@ Immutable value objects:
 - `DepreciationInfo.cs` - Thông tin khấu hao
 
 ### Abstractions/
+
 Repository interfaces và patterns:
+
 - `IRepository<T>` - Generic repository
 - `IAssetRepository.cs` - Repository cho Asset aggregate
 - `ILocationRepository.cs` - Repository cho Location aggregate
@@ -684,79 +738,110 @@ Repository interfaces và patterns:
 - `ISpecification.cs` - Specification pattern với combinators
 
 ### Services/
+
 Domain services (business logic không thuộc về entity):
+
 - `IDepreciationService.cs` - Tính toán khấu hao
 - `IAssetTagGenerator.cs` - Generate mã tài sản
 - `ILocationHierarchyService.cs` - Quản lý cây phân cấp
 - `IAssetLifecycleValidator.cs` - Validate lifecycle transitions
 
 ### Assets/ (Aggregate Root)
+
 Domain chính về tài sản:
+
 - `Asset.cs` - Tài sản (Aggregate Root)
 - `AssetId.cs` - Value object cho Asset ID
 - `Assignment.cs` - Bàn giao/thu hồi tài sản
 - `AssetEvent.cs` - Sự kiện tài sản (audit log)
 - `Attachment.cs` - File đính kèm
 - `Enums/AssetStatus.cs` - Enums cho lifecycle, usage status, depreciation method
-- `Events/` - Domain events (AssetCreated, AssetUpdated, AssetDeleted, AssetAssigned, AssetReleased, AssetSoftDeleted, AssetRestored)
+- `Events/` - Domain events (AssetCreated, AssetUpdated, AssetDeleted, AssetAssigned, AssetReleased, AssetSoftDeleted,
+  AssetRestored)
 - `Specifications/` - Business rules specifications
 
 ### Types/
+
 Loại tài sản (OA, IT, SW, CA, WA, PU, MT):
+
 - `AssetType.cs`
 - `Events/AssetTypeCreated.cs`
 
 ### Categories/
+
 Danh mục tài sản:
+
 - `AssetCategory.cs`
 - `Events/AssetCategoryCreated.cs`
 
 ### Geography/
+
 Địa lý (quốc gia):
+
 - `Country.cs` - ISO2 code
 - `Events/CountryCreated.cs`
 
 ### Locations/ (Aggregate Root)
+
 Địa điểm (hierarchical tree):
+
 - `Location.cs` - Hỗ trợ phân cấp với Parent/Children (Aggregate Root)
 - `Events/LocationCreated.cs`
 
 ### Companies/
+
 Công ty:
+
 - `Company.cs`
 
 ### Departments/
+
 Phòng ban:
+
 - `Department.cs`
 
 ### Users/
+
 Người dùng:
+
 - `User.cs`
 
 ### Manufacturers/
+
 Nhà sản xuất:
+
 - `Manufacturer.cs`
 
 ### Models/
+
 Model/kiểu máy:
+
 - `Model.cs`
 
 ### Suppliers/
+
 Nhà cung cấp:
+
 - `Supplier.cs`
 
 ### Conditions/
+
 Tình trạng tài sản:
+
 - `AssetCondition.cs`
 
 ### Statuses/
+
 Các loại trạng thái:
+
 - `LifecycleStatus.cs` - Trạng thái vòng đời (draft, pending_approval, active, v.v.)
 - `UsageStatus.cs` - Trạng thái sử dụng (available, in_use, under_repair)
 - `AssetEventType.cs` - Loại sự kiện (created, assigned, released, v.v.)
 
 ### Finance/
+
 Tài chính:
+
 - `FinanceEntry.cs` - Bút toán tài chính (khấu hao, điều chỉnh, xóa sổ)
 
 ## Nguyên tắc DDD
@@ -775,11 +860,13 @@ Tài chính:
 ## Tactical Patterns Implemented
 
 ### 1. Entities & Value Objects
+
 - **Entities**: Có identity (Id), mutable
 - **Value Objects**: Không có identity, immutable, equality by value
 - **Aggregate Roots**: Entities có thể chứa domain events
 
 ### 2. Repository Pattern
+
 ```csharp
 // Repository interface trong Domain
 public interface IAssetRepository : IRepository<Asset>
@@ -792,6 +879,7 @@ public interface IAssetRepository : IRepository<Asset>
 ```
 
 ### 3. Specification Pattern
+
 ```csharp
 var spec = new ActiveAssetSpecification()
     .And(new AssetByCompanySpecification(companyId))
@@ -801,6 +889,7 @@ var assets = await repository.FindAsync(spec.ToExpression());
 ```
 
 ### 4. Domain Services
+
 ```csharp
 // Business logic không thuộc về entity nào
 var bookValue = depreciationService.CalculateCurrentBookValue(asset, DateTime.Now);
@@ -808,6 +897,7 @@ var isValid = lifecycleValidator.CanTransitionTo(asset, "active");
 ```
 
 ### 5. Domain Events
+
 ```csharp
 asset.Assign("user", userId, currentUserId);
 // Raises AssetAssigned domain event
@@ -815,6 +905,7 @@ asset.Assign("user", userId, currentUserId);
 ```
 
 ### 6. Unit of Work
+
 ```csharp
 await unitOfWork.BeginTransactionAsync();
 try
@@ -833,21 +924,25 @@ catch
 ## Aggregates
 
 Xem chi tiết trong `AGGREGATES.md`:
+
 - **Asset Aggregate**: Asset (root) + Assignment + AssetEvent + Attachment
 - **Location Aggregate**: Location (root) + Children
 
 ## Soft Delete Pattern
 
 Tất cả entities kế thừa từ `Entity` base class đều có:
+
 - `IsDeleted` (bool) - Đánh dấu đã xóa
 - `DeletedAt` (DateTime?) - Thời điểm xóa
 - `DeletedBy` (int?) - User ID người xóa
 
 Methods:
+
 - `SoftDelete(int? deletedBy)` - Xóa mềm
 - `Restore()` - Khôi phục
 
 **Lợi ích:**
+
 - Không mất dữ liệu vĩnh viễn
 - Có thể audit/track lịch sử xóa
 - Dễ dàng khôi phục khi cần

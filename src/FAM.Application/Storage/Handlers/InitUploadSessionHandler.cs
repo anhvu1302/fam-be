@@ -61,9 +61,7 @@ public class InitUploadSessionHandler : IRequestHandler<InitUploadSessionCommand
             request.FileSize);
 
         if (!isValid || !fileType.HasValue)
-        {
             throw new InvalidOperationException(errorMessage ?? "File validation failed");
-        }
 
         // Generate upload ID and temp key
         var uploadId = Guid.NewGuid().ToString("N");
@@ -71,15 +69,15 @@ public class InitUploadSessionHandler : IRequestHandler<InitUploadSessionCommand
 
         // Create session
         var session = UploadSession.Create(
-            uploadId: uploadId,
-            tempKey: tempKey,
-            fileName: request.FileName,
-            fileType: fileType.Value,
-            fileSize: request.FileSize,
-            contentType: request.ContentType,
-            userId: (int)request.UserId,
-            ttlHours: 24,
-            idempotencyKey: request.IdempotencyKey);
+            uploadId,
+            tempKey,
+            request.FileName,
+            fileType.Value,
+            request.FileSize,
+            request.ContentType,
+            (int)request.UserId,
+            24,
+            request.IdempotencyKey);
 
         await _sessionRepository.AddAsync(session, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

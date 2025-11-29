@@ -13,72 +13,74 @@ public class AssetCategory : Entity
     public string? Code { get; private set; } // Category code
     public string? Description { get; private set; }
     public string? LongDescription { get; private set; }
-    
+
     // Hierarchy
     public int? ParentId { get; private set; }
     public int Level { get; private set; }
     public string? Path { get; private set; } // Full hierarchical path
-    
+
     // Classification
     public string? CategoryType { get; private set; } // Functional, Departmental, Industry-specific
     public string? Industry { get; private set; } // Healthcare, Manufacturing, Retail, etc.
     public string? Sector { get; private set; }
-    
+
     // Accounting
     public string? GLAccountCode { get; private set; }
     public string? DepreciationAccountCode { get; private set; }
     public string? CostCenter { get; private set; }
-    
+
     // Depreciation Defaults
     public string? DefaultDepreciationMethod { get; private set; }
     public int? DefaultUsefulLifeMonths { get; private set; }
     public decimal? DefaultResidualValuePercentage { get; private set; }
-    
+
     // Properties
     public bool IsDepreciable { get; private set; } = true;
     public bool IsCapitalized { get; private set; } = true;
     public bool RequiresMaintenance { get; private set; } = true;
     public bool RequiresInsurance { get; private set; }
-    
+
     // Valuation
     public decimal? MinimumCapitalizationValue { get; private set; }
     public string? ValuationMethod { get; private set; }
-    
+
     // Compliance
     public bool RequiresCompliance { get; private set; }
     public string? ComplianceStandards { get; private set; } // JSON array
     public bool RequiresAudit { get; private set; }
     public int? AuditIntervalMonths { get; private set; }
-    
+
     // Display
     public string? IconName { get; private set; }
     public Url? IconUrl { get; private set; }
     public string? Color { get; private set; }
     public int DisplayOrder { get; private set; }
-    
+
     // Status
     public bool IsActive { get; private set; } = true;
     public bool IsSystemCategory { get; private set; }
-    
+
     // Tags & Search
     public string? Tags { get; private set; } // JSON array
     public string? SearchKeywords { get; private set; }
     public string? Aliases { get; private set; }
-    
+
     // Statistics
     public int AssetCount { get; private set; }
     public decimal? TotalValue { get; private set; }
-    
+
     // Internal Notes
     public string? InternalNotes { get; private set; }
-    
+
     // Navigation properties
     public AssetCategory? Parent { get; set; }
     public ICollection<AssetCategory> Children { get; set; } = new List<AssetCategory>();
     public ICollection<Models.Model> Models { get; set; } = new List<Models.Model>();
     public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
 
-    private AssetCategory() { }
+    private AssetCategory()
+    {
+    }
 
     public static AssetCategory Create(string name, string? code = null, string? description = null)
     {
@@ -141,7 +143,8 @@ public class AssetCategory : Entity
         if (usefulLifeMonths.HasValue && usefulLifeMonths.Value < 0)
             throw new DomainException("Default useful life months cannot be negative");
 
-        if (residualValuePercentage.HasValue && (residualValuePercentage.Value < 0 || residualValuePercentage.Value > 100))
+        if (residualValuePercentage.HasValue &&
+            (residualValuePercentage.Value < 0 || residualValuePercentage.Value > 100))
             throw new DomainException("Default residual value percentage must be between 0 and 100");
 
         DefaultDepreciationMethod = method;
@@ -221,10 +224,20 @@ public class AssetCategory : Entity
         InternalNotes = internalNotes;
     }
 
-    public void Activate() => IsActive = true;
-    public void Deactivate() => IsActive = false;
-    
-    public void MarkAsSystemCategory() => IsSystemCategory = true;
+    public void Activate()
+    {
+        IsActive = true;
+    }
+
+    public void Deactivate()
+    {
+        IsActive = false;
+    }
+
+    public void MarkAsSystemCategory()
+    {
+        IsSystemCategory = true;
+    }
 
     public void UpdateStatistics(int assetCount, decimal? totalValue)
     {
@@ -238,7 +251,18 @@ public class AssetCategory : Entity
         TotalValue = totalValue;
     }
 
-    public bool IsHierarchical() => ParentId.HasValue || Children.Any();
-    public bool IsRoot() => !ParentId.HasValue;
-    public bool IsLeaf() => !Children.Any();
+    public bool IsHierarchical()
+    {
+        return ParentId.HasValue || Children.Any();
+    }
+
+    public bool IsRoot()
+    {
+        return !ParentId.HasValue;
+    }
+
+    public bool IsLeaf()
+    {
+        return !Children.Any();
+    }
 }

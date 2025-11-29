@@ -21,7 +21,7 @@ public class SeedHistoryRepositoryPostgreSql : ISeedHistoryRepository
             .ExecuteSqlAsync($@"
                 SELECT COUNT(*) 
                 FROM information_schema.tables 
-                WHERE table_name = '__seed_history'", 
+                WHERE table_name = '__seed_history'",
                 cancellationToken) > 0;
 
         if (!tableExists)
@@ -77,9 +77,9 @@ public class SeedHistoryRepositoryPostgreSql : ISeedHistoryRepository
     {
         // Ensure table exists
         await HasBeenExecutedAsync("_init_check_", cancellationToken);
-        
+
         var histories = new List<SeedHistory>();
-        
+
         var connection = _dbContext.Database.GetDbConnection();
         await connection.OpenAsync(cancellationToken);
 
@@ -88,7 +88,6 @@ public class SeedHistoryRepositoryPostgreSql : ISeedHistoryRepository
 
         using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
-        {
             histories.Add(new SeedHistory
             {
                 Id = reader.GetInt64(0),
@@ -100,7 +99,6 @@ public class SeedHistoryRepositoryPostgreSql : ISeedHistoryRepository
                 ErrorMessage = reader.IsDBNull(6) ? null : reader.GetString(6),
                 Duration = TimeSpan.FromMilliseconds(reader.GetDouble(7))
             });
-        }
 
         return histories;
     }

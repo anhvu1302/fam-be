@@ -39,7 +39,8 @@ public class PostgreSqlRoleSeeder : BaseDataSeeder
             new RoleEf
             {
                 Name = "Admin",
-                Description = "System Administrator: Full access to all system features including role and permission management",
+                Description =
+                    "System Administrator: Full access to all system features including role and permission management",
                 Code = "ADMIN",
                 Rank = 1
             },
@@ -53,7 +54,8 @@ public class PostgreSqlRoleSeeder : BaseDataSeeder
             new RoleEf
             {
                 Name = "FA_WORKER",
-                Description = "FA Worker: trực tiếp thao tác tất cả action. Tạo, sửa, report... vào làm và xem được tất cả",
+                Description =
+                    "FA Worker: trực tiếp thao tác tất cả action. Tạo, sửa, report... vào làm và xem được tất cả",
                 Code = "FA_WORKER",
                 Rank = 3
             },
@@ -67,7 +69,8 @@ public class PostgreSqlRoleSeeder : BaseDataSeeder
             new RoleEf
             {
                 Name = "PIC",
-                Description = "PIC: người quản lý tài sản, sửa tình trạng, location của FA, nhưng không dc cấp phát hay thu hồi",
+                Description =
+                    "PIC: người quản lý tài sản, sửa tình trạng, location của FA, nhưng không dc cấp phát hay thu hồi",
                 Code = "PIC",
                 Rank = 5
             },

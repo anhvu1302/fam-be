@@ -10,10 +10,10 @@ public sealed class FieldMap<T>
     private readonly Dictionary<string, FieldMapping> _map = new(StringComparer.OrdinalIgnoreCase);
 
     public FieldMap<T> Add<TProp>(
-        string name, 
-        Expression<Func<T, TProp>> selector, 
-        bool canFilter = true, 
-        bool canSort = true, 
+        string name,
+        Expression<Func<T, TProp>> selector,
+        bool canFilter = true,
+        bool canSort = true,
         bool canSelect = true)
     {
         _map[name] = new FieldMapping(selector, typeof(TProp), canFilter, canSort, canSelect);
@@ -54,7 +54,10 @@ public sealed class FieldMap<T>
         return _map.ContainsKey(name);
     }
 
-    public IEnumerable<string> GetFieldNames() => _map.Keys;
+    public IEnumerable<string> GetFieldNames()
+    {
+        return _map.Keys;
+    }
 
     private sealed record FieldMapping(
         LambdaExpression Expression,

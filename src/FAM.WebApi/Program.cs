@@ -1,4 +1,3 @@
-using FAM.Application.Common.Mappings;
 using FAM.Application.Common.Options;
 using FAM.Application.Querying.Parsing;
 using FAM.Application.Auth.Services;
@@ -13,6 +12,7 @@ using Microsoft.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
 using System.Text;
 
 // Load environment variables from .env file
@@ -31,28 +31,37 @@ builder.Services.AddSingleton(appConfig);
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    
+
     // Clear the known networks and proxies to allow any proxy
     // In production, you should specify known proxy IPs for security
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
-    
+
     // Add custom headers that might contain the real IP
     options.ForwardedForHeaderName = "X-Forwarded-For";
     options.ForwardedProtoHeaderName = "X-Forwarded-Proto";
-    
+
     // Limit to 1 proxy hop (adjust based on your infrastructure)
     options.ForwardLimit = 2;
 });
 
-// Add CORS
+// Add CORS - configured from appsettings.json
+var corsSection = builder.Configuration.GetSection("Cors");
+var allowedOrigins = corsSection.GetSection("AllowedOrigins").Get<string[]>() ?? new[] { "http://localhost:8001" };
+var allowedMethods = corsSection.GetSection("AllowedMethods").Get<string[]>() ?? new[] { "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" };
+var allowedHeaders = corsSection.GetSection("AllowedHeaders").Get<string[]>() ?? new[] { "Content-Type", "Authorization" };
+var allowCredentials = corsSection.GetValue<bool>("AllowCredentials", true);
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        policy.WithOrigins(allowedOrigins)
+            .WithMethods(allowedMethods)
+            .WithHeaders(allowedHeaders);
+        
+        if (allowCredentials)
+            policy.AllowCredentials();
     });
 });
 
@@ -76,7 +85,8 @@ builder.Services.AddSwaggerGen(c =>
     // Add JWT authentication to Swagger
     c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+        Description =
+            "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
         Name = "Authorization",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
@@ -102,7 +112,7 @@ builder.Services.AddSwaggerGen(c =>
 // Register MediatR (no validation pipeline - validation is at Web API layer)
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssembly(typeof(FAM.Application.Users.Commands.CreateUserCommand).Assembly);
+    cfg.RegisterServicesFromAssembly(typeof(FAM.Application.Users.Commands.CreateUser.CreateUserCommand).Assembly);
 });
 
 // Register Filter Parser (singleton - stateless)
@@ -115,46 +125,67 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 var secretKey = appConfig.JwtSecret;
 
 builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.SaveToken = true;
-    options.RequireHttpsMetadata = appConfig.Environment == "Production";
-    options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = appConfig.JwtIssuer,
-        ValidAudience = appConfig.JwtAudience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-        ClockSkew = TimeSpan.Zero // Remove default 5 minute tolerance
-    };
-});
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.RequireHttpsMetadata = appConfig.Environment == "Production";
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = appConfig.JwtIssuer,
+            ValidAudience = appConfig.JwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+            ClockSkew = TimeSpan.Zero // Remove default 5 minute tolerance
+        };
+    });
 
 builder.Services.AddAuthorization();
 
 // Add infrastructure (database provider) - no longer needs IConfiguration
 builder.Services.AddInfrastructure();
 
-// Bind paging options from AppConfiguration
-builder.Services.Configure<PagingOptions>(options =>
-{
-    options.MaxPageSize = appConfig.MaxPageSize;
-});
+// ===== Settings from appsettings.json (non-sensitive) =====
 
-// Bind MinIO settings from configuration
-builder.Services.Configure<MinioSettings>(
-    builder.Configuration.GetSection(MinioSettings.SectionName));
+// Pagination settings
+builder.Services.Configure<PaginationSettings>(
+    builder.Configuration.GetSection(PaginationSettings.SectionName));
+builder.Services.AddSingleton(sp =>
+    sp.GetRequiredService<IOptions<PaginationSettings>>().Value);
 
-// Bind File Upload settings from configuration
+// File Upload settings
 builder.Services.Configure<FileUploadSettings>(
     builder.Configuration.GetSection(FileUploadSettings.SectionName));
+
+// Real IP Detection settings  
+builder.Services.Configure<RealIpDetectionSettings>(
+    builder.Configuration.GetSection(RealIpDetectionSettings.SectionName));
+
+// Legacy paging options (backward compatibility)
+var paginationSection = builder.Configuration.GetSection(PaginationSettings.SectionName);
+builder.Services.Configure<PagingOptions>(options =>
+{
+    options.MaxPageSize = paginationSection.GetValue<int>("MaxPageSize", 100);
+});
+
+// ===== Settings from .env (sensitive - via AppConfiguration) =====
+
+// MinIO settings from environment variables
+builder.Services.Configure<MinioSettings>(options =>
+{
+    options.Endpoint = appConfig.MinioEndpoint;
+    options.AccessKey = appConfig.MinioAccessKey;
+    options.SecretKey = appConfig.MinioSecretKey;
+    options.UseSsl = appConfig.MinioUseSsl;
+    options.BucketName = appConfig.MinioBucketName;
+});
 
 var app = builder.Build();
 
@@ -177,10 +208,7 @@ app.UseMiddleware<RealIpMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fixed Asset Management API v1");
-    });
+    app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fixed Asset Management API v1"); });
 }
 
 app.UseHttpsRedirection();
@@ -192,4 +220,6 @@ app.MapControllers();
 app.Run();
 
 // Make the Program class accessible to integration tests
-public partial class Program { }
+public partial class Program
+{
+}

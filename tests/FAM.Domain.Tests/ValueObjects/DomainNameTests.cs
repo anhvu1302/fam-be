@@ -108,7 +108,7 @@ public class DomainNameTests
         var value = "example.com";
 
         // Act
-        DomainName domainName = (DomainName)value;
+        var domainName = (DomainName)value;
 
         // Assert
         domainName.Value.Should().Be("example.com");

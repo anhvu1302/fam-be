@@ -38,10 +38,7 @@ public class FileValidator : IFileValidator
         long fileSize)
     {
         // Check empty/invalid size first
-        if (fileSize <= 0)
-        {
-            return (false, "File is empty or invalid", null);
-        }
+        if (fileSize <= 0) return (false, "File is empty or invalid", null);
 
         // Detect file type from extension
         var fileType = DetectFileType(fileName);
@@ -49,7 +46,9 @@ public class FileValidator : IFileValidator
         if (!fileType.HasValue)
         {
             var extension = Path.GetExtension(fileName);
-            return (false, $"File extension '{extension}' is not supported. Allowed: images (.jpg, .png, etc.), media (.mp4, .mp3, etc.), documents (.pdf, .doc, etc.)", null);
+            return (false,
+                $"File extension '{extension}' is not supported. Allowed: images (.jpg, .png, etc.), media (.mp4, .mp3, etc.), documents (.pdf, .doc, etc.)",
+                null);
         }
 
         // Check size

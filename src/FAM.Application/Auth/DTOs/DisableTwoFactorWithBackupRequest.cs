@@ -12,13 +12,13 @@ public sealed record DisableTwoFactorWithBackupRequest
     /// </summary>
     [Required]
     public required string Username { get; init; }
-    
+
     /// <summary>
     /// Password for authentication
     /// </summary>
     [Required]
     public required string Password { get; init; }
-    
+
     /// <summary>
     /// One of the backup codes provided during 2FA setup
     /// Format: xxxxx-xxxxx (example: 881eb-53018)

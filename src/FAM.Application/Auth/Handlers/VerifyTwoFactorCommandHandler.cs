@@ -35,29 +35,23 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
         this._logger = _logger;
     }
 
-    public async Task<VerifyTwoFactorResponse> Handle(VerifyTwoFactorCommand request, CancellationToken cancellationToken)
+    public async Task<VerifyTwoFactorResponse> Handle(VerifyTwoFactorCommand request,
+        CancellationToken cancellationToken)
     {
         // Validate the 2FA session token
         if (!ValidateTwoFactorSessionToken(request.TwoFactorSessionToken))
-        {
             throw new UnauthorizedAccessException("Invalid or expired two-factor session token");
-        }
 
         // Extract user ID from session token
         var userId = _jwtService.GetUserIdFromToken(request.TwoFactorSessionToken);
-        
+
         // Get user
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException("User not found");
-        }
+        if (user == null) throw new UnauthorizedAccessException("User not found");
 
         // Check if 2FA is enabled
         if (!user.TwoFactorEnabled || string.IsNullOrEmpty(user.TwoFactorSecret))
-        {
             throw new UnauthorizedAccessException("Two-factor authentication is not enabled for this user");
-        }
 
         // Verify 2FA code
         if (!VerifyTwoFactorCode(user.TwoFactorSecret, request.TwoFactorCode))
@@ -87,11 +81,11 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
 
         // Update last login info
         user.RecordLogin(request.IpAddress);
-        
+
         // Save changes
         // Check if device exists in DB
         var existingDeviceInDb = await _unitOfWork.UserDevices.GetByDeviceIdAsync(request.DeviceId, cancellationToken);
-        
+
         if (existingDeviceInDb != null)
         {
             // Device exists in DB, update it
@@ -103,7 +97,7 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
             // New device, add it
             await _unitOfWork.UserDevices.AddAsync(device, cancellationToken);
         }
-        
+
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -139,7 +133,7 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
             // Check if token contains 2fa_session role (our way to identify 2FA session tokens)
             var userId = _jwtService.GetUserIdFromToken(token);
             // Additional validation could be added here
-            
+
             return true;
         }
         catch
@@ -158,11 +152,11 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
             // Decode base32 secret
             var secretBytes = Base32Encoding.ToBytes(secret);
             var totp = new Totp(secretBytes);
-            
+
             // Verify code with time window tolerance (1 step = 30 seconds)
             // This allows for slight clock skew between server and client
-            var verificationWindow = new VerificationWindow(previous: 1, future: 1);
-            
+            var verificationWindow = new VerificationWindow(1, 1);
+
             return totp.VerifyTotp(code, out _, verificationWindow);
         }
         catch (Exception ex)

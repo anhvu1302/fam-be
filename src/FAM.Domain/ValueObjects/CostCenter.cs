@@ -33,17 +33,26 @@ public sealed class CostCenter : ValueObject
     /// <summary>
     /// Implicit conversion từ CostCenter sang string
     /// </summary>
-    public static implicit operator string(CostCenter costCenter) => costCenter.Value;
+    public static implicit operator string(CostCenter costCenter)
+    {
+        return costCenter.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ string sang CostCenter
     /// </summary>
-    public static explicit operator CostCenter(string costCenter) => Create(costCenter);
+    public static explicit operator CostCenter(string costCenter)
+    {
+        return Create(costCenter);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 }

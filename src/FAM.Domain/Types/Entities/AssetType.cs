@@ -13,17 +13,17 @@ public class AssetType : Entity
     public string Name { get; private set; } = string.Empty;
     public string? Description { get; private set; }
     public string? LongDescription { get; private set; }
-    
+
     // Hierarchy
     public int? ParentId { get; private set; } // For hierarchical types
     public int Level { get; private set; } // Hierarchy level (0 = root)
     public string? Path { get; private set; } // Full path (e.g., "/IT/Hardware/Laptop")
-    
+
     // Classification
     public string? AssetClass { get; private set; } // Fixed Asset, Current Asset, Intangible
     public string? Category { get; private set; } // Primary category
     public string? Subcategory { get; private set; }
-    
+
     // Properties & Characteristics
     public bool IsDepreciable { get; private set; } = true;
     public bool IsAssignable { get; private set; } = true; // Can be assigned to users
@@ -35,83 +35,85 @@ public class AssetType : Entity
     public bool RequiresCalibration { get; private set; } // Measurement equipment
     public bool RequiresInsurance { get; private set; }
     public bool IsITAsset { get; private set; }
-    
+
     // Depreciation Defaults
     public string? DefaultDepreciationMethod { get; private set; } // Straight Line, Declining Balance
     public int? DefaultUsefulLifeMonths { get; private set; }
     public decimal? DefaultResidualValuePercentage { get; private set; }
     public string? DepreciationAccountCode { get; private set; }
     public string? AccumulatedDepreciationAccountCode { get; private set; }
-    
+
     // Accounting
     public string? GLAccountCode { get; private set; } // General Ledger account
     public string? AssetAccountCode { get; private set; }
     public string? ExpenseAccountCode { get; private set; }
     public string? CostCenter { get; private set; } // Default cost center
-    
+
     // Lifecycle
     public int? DefaultWarrantyMonths { get; private set; }
     public int? DefaultMaintenanceIntervalDays { get; private set; }
     public string? DefaultMaintenanceType { get; private set; }
-    
+
     // Valuation
     public decimal? MinimumCapitalizationValue { get; private set; } // Minimum value to capitalize
     public string? ValuationCurrency { get; private set; }
     public string? ValuationMethod { get; private set; } // Cost, Market, Book Value
-    
+
     // Compliance & Regulations
     public bool RequiresCompliance { get; private set; }
     public string? ComplianceStandards { get; private set; } // JSON array (HIPAA, SOX, GDPR, etc.)
     public string? RegulatoryRequirements { get; private set; }
     public bool RequiresAudit { get; private set; }
     public int? AuditIntervalMonths { get; private set; }
-    
+
     // Security
     public string? DefaultSecurityClassification { get; private set; } // Public, Internal, Confidential
     public bool RequiresBackgroundCheck { get; private set; }
     public bool RequiresAccessControl { get; private set; }
-    
+
     // Workflow & Approval
     public bool RequiresApprovalToAcquire { get; private set; }
     public bool RequiresApprovalToDispose { get; private set; }
     public string? ApprovalWorkflow { get; private set; } // JSON workflow definition
-    
+
     // Custom Fields Definition
     public string? CustomFieldsSchema { get; private set; } // JSON schema for custom fields
     public string? RequiredFields { get; private set; } // JSON array of required field names
-    
+
     // Display & UI
     public string? IconName { get; private set; } // Icon identifier
     public Url? IconUrl { get; private set; }
     public string? Color { get; private set; } // Hex color for UI
     public int DisplayOrder { get; private set; }
-    
+
     // Status & Metadata
     public bool IsActive { get; private set; } = true;
     public bool IsSystemType { get; private set; } // System-defined, cannot be deleted
     public DateTime? EffectiveDate { get; private set; }
     public DateTime? ExpiryDate { get; private set; }
-    
+
     // Tags & Search
     public string? Tags { get; private set; } // JSON array
     public string? SearchKeywords { get; private set; }
     public string? Aliases { get; private set; } // JSON array of alternative names
-    
+
     // Statistics (can be calculated)
     public int AssetCount { get; private set; } // Current count
     public decimal? TotalValue { get; private set; } // Total value of assets
-    
+
     // Internal Notes
     public string? InternalNotes { get; private set; }
     public string? ProcurementNotes { get; private set; }
-    
+
     // Navigation properties
     public AssetType? Parent { get; set; }
     public ICollection<AssetType> Children { get; set; } = new List<AssetType>();
     public ICollection<Models.Model> Models { get; set; } = new List<Models.Model>();
     public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
 
-    private AssetType() { }
+    private AssetType()
+    {
+    }
 
     public static AssetType Create(string code, string name, string? description = null)
     {
@@ -192,7 +194,8 @@ public class AssetType : Entity
         if (usefulLifeMonths.HasValue && usefulLifeMonths.Value < 0)
             throw new DomainException("Default useful life months cannot be negative");
 
-        if (residualValuePercentage.HasValue && (residualValuePercentage.Value < 0 || residualValuePercentage.Value > 100))
+        if (residualValuePercentage.HasValue &&
+            (residualValuePercentage.Value < 0 || residualValuePercentage.Value > 100))
             throw new DomainException("Default residual value percentage must be between 0 and 100");
 
         DefaultDepreciationMethod = method;
@@ -323,10 +326,20 @@ public class AssetType : Entity
         ProcurementNotes = procurementNotes;
     }
 
-    public void Activate() => IsActive = true;
-    public void Deactivate() => IsActive = false;
-    
-    public void MarkAsSystemType() => IsSystemType = true;
+    public void Activate()
+    {
+        IsActive = true;
+    }
+
+    public void Deactivate()
+    {
+        IsActive = false;
+    }
+
+    public void MarkAsSystemType()
+    {
+        IsSystemType = true;
+    }
 
     public void UpdateStatistics(int assetCount, decimal? totalValue)
     {
@@ -340,7 +353,18 @@ public class AssetType : Entity
         TotalValue = totalValue;
     }
 
-    public bool IsHierarchical() => ParentId.HasValue || Children.Any();
-    public bool IsRoot() => !ParentId.HasValue;
-    public bool IsLeaf() => !Children.Any();
+    public bool IsHierarchical()
+    {
+        return ParentId.HasValue || Children.Any();
+    }
+
+    public bool IsRoot()
+    {
+        return !ParentId.HasValue;
+    }
+
+    public bool IsLeaf()
+    {
+        return !Children.Any();
+    }
 }

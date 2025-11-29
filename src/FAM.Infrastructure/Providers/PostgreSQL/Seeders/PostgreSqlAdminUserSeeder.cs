@@ -13,7 +13,7 @@ public class PostgreSqlAdminUserSeeder : BaseDataSeeder
 {
     private readonly PostgreSqlDbContext _dbContext;
 
-    public PostgreSqlAdminUserSeeder(PostgreSqlDbContext dbContext, ILogger<PostgreSqlAdminUserSeeder> logger) 
+    public PostgreSqlAdminUserSeeder(PostgreSqlDbContext dbContext, ILogger<PostgreSqlAdminUserSeeder> logger)
         : base(logger)
     {
         _dbContext = dbContext;
@@ -36,7 +36,7 @@ public class PostgreSqlAdminUserSeeder : BaseDataSeeder
 
         var users = new List<UserEf>
         {
-            new UserEf
+            new()
             {
                 Username = "admin",
                 Email = "admin@fam.local",
@@ -47,7 +47,7 @@ public class PostgreSqlAdminUserSeeder : BaseDataSeeder
                 IsDeleted = false,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
-            },
+            }
         };
 
         await _dbContext.Users.AddRangeAsync(users, cancellationToken);

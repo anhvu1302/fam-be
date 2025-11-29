@@ -19,9 +19,12 @@ public class Assignment : Entity
     public Asset Asset { get; set; } = null!;
     public Users.User? ByUser { get; set; }
 
-    private Assignment() { }
+    private Assignment()
+    {
+    }
 
-    public static Assignment Create(long assetId, string assigneeType, int assigneeId, int? byUserId = null, string? comments = null)
+    public static Assignment Create(long assetId, string assigneeType, int assigneeId, int? byUserId = null,
+        string? comments = null)
     {
         return new Assignment
         {

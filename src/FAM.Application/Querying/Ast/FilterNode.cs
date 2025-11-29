@@ -27,7 +27,8 @@ public sealed record UnaryNode(FilterOperator Operator, FilterNode Operand) : Fi
 /// <summary>
 /// Function call node (@contains, @startswith, @in, @between, etc.)
 /// </summary>
-public sealed record CallNode(FilterOperator Operator, FilterNode Target, IReadOnlyList<FilterNode> Arguments) : FilterNode
+public sealed record CallNode(FilterOperator Operator, FilterNode Target, IReadOnlyList<FilterNode> Arguments)
+    : FilterNode
 {
     public override int Depth => 1 + Math.Max(Target.Depth, Arguments.Any() ? Arguments.Max(a => a.Depth) : 0);
 }
@@ -47,11 +48,30 @@ public sealed record LiteralNode(object? Value, Type Type) : FilterNode
 {
     public override int Depth => 1;
 
-    public static LiteralNode String(string value) => new(value, typeof(string));
-    public static LiteralNode Number(double value) => new(value, typeof(double));
-    public static LiteralNode Integer(long value) => new(value, typeof(long));
-    public static LiteralNode Boolean(bool value) => new(value, typeof(bool));
-    public static LiteralNode Null() => new(null, typeof(object));
+    public static LiteralNode String(string value)
+    {
+        return new LiteralNode(value, typeof(string));
+    }
+
+    public static LiteralNode Number(double value)
+    {
+        return new LiteralNode(value, typeof(double));
+    }
+
+    public static LiteralNode Integer(long value)
+    {
+        return new LiteralNode(value, typeof(long));
+    }
+
+    public static LiteralNode Boolean(bool value)
+    {
+        return new LiteralNode(value, typeof(bool));
+    }
+
+    public static LiteralNode Null()
+    {
+        return new LiteralNode(null, typeof(object));
+    }
 }
 
 /// <summary>

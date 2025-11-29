@@ -1,5 +1,4 @@
 using FAM.Application.Abstractions;
-using FAM.Application.Common.Mappings;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
 using FAM.Infrastructure.Common.Mapping;
@@ -22,49 +21,45 @@ public static class InfrastructureModule
     {
         // Get database provider from environment or default to PostgreSQL
         var providerStr = Environment.GetEnvironmentVariable("DB_PROVIDER") ?? "PostgreSQL";
-        
+
         // Validate provider
-        if (!Enum.TryParse<DatabaseProvider>(providerStr, ignoreCase: true, out var provider))
-        {
+        if (!Enum.TryParse<DatabaseProvider>(providerStr, true, out var provider))
             throw new InvalidOperationException(
                 $"Invalid DB_PROVIDER value: '{providerStr}'. Valid values are: 'PostgreSQL', 'MongoDB'");
-        }
-        
+
         // Get shared database connection parameters
         var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
-        var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? (provider == DatabaseProvider.MongoDB ? "27017" : "5432");
+        var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ??
+                     (provider == DatabaseProvider.MongoDB ? "27017" : "5432");
         var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "fam_db";
         var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "";
         var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "";
-        
+
         // Build connection strings based on provider
-        string postgresConnection = "";
-        string mongoConnection = "";
-        
+        var postgresConnection = "";
+        var mongoConnection = "";
+
         switch (provider)
         {
             case DatabaseProvider.PostgreSQL:
                 // Only build PostgreSQL connection string
-                postgresConnection = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
+                postgresConnection =
+                    $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
                 break;
-                
+
             case DatabaseProvider.MongoDB:
                 // Only build MongoDB connection string
                 // Format: mongodb://[username:password@]host[:port]/[database]
                 var escapedUser = !string.IsNullOrEmpty(dbUser) ? Uri.EscapeDataString(dbUser) : "";
                 var escapedPassword = !string.IsNullOrEmpty(dbPassword) ? Uri.EscapeDataString(dbPassword) : "";
-                
+
                 if (!string.IsNullOrEmpty(escapedUser) && !string.IsNullOrEmpty(escapedPassword))
-                {
                     mongoConnection = $"mongodb://{escapedUser}:{escapedPassword}@{dbHost}:{dbPort}";
-                }
                 else
-                {
                     mongoConnection = $"mongodb://{dbHost}:{dbPort}";
-                }
                 break;
         }
-        
+
         var databaseOptions = new DatabaseOptions
         {
             Provider = provider,
@@ -79,14 +74,11 @@ public static class InfrastructureModule
             }
         };
 
-        // Register AutoMapper with specific profiles
+        // Register AutoMapper with specific profiles (Domain <-> Persistence layer mappings)
         services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<DomainToEfProfile>();
             cfg.AddProfile<DomainToMongoProfile>();
-            cfg.AddProfile<EfToDtoProfile>();
-            cfg.AddProfile<MongoToDtoProfile>();
-            cfg.AddProfile<UserMappingProfile>();
         });
 
         // Register Data Seeder Orchestrator

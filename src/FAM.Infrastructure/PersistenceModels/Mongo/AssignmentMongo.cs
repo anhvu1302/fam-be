@@ -11,28 +11,25 @@ namespace FAM.Infrastructure.PersistenceModels.Mongo;
 [BsonIgnoreExtraElements]
 public class AssignmentMongo : BaseEntityMongo
 {
-    [BsonElement("assetId")]
-    public long AssetId { get; set; }
+    [BsonElement("assetId")] public long AssetId { get; set; }
 
-    [BsonElement("assigneeType")]
-    public string AssigneeType { get; set; } = string.Empty;
+    [BsonElement("assigneeType")] public string AssigneeType { get; set; } = string.Empty;
 
-    [BsonElement("assigneeId")]
-    public long AssigneeId { get; set; }
+    [BsonElement("assigneeId")] public long AssigneeId { get; set; }
 
-    [BsonElement("assignedAt")]
-    public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
+    [BsonElement("assignedAt")] public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
 
-    [BsonElement("releasedAt")]
-    public DateTime? ReleasedAt { get; set; }
+    [BsonElement("releasedAt")] public DateTime? ReleasedAt { get; set; }
 
-    [BsonElement("byUserId")]
-    public long? ByUserId { get; set; }
+    [BsonElement("byUserId")] public long? ByUserId { get; set; }
 
-    [BsonElement("comments")]
-    public string? Comments { get; set; }
+    [BsonElement("comments")] public string? Comments { get; set; }
 
-    public AssignmentMongo() { }
+    public AssignmentMongo()
+    {
+    }
 
-    public AssignmentMongo(long domainId) : base(domainId) { }
+    public AssignmentMongo(long domainId) : base(domainId)
+    {
+    }
 }

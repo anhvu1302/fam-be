@@ -81,7 +81,7 @@ public class ResourceTests
         var newName = "";
 
         // Act
-        Action act = () => resource.Update(newName);
+        var act = () => resource.Update(newName);
 
         // Assert
         act.Should().Throw<DomainException>()

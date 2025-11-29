@@ -30,7 +30,7 @@ public class MongoDbUserSeeder : BaseDataSeeder
 
         // Check if users already exist
         var count = await usersCollection.CountDocumentsAsync(
-            FilterDefinition<UserMongo>.Empty, 
+            FilterDefinition<UserMongo>.Empty,
             cancellationToken: cancellationToken);
 
         if (count > 0)
@@ -41,7 +41,7 @@ public class MongoDbUserSeeder : BaseDataSeeder
 
         var users = new List<UserMongo>
         {
-            new UserMongo
+            new()
             {
                 DomainId = 1,
                 Username = "admin",

@@ -82,7 +82,7 @@ public class SerialNumberTests
         var value = "SN123";
 
         // Act
-        SerialNumber serialNumber = (SerialNumber)value;
+        var serialNumber = (SerialNumber)value;
 
         // Assert
         serialNumber.Value.Should().Be(value);

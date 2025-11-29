@@ -39,14 +39,8 @@ public class LocationInfo
     /// </summary>
     public string GetFormattedLocation()
     {
-        if (!string.IsNullOrEmpty(City) && !string.IsNullOrEmpty(Country))
-        {
-            return $"{City}, {Country}";
-        }
-        if (!string.IsNullOrEmpty(Country))
-        {
-            return Country;
-        }
+        if (!string.IsNullOrEmpty(City) && !string.IsNullOrEmpty(Country)) return $"{City}, {Country}";
+        if (!string.IsNullOrEmpty(Country)) return Country;
         return "Unknown";
     }
 }

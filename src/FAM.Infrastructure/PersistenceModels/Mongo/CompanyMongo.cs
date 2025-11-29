@@ -9,18 +9,19 @@ namespace FAM.Infrastructure.PersistenceModels.Mongo;
 [BsonCollection("companies")]
 public class CompanyMongo : EntityMongo
 {
-    [BsonElement("name")]
-    public string Name { get; set; } = string.Empty;
+    [BsonElement("name")] public string Name { get; set; } = string.Empty;
 
-    [BsonElement("taxCode")]
-    public string? TaxCode { get; set; }
+    [BsonElement("taxCode")] public string? TaxCode { get; set; }
 
-    [BsonElement("address")]
-    public string? Address { get; set; }
+    [BsonElement("address")] public string? Address { get; set; }
 
-    public CompanyMongo() : base() { }
+    public CompanyMongo() : base()
+    {
+    }
 
-    public CompanyMongo(long domainId) : base(domainId) { }
+    public CompanyMongo(long domainId) : base(domainId)
+    {
+    }
 }
 
 /// <summary>

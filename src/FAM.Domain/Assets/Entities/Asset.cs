@@ -11,23 +11,23 @@ namespace FAM.Domain.Assets;
 public class Asset : AggregateRoot
 {
     public string Name { get; private set; } = string.Empty;
-    
+
     // Company & Type
     public int? CompanyId { get; private set; }
     public int? AssetTypeId { get; private set; }
     public int? CategoryId { get; private set; }
-    
+
     // Model & Manufacturer
     public int? ModelId { get; private set; }
     public int? ManufacturerId { get; private set; }
-    
+
     // Identification
     public SerialNumber? SerialNo { get; private set; }
     public AssetTag? AssetTag { get; private set; }
     public string? Barcode { get; private set; }
     public string? QRCode { get; private set; }
     public string? RFIDTag { get; private set; }
-    
+
     // Purchase Information
     public DateTime? PurchaseDate { get; private set; }
     public decimal? PurchaseCost { get; private set; }
@@ -37,21 +37,21 @@ public class Asset : AggregateRoot
     public DateTime? WarrantyUntil { get; private set; }
     public int? WarrantyMonths { get; private set; }
     public string? WarrantyTerms { get; private set; }
-    
+
     // Condition & Location
     public int? ConditionId { get; private set; }
     public int? LocationId { get; private set; }
     public string? LocationCode { get; private set; }
     public int? CountryId { get; private set; }
-    
+
     // Assignment
     public int? DepartmentId { get; private set; }
     public int? OwnerId { get; private set; }
-    
+
     // Status
     public string LifecycleCode { get; private set; } = "draft";
     public string? UsageCode { get; private set; }
-    
+
     // Depreciation & Finance
     public string? DepreciationMethod { get; private set; }
     public int? UsefulLifeMonths { get; private set; }
@@ -63,13 +63,13 @@ public class Asset : AggregateRoot
     public string? AccountingCode { get; private set; }
     public string? CostCenter { get; private set; }
     public string? GLAccount { get; private set; }
-    
+
     // Insurance & Risk
     public string? InsurancePolicyNo { get; private set; }
     public decimal? InsuredValue { get; private set; }
     public DateTime? InsuranceExpiryDate { get; private set; }
     public string? RiskLevel { get; private set; } // Low, Medium, High, Critical
-    
+
     // Maintenance & Support
     public DateTime? LastMaintenanceDate { get; private set; }
     public DateTime? NextMaintenanceDate { get; private set; }
@@ -77,7 +77,7 @@ public class Asset : AggregateRoot
     public string? MaintenanceContractNo { get; private set; }
     public DateTime? SupportExpiryDate { get; private set; }
     public string? ServiceLevel { get; private set; } // Bronze, Silver, Gold, Platinum
-    
+
     // IT/Software Specific (if applicable)
     public IPAddress? IPAddress { get; private set; }
     public MACAddress? MACAddress { get; private set; }
@@ -87,20 +87,20 @@ public class Asset : AggregateRoot
     public string? LicenseKey { get; private set; }
     public DateTime? LicenseExpiryDate { get; private set; }
     public int? LicenseCount { get; private set; }
-    
+
     // Physical Characteristics
     public decimal? Weight { get; private set; } // kg
     public string? Dimensions { get; private set; } // "L x W x H" in cm
     public string? Color { get; private set; }
     public string? Material { get; private set; }
-    
+
     // Energy & Environmental
     public decimal? PowerConsumption { get; private set; } // Watts
     public string? EnergyRating { get; private set; } // A+, A, B, C, etc.
     public bool IsEnvironmentallyFriendly { get; private set; }
     public DateTime? EndOfLifeDate { get; private set; }
     public string? DisposalMethod { get; private set; }
-    
+
     // Compliance & Security
     public string? ComplianceStatus { get; private set; } // Compliant, NonCompliant, UnderReview
     public string? SecurityClassification { get; private set; } // Public, Internal, Confidential, Secret
@@ -108,7 +108,7 @@ public class Asset : AggregateRoot
     public string? DataClassification { get; private set; }
     public DateTime? LastAuditDate { get; private set; }
     public DateTime? NextAuditDate { get; private set; }
-    
+
     // Additional tracking
     public string? ProjectCode { get; private set; }
     public string? CampaignCode { get; private set; }
@@ -127,19 +127,23 @@ public class Asset : AggregateRoot
     public Suppliers.Supplier? Supplier { get; set; }
     public Conditions.AssetCondition? Condition { get; set; }
     public Locations.Location? Location { get; set; }
+
     public Geography.Country? Country { get; set; }
+
     // public Departments.Department? Department { get; set; }
     public Users.User? Owner { get; set; }
     public Statuses.LifecycleStatus? LifecycleStatus { get; set; }
     public Statuses.UsageStatus? UsageStatus { get; set; }
-    
+
     public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
     public ICollection<AssetEvent> AssetEvents { get; set; } = new List<AssetEvent>();
     public ICollection<Finance.FinanceEntry> FinanceEntries { get; set; } = new List<Finance.FinanceEntry>();
     public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
 
     // EF Core constructor
-    private Asset() { }
+    private Asset()
+    {
+    }
 
     // Factory method
     public static Asset Create(
@@ -403,12 +407,10 @@ public class Asset : AggregateRoot
         InvoiceNo = invoiceNo;
         WarrantyMonths = warrantyMonths;
         WarrantyTerms = warrantyTerms;
-        
+
         if (warrantyMonths.HasValue && PurchaseDate.HasValue)
-        {
             WarrantyUntil = PurchaseDate.Value.AddMonths(warrantyMonths.Value);
-        }
-        
+
         UpdatedAt = DateTime.UtcNow;
         UpdatedById = updatedById;
     }
@@ -485,7 +487,7 @@ public class Asset : AggregateRoot
     {
         if (!CurrentBookValue.HasValue || !ResidualValue.HasValue)
             return false;
-        
+
         return CurrentBookValue.Value <= ResidualValue.Value;
     }
 
@@ -516,13 +518,17 @@ public class Asset : AggregateRoot
         UpdatedById = updatedById;
     }
 
-    public bool IsInsuranceExpired() => 
-        InsuranceExpiryDate.HasValue && InsuranceExpiryDate.Value < DateTime.UtcNow;
+    public bool IsInsuranceExpired()
+    {
+        return InsuranceExpiryDate.HasValue && InsuranceExpiryDate.Value < DateTime.UtcNow;
+    }
 
-    public bool IsInsuranceExpiringSoon(int daysThreshold = 30) =>
-        InsuranceExpiryDate.HasValue && 
-        InsuranceExpiryDate.Value <= DateTime.UtcNow.AddDays(daysThreshold) &&
-        InsuranceExpiryDate.Value > DateTime.UtcNow;
+    public bool IsInsuranceExpiringSoon(int daysThreshold = 30)
+    {
+        return InsuranceExpiryDate.HasValue &&
+               InsuranceExpiryDate.Value <= DateTime.UtcNow.AddDays(daysThreshold) &&
+               InsuranceExpiryDate.Value > DateTime.UtcNow;
+    }
 
     // Risk Management
     public void SetRiskLevel(string riskLevel, long updatedById)
@@ -532,16 +538,21 @@ public class Asset : AggregateRoot
 
         if (!IsValidRiskLevel(riskLevel))
             throw new DomainException($"Invalid risk level: {riskLevel}. Must be Low, Medium, High, or Critical.");
-        
+
         RiskLevel = riskLevel;
         UpdatedAt = DateTime.UtcNow;
         UpdatedById = updatedById;
     }
 
-    private static bool IsValidRiskLevel(string level) =>
-        new[] { "Low", "Medium", "High", "Critical" }.Contains(level);
+    private static bool IsValidRiskLevel(string level)
+    {
+        return new[] { "Low", "Medium", "High", "Critical" }.Contains(level);
+    }
 
-    public bool IsCriticalAsset() => RiskLevel == "Critical";
+    public bool IsCriticalAsset()
+    {
+        return RiskLevel == "Critical";
+    }
 
     // Maintenance Management
     public void ScheduleMaintenance(
@@ -582,31 +593,33 @@ public class Asset : AggregateRoot
             throw new DomainException("Maintenance date cannot be in the future");
 
         LastMaintenanceDate = maintenanceDate;
-        
+
         if (MaintenanceIntervalDays.HasValue)
-        {
             NextMaintenanceDate = maintenanceDate.AddDays(MaintenanceIntervalDays.Value);
-        }
-        
+
         UpdatedAt = DateTime.UtcNow;
         UpdatedById = updatedById;
     }
 
-    public bool IsMaintenanceDue() =>
-        NextMaintenanceDate.HasValue && NextMaintenanceDate.Value <= DateTime.UtcNow;
+    public bool IsMaintenanceDue()
+    {
+        return NextMaintenanceDate.HasValue && NextMaintenanceDate.Value <= DateTime.UtcNow;
+    }
 
     public bool IsMaintenanceOverdue()
     {
         if (!NextMaintenanceDate.HasValue)
             return false;
-        
+
         return NextMaintenanceDate.Value < DateTime.UtcNow;
     }
 
-    public int? DaysUntilMaintenance() =>
-        NextMaintenanceDate.HasValue 
-            ? (int?)(NextMaintenanceDate.Value - DateTime.UtcNow).Days 
+    public int? DaysUntilMaintenance()
+    {
+        return NextMaintenanceDate.HasValue
+            ? (int?)(NextMaintenanceDate.Value - DateTime.UtcNow).Days
             : null;
+    }
 
     // Support & Service Level
     public void SetSupport(
@@ -615,19 +628,24 @@ public class Asset : AggregateRoot
         long? updatedById = null)
     {
         if (serviceLevel != null && !IsValidServiceLevel(serviceLevel))
-            throw new DomainException($"Invalid service level: {serviceLevel}. Must be Bronze, Silver, Gold, or Platinum.");
-        
+            throw new DomainException(
+                $"Invalid service level: {serviceLevel}. Must be Bronze, Silver, Gold, or Platinum.");
+
         ServiceLevel = serviceLevel;
         SupportExpiryDate = supportExpiryDate;
         UpdatedAt = DateTime.UtcNow;
         UpdatedById = updatedById;
     }
 
-    private static bool IsValidServiceLevel(string level) =>
-        new[] { "Bronze", "Silver", "Gold", "Platinum" }.Contains(level);
+    private static bool IsValidServiceLevel(string level)
+    {
+        return new[] { "Bronze", "Silver", "Gold", "Platinum" }.Contains(level);
+    }
 
-    public bool IsSupportExpired() =>
-        SupportExpiryDate.HasValue && SupportExpiryDate.Value < DateTime.UtcNow;
+    public bool IsSupportExpired()
+    {
+        return SupportExpiryDate.HasValue && SupportExpiryDate.Value < DateTime.UtcNow;
+    }
 
     // IT Asset Management
     public void SetITInfo(
@@ -685,13 +703,17 @@ public class Asset : AggregateRoot
         UpdatedById = updatedById;
     }
 
-    public bool IsLicenseExpired() =>
-        LicenseExpiryDate.HasValue && LicenseExpiryDate.Value < DateTime.UtcNow;
+    public bool IsLicenseExpired()
+    {
+        return LicenseExpiryDate.HasValue && LicenseExpiryDate.Value < DateTime.UtcNow;
+    }
 
-    public bool IsLicenseExpiringSoon(int daysThreshold = 30) =>
-        LicenseExpiryDate.HasValue &&
-        LicenseExpiryDate.Value <= DateTime.UtcNow.AddDays(daysThreshold) &&
-        LicenseExpiryDate.Value > DateTime.UtcNow;
+    public bool IsLicenseExpiringSoon(int daysThreshold = 30)
+    {
+        return LicenseExpiryDate.HasValue &&
+               LicenseExpiryDate.Value <= DateTime.UtcNow.AddDays(daysThreshold) &&
+               LicenseExpiryDate.Value > DateTime.UtcNow;
+    }
 
     // Physical Characteristics
     public void SetPhysicalCharacteristics(
@@ -746,10 +768,12 @@ public class Asset : AggregateRoot
         UpdatedById = updatedById;
     }
 
-    public bool IsNearingEndOfLife(int daysThreshold = 90) =>
-        EndOfLifeDate.HasValue &&
-        EndOfLifeDate.Value <= DateTime.UtcNow.AddDays(daysThreshold) &&
-        EndOfLifeDate.Value > DateTime.UtcNow;
+    public bool IsNearingEndOfLife(int daysThreshold = 90)
+    {
+        return EndOfLifeDate.HasValue &&
+               EndOfLifeDate.Value <= DateTime.UtcNow.AddDays(daysThreshold) &&
+               EndOfLifeDate.Value > DateTime.UtcNow;
+    }
 
     // Compliance & Security
     public void SetCompliance(
@@ -778,11 +802,15 @@ public class Asset : AggregateRoot
         UpdatedById = updatedById;
     }
 
-    public bool IsAuditDue() =>
-        NextAuditDate.HasValue && NextAuditDate.Value <= DateTime.UtcNow;
+    public bool IsAuditDue()
+    {
+        return NextAuditDate.HasValue && NextAuditDate.Value <= DateTime.UtcNow;
+    }
 
-    public bool IsHighSecurity() =>
-        SecurityClassification is "Confidential" or "Secret";
+    public bool IsHighSecurity()
+    {
+        return SecurityClassification is "Confidential" or "Secret";
+    }
 
     // Project & Campaign Tracking
     public void SetProjectInfo(
@@ -836,13 +864,17 @@ public class Asset : AggregateRoot
         UpdatedById = updatedById;
     }
 
-    public bool IsReplacementDue() =>
-        EstimatedRemainingLifeMonths.HasValue && EstimatedRemainingLifeMonths.Value <= 0;
+    public bool IsReplacementDue()
+    {
+        return EstimatedRemainingLifeMonths.HasValue && EstimatedRemainingLifeMonths.Value <= 0;
+    }
 
-    public bool IsReplacementSoon(int monthsThreshold = 6) =>
-        EstimatedRemainingLifeMonths.HasValue &&
-        EstimatedRemainingLifeMonths.Value <= monthsThreshold &&
-        EstimatedRemainingLifeMonths.Value > 0;
+    public bool IsReplacementSoon(int monthsThreshold = 6)
+    {
+        return EstimatedRemainingLifeMonths.HasValue &&
+               EstimatedRemainingLifeMonths.Value <= monthsThreshold &&
+               EstimatedRemainingLifeMonths.Value > 0;
+    }
 
     // Comprehensive Status Check
     public AssetHealthStatus GetHealthStatus()
@@ -851,44 +883,50 @@ public class Asset : AggregateRoot
 
         if (IsMaintenanceOverdue())
             issues.Add("Maintenance overdue");
-        
+
         if (IsWarrantyExpired())
             issues.Add("Warranty expired");
-        
+
         if (IsInsuranceExpired())
             issues.Add("Insurance expired");
-        
+
         if (IsLicenseExpired())
             issues.Add("License expired");
-        
+
         if (IsSupportExpired())
             issues.Add("Support expired");
-        
+
         if (IsAuditDue())
             issues.Add("Audit due");
-        
+
         if (IsReplacementDue())
             issues.Add("Replacement due");
 
         if (issues.Count == 0)
             return AssetHealthStatus.Healthy;
-        
+
         if (issues.Count <= 2)
             return AssetHealthStatus.NeedsAttention;
-        
+
         return AssetHealthStatus.Critical;
     }
 
-    public bool IsWarrantyExpired() =>
-        WarrantyUntil.HasValue && WarrantyUntil.Value < DateTime.UtcNow;
+    public bool IsWarrantyExpired()
+    {
+        return WarrantyUntil.HasValue && WarrantyUntil.Value < DateTime.UtcNow;
+    }
 
-    public bool IsWarrantyActive() =>
-        WarrantyUntil.HasValue && WarrantyUntil.Value >= DateTime.UtcNow;
+    public bool IsWarrantyActive()
+    {
+        return WarrantyUntil.HasValue && WarrantyUntil.Value >= DateTime.UtcNow;
+    }
 
-    public int? DaysUntilWarrantyExpiry() =>
-        WarrantyUntil.HasValue
+    public int? DaysUntilWarrantyExpiry()
+    {
+        return WarrantyUntil.HasValue
             ? (int?)(WarrantyUntil.Value - DateTime.UtcNow).Days
             : null;
+    }
 }
 
 public enum AssetHealthStatus

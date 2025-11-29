@@ -71,8 +71,8 @@ public class UploadSessionRepository : IUploadSessionRepository
 
         return await _context.Set<UploadSession>()
             .Where(s =>
-                (s.Status == UploadSessionStatus.Expired) ||
-                (s.Status == UploadSessionStatus.Failed) ||
+                s.Status == UploadSessionStatus.Expired ||
+                s.Status == UploadSessionStatus.Failed ||
                 (s.Status == UploadSessionStatus.Pending && s.ExpiresAt < now) ||
                 (s.Status == UploadSessionStatus.Uploaded && s.ExpiresAt < now))
             .OrderBy(s => s.CreatedAt)

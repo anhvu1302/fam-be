@@ -24,11 +24,9 @@ public static class ProjectionBinder
     {
         // If no fields specified, return all (will need manual mapping later)
         if (fields == null || fields.Length == 0)
-        {
             throw new InvalidOperationException(
                 "Cannot auto-project without field specification. " +
                 "Either specify fields or use manual mapping.");
-        }
 
         // Validate all requested fields exist and are selectable
         foreach (var field in fields)
@@ -67,13 +65,9 @@ public static class ProjectionBinder
 
             // Convert if types don't match
             if (sourceBody.Type != dtoProperty.PropertyType)
-            {
                 // Try to convert (e.g., long to int, DateTime to string, etc.)
                 if (dtoProperty.PropertyType.IsAssignableFrom(sourceBody.Type))
-                {
                     sourceBody = Expression.Convert(sourceBody, dtoProperty.PropertyType);
-                }
-            }
 
             bindings.Add(Expression.Bind(dtoProperty, sourceBody));
         }

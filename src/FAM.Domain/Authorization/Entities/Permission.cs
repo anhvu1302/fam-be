@@ -14,7 +14,9 @@ public class Permission : BaseEntity
     // Navigation properties
     public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
 
-    private Permission() { }
+    private Permission()
+    {
+    }
 
     public static Permission Create(string resource, string action)
     {

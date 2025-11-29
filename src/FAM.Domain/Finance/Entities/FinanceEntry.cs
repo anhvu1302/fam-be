@@ -17,7 +17,9 @@ public class FinanceEntry : Entity
     public Assets.Asset Asset { get; set; } = null!;
     public Users.User? Creator { get; set; }
 
-    private FinanceEntry() { }
+    private FinanceEntry()
+    {
+    }
 
     public static FinanceEntry Create(
         long assetId,

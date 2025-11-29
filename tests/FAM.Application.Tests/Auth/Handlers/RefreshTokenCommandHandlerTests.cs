@@ -39,20 +39,20 @@ public class RefreshTokenCommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
-        
+
         var device = user.GetOrCreateDevice(
-            deviceId: "device-123",
-            deviceName: "Test Device",
-            deviceType: "browser",
-            userAgent: "Mozilla/5.0",
-            ipAddress: "192.168.1.1",
-            location: "Hanoi, Vietnam"
+            "device-123",
+            "Test Device",
+            "browser",
+            "Mozilla/5.0",
+            "192.168.1.1",
+            "Hanoi, Vietnam"
         );
-        
+
         var oldRefreshToken = "old-refresh-token";
         var refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(oldRefreshToken, refreshTokenExpiry, "192.168.1.1");
@@ -130,20 +130,20 @@ public class RefreshTokenCommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
-        
+
         var device = user.GetOrCreateDevice(
-            deviceId: "device-123",
-            deviceName: "Test Device",
-            deviceType: "browser",
-            userAgent: "Mozilla/5.0",
-            ipAddress: "192.168.1.1",
-            location: "Hanoi, Vietnam"
+            "device-123",
+            "Test Device",
+            "browser",
+            "Mozilla/5.0",
+            "192.168.1.1",
+            "Hanoi, Vietnam"
         );
-        
+
         var expiredRefreshToken = "expired-refresh-token";
         var expiredDate = DateTime.UtcNow.AddDays(-1); // Expired yesterday
         device.UpdateRefreshToken(expiredRefreshToken, expiredDate, "192.168.1.1");
@@ -172,20 +172,20 @@ public class RefreshTokenCommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
-        
+
         var device = user.GetOrCreateDevice(
-            deviceId: "device-123",
-            deviceName: "Test Device",
-            deviceType: "browser",
-            userAgent: "Mozilla/5.0",
-            ipAddress: "192.168.1.1",
-            location: "Hanoi, Vietnam"
+            "device-123",
+            "Test Device",
+            "browser",
+            "Mozilla/5.0",
+            "192.168.1.1",
+            "Hanoi, Vietnam"
         );
-        
+
         var refreshToken = "valid-refresh-token";
         var refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
@@ -215,21 +215,21 @@ public class RefreshTokenCommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
         user.Deactivate(); // Deactivate the user
-        
+
         var device = user.GetOrCreateDevice(
-            deviceId: "device-123",
-            deviceName: "Test Device",
-            deviceType: "browser",
-            userAgent: "Mozilla/5.0",
-            ipAddress: "192.168.1.1",
-            location: "Hanoi, Vietnam"
+            "device-123",
+            "Test Device",
+            "browser",
+            "Mozilla/5.0",
+            "192.168.1.1",
+            "Hanoi, Vietnam"
         );
-        
+
         var refreshToken = "valid-refresh-token";
         var refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
@@ -262,26 +262,23 @@ public class RefreshTokenCommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
-        
+
         // Lock the user by recording failed attempts
-        for (int i = 0; i < 5; i++)
-        {
-            user.RecordFailedLogin();
-        }
-        
+        for (var i = 0; i < 5; i++) user.RecordFailedLogin();
+
         var device = user.GetOrCreateDevice(
-            deviceId: "device-123",
-            deviceName: "Test Device",
-            deviceType: "browser",
-            userAgent: "Mozilla/5.0",
-            ipAddress: "192.168.1.1",
-            location: "Hanoi, Vietnam"
+            "device-123",
+            "Test Device",
+            "browser",
+            "Mozilla/5.0",
+            "192.168.1.1",
+            "Hanoi, Vietnam"
         );
-        
+
         var refreshToken = "valid-refresh-token";
         var refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
@@ -314,20 +311,20 @@ public class RefreshTokenCommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
-        
+
         var device = user.GetOrCreateDevice(
-            deviceId: "device-123",
-            deviceName: "Test Device",
-            deviceType: "browser",
-            userAgent: "Mozilla/5.0",
-            ipAddress: "192.168.1.1",
-            location: "Hanoi, Vietnam"
+            "device-123",
+            "Test Device",
+            "browser",
+            "Mozilla/5.0",
+            "192.168.1.1",
+            "Hanoi, Vietnam"
         );
-        
+
         var refreshToken = "valid-refresh-token";
         var refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");

@@ -21,19 +21,13 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
     {
         // Get user
         var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        
-        if (user == null)
-        {
-            throw new KeyNotFoundException($"User with ID {request.UserId} not found");
-        }
+
+        if (user == null) throw new KeyNotFoundException($"User with ID {request.UserId} not found");
 
         // Verify current password
         var isCurrentPasswordValid = user.Password.Verify(request.CurrentPassword);
-        
-        if (!isCurrentPasswordValid)
-        {
-            throw new UnauthorizedAccessException("Current password is incorrect");
-        }
+
+        if (!isCurrentPasswordValid) throw new UnauthorizedAccessException("Current password is incorrect");
 
         // Validate new password (Password.Create will throw if invalid)
         var newPassword = Password.Create(request.NewPassword);
@@ -44,12 +38,10 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
 
         // Optionally: Logout all devices except current one for security
         if (request.LogoutAllDevices)
-        {
             await _unitOfWork.UserDevices.DeactivateAllUserDevicesAsync(
                 request.UserId,
                 request.CurrentDeviceId,
                 cancellationToken);
-        }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

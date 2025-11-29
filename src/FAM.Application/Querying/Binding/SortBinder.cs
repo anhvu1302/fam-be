@@ -53,8 +53,10 @@ public static class SortBinder
             var lambda = Expression.Lambda<Func<T, object>>(body, parameter);
 
             orderedQuery = orderedQuery == null
-                ? (descending ? query.OrderByDescending(lambda) : query.OrderBy(lambda))
-                : (descending ? orderedQuery.ThenByDescending(lambda) : orderedQuery.ThenBy(lambda));
+                ? descending ? query.OrderByDescending(lambda) : query.OrderBy(lambda)
+                : descending
+                    ? orderedQuery.ThenByDescending(lambda)
+                    : orderedQuery.ThenBy(lambda);
         }
 
         return orderedQuery ?? query;

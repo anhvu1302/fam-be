@@ -31,9 +31,9 @@ public class Confirm2FACommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
 
         // Generate a real secret and valid TOTP code
@@ -80,9 +80,9 @@ public class Confirm2FACommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
@@ -142,8 +142,8 @@ public class Confirm2FACommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user1 = User.Create(username: "user1", email: "user1@example.com", plainPassword: plainPassword);
-        var user2 = User.Create(username: "user2", email: "user2@example.com", plainPassword: plainPassword);
+        var user1 = User.Create("user1", "user1@example.com", plainPassword);
+        var user2 = User.Create("user2", "user2@example.com", plainPassword);
 
         var secretKey1 = KeyGeneration.GenerateRandomKey(32);
         var base32Secret1 = Base32Encoding.ToString(secretKey1);
@@ -181,9 +181,9 @@ public class Confirm2FACommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
@@ -207,9 +207,7 @@ public class Confirm2FACommandHandlerTests
 
         // Assert - Each backup code should match format: xxxxx-xxxxx
         foreach (var code in result.BackupCodes)
-        {
-            code.Should().MatchRegex(@"^[0-9a-f]{5}-[0-9a-f]{5}$", 
+            code.Should().MatchRegex(@"^[0-9a-f]{5}-[0-9a-f]{5}$",
                 $"code '{code}' should match format xxxxx-xxxxx with hex characters");
-        }
     }
 }

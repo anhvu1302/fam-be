@@ -35,7 +35,8 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
         return _mapper.Map<IEnumerable<UserDevice>>(entities);
     }
 
-    public async Task<IEnumerable<UserDevice>> FindAsync(Expression<Func<UserDevice, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<UserDevice>> FindAsync(Expression<Func<UserDevice, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         var allEntities = await _context.UserDevices.ToListAsync(cancellationToken);
         var allUserDevices = _mapper.Map<IEnumerable<UserDevice>>(allEntities);
@@ -87,7 +88,8 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
         return entity != null ? _mapper.Map<UserDevice>(entity) : null;
     }
 
-    public async Task<IEnumerable<UserDevice>> GetByUserIdAsync(long userId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<UserDevice>> GetByUserIdAsync(long userId,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.UserDevices
             .Where(d => d.UserId == userId)
@@ -95,7 +97,8 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
         return _mapper.Map<IEnumerable<UserDevice>>(entities);
     }
 
-    public async Task<IEnumerable<UserDevice>> GetActiveDevicesByUserIdAsync(long userId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<UserDevice>> GetActiveDevicesByUserIdAsync(long userId,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.UserDevices
             .Where(d => d.UserId == userId && d.IsActive)
@@ -103,13 +106,11 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
         return _mapper.Map<IEnumerable<UserDevice>>(entities);
     }
 
-    public async Task<bool> IsDeviceIdTakenAsync(string deviceId, Guid? excludeDeviceId = null, CancellationToken cancellationToken = default)
+    public async Task<bool> IsDeviceIdTakenAsync(string deviceId, Guid? excludeDeviceId = null,
+        CancellationToken cancellationToken = default)
     {
         var query = _context.UserDevices.Where(d => d.DeviceId == deviceId);
-        if (excludeDeviceId.HasValue)
-        {
-            query = query.Where(d => d.Id != excludeDeviceId.Value);
-        }
+        if (excludeDeviceId.HasValue) query = query.Where(d => d.Id != excludeDeviceId.Value);
         return await query.AnyAsync(cancellationToken);
     }
 
@@ -125,16 +126,14 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
         }
     }
 
-    public async Task DeactivateAllUserDevicesAsync(long userId, string? excludeDeviceId = null, CancellationToken cancellationToken = default)
+    public async Task DeactivateAllUserDevicesAsync(long userId, string? excludeDeviceId = null,
+        CancellationToken cancellationToken = default)
     {
         var query = _context.UserDevices
             .Where(d => d.UserId == userId && !d.IsDeleted);
 
         // Exclude device by DeviceId (fingerprint string), not by Guid ID
-        if (!string.IsNullOrEmpty(excludeDeviceId))
-        {
-            query = query.Where(d => d.DeviceId != excludeDeviceId);
-        }
+        if (!string.IsNullOrEmpty(excludeDeviceId)) query = query.Where(d => d.DeviceId != excludeDeviceId);
 
         var entities = await query.ToListAsync(cancellationToken);
 
@@ -144,10 +143,12 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
             entity.RefreshToken = null;
             entity.RefreshTokenExpiresAt = null;
         }
+
         _context.UserDevices.UpdateRange(entities);
     }
 
-    public async Task<UserDevice?> FindByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+    public async Task<UserDevice?> FindByRefreshTokenAsync(string refreshToken,
+        CancellationToken cancellationToken = default)
     {
         var entity = await _context.UserDevices
             .Include(d => d.User)
@@ -157,7 +158,6 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
 
     /// <summary>
     /// Get IQueryable for EF entities (not domain) - for advanced filtering
-
     /// <summary>
     /// Get IQueryable for EF entities (not domain) - for advanced filtering
     /// Note: Returns EF entities which will be mapped to domain later

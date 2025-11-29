@@ -42,12 +42,18 @@ public sealed class Percentage : ValueObject
     /// <summary>
     /// Chuyển thành số thập phân (0.0 - 1.0)
     /// </summary>
-    public decimal ToDecimal() => Value / 100;
+    public decimal ToDecimal()
+    {
+        return Value / 100;
+    }
 
     /// <summary>
     /// Chuyển thành fraction (0.0 - 1.0)
     /// </summary>
-    public decimal ToFraction() => ToDecimal();
+    public decimal ToFraction()
+    {
+        return ToDecimal();
+    }
 
     /// <summary>
     /// Cộng hai Percentage
@@ -76,27 +82,42 @@ public sealed class Percentage : ValueObject
     /// <summary>
     /// Kiểm tra có phải zero không
     /// </summary>
-    public bool IsZero() => Value == 0;
+    public bool IsZero()
+    {
+        return Value == 0;
+    }
 
     /// <summary>
     /// Kiểm tra có phải 100% không
     /// </summary>
-    public bool IsFull() => Value == 100;
+    public bool IsFull()
+    {
+        return Value == 100;
+    }
 
     /// <summary>
     /// Implicit conversion từ Percentage sang decimal
     /// </summary>
-    public static implicit operator decimal(Percentage percentage) => percentage.Value;
+    public static implicit operator decimal(Percentage percentage)
+    {
+        return percentage.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ decimal sang Percentage
     /// </summary>
-    public static explicit operator Percentage(decimal value) => Create(value);
+    public static explicit operator Percentage(decimal value)
+    {
+        return Create(value);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => $"{Value}%";
+    public override string ToString()
+    {
+        return $"{Value}%";
+    }
 }

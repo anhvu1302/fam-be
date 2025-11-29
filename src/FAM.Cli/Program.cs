@@ -6,15 +6,15 @@ using Microsoft.Extensions.Logging;
 
 namespace FAM.Cli;
 
-class Program
+internal class Program
 {
-    static async Task<int> Main(string[] args)
+    private static async Task<int> Main(string[] args)
     {
         try
         {
             // Load .env file before anything else
             LoadDotEnv();
-            
+
             var host = CreateHostBuilder(args).Build();
 
             if (args.Length == 0)
@@ -45,7 +45,7 @@ class Program
         }
     }
 
-    static int ShowHelp()
+    private static int ShowHelp()
     {
         Console.WriteLine();
         Console.WriteLine("FAM CLI - Database Management Tool");
@@ -69,7 +69,7 @@ class Program
         return 0;
     }
 
-    static int InvalidCommand(string command)
+    private static int InvalidCommand(string command)
     {
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine($"Unknown command: {command}");
@@ -79,8 +79,9 @@ class Program
         return 1;
     }
 
-    static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
+    private static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args)
             .ConfigureServices((context, services) =>
             {
                 // Add infrastructure (uses environment variables loaded from .env)
@@ -92,13 +93,14 @@ class Program
                 logging.AddConsole();
                 logging.SetMinimumLevel(LogLevel.Information);
             });
+    }
 
-    static void LoadDotEnv()
+    private static void LoadDotEnv()
     {
         // Find the solution root directory (where .env is located)
         var currentDir = Directory.GetCurrentDirectory();
         var solutionRoot = FindSolutionRoot(currentDir);
-        
+
         if (solutionRoot == null)
         {
             Console.WriteLine("Warning: Could not find solution root. Skipping .env file loading.");
@@ -106,7 +108,7 @@ class Program
         }
 
         var envFile = Path.Combine(solutionRoot, ".env");
-        
+
         if (!File.Exists(envFile))
         {
             Console.WriteLine($"Warning: .env file not found at '{envFile}'.");
@@ -131,44 +133,38 @@ class Program
             // Remove quotes if present
             if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
                 (value.StartsWith("'") && value.EndsWith("'")))
-            {
                 value = value[1..^1];
-            }
 
             // Only set if not already set (system env vars take precedence)
             if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(key)))
-            {
                 Environment.SetEnvironmentVariable(key, value);
-            }
         }
     }
 
-    static string? FindSolutionRoot(string startDirectory)
+    private static string? FindSolutionRoot(string startDirectory)
     {
         var current = new DirectoryInfo(startDirectory);
-        
+
         while (current != null)
         {
             // Look for .sln file or docker-compose.yml as indicators of solution root
-            if (current.GetFiles("*.sln").Length > 0 || 
+            if (current.GetFiles("*.sln").Length > 0 ||
                 current.GetFiles("docker-compose.yml").Length > 0)
-            {
                 return current.FullName;
-            }
-            
+
             current = current.Parent;
         }
-        
+
         return null;
     }
 
-    static async Task<int> RunSeedCommand(IHost host, string[] flags)
+    private static async Task<int> RunSeedCommand(IHost host, string[] flags)
     {
         var forceReseed = flags.Contains("--force");
 
         using var scope = host.Services.CreateScope();
         var orchestrator = scope.ServiceProvider.GetRequiredService<DataSeederOrchestrator>();
-        
+
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine("╔════════════════════════════════════════════════╗");
@@ -196,11 +192,11 @@ class Program
         return 0;
     }
 
-    static async Task<int> ShowSeedHistory(IHost host)
+    private static async Task<int> ShowSeedHistory(IHost host)
     {
         using var scope = host.Services.CreateScope();
         var orchestrator = scope.ServiceProvider.GetRequiredService<DataSeederOrchestrator>();
-        
+
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine("═══ Seed Execution History ═══");
@@ -208,7 +204,7 @@ class Program
         Console.WriteLine();
 
         var history = await orchestrator.GetHistoryAsync();
-        
+
         if (!history.Any())
         {
             Console.WriteLine("No seed execution history found.");
@@ -235,14 +231,14 @@ class Program
             Console.Write($"Order: {latest.Order,2}  ");
             Console.Write($"Duration: {latest.Duration.TotalMilliseconds,6:F0}ms  ");
             Console.Write($"Last: {latest.ExecutedAt:yyyy-MM-dd HH:mm:ss}");
-            
+
             if (!latest.Success && !string.IsNullOrEmpty(latest.ErrorMessage))
             {
                 Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine($"    Error: {latest.ErrorMessage}");
             }
-            
+
             Console.ResetColor();
             Console.WriteLine();
         }
@@ -256,13 +252,13 @@ class Program
         return 0;
     }
 
-    static async Task<int> ListAvailableSeeders(IHost host)
+    private static async Task<int> ListAvailableSeeders(IHost host)
     {
         using var scope = host.Services.CreateScope();
         var seeders = scope.ServiceProvider.GetServices<IDataSeeder>()
             .OrderBy(s => s.Order)
             .ToList();
-        
+
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine("═══ Available Seeders ═══");

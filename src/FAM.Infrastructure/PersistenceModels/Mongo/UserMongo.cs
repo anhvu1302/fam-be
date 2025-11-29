@@ -9,22 +9,21 @@ namespace FAM.Infrastructure.PersistenceModels.Mongo;
 [BsonCollection("users")]
 public class UserMongo : BaseEntityMongo
 {
-    [BsonElement("username")]
-    public string Username { get; set; } = string.Empty;
+    [BsonElement("username")] public string Username { get; set; } = string.Empty;
 
-    [BsonElement("email")]
-    public string Email { get; set; } = string.Empty;
+    [BsonElement("email")] public string Email { get; set; } = string.Empty;
 
-    [BsonElement("passwordHash")]
-    public string PasswordHash { get; set; } = string.Empty;
+    [BsonElement("passwordHash")] public string PasswordHash { get; set; } = string.Empty;
 
-    [BsonElement("passwordSalt")]
-    public string PasswordSalt { get; set; } = string.Empty;
+    [BsonElement("passwordSalt")] public string PasswordSalt { get; set; } = string.Empty;
 
-    [BsonElement("fullName")]
-    public string? FullName { get; set; }
+    [BsonElement("fullName")] public string? FullName { get; set; }
 
-    public UserMongo() : base() { }
+    public UserMongo() : base()
+    {
+    }
 
-    public UserMongo(long domainId) : base(domainId) { }
+    public UserMongo(long domainId) : base(domainId)
+    {
+    }
 }

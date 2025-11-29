@@ -8,21 +8,21 @@ namespace FAM.Infrastructure.PersistenceModels.Mongo;
 /// </summary>
 public class OrgNodeMongo : BaseEntityMongo
 {
-    [BsonElement("type")]
-    public int Type { get; set; } // OrgNodeType as int
+    [BsonElement("type")] public int Type { get; set; } // OrgNodeType as int
 
-    [BsonElement("name")]
-    public string Name { get; set; } = string.Empty;
+    [BsonElement("name")] public string Name { get; set; } = string.Empty;
 
-    [BsonElement("parentId")]
-    public long? ParentId { get; set; }
+    [BsonElement("parentId")] public long? ParentId { get; set; }
 
-    [BsonElement("children")]
-    public List<long> ChildrenIds { get; set; } = new List<long>();
+    [BsonElement("children")] public List<long> ChildrenIds { get; set; } = new();
 
-    public OrgNodeMongo() : base() { }
+    public OrgNodeMongo() : base()
+    {
+    }
 
-    public OrgNodeMongo(long domainId) : base(domainId) { }
+    public OrgNodeMongo(long domainId) : base(domainId)
+    {
+    }
 }
 
 /// <summary>
@@ -30,24 +30,23 @@ public class OrgNodeMongo : BaseEntityMongo
 /// </summary>
 public class CompanyDetailsMongo : BaseEntityMongo
 {
-    [BsonElement("nodeId")]
-    public long NodeId { get; set; }
+    [BsonElement("nodeId")] public long NodeId { get; set; }
 
-    [BsonElement("taxCode")]
-    public string? TaxCode { get; set; }
+    [BsonElement("taxCode")] public string? TaxCode { get; set; }
 
-    [BsonElement("domain")]
-    public string? Domain { get; set; }
+    [BsonElement("domain")] public string? Domain { get; set; }
 
-    [BsonElement("address")]
-    public string? Address { get; set; }
+    [BsonElement("address")] public string? Address { get; set; }
 
-    [BsonElement("establishedOn")]
-    public DateTime? EstablishedOn { get; set; }
+    [BsonElement("establishedOn")] public DateTime? EstablishedOn { get; set; }
 
-    public CompanyDetailsMongo() : base() { }
+    public CompanyDetailsMongo() : base()
+    {
+    }
 
-    public CompanyDetailsMongo(long domainId) : base(domainId) { }
+    public CompanyDetailsMongo(long domainId) : base(domainId)
+    {
+    }
 }
 
 /// <summary>
@@ -55,19 +54,19 @@ public class CompanyDetailsMongo : BaseEntityMongo
 /// </summary>
 public class DepartmentDetailsMongo : BaseEntityMongo
 {
-    [BsonElement("nodeId")]
-    public long NodeId { get; set; }
+    [BsonElement("nodeId")] public long NodeId { get; set; }
 
-    [BsonElement("costCenter")]
-    public string? CostCenter { get; set; }
+    [BsonElement("costCenter")] public string? CostCenter { get; set; }
 
-    [BsonElement("headcount")]
-    public int? Headcount { get; set; }
+    [BsonElement("headcount")] public int? Headcount { get; set; }
 
-    [BsonElement("budgetYear")]
-    public decimal? BudgetYear { get; set; }
+    [BsonElement("budgetYear")] public decimal? BudgetYear { get; set; }
 
-    public DepartmentDetailsMongo() : base() { }
+    public DepartmentDetailsMongo() : base()
+    {
+    }
 
-    public DepartmentDetailsMongo(long domainId) : base(domainId) { }
+    public DepartmentDetailsMongo(long domainId) : base(domainId)
+    {
+    }
 }

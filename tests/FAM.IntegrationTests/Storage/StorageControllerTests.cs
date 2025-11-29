@@ -7,7 +7,7 @@ using Xunit;
 
 namespace FAM.IntegrationTests.Storage;
 
-public class StorageControllerTests : IClassFixture<FamWebApplicationFactory>
+public class StorageControllerTests : IClassFixture<FamWebApplicationFactory>, IAsyncLifetime
 {
     private readonly HttpClient _client;
     private readonly FamWebApplicationFactory _factory;
@@ -17,6 +17,18 @@ public class StorageControllerTests : IClassFixture<FamWebApplicationFactory>
     {
         _factory = factory;
         _client = factory.CreateClient();
+    }
+
+    public async Task InitializeAsync()
+    {
+        // Reset admin user to original state before running tests
+        // This ensures password is "Admin@123" and lockout is cleared
+        await _factory.ResetAdminUserAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
     }
 
     private async Task<string> GetAccessTokenAsync()
@@ -36,7 +48,7 @@ public class StorageControllerTests : IClassFixture<FamWebApplicationFactory>
             "application/json");
 
         var response = await _client.PostAsync("/api/auth/login", content);
-        
+
         if (!response.IsSuccessStatusCode)
         {
             var error = await response.Content.ReadAsStringAsync();
@@ -103,9 +115,11 @@ public class StorageControllerTests : IClassFixture<FamWebApplicationFactory>
         Assert.Contains("not supported", responseContent, StringComparison.OrdinalIgnoreCase);
     }
 
-    // Note: This test may pass in test environment due to TestHost not enforcing multipart limits
-    // In production, ASP.NET will reject large uploads before they reach the controller
-    [Fact(Skip = "TestHost doesn't enforce multipart form size limits like production")]
+    /// <summary>
+    /// Tests application-level file size validation via FileValidator.
+    /// MaxImageSizeMb = 10 (from appsettings.json), so 11MB file should be rejected.
+    /// </summary>
+    [Fact]
     public async Task UploadFile_FileTooLarge_ReturnsBadRequest()
     {
         // Arrange
@@ -113,7 +127,8 @@ public class StorageControllerTests : IClassFixture<FamWebApplicationFactory>
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var content = new MultipartFormDataContent();
-        var largeImageContent = new ByteArrayContent(new byte[6 * 1024 * 1024]); // 6 MB
+        // 11 MB file exceeds MaxImageSizeMb = 10 (from appsettings.json)
+        var largeImageContent = new ByteArrayContent(new byte[11 * 1024 * 1024]);
         largeImageContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
         content.Add(largeImageContent, "file", "large-image.jpg");
 
@@ -169,10 +184,11 @@ public class StorageControllerTests : IClassFixture<FamWebApplicationFactory>
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var responseContent = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<InitiateMultipartUploadResponse>(responseContent, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        var result = JsonSerializer.Deserialize<InitiateMultipartUploadResponse>(responseContent,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
 
         Assert.NotNull(result);
         Assert.NotEmpty(result.UploadId);

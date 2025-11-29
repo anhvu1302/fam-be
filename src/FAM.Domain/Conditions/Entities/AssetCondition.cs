@@ -13,7 +13,9 @@ public class AssetCondition : Entity
     // Navigation properties
     public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
 
-    private AssetCondition() { }
+    private AssetCondition()
+    {
+    }
 
     public static AssetCondition Create(string name, string? description = null)
     {

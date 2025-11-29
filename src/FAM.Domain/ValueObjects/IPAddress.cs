@@ -25,10 +25,8 @@ public sealed class IPAddress : ValueObject
 
         // Handle "Unknown" IP (e.g., in testing or when IP detection fails)
         if (ipAddress.Equals("Unknown", StringComparison.OrdinalIgnoreCase))
-        {
             // Default to localhost for unknown IPs
             ipAddress = "127.0.0.1";
-        }
 
         var type = DetermineType(ipAddress);
         if (type == IPAddressType.Invalid)
@@ -40,11 +38,9 @@ public sealed class IPAddress : ValueObject
     private static IPAddressType DetermineType(string ip)
     {
         if (System.Net.IPAddress.TryParse(ip, out var parsed))
-        {
             return parsed.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork
                 ? IPAddressType.IPv4
                 : IPAddressType.IPv6;
-        }
         return IPAddressType.Invalid;
     }
 
@@ -72,7 +68,10 @@ public sealed class IPAddress : ValueObject
         return false;
     }
 
-    public bool IsLoopback() => Value == "127.0.0.1" || Value == "::1";
+    public bool IsLoopback()
+    {
+        return Value == "127.0.0.1" || Value == "::1";
+    }
 
     protected override IEnumerable<object?> GetEqualityComponents()
     {
@@ -80,9 +79,15 @@ public sealed class IPAddress : ValueObject
         yield return Type;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 
-    public static implicit operator string(IPAddress ipAddress) => ipAddress.Value;
+    public static implicit operator string(IPAddress ipAddress)
+    {
+        return ipAddress.Value;
+    }
 }
 
 public enum IPAddressType

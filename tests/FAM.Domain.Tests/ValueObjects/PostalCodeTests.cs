@@ -189,7 +189,7 @@ public class PostalCodeTests
         var value = "12345";
 
         // Act
-        PostalCode postalCode = (PostalCode)value;
+        var postalCode = (PostalCode)value;
 
         // Assert
         postalCode.Value.Should().Be("12345");

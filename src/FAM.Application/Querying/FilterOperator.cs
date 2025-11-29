@@ -11,32 +11,32 @@ public enum FilterOperator
     Not,
 
     // Comparison operators
-    Equal,              // ==
-    NotEqual,           // !=
-    GreaterThan,        // >
+    Equal, // ==
+    NotEqual, // !=
+    GreaterThan, // >
     GreaterThanOrEqual, // >=
-    LessThan,           // <
-    LessThanOrEqual,    // <=
+    LessThan, // <
+    LessThanOrEqual, // <=
 
     // String operators
-    Contains,           // @contains
-    NotContains,        // @ncontains
-    StartsWith,         // @startswith
-    EndsWith,           // @endswith
+    Contains, // @contains
+    NotContains, // @ncontains
+    StartsWith, // @startswith
+    EndsWith, // @endswith
 
     // Set operators
-    In,                 // @in
-    NotIn,              // @nin
+    In, // @in
+    NotIn, // @nin
 
     // Range operators
-    Between,            // @between
+    Between, // @between
 
     // Null operators
-    IsNull,             // @isnull
-    NotNull,            // @notnull
+    IsNull, // @isnull
+    NotNull, // @notnull
 
     // Array operators
-    Any,                // @any
-    All,                // @all
-    ContainsAny         // @containsAny
+    Any, // @any
+    All, // @all
+    ContainsAny // @containsAny
 }

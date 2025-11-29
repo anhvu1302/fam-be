@@ -22,34 +22,29 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
     {
         // Get user by ID
         var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException("User not found");
-        }
+        if (user == null) throw new UnauthorizedAccessException("User not found");
 
         // Verify the TOTP code with the provided secret
         var secretBytes = Base32Encoding.ToBytes(request.Secret);
         var totp = new Totp(secretBytes);
-        
+
         // Verify code with time window tolerance (1 step = 30 seconds)
         // This allows for slight clock skew between server and client
-        var verificationWindow = new VerificationWindow(previous: 1, future: 1);
-        
+        var verificationWindow = new VerificationWindow(1, 1);
+
         if (!totp.VerifyTotp(request.Code, out _, verificationWindow))
-        {
             throw new InvalidOperationException("Invalid verification code");
-        }
 
         // Generate backup codes
         var backupCodes = GenerateBackupCodes();
-        
+
         // Hash backup codes before storing (for security)
         var hashedBackupCodes = backupCodes.Select(code => BCrypt.Net.BCrypt.HashPassword(code)).ToList();
         var backupCodesJson = System.Text.Json.JsonSerializer.Serialize(hashedBackupCodes);
-        
+
         // Code is valid - enable 2FA and save the secret with backup codes
         user.EnableTwoFactor(request.Secret, backupCodesJson);
-        
+
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -57,7 +52,8 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
         {
             Success = true,
             BackupCodes = backupCodes,
-            Message = "Two-factor authentication has been enabled successfully. Please save your backup codes in a secure location. Each code can only be used once for account recovery."
+            Message =
+                "Two-factor authentication has been enabled successfully. Please save your backup codes in a secure location. Each code can only be used once for account recovery."
         };
     }
 
@@ -67,13 +63,13 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
     private static List<string> GenerateBackupCodes()
     {
         var codes = new List<string>();
-        
-        for (int i = 0; i < BackupCodeCount; i++)
+
+        for (var i = 0; i < BackupCodeCount; i++)
         {
             var code = GenerateSecureCode(BackupCodeLength);
             codes.Add(code);
         }
-        
+
         return codes;
     }
 
@@ -87,12 +83,9 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
         // Use lowercase hex characters only (like GitHub)
         const string chars = "0123456789abcdef";
         var result = new char[length];
-        
-        for (int i = 0; i < length; i++)
-        {
-            result[i] = chars[RandomNumberGenerator.GetInt32(chars.Length)];
-        }
-        
+
+        for (var i = 0; i < length; i++) result[i] = chars[RandomNumberGenerator.GetInt32(chars.Length)];
+
         // Format: xxxxx-xxxxx (5-5 format with dash)
         var code = new string(result);
         return $"{code.Substring(0, 5)}-{code.Substring(5, 5)}";

@@ -25,10 +25,11 @@ public sealed class DisableTwoFactorWithBackupCommandHandler : IRequestHandler<D
     {
         // Find user by username
         var user = await _unitOfWork.Users.FindByUsernameAsync(request.Username, cancellationToken);
-        
+
         if (user == null)
         {
-            _logger.LogWarning("Disable 2FA with backup code failed: User not found for username: {Username}", request.Username);
+            _logger.LogWarning("Disable 2FA with backup code failed: User not found for username: {Username}",
+                request.Username);
             throw new UnauthorizedAccessException("Invalid credentials");
         }
 
@@ -65,18 +66,16 @@ public sealed class DisableTwoFactorWithBackupCommandHandler : IRequestHandler<D
         }
 
         // Verify backup code and remove it if valid
-        bool codeFound = false;
+        var codeFound = false;
         string? matchedHash = null;
-        
+
         foreach (var hashedCode in hashedBackupCodes)
-        {
             if (BCrypt.Net.BCrypt.Verify(request.BackupCode, hashedCode))
             {
                 codeFound = true;
                 matchedHash = hashedCode;
                 break;
             }
-        }
 
         if (!codeFound)
         {
@@ -86,7 +85,7 @@ public sealed class DisableTwoFactorWithBackupCommandHandler : IRequestHandler<D
 
         // Remove the used backup code
         hashedBackupCodes.Remove(matchedHash!);
-        
+
         // If no more backup codes left, disable 2FA completely
         // Otherwise, save the remaining codes
         if (hashedBackupCodes.Count == 0)
@@ -98,7 +97,8 @@ public sealed class DisableTwoFactorWithBackupCommandHandler : IRequestHandler<D
         {
             // Still have backup codes - update but keep 2FA disabled for now
             // User needs to re-enable 2FA to get security back
-            _logger.LogInformation("Backup code verified. Disabling 2FA for user: {UserId}. Remaining backup codes: {Count}", 
+            _logger.LogInformation(
+                "Backup code verified. Disabling 2FA for user: {UserId}. Remaining backup codes: {Count}",
                 user.Id, hashedBackupCodes.Count);
             user.DisableTwoFactor();
         }

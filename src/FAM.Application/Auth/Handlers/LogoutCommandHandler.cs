@@ -22,15 +22,13 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Unit>
         // Find device by refresh token or device ID
         var device = !string.IsNullOrEmpty(request.RefreshToken)
             ? await _unitOfWork.UserDevices.FindByRefreshTokenAsync(request.RefreshToken, cancellationToken)
-            : !string.IsNullOrEmpty(request.DeviceId) 
+            : !string.IsNullOrEmpty(request.DeviceId)
                 ? await _unitOfWork.UserDevices.GetByDeviceIdAsync(request.DeviceId, cancellationToken)
                 : null;
 
         if (device == null)
-        {
             // Device not found - might already be logged out or invalid token
             return Unit.Value;
-        }
 
         // Get user
         var user = await _unitOfWork.Users.GetByIdAsync(device.UserId, cancellationToken);

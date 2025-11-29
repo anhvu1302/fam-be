@@ -79,12 +79,14 @@ public static class MongoFilterBinder<T>
         return node.Operator switch
         {
             FilterOperator.Contains => BuildStringContains(node.Target, node.Arguments[0], builder, fieldMap),
-            FilterOperator.NotContains => builder.Not(BuildStringContains(node.Target, node.Arguments[0], builder, fieldMap)),
+            FilterOperator.NotContains => builder.Not(BuildStringContains(node.Target, node.Arguments[0], builder,
+                fieldMap)),
             FilterOperator.StartsWith => BuildStringStartsWith(node.Target, node.Arguments[0], builder, fieldMap),
             FilterOperator.EndsWith => BuildStringEndsWith(node.Target, node.Arguments[0], builder, fieldMap),
             FilterOperator.In => BuildIn(node.Target, node.Arguments, builder, fieldMap),
             FilterOperator.NotIn => BuildNotIn(node.Target, node.Arguments, builder, fieldMap),
-            FilterOperator.Between => BuildBetween(node.Target, node.Arguments[0], node.Arguments[1], builder, fieldMap),
+            FilterOperator.Between => BuildBetween(node.Target, node.Arguments[0], node.Arguments[1], builder,
+                fieldMap),
             FilterOperator.ContainsAny => BuildContainsAny(node.Target, node.Arguments, builder, fieldMap),
             _ => throw new NotSupportedException($"Call operator {node.Operator} not supported for MongoDB")
         };

@@ -24,17 +24,14 @@ public static class FieldSelectionExtensions
         {
             // No field selection - return all properties as dictionaries
             var allProperties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            
+
             foreach (var item in items)
             {
                 var dict = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
-                foreach (var prop in allProperties)
-                {
-                    dict[ToCamelCase(prop.Name)] = prop.GetValue(item);
-                }
+                foreach (var prop in allProperties) dict[ToCamelCase(prop.Name)] = prop.GetValue(item);
                 result.Add(dict);
             }
-            
+
             return result;
         }
 
@@ -72,7 +69,8 @@ public static class FieldSelectionExtensions
     /// </summary>
     private static Dictionary<string, Dictionary<string, Dictionary<string, object?>?>?> ParseFieldTree(string[] fields)
     {
-        var tree = new Dictionary<string, Dictionary<string, Dictionary<string, object?>?>?>(StringComparer.OrdinalIgnoreCase);
+        var tree =
+            new Dictionary<string, Dictionary<string, Dictionary<string, object?>?>?>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var field in fields)
         {
@@ -82,27 +80,22 @@ public static class FieldSelectionExtensions
             if (parts.Length == 1)
             {
                 // Simple field
-                if (!tree.ContainsKey(rootField))
-                {
-                    tree[rootField] = null;
-                }
+                if (!tree.ContainsKey(rootField)) tree[rootField] = null;
             }
             else
             {
                 // Nested field
                 if (!tree.TryGetValue(rootField, out var nestedFields))
                 {
-                    nestedFields = new Dictionary<string, Dictionary<string, object?>?>(StringComparer.OrdinalIgnoreCase);
+                    nestedFields =
+                        new Dictionary<string, Dictionary<string, object?>?>(StringComparer.OrdinalIgnoreCase);
                     tree[rootField] = nestedFields;
                 }
-                
+
                 if (nestedFields != null)
                 {
                     var nestedField = parts[1];
-                    if (!nestedFields.ContainsKey(nestedField))
-                    {
-                        nestedFields[nestedField] = null;
-                    }
+                    if (!nestedFields.ContainsKey(nestedField)) nestedFields[nestedField] = null;
                 }
             }
         }
@@ -114,7 +107,7 @@ public static class FieldSelectionExtensions
     /// Apply field selection recursively to an object
     /// </summary>
     private static Dictionary<string, object?> ApplyFieldSelection(
-        object? obj, 
+        object? obj,
         Dictionary<string, Dictionary<string, Dictionary<string, object?>?>?> fieldTree)
     {
         var result = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
@@ -129,7 +122,8 @@ public static class FieldSelectionExtensions
             var fieldName = kvp.Key;
             var nestedFields = kvp.Value;
 
-            var prop = type.GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            var prop = type.GetProperty(fieldName,
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
             if (prop == null)
                 continue;
 
@@ -152,13 +146,12 @@ public static class FieldSelectionExtensions
                     // Collection - apply to each item
                     var selectedItems = new List<Dictionary<string, object?>>();
                     foreach (var item in enumerable)
-                    {
                         if (item != null)
                         {
                             var selectedItem = ApplyNestedFieldSelection(item, nestedFields);
                             selectedItems.Add(selectedItem);
                         }
-                    }
+
                     result[ToCamelCase(prop.Name)] = selectedItems;
                 }
                 else
@@ -185,11 +178,9 @@ public static class FieldSelectionExtensions
 
         foreach (var fieldName in nestedFields.Keys)
         {
-            var prop = type.GetProperty(fieldName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-            if (prop != null)
-            {
-                result[ToCamelCase(prop.Name)] = prop.GetValue(obj);
-            }
+            var prop = type.GetProperty(fieldName,
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            if (prop != null) result[ToCamelCase(prop.Name)] = prop.GetValue(obj);
         }
 
         return result;

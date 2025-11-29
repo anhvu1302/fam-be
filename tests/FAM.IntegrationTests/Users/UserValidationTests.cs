@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using FAM.WebApi.Models.Users;
+using FAM.WebApi.Contracts.Users;
 using FluentAssertions;
 using Xunit;
 
@@ -23,20 +23,20 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
     public async Task CreateUser_WithInvalidEmailFormat_ShouldReturn400BadRequest()
     {
         // Arrange
-        var request = new CreateUserRequestModel
-        {
-            Username = "testuser",
-            Email = "invalid-email-format", // Invalid email format
-            Password = "SecurePass123!",
-            FullName = "Test User"
-        };
+        var request = new CreateUserRequest(
+            "testuser",
+            "invalid-email-format", // Invalid email format
+            "SecurePass123!",
+            "Test",
+            "User"
+        );
 
         // Act
         var response = await Client.PostAsJsonAsync("/api/users", request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
+
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Email"); // ModelState error should mention Email field
     }
@@ -45,20 +45,20 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
     public async Task CreateUser_WithEmptyUsername_ShouldReturn400BadRequest()
     {
         // Arrange
-        var request = new CreateUserRequestModel
-        {
-            Username = "", // Empty username
-            Email = "test@example.com",
-            Password = "SecurePass123!",
-            FullName = "Test User"
-        };
+        var request = new CreateUserRequest(
+            "", // Empty username
+            "test@example.com",
+            "SecurePass123!",
+            "Test",
+            "User"
+        );
 
         // Act
         var response = await Client.PostAsJsonAsync("/api/users", request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
+
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Username"); // ModelState error
     }
@@ -67,20 +67,20 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
     public async Task CreateUser_WithShortPassword_ShouldReturn400BadRequest()
     {
         // Arrange
-        var request = new CreateUserRequestModel
-        {
-            Username = "testuser",
-            Email = "test@example.com",
-            Password = "short", // Too short
-            FullName = "Test User"
-        };
+        var request = new CreateUserRequest(
+            "testuser",
+            "test@example.com",
+            "short", // Too short
+            "Test",
+            "User"
+        );
 
         // Act
         var response = await Client.PostAsJsonAsync("/api/users", request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
+
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Password"); // ModelState error
     }
@@ -89,44 +89,44 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
     public async Task CreateUser_WithInvalidUsernameFormat_ShouldReturn400BadRequest()
     {
         // Arrange
-        var request = new CreateUserRequestModel
-        {
-            Username = "invalid@username!", // Contains invalid characters
-            Email = "test@example.com",
-            Password = "SecurePass123!",
-            FullName = "Test User"
-        };
+        var request = new CreateUserRequest(
+            "invalid@username!", // Contains invalid characters
+            "test@example.com",
+            "SecurePass123!",
+            "Test",
+            "User"
+        );
 
         // Act
         var response = await Client.PostAsJsonAsync("/api/users", request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
+
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Username"); // ModelState error
     }
 
     [Fact]
-    public async Task CreateUser_WithTooLongFullName_ShouldReturn400BadRequest()
+    public async Task CreateUser_WithTooLongFirstName_ShouldReturn400BadRequest()
     {
         // Arrange
-        var request = new CreateUserRequestModel
-        {
-            Username = "testuser",
-            Email = "test@example.com",
-            Password = "SecurePass123!",
-            FullName = new string('a', 201) // Exceeds 200 character limit
-        };
+        var request = new CreateUserRequest(
+            "testuser",
+            "test@example.com",
+            "SecurePass123!",
+            new string('a', 51), // Exceeds 50 character limit
+            "User"
+        );
 
         // Act
         var response = await Client.PostAsJsonAsync("/api/users", request);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        
+
         var content = await response.Content.ReadAsStringAsync();
-        content.Should().Contain("FullName"); // ModelState error
+        content.Should().Contain("FirstName"); // ModelState error
     }
 
     #endregion
@@ -137,31 +137,31 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
     public async Task CreateUser_WithDuplicateUsername_ShouldReturn409Conflict()
     {
         // Arrange - Create first user
-        var firstRequest = new CreateUserRequestModel
-        {
-            Username = "duplicateuser",
-            Email = "first@example.com",
-            Password = "SecurePass123!",
-            FullName = "First User"
-        };
+        var firstRequest = new CreateUserRequest(
+            "duplicateuser",
+            "first@example.com",
+            "SecurePass123!",
+            "First",
+            "User"
+        );
 
         await Client.PostAsJsonAsync("/api/users", firstRequest);
 
         // Arrange - Try to create second user with same username
-        var secondRequest = new CreateUserRequestModel
-        {
-            Username = "duplicateuser", // Same username
-            Email = "second@example.com", // Different email
-            Password = "SecurePass123!",
-            FullName = "Second User"
-        };
+        var secondRequest = new CreateUserRequest(
+            "duplicateuser", // Same username
+            "second@example.com", // Different email
+            "SecurePass123!",
+            "Second",
+            "User"
+        );
 
         // Act
         var response = await Client.PostAsJsonAsync("/api/users", secondRequest);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict); // Application layer returns 409
-        
+
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Username is already taken");
     }
@@ -170,31 +170,31 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
     public async Task CreateUser_WithDuplicateEmail_ShouldReturn409Conflict()
     {
         // Arrange - Create first user
-        var firstRequest = new CreateUserRequestModel
-        {
-            Username = "firstuser",
-            Email = "duplicate@example.com",
-            Password = "SecurePass123!",
-            FullName = "First User"
-        };
+        var firstRequest = new CreateUserRequest(
+            "firstuser",
+            "duplicate@example.com",
+            "SecurePass123!",
+            "First",
+            "User"
+        );
 
         await Client.PostAsJsonAsync("/api/users", firstRequest);
 
         // Arrange - Try to create second user with same email
-        var secondRequest = new CreateUserRequestModel
-        {
-            Username = "seconduser", // Different username
-            Email = "duplicate@example.com", // Same email
-            Password = "SecurePass123!",
-            FullName = "Second User"
-        };
+        var secondRequest = new CreateUserRequest(
+            "seconduser", // Different username
+            "duplicate@example.com", // Same email
+            "SecurePass123!",
+            "Second",
+            "User"
+        );
 
         // Act
         var response = await Client.PostAsJsonAsync("/api/users", secondRequest);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Conflict); // Application layer returns 409
-        
+
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Email is already taken");
     }
@@ -204,13 +204,12 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
     {
         // Arrange
         var nonExistentUserId = 99999L;
-        var request = new UpdateUserRequestModel
-        {
-            Username = "newusername",
-            Email = "new@example.com",
-            Password = "NewPass123!",
-            FullName = "New Name"
-        };
+        var request = new UpdateUserRequest(
+            "newusername",
+            "new@example.com",
+            "New",
+            "Name"
+        );
 
         // Act
         var response = await Client.PutAsJsonAsync($"/api/users/{nonExistentUserId}", request);
@@ -221,21 +220,21 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
 
     #endregion
 
-    #region Domain Layer Validation (Business Rules) - DomainException mapped to 400
+    #region Domain Layer Validation (Business Rules) - DomainException mapped to 422
 
     [Fact]
-    public async Task CreateUser_WithWeakPassword_ShouldReturnWebAPIValidationError()
+    public async Task CreateUser_WithWeakPassword_ShouldReturn422UnprocessableEntity()
     {
         // Arrange
-        var request = new CreateUserRequestModel
-        {
-            Username = "testuser",
-            Email = "test@example.com",
-            Password = "weakpass", // Passes Web API min length (8 chars) but ALSO passes DataAnnotations
+        var request = new CreateUserRequest(
+            $"weakpasstest_{Guid.NewGuid():N}",
+            $"weakpasstest_{Guid.NewGuid():N}@example.com",
+            "weakpass", // Passes Web API min length (8 chars) but ALSO passes DataAnnotations
             // NOTE: Web API only validates min length, not password strength
             // Domain would validate strength, but this password passes Web API layer
-            FullName = "Test User"
-        };
+            "Test",
+            "User"
+        );
 
         // Act
         var response = await Client.PostAsJsonAsync("/api/users", request);
@@ -243,8 +242,9 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
         // Assert
         // This password actually passes Web API validation (8 chars minimum)
         // It will fail at Domain layer (Password.Create) due to missing uppercase/number/special char
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest); // Domain validation returns 400
-        
+        // RFC 4918: 422 Unprocessable Entity - semantically incorrect (domain validation failed)
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Password"); // Domain validation error
     }
@@ -253,13 +253,13 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
     public async Task CreateUser_WithValidRequest_ShouldReturn201Created()
     {
         // Arrange
-        var request = new CreateUserRequestModel
-        {
-            Username = $"validuser_{Guid.NewGuid():N}",
-            Email = $"valid_{Guid.NewGuid():N}@example.com",
-            Password = "SecurePass123!",
-            FullName = "Valid User"
-        };
+        var request = new CreateUserRequest(
+            $"validuser_{Guid.NewGuid():N}",
+            $"valid_{Guid.NewGuid():N}@example.com",
+            "SecurePass123!",
+            "Valid",
+            "User"
+        );
 
         // Act
         var response = await Client.PostAsJsonAsync("/api/users", request);
@@ -267,7 +267,7 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         response.Headers.Location.Should().NotBeNull();
-        
+
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain(request.Username);
         content.Should().Contain(request.Email.ToLowerInvariant()); // Email is normalized to lowercase
@@ -286,13 +286,12 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
         // 3. Domain validates business rules (Value Objects) -> DomainException -> 400
 
         // Test 1: Web API catches invalid format first
-        var invalidFormatRequest = new CreateUserRequestModel
-        {
-            Username = "test@invalid!", // Invalid format
-            Email = "duplicate@example.com", // Even if this email exists
-            Password = "SecurePass123!",
-            FullName = "Test"
-        };
+        var invalidFormatRequest = new CreateUserRequest(
+            "test@invalid!", // Invalid format
+            "duplicate@example.com", // Even if this email exists
+            "SecurePass123!",
+            "Test"
+        );
 
         var response1 = await Client.PostAsJsonAsync("/api/users", invalidFormatRequest);
         response1.StatusCode.Should().Be(HttpStatusCode.BadRequest); // Web API validation stops here
@@ -301,16 +300,17 @@ public class UserValidationTests : IClassFixture<FamWebApplicationFactory>
         // (Already tested in previous tests)
 
         // Test 3: Web API and Application pass, Domain validates business rules
-        var weakDomainPassword = new CreateUserRequestModel
-        {
-            Username = $"domaintest_{Guid.NewGuid():N}",
-            Email = $"domaintest_{Guid.NewGuid():N}@example.com",
-            Password = "weakpass", // Passes Web API (8 chars) but fails Domain validation
-            FullName = "Domain Test"
-        };
+        var weakDomainPassword = new CreateUserRequest(
+            $"domaintest_{Guid.NewGuid():N}",
+            $"domaintest_{Guid.NewGuid():N}@example.com",
+            "weakpass", // Passes Web API (8 chars) but fails Domain validation
+            "Domain",
+            "Test"
+        );
 
         var response3 = await Client.PostAsJsonAsync("/api/users", weakDomainPassword);
-        response3.StatusCode.Should().Be(HttpStatusCode.BadRequest); // Domain exception returns 400
+        // RFC 4918: 422 Unprocessable Entity - semantically incorrect
+        response3.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
     }
 
     #endregion

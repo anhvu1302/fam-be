@@ -45,7 +45,13 @@ public sealed class Email : ValueObject
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 
-    public static implicit operator string(Email email) => email.Value;
+    public static implicit operator string(Email email)
+    {
+        return email.Value;
+    }
 }

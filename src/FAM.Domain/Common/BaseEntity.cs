@@ -16,7 +16,9 @@ public abstract class BaseEntity
     public DateTime? DeletedAt { get; set; }
     public long? DeletedById { get; set; }
 
-    protected BaseEntity() { }
+    protected BaseEntity()
+    {
+    }
 
     protected BaseEntity(long id)
     {

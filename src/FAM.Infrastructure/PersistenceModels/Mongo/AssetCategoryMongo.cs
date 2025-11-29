@@ -13,47 +13,35 @@ namespace FAM.Infrastructure.PersistenceModels.Mongo;
 public class AssetCategoryMongo : BaseEntityMongo
 {
     // Basic Information
-    [BsonElement("name")]
-    public string Name { get; set; } = string.Empty;
+    [BsonElement("name")] public string Name { get; set; } = string.Empty;
 
-    [BsonElement("code")]
-    public string? Code { get; set; }
+    [BsonElement("code")] public string? Code { get; set; }
 
-    [BsonElement("description")]
-    public string? Description { get; set; }
+    [BsonElement("description")] public string? Description { get; set; }
 
-    [BsonElement("longDescription")]
-    public string? LongDescription { get; set; }
+    [BsonElement("longDescription")] public string? LongDescription { get; set; }
 
     // Hierarchy
-    [BsonElement("parentId")]
-    public long? ParentId { get; set; }
+    [BsonElement("parentId")] public long? ParentId { get; set; }
 
-    [BsonElement("level")]
-    public int Level { get; set; }
+    [BsonElement("level")] public int Level { get; set; }
 
-    [BsonElement("path")]
-    public string? Path { get; set; }
+    [BsonElement("path")] public string? Path { get; set; }
 
     // Classification
-    [BsonElement("categoryType")]
-    public string? CategoryType { get; set; }
+    [BsonElement("categoryType")] public string? CategoryType { get; set; }
 
-    [BsonElement("industry")]
-    public string? Industry { get; set; }
+    [BsonElement("industry")] public string? Industry { get; set; }
 
-    [BsonElement("sector")]
-    public string? Sector { get; set; }
+    [BsonElement("sector")] public string? Sector { get; set; }
 
     // Accounting
-    [BsonElement("glAccountCode")]
-    public string? GLAccountCode { get; set; }
+    [BsonElement("glAccountCode")] public string? GLAccountCode { get; set; }
 
     [BsonElement("depreciationAccountCode")]
     public string? DepreciationAccountCode { get; set; }
 
-    [BsonElement("costCenter")]
-    public string? CostCenter { get; set; }
+    [BsonElement("costCenter")] public string? CostCenter { get; set; }
 
     // Depreciation Defaults
     [BsonElement("defaultDepreciationMethod")]
@@ -66,85 +54,62 @@ public class AssetCategoryMongo : BaseEntityMongo
     public decimal? DefaultResidualValuePercentage { get; set; }
 
     // Properties
-    [BsonElement("isDepreciable")]
-    public bool IsDepreciable { get; set; } = true;
+    [BsonElement("isDepreciable")] public bool IsDepreciable { get; set; } = true;
 
-    [BsonElement("isCapitalized")]
-    public bool IsCapitalized { get; set; } = true;
+    [BsonElement("isCapitalized")] public bool IsCapitalized { get; set; } = true;
 
-    [BsonElement("requiresMaintenance")]
-    public bool RequiresMaintenance { get; set; } = true;
+    [BsonElement("requiresMaintenance")] public bool RequiresMaintenance { get; set; } = true;
 
-    [BsonElement("requiresInsurance")]
-    public bool RequiresInsurance { get; set; }
+    [BsonElement("requiresInsurance")] public bool RequiresInsurance { get; set; }
 
     // Valuation
     [BsonElement("minimumCapitalizationValue")]
     public decimal? MinimumCapitalizationValue { get; set; }
 
-    [BsonElement("valuationMethod")]
-    public string? ValuationMethod { get; set; }
+    [BsonElement("valuationMethod")] public string? ValuationMethod { get; set; }
 
     // Compliance
-    [BsonElement("requiresCompliance")]
-    public bool RequiresCompliance { get; set; }
+    [BsonElement("requiresCompliance")] public bool RequiresCompliance { get; set; }
 
-    [BsonElement("complianceStandards")]
-    public string? ComplianceStandards { get; set; }
+    [BsonElement("complianceStandards")] public string? ComplianceStandards { get; set; }
 
-    [BsonElement("requiresAudit")]
-    public bool RequiresAudit { get; set; }
+    [BsonElement("requiresAudit")] public bool RequiresAudit { get; set; }
 
-    [BsonElement("auditIntervalMonths")]
-    public int? AuditIntervalMonths { get; set; }
+    [BsonElement("auditIntervalMonths")] public int? AuditIntervalMonths { get; set; }
 
     // Display
-    [BsonElement("iconName")]
-    public string? IconName { get; set; }
+    [BsonElement("iconName")] public string? IconName { get; set; }
 
-    [BsonElement("iconUrl")]
-    public string? IconUrl { get; set; }
+    [BsonElement("iconUrl")] public string? IconUrl { get; set; }
 
-    [BsonElement("color")]
-    public string? Color { get; set; }
+    [BsonElement("color")] public string? Color { get; set; }
 
-    [BsonElement("displayOrder")]
-    public int DisplayOrder { get; set; }
+    [BsonElement("displayOrder")] public int DisplayOrder { get; set; }
 
     // Status
-    [BsonElement("isActive")]
-    public bool IsActive { get; set; } = true;
+    [BsonElement("isActive")] public bool IsActive { get; set; } = true;
 
-    [BsonElement("isSystemCategory")]
-    public bool IsSystemCategory { get; set; }
+    [BsonElement("isSystemCategory")] public bool IsSystemCategory { get; set; }
 
     // Tags & Search
-    [BsonElement("tags")]
-    public string? Tags { get; set; }
+    [BsonElement("tags")] public string? Tags { get; set; }
 
-    [BsonElement("searchKeywords")]
-    public string? SearchKeywords { get; set; }
+    [BsonElement("searchKeywords")] public string? SearchKeywords { get; set; }
 
-    [BsonElement("aliases")]
-    public string? Aliases { get; set; }
+    [BsonElement("aliases")] public string? Aliases { get; set; }
 
     // Statistics
-    [BsonElement("assetCount")]
-    public int AssetCount { get; set; }
+    [BsonElement("assetCount")] public int AssetCount { get; set; }
 
-    [BsonElement("totalValue")]
-    public decimal? TotalValue { get; set; }
+    [BsonElement("totalValue")] public decimal? TotalValue { get; set; }
 
     // Internal Notes
-    [BsonElement("internalNotes")]
-    public string? InternalNotes { get; set; }
+    [BsonElement("internalNotes")] public string? InternalNotes { get; set; }
 
     // Navigation properties (NOT stored in MongoDB - use references instead)
-    [BsonIgnore]
-    public AssetCategoryMongo? Parent { get; set; }
+    [BsonIgnore] public AssetCategoryMongo? Parent { get; set; }
 
-    [BsonIgnore]
-    public List<AssetCategoryMongo> Children { get; set; } = new();
+    [BsonIgnore] public List<AssetCategoryMongo> Children { get; set; } = new();
 
     // Reference IDs for related entities (stored)
     [BsonElement("modelIds")]
@@ -155,7 +120,11 @@ public class AssetCategoryMongo : BaseEntityMongo
     [BsonIgnoreIfNull]
     public List<long>? AssetIds { get; set; }
 
-    public AssetCategoryMongo() { }
+    public AssetCategoryMongo()
+    {
+    }
 
-    public AssetCategoryMongo(long domainId) : base(domainId) { }
+    public AssetCategoryMongo(long domainId) : base(domainId)
+    {
+    }
 }

@@ -81,7 +81,7 @@ public class CostCenterTests
         var value = "CC-001";
 
         // Act
-        CostCenter costCenter = (CostCenter)value;
+        var costCenter = (CostCenter)value;
 
         // Assert
         costCenter.Value.Should().Be("CC-001");

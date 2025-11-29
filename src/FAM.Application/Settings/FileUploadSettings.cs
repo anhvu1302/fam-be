@@ -25,7 +25,7 @@ public class FileUploadSettings
     /// <summary>
     /// Allowed extensions for images
     /// </summary>
-    public string[] AllowedImageExtensions { get; set; } = 
+    public string[] AllowedImageExtensions { get; set; } =
     {
         ".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"
     };
@@ -33,7 +33,7 @@ public class FileUploadSettings
     /// <summary>
     /// Allowed extensions for media files
     /// </summary>
-    public string[] AllowedMediaExtensions { get; set; } = 
+    public string[] AllowedMediaExtensions { get; set; } =
     {
         ".mp4", ".avi", ".mov", ".wmv", ".flv", ".mkv", ".webm",
         ".mp3", ".wav", ".ogg", ".m4a"
@@ -42,7 +42,7 @@ public class FileUploadSettings
     /// <summary>
     /// Allowed extensions for documents
     /// </summary>
-    public string[] AllowedDocumentExtensions { get; set; } = 
+    public string[] AllowedDocumentExtensions { get; set; } =
     {
         ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".txt", ".csv"
     };

@@ -14,7 +14,9 @@ public class DepartmentDetails : Entity
     public int? Headcount { get; private set; }
     public decimal? BudgetYear { get; private set; }
 
-    private DepartmentDetails() { }
+    private DepartmentDetails()
+    {
+    }
 
     public static DepartmentDetails Create(string? costCenter = null, int? headcount = null, decimal? budgetYear = null)
     {

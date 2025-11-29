@@ -37,32 +37,41 @@ public sealed class Rating : ValueObject
     /// <summary>
     /// Rating tối đa (5 sao)
     /// </summary>
-    public static Rating Max => new Rating(5);
+    public static Rating Max => new(5);
 
     /// <summary>
     /// Rating tối thiểu (1 sao)
     /// </summary>
-    public static Rating Min => new Rating(1);
+    public static Rating Min => new(1);
 
     /// <summary>
     /// Rating trung bình (3 sao)
     /// </summary>
-    public static Rating Average => new Rating(3);
+    public static Rating Average => new(3);
 
     /// <summary>
     /// Kiểm tra có phải rating cao không (>= 4)
     /// </summary>
-    public bool IsHighRating() => Value >= 4;
+    public bool IsHighRating()
+    {
+        return Value >= 4;
+    }
 
     /// <summary>
     /// Kiểm tra có phải rating thấp không (<= 2)
     /// </summary>
-    public bool IsLowRating() => Value <= 2;
+    public bool IsLowRating()
+    {
+        return Value <= 2;
+    }
 
     /// <summary>
     /// Kiểm tra có phải rating trung bình không (= 3)
     /// </summary>
-    public bool IsAverageRating() => Value == 3;
+    public bool IsAverageRating()
+    {
+        return Value == 3;
+    }
 
     /// <summary>
     /// Lấy mô tả text của rating
@@ -83,12 +92,18 @@ public sealed class Rating : ValueObject
     /// <summary>
     /// Lấy số sao dưới dạng string
     /// </summary>
-    public string GetStars() => new string('★', Value) + new string('☆', 5 - Value);
+    public string GetStars()
+    {
+        return new string('★', Value) + new string('☆', 5 - Value);
+    }
 
     /// <summary>
     /// So sánh với rating khác
     /// </summary>
-    public int CompareTo(Rating other) => Value.CompareTo(other.Value);
+    public int CompareTo(Rating other)
+    {
+        return Value.CompareTo(other.Value);
+    }
 
     /// <summary>
     /// Cộng hai rating (lấy trung bình)
@@ -102,17 +117,26 @@ public sealed class Rating : ValueObject
     /// <summary>
     /// Implicit conversion từ Rating sang int
     /// </summary>
-    public static implicit operator int(Rating rating) => rating.Value;
+    public static implicit operator int(Rating rating)
+    {
+        return rating.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ int sang Rating
     /// </summary>
-    public static explicit operator Rating(int value) => Create(value);
+    public static explicit operator Rating(int value)
+    {
+        return Create(value);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => $"{Value}/5 stars";
+    public override string ToString()
+    {
+        return $"{Value}/5 stars";
+    }
 }

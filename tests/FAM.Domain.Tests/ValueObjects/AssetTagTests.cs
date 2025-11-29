@@ -82,7 +82,7 @@ public class AssetTagTests
         var value = "TAG001";
 
         // Act
-        AssetTag assetTag = (AssetTag)value;
+        var assetTag = (AssetTag)value;
 
         // Assert
         assetTag.Value.Should().Be(value);

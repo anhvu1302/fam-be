@@ -11,26 +11,24 @@ namespace FAM.Infrastructure.PersistenceModels.Mongo;
 [BsonIgnoreExtraElements]
 public class LifecycleStatusMongo : BaseEntityMongo
 {
-    [BsonElement("code")]
-    public string Code { get; set; } = string.Empty;
+    [BsonElement("code")] public string Code { get; set; } = string.Empty;
 
-    [BsonElement("name")]
-    public string Name { get; set; } = string.Empty;
+    [BsonElement("name")] public string Name { get; set; } = string.Empty;
 
-    [BsonElement("description")]
-    public string? Description { get; set; }
+    [BsonElement("description")] public string? Description { get; set; }
 
-    [BsonElement("color")]
-    public string? Color { get; set; }
+    [BsonElement("color")] public string? Color { get; set; }
 
-    [BsonElement("orderNo")]
-    public int? OrderNo { get; set; }
+    [BsonElement("orderNo")] public int? OrderNo { get; set; }
 
     // Navigation properties (stored as references)
-    [BsonElement("assetIds")]
-    public List<long> AssetIds { get; set; } = new();
+    [BsonElement("assetIds")] public List<long> AssetIds { get; set; } = new();
 
-    public LifecycleStatusMongo() { }
+    public LifecycleStatusMongo()
+    {
+    }
 
-    public LifecycleStatusMongo(long domainId) : base(domainId) { }
+    public LifecycleStatusMongo(long domainId) : base(domainId)
+    {
+    }
 }

@@ -95,9 +95,11 @@ public class ComplianceReport
     public int TotalAssets { get; set; }
     public int CompliantAssets { get; set; }
     public int NonCompliantAssets { get; set; }
-    public decimal ComplianceRate => TotalAssets > 0 
-        ? (decimal)CompliantAssets / TotalAssets * 100 
+
+    public decimal ComplianceRate => TotalAssets > 0
+        ? (decimal)CompliantAssets / TotalAssets * 100
         : 0;
+
     public List<ComplianceIssue> TopIssues { get; set; } = new();
     public Dictionary<string, int> IssuesByCategory { get; set; } = new();
 }

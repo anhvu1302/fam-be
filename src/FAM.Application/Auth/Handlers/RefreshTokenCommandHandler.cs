@@ -24,42 +24,24 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
     {
         // Find device by refresh token
         var device = await _unitOfWork.UserDevices.FindByRefreshTokenAsync(request.RefreshToken, cancellationToken);
-        
-        if (device == null)
-        {
-            throw new UnauthorizedAccessException("Invalid refresh token");
-        }
+
+        if (device == null) throw new UnauthorizedAccessException("Invalid refresh token");
 
         // Check if refresh token is still valid
-        if (!device.IsRefreshTokenValid())
-        {
-            throw new UnauthorizedAccessException("Refresh token has expired");
-        }
+        if (!device.IsRefreshTokenValid()) throw new UnauthorizedAccessException("Refresh token has expired");
 
         // Check if device is active
-        if (!device.IsActive)
-        {
-            throw new UnauthorizedAccessException("Device is inactive");
-        }
+        if (!device.IsActive) throw new UnauthorizedAccessException("Device is inactive");
 
         // Get the user
         var user = await _unitOfWork.Users.GetByIdAsync(device.UserId, cancellationToken);
-        
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException("User not found");
-        }
+
+        if (user == null) throw new UnauthorizedAccessException("User not found");
 
         // Check if user is active and not locked
-        if (!user.IsActive)
-        {
-            throw new UnauthorizedAccessException("Account is inactive");
-        }
+        if (!user.IsActive) throw new UnauthorizedAccessException("Account is inactive");
 
-        if (user.IsLockedOut())
-        {
-            throw new UnauthorizedAccessException("Account is locked");
-        }
+        if (user.IsLockedOut()) throw new UnauthorizedAccessException("Account is locked");
 
         // Generate new access token
         var roles = new List<string>(); // TODO: Load user roles from UserNodeRoles
@@ -68,7 +50,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
         // Optionally generate new refresh token (rotate refresh token for better security)
         var newRefreshToken = _jwtService.GenerateRefreshToken();
         var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(30);
-        
+
         // Update device with new refresh token
         device.UpdateRefreshToken(newRefreshToken, refreshTokenExpiresAt, request.IpAddress, request.Location);
         _unitOfWork.UserDevices.Update(device);

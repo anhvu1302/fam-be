@@ -18,7 +18,8 @@ public sealed record LoginCommand : IRequest<LoginResponse>
     public string? Location { get; init; }
     public bool RememberMe { get; init; }
 
-    public static LoginCommand From(LoginRequest request, string deviceId, string deviceName, string deviceType, string? ipAddress, string? userAgent)
+    public static LoginCommand From(LoginRequest request, string deviceId, string deviceName, string deviceType,
+        string? ipAddress, string? userAgent)
     {
         return new LoginCommand
         {

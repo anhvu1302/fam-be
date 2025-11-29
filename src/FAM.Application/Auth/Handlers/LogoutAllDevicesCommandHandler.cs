@@ -20,16 +20,13 @@ public class LogoutAllDevicesCommandHandler : IRequestHandler<LogoutAllDevicesCo
     {
         // Verify user exists
         var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        
-        if (user == null)
-        {
-            throw new KeyNotFoundException($"User with ID {request.UserId} not found");
-        }
+
+        if (user == null) throw new KeyNotFoundException($"User with ID {request.UserId} not found");
 
         // Deactivate all user devices (except current device if specified)
         await _unitOfWork.UserDevices.DeactivateAllUserDevicesAsync(
-            request.UserId, 
-            request.ExceptDeviceId, 
+            request.UserId,
+            request.ExceptDeviceId,
             cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

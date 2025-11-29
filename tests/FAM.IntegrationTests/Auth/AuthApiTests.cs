@@ -10,7 +10,7 @@ namespace FAM.IntegrationTests.Auth;
 /// <summary>
 /// Integration tests for Auth API endpoints
 /// </summary>
-public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
+public class AuthApiTests : IClassFixture<FamWebApplicationFactory>, IAsyncLifetime
 {
     private readonly HttpClient _client;
     private readonly FamWebApplicationFactory _factory;
@@ -19,6 +19,18 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
     {
         _factory = factory;
         _client = factory.CreateClient();
+    }
+
+    public async Task InitializeAsync()
+    {
+        // Reset admin user to original state before running tests
+        // This ensures password is "Admin@123" and lockout is cleared
+        await _factory.ResetAdminUserAsync();
+    }
+
+    public Task DisposeAsync()
+    {
+        return Task.CompletedTask;
     }
 
     #region Login Tests
@@ -39,7 +51,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         var content = await response.Content.ReadFromJsonAsync<LoginResponse>();
         content.Should().NotBeNull();
         content!.AccessToken.Should().NotBeNullOrEmpty();
@@ -92,7 +104,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
     {
         // Arrange - First login to get refresh token
         var loginResponse = await LoginAsAdmin();
-        
+
         var refreshRequest = new
         {
             refreshToken = loginResponse.RefreshToken
@@ -103,7 +115,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         var content = await response.Content.ReadFromJsonAsync<LoginResponse>();
         content.Should().NotBeNull();
         content!.AccessToken.Should().NotBeNullOrEmpty();
@@ -135,7 +147,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
     {
         // Arrange
         var loginResponse = await LoginAsAdmin();
-        _client.DefaultRequestHeaders.Authorization = 
+        _client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginResponse.AccessToken);
 
         // Act
@@ -143,7 +155,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Logged out successfully");
     }
@@ -167,7 +179,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
     {
         // Arrange
         var loginResponse = await LoginAsAdmin();
-        _client.DefaultRequestHeaders.Authorization = 
+        _client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginResponse.AccessToken);
 
         var request = new
@@ -180,7 +192,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Logged out from all devices successfully");
     }
@@ -190,7 +202,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
     {
         // Arrange
         var loginResponse = await LoginAsAdmin();
-        _client.DefaultRequestHeaders.Authorization = 
+        _client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginResponse.AccessToken);
 
         var request = new
@@ -214,7 +226,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
     {
         // Arrange
         var loginResponse = await LoginAsAdmin();
-        _client.DefaultRequestHeaders.Authorization = 
+        _client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginResponse.AccessToken);
 
         var request = new
@@ -229,7 +241,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Password changed successfully");
 
@@ -248,7 +260,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
     {
         // Arrange
         var loginResponse = await LoginAsAdmin();
-        _client.DefaultRequestHeaders.Authorization = 
+        _client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginResponse.AccessToken);
 
         var request = new
@@ -270,7 +282,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
     {
         // Arrange
         var loginResponse = await LoginAsAdmin();
-        _client.DefaultRequestHeaders.Authorization = 
+        _client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginResponse.AccessToken);
 
         var request = new
@@ -305,7 +317,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
     {
         // Arrange
         var loginResponse = await LoginAsAdmin();
-        _client.DefaultRequestHeaders.Authorization = 
+        _client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginResponse.AccessToken);
 
         var request = new
@@ -318,7 +330,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         var content = await response.Content.ReadFromJsonAsync<Enable2FAResponse>();
         content.Should().NotBeNull();
         content!.Secret.Should().NotBeNullOrEmpty();
@@ -331,7 +343,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
     {
         // Arrange
         var loginResponse = await LoginAsAdmin();
-        _client.DefaultRequestHeaders.Authorization = 
+        _client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginResponse.AccessToken);
 
         var request = new
@@ -351,7 +363,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
     {
         // Arrange
         var loginResponse = await LoginAsAdmin();
-        _client.DefaultRequestHeaders.Authorization = 
+        _client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginResponse.AccessToken);
 
         var request = new
@@ -375,7 +387,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
     {
         // Arrange
         var loginResponse = await LoginAsAdmin();
-        _client.DefaultRequestHeaders.Authorization = 
+        _client.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", loginResponse.AccessToken);
 
         // Act
@@ -383,7 +395,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        
+
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("admin");
         content.Should().Contain("userId");

@@ -115,5 +115,9 @@ public sealed class Password : ValueObject
         yield return Salt;
     }
 
-    public override string ToString() => "*****"; // Never expose password hash
+    public override string ToString()
+    {
+        return "*****";
+        // Never expose password hash
+    }
 }

@@ -35,7 +35,8 @@ public class RoleRepositoryPostgreSql : IRoleRepository
         return _mapper.Map<IEnumerable<Role>>(entities);
     }
 
-    public async Task<IEnumerable<Role>> FindAsync(Expression<Func<Role, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Role>> FindAsync(Expression<Func<Role, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         var allEntities = await _context.Roles.ToListAsync(cancellationToken);
         var allRoles = _mapper.Map<IEnumerable<Role>>(allEntities);
@@ -72,7 +73,8 @@ public class RoleRepositoryPostgreSql : IRoleRepository
         return entity != null ? _mapper.Map<Role>(entity) : null;
     }
 
-    public async Task<IEnumerable<Role>> GetByRankGreaterThanAsync(int rank, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Role>> GetByRankGreaterThanAsync(int rank,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.Roles
             .Where(r => r.Rank > rank)
@@ -81,13 +83,11 @@ public class RoleRepositoryPostgreSql : IRoleRepository
         return _mapper.Map<IEnumerable<Role>>(entities);
     }
 
-    public async Task<bool> ExistsByCodeAsync(string code, long? excludeRoleId = null, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsByCodeAsync(string code, long? excludeRoleId = null,
+        CancellationToken cancellationToken = default)
     {
         var query = _context.Roles.Where(r => r.Code == code);
-        if (excludeRoleId.HasValue)
-        {
-            query = query.Where(r => r.Id != excludeRoleId.Value);
-        }
+        if (excludeRoleId.HasValue) query = query.Where(r => r.Id != excludeRoleId.Value);
         return await query.AnyAsync(cancellationToken);
     }
 }

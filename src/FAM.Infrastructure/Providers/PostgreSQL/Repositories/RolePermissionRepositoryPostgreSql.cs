@@ -34,7 +34,8 @@ public class RolePermissionRepositoryPostgreSql : IRolePermissionRepository
         return _mapper.Map<IEnumerable<RolePermission>>(entities);
     }
 
-    public async Task<IEnumerable<RolePermission>> FindAsync(Expression<Func<RolePermission, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<RolePermission>> FindAsync(Expression<Func<RolePermission, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         var allEntities = await _context.RolePermissions.ToListAsync(cancellationToken);
         var allRolePermissions = _mapper.Map<IEnumerable<RolePermission>>(allEntities);
@@ -64,7 +65,8 @@ public class RolePermissionRepositoryPostgreSql : IRolePermissionRepository
         return await _context.RolePermissions.AnyAsync(rp => rp.Id == id, cancellationToken);
     }
 
-    public async Task<IEnumerable<RolePermission>> GetByRoleIdAsync(long roleId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<RolePermission>> GetByRoleIdAsync(long roleId,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.RolePermissions
             .Where(rp => rp.RoleId == roleId)
@@ -72,7 +74,8 @@ public class RolePermissionRepositoryPostgreSql : IRolePermissionRepository
         return _mapper.Map<IEnumerable<RolePermission>>(entities);
     }
 
-    public async Task<IEnumerable<RolePermission>> GetByPermissionIdAsync(long permissionId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<RolePermission>> GetByPermissionIdAsync(long permissionId,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.RolePermissions
             .Where(rp => rp.PermissionId == permissionId)
@@ -80,7 +83,8 @@ public class RolePermissionRepositoryPostgreSql : IRolePermissionRepository
         return _mapper.Map<IEnumerable<RolePermission>>(entities);
     }
 
-    public async Task<RolePermission?> GetByRoleAndPermissionAsync(long roleId, long permissionId, CancellationToken cancellationToken = default)
+    public async Task<RolePermission?> GetByRoleAndPermissionAsync(long roleId, long permissionId,
+        CancellationToken cancellationToken = default)
     {
         var entity = await _context.RolePermissions
             .FirstOrDefaultAsync(rp => rp.RoleId == roleId && rp.PermissionId == permissionId, cancellationToken);

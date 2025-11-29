@@ -68,7 +68,7 @@ public class ResourceTypeTests
         var value = "asset";
 
         // Act
-        ResourceType resourceType = (ResourceType)value;
+        var resourceType = (ResourceType)value;
 
         // Assert
         resourceType.Value.Should().Be(value);

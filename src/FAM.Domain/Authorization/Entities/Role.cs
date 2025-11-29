@@ -17,7 +17,9 @@ public class Role : BaseEntity
     public ICollection<UserNodeRole> UserNodeRoles { get; set; } = new List<UserNodeRole>();
     public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
 
-    private Role() { }
+    private Role()
+    {
+    }
 
     public static Role Create(string code, string name, int rank, string? description = null)
     {

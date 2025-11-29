@@ -14,18 +14,20 @@ public sealed class MongoUserFieldMap
         var map = new FieldMap<UserMongo>();
 
         // Map fields to MongoDB document properties
-        map.Add("id", u => u.Id, canFilter: true, canSort: true, canSelect: true);
-        map.Add("username", u => u.Username, canFilter: true, canSort: true, canSelect: true);
-        map.Add("email", u => u.Email, canFilter: true, canSort: true, canSelect: true);
-        map.Add("fullname", u => u.FullName ?? string.Empty, canFilter: true, canSort: true, canSelect: true);
-        map.Add("createdAt", u => u.CreatedAt, canFilter: true, canSort: true, canSelect: true);
-        map.Add("updatedAt", u => u.UpdatedAt ?? DateTime.MinValue, canFilter: true, canSort: true, canSelect: true);
-        map.Add("isDeleted", u => u.IsDeleted, canFilter: true, canSort: true, canSelect: true);
+        map.Add("id", u => u.Id, true, true, true);
+        map.Add("username", u => u.Username, true, true, true);
+        map.Add("email", u => u.Email, true, true, true);
+        map.Add("fullname", u => u.FullName ?? string.Empty, true, true, true);
+        map.Add("createdAt", u => u.CreatedAt, true, true, true);
+        map.Add("updatedAt", u => u.UpdatedAt ?? DateTime.MinValue, true, true, true);
+        map.Add("isDeleted", u => u.IsDeleted, true, true, true);
 
         return map;
     });
 
     public static FieldMap<UserMongo> Instance => _instance.Value;
 
-    private MongoUserFieldMap() { }
+    private MongoUserFieldMap()
+    {
+    }
 }

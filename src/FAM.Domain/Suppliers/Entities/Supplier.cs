@@ -15,14 +15,14 @@ public class Supplier : Entity
     public string? ShortName { get; private set; }
     public string? Description { get; private set; }
     public string? SupplierCode { get; private set; } // Internal supplier code
-    
+
     // Registration & Legal
     public string? TaxCode { get; private set; } // Tax ID / EIN
     public string? VATNumber { get; private set; } // VAT registration number
     public string? RegistrationNumber { get; private set; } // Business registration
     public string? DUNSNumber { get; private set; } // D&B number
     public string? GLN { get; private set; } // Global Location Number
-    
+
     // Location
     public int? CountryId { get; private set; }
     public string? Address { get; private set; }
@@ -30,25 +30,25 @@ public class Supplier : Entity
     public string? State { get; private set; }
     public PostalCode? PostalCode { get; private set; }
     public string? Region { get; private set; }
-    
+
     // Contact Information
     public Url? Website { get; private set; }
     public Email? Email { get; private set; }
     public PhoneNumber? Phone { get; private set; }
     public PhoneNumber? Fax { get; private set; }
     public PhoneNumber? MobilePhone { get; private set; }
-    
+
     // Primary Contact Person
     public string? ContactPersonName { get; private set; }
     public string? ContactPersonTitle { get; private set; }
     public Email? ContactPersonEmail { get; private set; }
     public PhoneNumber? ContactPersonPhone { get; private set; }
-    
+
     // Account Manager (their side)
     public string? AccountManagerName { get; private set; }
     public Email? AccountManagerEmail { get; private set; }
     public PhoneNumber? AccountManagerPhone { get; private set; }
-    
+
     // Business Information
     public string? SupplierType { get; private set; } // Manufacturer, Distributor, Reseller, Service Provider
     public string? IndustryType { get; private set; }
@@ -57,7 +57,7 @@ public class Supplier : Entity
     public int? EmployeeCount { get; private set; }
     public Money? AnnualRevenue { get; private set; }
     public string? RevenueCurrency { get; private set; }
-    
+
     // Financial Terms
     public string? PaymentTerms { get; private set; } // Net 30, Net 60, COD, etc.
     public string? PaymentMethods { get; private set; } // JSON array: Wire, Check, Credit Card
@@ -66,14 +66,14 @@ public class Supplier : Entity
     public Percentage? DiscountRate { get; private set; } // Standard discount %
     public bool TaxExempt { get; private set; }
     public string? TaxExemptCertificate { get; private set; }
-    
+
     // Banking Information
     public string? BankName { get; private set; }
     public string? BankAccountNumber { get; private set; }
     public string? BankRoutingNumber { get; private set; }
     public string? SwiftCode { get; private set; }
     public string? IBAN { get; private set; }
-    
+
     // Certifications & Compliance
     public string? ISO9001Certified { get; private set; }
     public string? ISO14001Certified { get; private set; }
@@ -82,12 +82,12 @@ public class Supplier : Entity
     public bool IsWomanOwned { get; private set; }
     public bool IsVeteranOwned { get; private set; }
     public bool IsSmallBusiness { get; private set; }
-    
+
     // Product & Service Categories
     public string? ProductCategories { get; private set; } // JSON array
     public string? ServiceCategories { get; private set; } // JSON array
     public string? Specialization { get; private set; }
-    
+
     // Performance & Rating
     public Rating? QualityRating { get; private set; }
     public Rating? DeliveryRating { get; private set; }
@@ -95,7 +95,7 @@ public class Supplier : Entity
     public Rating? PriceRating { get; private set; }
     public int? OnTimeDeliveryPercentage { get; private set; }
     public int? DefectRate { get; private set; } // Percentage
-    
+
     // Relationship & Status
     public string? SupplierStatus { get; private set; } // Active, Inactive, Blocked, Preferred
     public bool IsPreferred { get; private set; }
@@ -106,20 +106,20 @@ public class Supplier : Entity
     public DateTime? PartnerSince { get; private set; }
     public DateTime? LastOrderDate { get; private set; }
     public DateTime? LastReviewDate { get; private set; }
-    
+
     // Risk Assessment
     public string? RiskLevel { get; private set; } // Low, Medium, High
     public string? RiskFactors { get; private set; } // JSON array
     public bool RequiresInsurance { get; private set; }
     public bool RequiresBackgroundCheck { get; private set; }
-    
+
     // Contract Information
     public string? ContractNumber { get; private set; }
     public DateTime? ContractStartDate { get; private set; }
     public DateTime? ContractEndDate { get; private set; }
     public Url? ContractDocumentUrl { get; private set; }
     public bool AutoRenew { get; private set; }
-    
+
     // Shipping & Logistics
     public string? ShippingMethods { get; private set; } // JSON array
     public string? ShippingTerms { get; private set; } // FOB, CIF, DDP, etc.
@@ -128,57 +128,59 @@ public class Supplier : Entity
     public string? MinimumOrderCurrency { get; private set; }
     public bool DropShipCapable { get; private set; }
     public string? WarehouseLocations { get; private set; } // JSON array
-    
+
     // Support & Service
     public Email? SupportEmail { get; private set; }
     public PhoneNumber? SupportPhone { get; private set; }
     public string? SupportHours { get; private set; }
     public Url? SLADocumentUrl { get; private set; }
     public bool Provides24x7Support { get; private set; }
-    
+
     // Insurance & Bonding
     public string? InsuranceProvider { get; private set; }
     public string? InsurancePolicyNumber { get; private set; }
     public Money? InsuranceCoverage { get; private set; }
     public DateTime? InsuranceExpiryDate { get; private set; }
     public string? BondingInformation { get; private set; }
-    
+
     // Diversity & Sustainability
     public bool IsMBE { get; private set; } // Minority Business Enterprise
     public bool IsWBE { get; private set; } // Women Business Enterprise
     public bool IsSDVOSB { get; private set; } // Service-Disabled Veteran-Owned Small Business
     public bool IsEnvironmentallyCertified { get; private set; }
     public string? SustainabilityRating { get; private set; }
-    
+
     // Internal Management
     public string? InternalNotes { get; private set; }
     public string? ProcurementNotes { get; private set; }
     public string? OurAccountManager { get; private set; } // Our internal account manager
     public string? Tags { get; private set; } // JSON array for categorization
-    
+
     // Statistics
     public int? TotalOrders { get; private set; }
     public Money? TotalSpent { get; private set; }
     public string? TotalSpentCurrency { get; private set; }
     public Money? AverageOrderValue { get; private set; }
-    
+
     // Documents & Attachments
     public Url? W9FormUrl { get; private set; } // US tax form
     public Url? CertificateOfInsuranceUrl { get; private set; }
     public Url? BusinessLicenseUrl { get; private set; }
     public string? References { get; private set; } // JSON array of references
-    
+
     // Navigation properties
     // public Companies.Company? Company { get; set; }
     public Geography.Country? Country { get; set; }
     public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
 
-    private Supplier() { }
+    private Supplier()
+    {
+    }
 
     public static Supplier Create(
-        string name, 
-        string? taxCode = null, 
-        int? companyId = null, 
+        string name,
+        string? taxCode = null,
+        int? companyId = null,
         int? countryId = null)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -328,7 +330,8 @@ public class Supplier : Entity
         int? onTimeDeliveryPercentage,
         int? defectRate)
     {
-        if (onTimeDeliveryPercentage.HasValue && (onTimeDeliveryPercentage.Value < 0 || onTimeDeliveryPercentage.Value > 100))
+        if (onTimeDeliveryPercentage.HasValue &&
+            (onTimeDeliveryPercentage.Value < 0 || onTimeDeliveryPercentage.Value > 100))
             throw new DomainException("On-time delivery percentage must be between 0 and 100");
 
         if (defectRate.HasValue && (defectRate.Value < 0 || defectRate.Value > 100))
@@ -397,8 +400,15 @@ public class Supplier : Entity
             SupplierStatus = "Active";
     }
 
-    public void Activate() => IsActive = true;
-    public void Deactivate() => IsActive = false;
+    public void Activate()
+    {
+        IsActive = true;
+    }
+
+    public void Deactivate()
+    {
+        IsActive = false;
+    }
 
     public decimal GetAverageRating()
     {
@@ -419,6 +429,8 @@ public class Supplier : Entity
                ContractEndDate.Value > DateTime.UtcNow;
     }
 
-    public bool IsContractExpired() => 
-        ContractEndDate.HasValue && ContractEndDate.Value < DateTime.UtcNow;
+    public bool IsContractExpired()
+    {
+        return ContractEndDate.HasValue && ContractEndDate.Value < DateTime.UtcNow;
+    }
 }

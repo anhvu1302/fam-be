@@ -13,7 +13,9 @@ public abstract class BaseEntityEf
     public bool IsDeleted { get; set; } = false;
     public DateTime? DeletedAt { get; set; }
 
-    protected BaseEntityEf() { }
+    protected BaseEntityEf()
+    {
+    }
 
     protected BaseEntityEf(long id)
     {

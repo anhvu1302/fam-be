@@ -13,10 +13,7 @@ public abstract class ValueObject : IEquatable<ValueObject>
 
     public override bool Equals(object? obj)
     {
-        if (obj == null || obj.GetType() != GetType())
-        {
-            return false;
-        }
+        if (obj == null || obj.GetType() != GetType()) return false;
 
         var other = (ValueObject)obj;
 

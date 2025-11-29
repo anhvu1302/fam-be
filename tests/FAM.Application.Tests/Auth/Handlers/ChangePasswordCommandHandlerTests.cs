@@ -34,7 +34,7 @@ public class ChangePasswordCommandHandlerTests
         // Arrange
         var userId = 1L;
         var currentPlainPassword = "OldPass123!";
-        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: currentPlainPassword);
+        var user = User.Create("testuser", "test@example.com", currentPlainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
         var command = new ChangePasswordCommand
@@ -61,12 +61,12 @@ public class ChangePasswordCommandHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        
+
         _mockUserRepository.Verify(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _mockUserDeviceRepository.Verify(
-            x => x.DeactivateAllUserDevicesAsync(It.IsAny<long>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()), 
+            x => x.DeactivateAllUserDevicesAsync(It.IsAny<long>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -134,7 +134,7 @@ public class ChangePasswordCommandHandlerTests
         var userId = 1L;
         var currentDeviceId = "device123";
         var currentPlainPassword = "OldPass123!";
-        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: currentPlainPassword);
+        var user = User.Create("testuser", "test@example.com", currentPlainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
         var command = new ChangePasswordCommand
@@ -166,9 +166,9 @@ public class ChangePasswordCommandHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        
+
         _mockUserDeviceRepository.Verify(
-            x => x.DeactivateAllUserDevicesAsync(userId, currentDeviceId, It.IsAny<CancellationToken>()), 
+            x => x.DeactivateAllUserDevicesAsync(userId, currentDeviceId, It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -179,7 +179,7 @@ public class ChangePasswordCommandHandlerTests
         // Arrange
         var userId = 1L;
         var currentPlainPassword = "OldPass123!";
-        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: currentPlainPassword);
+        var user = User.Create("testuser", "test@example.com", currentPlainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
         var command = new ChangePasswordCommand
@@ -209,7 +209,7 @@ public class ChangePasswordCommandHandlerTests
         // Arrange
         var userId = 1L;
         var samePlainPassword = "SamePass123!";
-        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: samePlainPassword);
+        var user = User.Create("testuser", "test@example.com", samePlainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
         var command = new ChangePasswordCommand

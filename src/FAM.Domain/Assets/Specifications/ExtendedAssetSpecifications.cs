@@ -63,7 +63,7 @@ public class LicenseExpiringSoonSpecification : Specification<Asset>
     {
         var checkDate = DateTime.UtcNow.AddDays(_daysThreshold);
         var today = DateTime.UtcNow;
-        
+
         return asset =>
             !asset.IsDeleted &&
             asset.LicenseExpiryDate.HasValue &&
@@ -178,7 +178,7 @@ public class HighSecurityAssetSpecification : Specification<Asset>
     {
         return asset =>
             !asset.IsDeleted &&
-            (asset.SecurityClassification == "Confidential" || 
+            (asset.SecurityClassification == "Confidential" ||
              asset.SecurityClassification == "Secret");
     }
 }

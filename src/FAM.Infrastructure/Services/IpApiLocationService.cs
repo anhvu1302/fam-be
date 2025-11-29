@@ -28,10 +28,7 @@ public class IpApiLocationService : ILocationService
         try
         {
             // Skip for local/private IPs
-            if (IsLocalOrPrivateIp(ipAddress))
-            {
-                return "Local Network";
-            }
+            if (IsLocalOrPrivateIp(ipAddress)) return "Local Network";
 
             var locationInfo = await GetDetailedLocationFromIpAsync(ipAddress);
             return locationInfo?.GetFormattedLocation();
@@ -49,33 +46,32 @@ public class IpApiLocationService : ILocationService
         {
             // Skip for local/private IPs
             if (IsLocalOrPrivateIp(ipAddress))
-            {
                 return new LocationInfo
                 {
                     Country = "Local",
-                    City = "Local Network",
+                    City = "Local Network"
                 };
-            }
 
-            var url = $"{ApiBaseUrl}{ipAddress}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp";
+            var url =
+                $"{ApiBaseUrl}{ipAddress}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp";
             var response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogWarning("IP API returned status code: {StatusCode} for IP: {IpAddress}", 
+                _logger.LogWarning("IP API returned status code: {StatusCode} for IP: {IpAddress}",
                     response.StatusCode, ipAddress);
                 return null;
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            var apiResponse = JsonSerializer.Deserialize<IpApiResponse>(json, new JsonSerializerOptions 
-            { 
-                PropertyNameCaseInsensitive = true 
+            var apiResponse = JsonSerializer.Deserialize<IpApiResponse>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
             });
 
             if (apiResponse?.Status != "success")
             {
-                _logger.LogWarning("IP API failed for IP: {IpAddress}, Message: {Message}", 
+                _logger.LogWarning("IP API failed for IP: {IpAddress}, Message: {Message}",
                     ipAddress, apiResponse?.Message);
                 return null;
             }
@@ -113,15 +109,13 @@ public class IpApiLocationService : ILocationService
             return true;
 
         var bytes = ip.GetAddressBytes();
-        
+
         // IPv4 private ranges
         if (bytes.Length == 4)
-        {
-            return bytes[0] == 10 
-                || (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
-                || (bytes[0] == 192 && bytes[1] == 168)
-                || bytes[0] == 127;
-        }
+            return bytes[0] == 10
+                   || (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
+                   || (bytes[0] == 192 && bytes[1] == 168)
+                   || bytes[0] == 127;
 
         // IPv6 local
         return ip.IsIPv6LinkLocal;

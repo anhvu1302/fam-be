@@ -28,7 +28,9 @@ public class UserDevice : BaseEntityGuid
     // Navigation property
     public User User { get; set; } = null!;
 
-    private UserDevice() { }
+    private UserDevice()
+    {
+    }
 
     public static UserDevice Create(
         long userId,
@@ -57,10 +59,7 @@ public class UserDevice : BaseEntityGuid
             IsTrusted = false
         };
 
-        if (!string.IsNullOrEmpty(ipAddress))
-        {
-            device.IpAddress = IPAddress.Create(ipAddress);
-        }
+        if (!string.IsNullOrEmpty(ipAddress)) device.IpAddress = IPAddress.Create(ipAddress);
 
         return device;
     }
@@ -96,7 +95,8 @@ public class UserDevice : BaseEntityGuid
     /// <summary>
     /// Update refresh token - combines SetRefreshToken and RecordLogin
     /// </summary>
-    public void UpdateRefreshToken(string refreshToken, DateTime expiresAt, string? ipAddress = null, string? location = null)
+    public void UpdateRefreshToken(string refreshToken, DateTime expiresAt, string? ipAddress = null,
+        string? location = null)
     {
         SetRefreshToken(refreshToken, expiresAt);
         RecordLogin(ipAddress, location);

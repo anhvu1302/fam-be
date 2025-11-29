@@ -18,20 +18,16 @@ public abstract class BaseEntityMongoGuid
     public Guid DomainId { get; set; }
 
     // Audit fields (timestamps)
-    [BsonElement("createdAt")]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    [BsonElement("createdAt")] public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    [BsonElement("updatedAt")]
-    public DateTime? UpdatedAt { get; set; }
+    [BsonElement("updatedAt")] public DateTime? UpdatedAt { get; set; }
 
     // Soft delete
-    [BsonElement("isDeleted")]
-    public bool IsDeleted { get; set; } = false;
+    [BsonElement("isDeleted")] public bool IsDeleted { get; set; } = false;
 
-    [BsonElement("deletedAt")]
-    public DateTime? DeletedAt { get; set; }
+    [BsonElement("deletedAt")] public DateTime? DeletedAt { get; set; }
 
-    protected BaseEntityMongoGuid() 
+    protected BaseEntityMongoGuid()
     {
         DomainId = Guid.NewGuid();
     }

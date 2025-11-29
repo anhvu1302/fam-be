@@ -17,7 +17,9 @@ public class Attachment : Entity
     public Asset? Asset { get; set; }
     public Users.User? Uploader { get; set; }
 
-    private Attachment() { }
+    private Attachment()
+    {
+    }
 
     public static Attachment Create(long? assetId, string fileName, string fileUrl, int? uploadedBy = null)
     {

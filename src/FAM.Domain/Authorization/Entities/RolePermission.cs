@@ -12,7 +12,9 @@ public class RolePermission : Entity
     public long PermissionId { get; private set; }
     public Permission Permission { get; private set; } = null!;
 
-    private RolePermission() { }
+    private RolePermission()
+    {
+    }
 
     public static RolePermission Create(Role role, Permission permission)
     {

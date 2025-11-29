@@ -99,7 +99,7 @@ public class DepartmentDetailsTests
         var budgetYear = 1000000m;
 
         // Act
-        Action act = () => details.Update(costCenter, headcount, budgetYear);
+        var act = () => details.Update(costCenter, headcount, budgetYear);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -116,7 +116,7 @@ public class DepartmentDetailsTests
         var budgetYear = -1000m;
 
         // Act
-        Action act = () => details.Update(costCenter, headcount, budgetYear);
+        var act = () => details.Update(costCenter, headcount, budgetYear);
 
         // Assert
         act.Should().Throw<DomainException>()

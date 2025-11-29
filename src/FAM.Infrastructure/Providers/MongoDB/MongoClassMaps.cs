@@ -13,106 +13,84 @@ public static class MongoClassMaps
     {
         // Register class maps
         if (!BsonClassMap.IsClassMapRegistered(typeof(CompanyMongo)))
-        {
             BsonClassMap.RegisterClassMap<CompanyMongo>(cm =>
             {
                 cm.AutoMap();
                 cm.SetIgnoreExtraElements(true);
             });
-        }
 
         if (!BsonClassMap.IsClassMapRegistered(typeof(UserMongo)))
-        {
             BsonClassMap.RegisterClassMap<UserMongo>(cm =>
             {
                 cm.AutoMap();
                 cm.SetIgnoreExtraElements(true);
             });
-        }
 
         // Authorization entities
         if (!BsonClassMap.IsClassMapRegistered(typeof(PermissionMongo)))
-        {
             BsonClassMap.RegisterClassMap<PermissionMongo>(cm =>
             {
                 cm.AutoMap();
                 cm.SetIgnoreExtraElements(true);
             });
-        }
 
         if (!BsonClassMap.IsClassMapRegistered(typeof(RoleMongo)))
-        {
             BsonClassMap.RegisterClassMap<RoleMongo>(cm =>
             {
                 cm.AutoMap();
                 cm.SetIgnoreExtraElements(true);
             });
-        }
 
         if (!BsonClassMap.IsClassMapRegistered(typeof(ResourceMongo)))
-        {
             BsonClassMap.RegisterClassMap<ResourceMongo>(cm =>
             {
                 cm.AutoMap();
                 cm.SetIgnoreExtraElements(true);
             });
-        }
 
         if (!BsonClassMap.IsClassMapRegistered(typeof(RolePermissionMongo)))
-        {
             BsonClassMap.RegisterClassMap<RolePermissionMongo>(cm =>
             {
                 cm.AutoMap();
                 cm.SetIgnoreExtraElements(true);
             });
-        }
 
         if (!BsonClassMap.IsClassMapRegistered(typeof(UserNodeRoleMongo)))
-        {
             BsonClassMap.RegisterClassMap<UserNodeRoleMongo>(cm =>
             {
                 cm.AutoMap();
                 cm.SetIgnoreExtraElements(true);
             });
-        }
 
         // Organizations entities
         if (!BsonClassMap.IsClassMapRegistered(typeof(OrgNodeMongo)))
-        {
             BsonClassMap.RegisterClassMap<OrgNodeMongo>(cm =>
             {
                 cm.AutoMap();
                 cm.SetIgnoreExtraElements(true);
             });
-        }
 
         if (!BsonClassMap.IsClassMapRegistered(typeof(CompanyDetailsMongo)))
-        {
             BsonClassMap.RegisterClassMap<CompanyDetailsMongo>(cm =>
             {
                 cm.AutoMap();
                 cm.SetIgnoreExtraElements(true);
             });
-        }
 
         if (!BsonClassMap.IsClassMapRegistered(typeof(DepartmentDetailsMongo)))
-        {
             BsonClassMap.RegisterClassMap<DepartmentDetailsMongo>(cm =>
             {
                 cm.AutoMap();
                 cm.SetIgnoreExtraElements(true);
             });
-        }
 
         // Asset Management entities
         if (!BsonClassMap.IsClassMapRegistered(typeof(SupplierMongo)))
-        {
             BsonClassMap.RegisterClassMap<SupplierMongo>(cm =>
             {
                 cm.AutoMap();
                 cm.SetIgnoreExtraElements(true);
             });
-        }
     }
 }
 
@@ -192,12 +170,14 @@ public static class MongoIndexes
             new CreateIndexModel<ResourceMongo>(resourceIndex));
 
         var rolePermissionsCollection = database.GetCollection<RolePermissionMongo>("role_permissions");
-        var rolePermissionIndex = Builders<RolePermissionMongo>.IndexKeys.Ascending(rp => rp.RoleId).Ascending(rp => rp.PermissionId);
+        var rolePermissionIndex = Builders<RolePermissionMongo>.IndexKeys.Ascending(rp => rp.RoleId)
+            .Ascending(rp => rp.PermissionId);
         await rolePermissionsCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<RolePermissionMongo>(rolePermissionIndex, new CreateIndexOptions { Unique = true }));
 
         var userNodeRolesCollection = database.GetCollection<UserNodeRoleMongo>("user_node_roles");
-        var userNodeRoleIndex = Builders<UserNodeRoleMongo>.IndexKeys.Ascending(unr => unr.UserId).Ascending(unr => unr.NodeId).Ascending(unr => unr.RoleId);
+        var userNodeRoleIndex = Builders<UserNodeRoleMongo>.IndexKeys.Ascending(unr => unr.UserId)
+            .Ascending(unr => unr.NodeId).Ascending(unr => unr.RoleId);
         await userNodeRolesCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<UserNodeRoleMongo>(userNodeRoleIndex, new CreateIndexOptions { Unique = true }));
 
@@ -227,7 +207,8 @@ public static class MongoIndexes
         var departmentDetailsCollection = database.GetCollection<DepartmentDetailsMongo>("department_details");
         var departmentNodeIndex = Builders<DepartmentDetailsMongo>.IndexKeys.Ascending(dd => dd.NodeId);
         await departmentDetailsCollection.Indexes.CreateOneAsync(
-            new CreateIndexModel<DepartmentDetailsMongo>(departmentNodeIndex, new CreateIndexOptions { Unique = true }));
+            new CreateIndexModel<DepartmentDetailsMongo>(departmentNodeIndex,
+                new CreateIndexOptions { Unique = true }));
 
         var departmentCostCenterIndex = Builders<DepartmentDetailsMongo>.IndexKeys.Ascending(dd => dd.CostCenter);
         await departmentDetailsCollection.Indexes.CreateOneAsync(

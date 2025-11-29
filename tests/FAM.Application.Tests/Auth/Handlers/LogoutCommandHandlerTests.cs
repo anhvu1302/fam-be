@@ -35,20 +35,20 @@ public class LogoutCommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
-        
+
         var device = user.GetOrCreateDevice(
-            deviceId: "device-123",
-            deviceName: "Test Device",
-            deviceType: "browser",
-            userAgent: "Mozilla/5.0",
-            ipAddress: "192.168.1.1",
-            location: "Hanoi, Vietnam"
+            "device-123",
+            "Test Device",
+            "browser",
+            "Mozilla/5.0",
+            "192.168.1.1",
+            "Hanoi, Vietnam"
         );
-        
+
         var refreshToken = "valid-refresh-token";
         var refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
@@ -86,19 +86,19 @@ public class LogoutCommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
-        
+
         var deviceId = "device-123";
         var device = user.GetOrCreateDevice(
-            deviceId: deviceId,
-            deviceName: "Test Device",
-            deviceType: "browser",
-            userAgent: "Mozilla/5.0",
-            ipAddress: "192.168.1.1",
-            location: "Hanoi, Vietnam"
+            deviceId,
+            "Test Device",
+            "browser",
+            "Mozilla/5.0",
+            "192.168.1.1",
+            "Hanoi, Vietnam"
         );
 
         _mockUserDeviceRepository

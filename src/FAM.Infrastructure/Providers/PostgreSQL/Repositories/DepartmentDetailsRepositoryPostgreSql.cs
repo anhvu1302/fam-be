@@ -35,7 +35,8 @@ public class DepartmentDetailsRepositoryPostgreSql : IDepartmentDetailsRepositor
         return _mapper.Map<IEnumerable<DepartmentDetails>>(entities);
     }
 
-    public async Task<IEnumerable<DepartmentDetails>> FindAsync(Expression<Func<DepartmentDetails, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<DepartmentDetails>> FindAsync(Expression<Func<DepartmentDetails, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         var allEntities = await _context.DepartmentDetails.ToListAsync(cancellationToken);
         var allDepartmentDetails = _mapper.Map<IEnumerable<DepartmentDetails>>(allEntities);
@@ -72,14 +73,16 @@ public class DepartmentDetailsRepositoryPostgreSql : IDepartmentDetailsRepositor
         return entity != null ? _mapper.Map<DepartmentDetails>(entity) : null;
     }
 
-    public async Task<DepartmentDetails?> GetByCostCenterAsync(string costCenter, CancellationToken cancellationToken = default)
+    public async Task<DepartmentDetails?> GetByCostCenterAsync(string costCenter,
+        CancellationToken cancellationToken = default)
     {
         var entity = await _context.DepartmentDetails
             .FirstOrDefaultAsync(dd => dd.CostCenter == costCenter, cancellationToken);
         return entity != null ? _mapper.Map<DepartmentDetails>(entity) : null;
     }
 
-    public async Task<IEnumerable<DepartmentDetails>> GetByParentNodeIdAsync(long parentNodeId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<DepartmentDetails>> GetByParentNodeIdAsync(long parentNodeId,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.DepartmentDetails
             .Join(_context.OrgNodes,

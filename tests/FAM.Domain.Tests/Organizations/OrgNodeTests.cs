@@ -122,7 +122,7 @@ public class OrgNodeTests
         var newName = "";
 
         // Act
-        Action act = () => node.UpdateName(newName);
+        var act = () => node.UpdateName(newName);
 
         // Assert
         act.Should().Throw<DomainException>()

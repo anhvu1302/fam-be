@@ -34,7 +34,8 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
         return _mapper.Map<IEnumerable<UserNodeRole>>(entities);
     }
 
-    public async Task<IEnumerable<UserNodeRole>> FindAsync(Expression<Func<UserNodeRole, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<UserNodeRole>> FindAsync(Expression<Func<UserNodeRole, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         var allEntities = await _context.UserNodeRoles.ToListAsync(cancellationToken);
         var allUserNodeRoles = _mapper.Map<IEnumerable<UserNodeRole>>(allEntities);
@@ -64,7 +65,8 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
         return await _context.UserNodeRoles.AnyAsync(unr => unr.Id == id, cancellationToken);
     }
 
-    public async Task<IEnumerable<UserNodeRole>> GetByUserIdAsync(long userId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<UserNodeRole>> GetByUserIdAsync(long userId,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.UserNodeRoles
             .Where(unr => unr.UserId == userId)
@@ -72,7 +74,8 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
         return _mapper.Map<IEnumerable<UserNodeRole>>(entities);
     }
 
-    public async Task<IEnumerable<UserNodeRole>> GetByNodeIdAsync(long nodeId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<UserNodeRole>> GetByNodeIdAsync(long nodeId,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.UserNodeRoles
             .Where(unr => unr.NodeId == nodeId)
@@ -80,7 +83,8 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
         return _mapper.Map<IEnumerable<UserNodeRole>>(entities);
     }
 
-    public async Task<IEnumerable<UserNodeRole>> GetByRoleIdAsync(long roleId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<UserNodeRole>> GetByRoleIdAsync(long roleId,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.UserNodeRoles
             .Where(unr => unr.RoleId == roleId)
@@ -88,10 +92,12 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
         return _mapper.Map<IEnumerable<UserNodeRole>>(entities);
     }
 
-    public async Task<UserNodeRole?> GetByUserAndNodeAndRoleAsync(long userId, long nodeId, long roleId, CancellationToken cancellationToken = default)
+    public async Task<UserNodeRole?> GetByUserAndNodeAndRoleAsync(long userId, long nodeId, long roleId,
+        CancellationToken cancellationToken = default)
     {
         var entity = await _context.UserNodeRoles
-            .FirstOrDefaultAsync(unr => unr.UserId == userId && unr.NodeId == nodeId && unr.RoleId == roleId, cancellationToken);
+            .FirstOrDefaultAsync(unr => unr.UserId == userId && unr.NodeId == nodeId && unr.RoleId == roleId,
+                cancellationToken);
         return entity != null ? _mapper.Map<UserNodeRole>(entity) : null;
     }
 

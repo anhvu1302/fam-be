@@ -27,13 +27,10 @@ public class FamWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
         builder.ConfigureServices(services =>
         {
             // Remove the existing DbContext registration
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<PostgreSqlDbContext>));
-            
-            if (descriptor != null)
-            {
-                services.Remove(descriptor);
-            }
+            var descriptor =
+                services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<PostgreSqlDbContext>));
+
+            if (descriptor != null) services.Remove(descriptor);
 
             // Add DbContext using the test container connection string
             services.AddDbContext<PostgreSqlDbContext>(options =>
@@ -86,15 +83,12 @@ public class FamWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
     private static async Task SeedTestDataAsync(PostgreSqlDbContext context)
     {
         // Check if data already exists
-        if (await context.Users.AnyAsync())
-        {
-            return;
-        }
+        if (await context.Users.AnyAsync()) return;
 
         // Generate password hashes for test users
-        var adminPassword = FAM.Domain.ValueObjects.Password.Create("Admin@123");
-        var testPassword = FAM.Domain.ValueObjects.Password.Create("Test@123");
-        
+        var adminPassword = Domain.ValueObjects.Password.Create("Admin@123");
+        var testPassword = Domain.ValueObjects.Password.Create("Test@123");
+
         var now = DateTime.UtcNow;
 
         // Seed admin user via raw SQL (matching UserEf schema)
@@ -111,27 +105,27 @@ public class FamWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
                 {8}, {9}, {10},
                 {11}, {12}, {13}, {14},
                 {15}, {16}, {17}, {18}, {19}
-            )", 
-            "admin",                    // username
-            "admin@fam-test.com",      // email
-            adminPassword.Hash,         // password_hash
-            adminPassword.Salt,         // password_salt
-            "Admin",                    // first_name
-            "",                         // last_name
-            "Administrator",            // full_name
-            "",                         // phone_number
-            true,                       // is_active
-            true,                       // is_email_verified
-            false,                      // two_factor_enabled
-            "en",                       // preferred_language
-            "UTC",                      // time_zone
-            true,                       // receive_notifications
-            false,                      // receive_marketing_emails
-            0,                          // failed_login_attempts
-            DBNull.Value,               // lockout_end
-            now,                        // created_at
-            now,                        // updated_at
-            false                       // is_deleted
+            )",
+            "admin", // username
+            "admin@fam-test.com", // email
+            adminPassword.Hash, // password_hash
+            adminPassword.Salt, // password_salt
+            "Admin", // first_name
+            "", // last_name
+            "Administrator", // full_name
+            "", // phone_number
+            true, // is_active
+            true, // is_email_verified
+            false, // two_factor_enabled
+            "en", // preferred_language
+            "UTC", // time_zone
+            true, // receive_notifications
+            false, // receive_marketing_emails
+            0, // failed_login_attempts
+            DBNull.Value, // lockout_end
+            now, // created_at
+            now, // updated_at
+            false // is_deleted
         );
 
         // Seed test user via raw SQL (matching UserEf schema)
@@ -149,26 +143,26 @@ public class FamWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
                 {11}, {12}, {13}, {14},
                 {15}, {16}, {17}, {18}, {19}
             )",
-            "testuser",                 // username
-            "testuser@fam-test.com",   // email
-            testPassword.Hash,          // password_hash
-            testPassword.Salt,          // password_salt
-            "Test",                     // first_name
-            "User",                     // last_name
-            "Test User",                // full_name
-            "",                         // phone_number
-            true,                       // is_active
-            true,                       // is_email_verified
-            false,                      // two_factor_enabled
-            "en",                       // preferred_language
-            "UTC",                      // time_zone
-            true,                       // receive_notifications
-            false,                      // receive_marketing_emails
-            0,                          // failed_login_attempts
-            DBNull.Value,               // lockout_end
-            now,                        // created_at
-            now,                        // updated_at
-            false                       // is_deleted
+            "testuser", // username
+            "testuser@fam-test.com", // email
+            testPassword.Hash, // password_hash
+            testPassword.Salt, // password_salt
+            "Test", // first_name
+            "User", // last_name
+            "Test User", // full_name
+            "", // phone_number
+            true, // is_active
+            true, // is_email_verified
+            false, // two_factor_enabled
+            "en", // preferred_language
+            "UTC", // time_zone
+            true, // receive_notifications
+            false, // receive_marketing_emails
+            0, // failed_login_attempts
+            DBNull.Value, // lockout_end
+            now, // created_at
+            now, // updated_at
+            false // is_deleted
         );
 
         // Update sequence to start from 3
@@ -189,5 +183,41 @@ public class FamWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
 
         // Re-seed
         await SeedTestDataAsync(context);
+    }
+
+    /// <summary>
+    /// Reset user lockout status - useful when tests cause account lockout
+    /// </summary>
+    public async Task ResetUserLockoutAsync(string username = "admin")
+    {
+        using var scope = Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<PostgreSqlDbContext>();
+
+        await context.Database.ExecuteSqlRawAsync(@"
+            UPDATE users 
+            SET failed_login_attempts = 0, lockout_end = NULL 
+            WHERE username = {0}", username);
+    }
+
+    /// <summary>
+    /// Reset admin user to original state (password, lockout, etc.)
+    /// Useful when tests modify admin user data
+    /// </summary>
+    public async Task ResetAdminUserAsync()
+    {
+        using var scope = Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<PostgreSqlDbContext>();
+
+        var adminPassword = Domain.ValueObjects.Password.Create("Admin@123");
+
+        await context.Database.ExecuteSqlRawAsync(@"
+            UPDATE users 
+            SET password_hash = {0}, 
+                password_salt = {1},
+                failed_login_attempts = 0, 
+                lockout_end = NULL 
+            WHERE username = 'admin'",
+            adminPassword.Hash,
+            adminPassword.Salt);
     }
 }

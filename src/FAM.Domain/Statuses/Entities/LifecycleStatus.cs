@@ -16,9 +16,12 @@ public class LifecycleStatus : Entity
     // Navigation properties
     public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
 
-    private LifecycleStatus() { }
+    private LifecycleStatus()
+    {
+    }
 
-    public static LifecycleStatus Create(string code, string name, string? description = null, string? color = null, int? orderNo = null)
+    public static LifecycleStatus Create(string code, string name, string? description = null, string? color = null,
+        int? orderNo = null)
     {
         return new LifecycleStatus
         {

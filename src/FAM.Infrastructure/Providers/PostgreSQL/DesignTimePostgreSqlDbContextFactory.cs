@@ -17,26 +17,26 @@ public class DesignTimePostgreSqlDbContextFactory : IDesignTimeDbContextFactory<
 
         // Get connection components from environment variables
         var dbHost = Environment.GetEnvironmentVariable("DB_HOST")
-            ?? throw new InvalidOperationException("DB_HOST environment variable is not set.");
+                     ?? throw new InvalidOperationException("DB_HOST environment variable is not set.");
         var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
         var dbName = Environment.GetEnvironmentVariable("DB_NAME")
-            ?? throw new InvalidOperationException("DB_NAME environment variable is not set.");
+                     ?? throw new InvalidOperationException("DB_NAME environment variable is not set.");
         var dbUser = Environment.GetEnvironmentVariable("DB_USER")
-            ?? throw new InvalidOperationException("DB_USER environment variable is not set.");
+                     ?? throw new InvalidOperationException("DB_USER environment variable is not set.");
         var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD")
-            ?? throw new InvalidOperationException("DB_PASSWORD environment variable is not set.");
+                         ?? throw new InvalidOperationException("DB_PASSWORD environment variable is not set.");
 
         // Build PostgreSQL connection string
         var connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
 
         // Validate port
         if (!int.TryParse(dbPort, out var port) || port < 1 || port > 65535)
-        {
-            throw new InvalidOperationException($"DB_PORT must be a valid port number (1-65535). Current value: {dbPort}");
-        }
+            throw new InvalidOperationException(
+                $"DB_PORT must be a valid port number (1-65535). Current value: {dbPort}");
 
         var enableDetailedErrors = bool.Parse(Environment.GetEnvironmentVariable("ENABLE_DETAILED_ERRORS") ?? "false");
-        var enableSensitiveDataLogging = bool.Parse(Environment.GetEnvironmentVariable("ENABLE_SENSITIVE_DATA_LOGGING") ?? "false");
+        var enableSensitiveDataLogging =
+            bool.Parse(Environment.GetEnvironmentVariable("ENABLE_SENSITIVE_DATA_LOGGING") ?? "false");
 
         var options = new Common.Options.PostgreSqlOptions
         {
@@ -55,7 +55,7 @@ public class DesignTimePostgreSqlDbContextFactory : IDesignTimeDbContextFactory<
         // Find the solution root directory (where .env is located)
         var currentDir = Directory.GetCurrentDirectory();
         var solutionRoot = FindSolutionRoot(currentDir);
-        
+
         if (solutionRoot == null)
         {
             Console.WriteLine("Warning: Could not find solution root. Skipping .env file loading.");
@@ -63,7 +63,7 @@ public class DesignTimePostgreSqlDbContextFactory : IDesignTimeDbContextFactory<
         }
 
         var envFile = Path.Combine(solutionRoot, ".env");
-        
+
         if (!File.Exists(envFile))
         {
             Console.WriteLine($"Warning: .env file not found at '{envFile}'. Using system environment variables only.");
@@ -90,15 +90,11 @@ public class DesignTimePostgreSqlDbContextFactory : IDesignTimeDbContextFactory<
             // Remove quotes if present
             if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
                 (value.StartsWith("'") && value.EndsWith("'")))
-            {
                 value = value[1..^1];
-            }
 
             // Only set if not already set (system env vars take precedence)
             if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(key)))
-            {
                 Environment.SetEnvironmentVariable(key, value);
-            }
         }
 
         Console.WriteLine(".env file loaded successfully");
@@ -107,19 +103,17 @@ public class DesignTimePostgreSqlDbContextFactory : IDesignTimeDbContextFactory<
     private static string? FindSolutionRoot(string startDirectory)
     {
         var current = new DirectoryInfo(startDirectory);
-        
+
         while (current != null)
         {
             // Look for .sln file or .env file as indicators of solution root
-            if (current.GetFiles("*.sln").Length > 0 || 
+            if (current.GetFiles("*.sln").Length > 0 ||
                 current.GetFiles(".env").Length > 0)
-            {
                 return current.FullName;
-            }
-            
+
             current = current.Parent;
         }
-        
+
         return null;
     }
 }

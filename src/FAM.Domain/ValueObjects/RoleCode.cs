@@ -36,17 +36,26 @@ public sealed class RoleCode : ValueObject
     /// <summary>
     /// Implicit conversion từ RoleCode sang string
     /// </summary>
-    public static implicit operator string(RoleCode roleCode) => roleCode.Value;
+    public static implicit operator string(RoleCode roleCode)
+    {
+        return roleCode.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ string sang RoleCode
     /// </summary>
-    public static explicit operator RoleCode(string roleCode) => Create(roleCode);
+    public static explicit operator RoleCode(string roleCode)
+    {
+        return Create(roleCode);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 }

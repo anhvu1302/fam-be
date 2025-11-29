@@ -13,25 +13,25 @@ public class Manufacturer : Entity
     public string? ShortName { get; private set; } // Abbreviated name
     public string? LegalName { get; private set; } // Full legal name
     public string? Description { get; private set; }
-    
+
     // Brand Information
     public string? BrandName { get; private set; }
     public Url? LogoUrl { get; private set; }
     public string? Tagline { get; private set; }
-    
+
     // Company Details
     public string? RegistrationNumber { get; private set; } // Business registration number
     public string? TaxId { get; private set; } // Tax identification number
     public string? VATNumber { get; private set; } // VAT registration number
     public string? DUNSNumber { get; private set; } // Dun & Bradstreet number
-    
+
     // Location
     public int? CountryId { get; private set; }
     public string? HeadquartersAddress { get; private set; }
     public string? City { get; private set; }
     public string? State { get; private set; }
     public string? PostalCode { get; private set; }
-    
+
     // Contact Information
     public Url? Website { get; private set; }
     public string? Email { get; private set; }
@@ -40,12 +40,12 @@ public class Manufacturer : Entity
     public string? SupportEmail { get; private set; }
     public string? SupportPhone { get; private set; }
     public Url? SupportWebsite { get; private set; }
-    
+
     // Social Media
     public Url? LinkedInUrl { get; private set; }
     public string? TwitterHandle { get; private set; }
     public Url? FacebookUrl { get; private set; }
-    
+
     // Business Information
     public string? IndustryType { get; private set; } // Electronics, Automotive, Software, etc.
     public string? BusinessType { get; private set; } // Public, Private, Government
@@ -53,47 +53,49 @@ public class Manufacturer : Entity
     public int? EmployeeCount { get; private set; }
     public decimal? AnnualRevenue { get; private set; }
     public string? RevenueCurrency { get; private set; }
-    
+
     // Certification & Compliance
     public string? ISO9001Certified { get; private set; } // Quality Management
     public string? ISO14001Certified { get; private set; } // Environmental Management
     public string? ISO27001Certified { get; private set; } // Information Security
     public string? Certifications { get; private set; } // JSON array of other certifications
-    
+
     // Warranty & Support
     public string? WarrantyPolicy { get; private set; }
     public int? StandardWarrantyMonths { get; private set; }
     public string? SupportHours { get; private set; } // Business hours or 24/7
     public Url? SLADocumentUrl { get; private set; }
-    
+
     // Partner Information
     public bool IsPreferred { get; private set; } // Preferred manufacturer
     public bool IsApproved { get; private set; } = true; // Approved for procurement
     public bool IsActive { get; private set; } = true;
     public DateTime? PartnerSince { get; private set; }
     public string? AccountManager { get; private set; } // Our account manager name
-    
+
     // Rating & Reviews
     public decimal? QualityRating { get; private set; } // 1-5 scale
     public decimal? ServiceRating { get; private set; } // 1-5 scale
     public decimal? PriceRating { get; private set; } // 1-5 scale
     public string? InternalNotes { get; private set; } // Private notes about manufacturer
-    
+
     // Financial Terms
     public string? PaymentTerms { get; private set; } // Net 30, Net 60, etc.
     public string? PreferredCurrency { get; private set; }
     public decimal? DiscountRate { get; private set; } // Standard discount percentage
-    
+
     // Stock & Availability
     public string? LeadTime { get; private set; } // Standard lead time
     public string? MinimumOrderQuantity { get; private set; }
-    
+
     // Navigation properties
     public Geography.Country? Country { get; set; }
     public ICollection<Models.Model> Models { get; set; } = new List<Models.Model>();
     public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
 
-    private Manufacturer() { }
+    private Manufacturer()
+    {
+    }
 
     public static Manufacturer Create(string name, string? website = null)
     {
@@ -293,12 +295,35 @@ public class Manufacturer : Entity
         MinimumOrderQuantity = minimumOrderQuantity;
     }
 
-    public void Activate() => IsActive = true;
-    public void Deactivate() => IsActive = false;
-    public void Approve() => IsApproved = true;
-    public void Reject() => IsApproved = false;
-    public void SetAsPreferred() => IsPreferred = true;
-    public void RemovePreferred() => IsPreferred = false;
+    public void Activate()
+    {
+        IsActive = true;
+    }
+
+    public void Deactivate()
+    {
+        IsActive = false;
+    }
+
+    public void Approve()
+    {
+        IsApproved = true;
+    }
+
+    public void Reject()
+    {
+        IsApproved = false;
+    }
+
+    public void SetAsPreferred()
+    {
+        IsPreferred = true;
+    }
+
+    public void RemovePreferred()
+    {
+        IsPreferred = false;
+    }
 
     public decimal GetAverageRating()
     {

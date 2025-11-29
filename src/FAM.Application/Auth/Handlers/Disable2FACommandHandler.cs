@@ -17,20 +17,14 @@ public sealed class Disable2FACommandHandler : IRequestHandler<Disable2FACommand
     {
         // Get user by ID
         var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException("User not found");
-        }
+        if (user == null) throw new UnauthorizedAccessException("User not found");
 
         // Verify password
-        if (!user.Password.Verify(request.Password))
-        {
-            throw new UnauthorizedAccessException("Invalid password");
-        }
+        if (!user.Password.Verify(request.Password)) throw new UnauthorizedAccessException("Invalid password");
 
         // Disable 2FA
         user.DisableTwoFactor();
-        
+
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

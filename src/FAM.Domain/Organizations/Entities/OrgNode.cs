@@ -22,7 +22,9 @@ public class OrgNode : Entity
     public ICollection<Authorization.UserNodeRole> UserNodeRoles { get; set; } = new List<Authorization.UserNodeRole>();
     public ICollection<Authorization.Resource> Resources { get; set; } = new List<Authorization.Resource>();
 
-    private OrgNode() { }
+    private OrgNode()
+    {
+    }
 
     public static OrgNode CreateCompany(string name, CompanyDetails details)
     {

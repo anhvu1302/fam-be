@@ -33,17 +33,26 @@ public sealed class SerialNumber : ValueObject
     /// <summary>
     /// Implicit conversion từ SerialNumber sang string
     /// </summary>
-    public static implicit operator string(SerialNumber serialNumber) => serialNumber.Value;
+    public static implicit operator string(SerialNumber serialNumber)
+    {
+        return serialNumber.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ string sang SerialNumber
     /// </summary>
-    public static explicit operator SerialNumber(string serialNumber) => Create(serialNumber);
+    public static explicit operator SerialNumber(string serialNumber)
+    {
+        return Create(serialNumber);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 }

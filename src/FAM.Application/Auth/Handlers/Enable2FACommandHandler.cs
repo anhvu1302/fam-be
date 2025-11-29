@@ -19,16 +19,10 @@ public sealed class Enable2FACommandHandler : IRequestHandler<Enable2FACommand, 
     {
         // Get user by ID
         var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException("User not found");
-        }
+        if (user == null) throw new UnauthorizedAccessException("User not found");
 
         // Verify password
-        if (!user.Password.Verify(request.Password))
-        {
-            throw new UnauthorizedAccessException("Invalid password");
-        }
+        if (!user.Password.Verify(request.Password)) throw new UnauthorizedAccessException("Invalid password");
 
         // Generate new secret key (32 bytes = 256 bits for enhanced security)
         var secretKey = KeyGeneration.GenerateRandomKey(32);
@@ -38,7 +32,8 @@ public sealed class Enable2FACommandHandler : IRequestHandler<Enable2FACommand, 
         // Format: otpauth://totp/{Issuer}:{AccountName}?secret={Secret}&issuer={Issuer}
         var issuer = "FAM"; // Fixed Asset Management
         var accountName = user.Email.Value;
-        var qrCodeUri = $"otpauth://totp/{Uri.EscapeDataString(issuer)}:{Uri.EscapeDataString(accountName)}?secret={base32Secret}&issuer={Uri.EscapeDataString(issuer)}";
+        var qrCodeUri =
+            $"otpauth://totp/{Uri.EscapeDataString(issuer)}:{Uri.EscapeDataString(accountName)}?secret={base32Secret}&issuer={Uri.EscapeDataString(issuer)}";
 
         // Format manual entry key for better readability (groups of 4 characters)
         var manualEntryKey = FormatSecretKey(base32Secret);
@@ -55,11 +50,12 @@ public sealed class Enable2FACommandHandler : IRequestHandler<Enable2FACommand, 
     {
         // Format: XXXX XXXX XXXX XXXX ...
         var formatted = "";
-        for (int i = 0; i < secret.Length; i += 4)
+        for (var i = 0; i < secret.Length; i += 4)
         {
             if (i > 0) formatted += " ";
             formatted += secret.Substring(i, Math.Min(4, secret.Length - i));
         }
+
         return formatted;
     }
 }

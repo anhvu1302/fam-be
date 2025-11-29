@@ -39,7 +39,8 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
         return _mapper.Map<IEnumerable<UserDevice>>(documents);
     }
 
-    public async Task<IEnumerable<UserDevice>> FindAsync(Expression<Func<UserDevice, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<UserDevice>> FindAsync(Expression<Func<UserDevice, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         // Note: Converting domain expressions to MongoDB queries is complex
         // For now, we'll get all and filter in memory
@@ -92,21 +93,24 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
         return document != null ? _mapper.Map<UserDevice>(document) : null;
     }
 
-    public async Task<IEnumerable<UserDevice>> GetByUserIdAsync(long userId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<UserDevice>> GetByUserIdAsync(long userId,
+        CancellationToken cancellationToken = default)
     {
         var documents = await _collection.Find(d => d.UserId == userId && !d.IsDeleted)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<UserDevice>>(documents);
     }
 
-    public async Task<IEnumerable<UserDevice>> GetActiveDevicesByUserIdAsync(long userId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<UserDevice>> GetActiveDevicesByUserIdAsync(long userId,
+        CancellationToken cancellationToken = default)
     {
         var documents = await _collection.Find(d => d.UserId == userId && d.IsActive && !d.IsDeleted)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<UserDevice>>(documents);
     }
 
-    public async Task<bool> IsDeviceIdTakenAsync(string deviceId, Guid? excludeDeviceId = null, CancellationToken cancellationToken = default)
+    public async Task<bool> IsDeviceIdTakenAsync(string deviceId, Guid? excludeDeviceId = null,
+        CancellationToken cancellationToken = default)
     {
         var filter = Builders<UserDeviceMongo>.Filter.And(
             Builders<UserDeviceMongo>.Filter.Eq(d => d.DeviceId, deviceId),
@@ -114,12 +118,10 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
         );
 
         if (excludeDeviceId.HasValue)
-        {
             filter = Builders<UserDeviceMongo>.Filter.And(
                 filter,
                 Builders<UserDeviceMongo>.Filter.Ne((UserDeviceMongo d) => d.DomainId, excludeDeviceId.Value)
             );
-        }
 
         var count = await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         return count > 0;
@@ -135,7 +137,8 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
         await _collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
     }
 
-    public async Task DeactivateAllUserDevicesAsync(long userId, string? excludeDeviceId = null, CancellationToken cancellationToken = default)
+    public async Task DeactivateAllUserDevicesAsync(long userId, string? excludeDeviceId = null,
+        CancellationToken cancellationToken = default)
     {
         var filter = Builders<UserDeviceMongo>.Filter.And(
             Builders<UserDeviceMongo>.Filter.Eq(d => d.UserId, userId),
@@ -144,12 +147,10 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
 
         // Exclude device by DeviceId (fingerprint string), not by Guid ID
         if (!string.IsNullOrEmpty(excludeDeviceId))
-        {
             filter = Builders<UserDeviceMongo>.Filter.And(
                 filter,
                 Builders<UserDeviceMongo>.Filter.Ne(d => d.DeviceId, excludeDeviceId)
             );
-        }
 
         var update = Builders<UserDeviceMongo>.Update
             .Set(d => d.IsActive, false)
@@ -158,7 +159,8 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
         await _collection.UpdateManyAsync(filter, update, cancellationToken: cancellationToken);
     }
 
-    public async Task<UserDevice?> FindByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+    public async Task<UserDevice?> FindByRefreshTokenAsync(string refreshToken,
+        CancellationToken cancellationToken = default)
     {
         var document = await _collection.Find(d => d.RefreshToken == refreshToken && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);

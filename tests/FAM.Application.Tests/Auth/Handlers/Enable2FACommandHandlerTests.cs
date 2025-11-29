@@ -30,9 +30,9 @@ public class Enable2FACommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
 
         _mockUserRepository
@@ -65,9 +65,9 @@ public class Enable2FACommandHandlerTests
         var plainPassword = "SecurePass123!";
         var wrongPassword = "WrongPassword123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
 
         _mockUserRepository
@@ -112,9 +112,9 @@ public class Enable2FACommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
 
         _mockUserRepository

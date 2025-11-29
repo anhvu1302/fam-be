@@ -82,7 +82,7 @@ public class UserNodeRoleTests
         var newEndAt = newStartAt.AddDays(-1);
 
         // Act
-        Action act = () => userNodeRole.UpdateDates(newStartAt, newEndAt);
+        var act = () => userNodeRole.UpdateDates(newStartAt, newEndAt);
 
         // Assert
         act.Should().Throw<DomainException>()

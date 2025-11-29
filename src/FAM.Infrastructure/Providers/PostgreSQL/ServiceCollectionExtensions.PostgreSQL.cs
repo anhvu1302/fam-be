@@ -1,12 +1,9 @@
-using FAM.Application.Abstractions;
-using FAM.Application.DTOs.Users;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Abstractions.Repositories;
 using FAM.Infrastructure.Common.Options;
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 using FAM.Infrastructure.Providers.PostgreSQL.Seeders;
-using FAM.Infrastructure.Providers.PostgreSQL.Services;
 using FAM.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -43,9 +40,6 @@ public static class ServiceCollectionExtensions
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWorkPostgreSql>();
-
-        // Register Query Services (for Filter DSL)
-        services.AddScoped<IQueryService<UserDto>, UserQueryService>();
 
         // Register Data Seeders
         services.AddScoped<IDataSeeder, PostgreSqlAdminUserSeeder>();

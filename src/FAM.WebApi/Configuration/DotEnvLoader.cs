@@ -16,12 +16,14 @@ public static class DotEnvLoader
                 Console.WriteLine("Warning: Could not find solution root. Skipping .env file loading.");
                 return;
             }
+
             filePath = Path.Combine(solutionRoot, ".env");
         }
 
         if (!File.Exists(filePath))
         {
-            Console.WriteLine($"Warning: .env file not found at '{filePath}'. Using system environment variables only.");
+            Console.WriteLine(
+                $"Warning: .env file not found at '{filePath}'. Using system environment variables only.");
             return;
         }
 
@@ -45,15 +47,11 @@ public static class DotEnvLoader
             // Remove quotes if present
             if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
                 (value.StartsWith("'") && value.EndsWith("'")))
-            {
                 value = value[1..^1];
-            }
 
             // Only set if not already set (system env vars take precedence)
             if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(key)))
-            {
                 Environment.SetEnvironmentVariable(key, value);
-            }
         }
 
         Console.WriteLine("Environment variables loaded successfully");
@@ -69,29 +67,24 @@ public static class DotEnvLoader
         if (solutionRoot != null)
         {
             var envFile = Path.Combine(solutionRoot, $".env.{environment.ToLowerInvariant()}");
-            if (File.Exists(envFile))
-            {
-                Load(envFile);
-            }
+            if (File.Exists(envFile)) Load(envFile);
         }
     }
 
     private static string? FindSolutionRoot(string startDirectory)
     {
         var current = new DirectoryInfo(startDirectory);
-        
+
         while (current != null)
         {
             // Look for .sln file or docker-compose.yml as indicators of solution root
-            if (current.GetFiles("*.sln").Length > 0 || 
+            if (current.GetFiles("*.sln").Length > 0 ||
                 current.GetFiles("docker-compose.yml").Length > 0)
-            {
                 return current.FullName;
-            }
-            
+
             current = current.Parent;
         }
-        
+
         return null;
     }
 }

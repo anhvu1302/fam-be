@@ -5,13 +5,13 @@ namespace FAM.Domain.Assets.Enums;
 /// </summary>
 public enum AssetLifecycleStatus
 {
-    Draft,              // Nháp
-    PendingApproval,    // Chờ duyệt
-    Approved,           // Đã duyệt
-    Active,             // Đang hoạt động
-    AwaitingWriteoff,   // Chờ xóa sổ
-    WrittenOff,         // Đã xóa sổ
-    Rejected            // Từ chối
+    Draft, // Nháp
+    PendingApproval, // Chờ duyệt
+    Approved, // Đã duyệt
+    Active, // Đang hoạt động
+    AwaitingWriteoff, // Chờ xóa sổ
+    WrittenOff, // Đã xóa sổ
+    Rejected // Từ chối
 }
 
 /// <summary>
@@ -19,9 +19,9 @@ public enum AssetLifecycleStatus
 /// </summary>
 public enum AssetUsageStatus
 {
-    Available,      // Sẵn sàng
-    InUse,          // Đang sử dụng
-    UnderRepair     // Đang sửa chữa
+    Available, // Sẵn sàng
+    InUse, // Đang sử dụng
+    UnderRepair // Đang sửa chữa
 }
 
 /// <summary>
@@ -29,7 +29,7 @@ public enum AssetUsageStatus
 /// </summary>
 public enum DepreciationMethod
 {
-    StraightLine,       // Khấu hao đều
-    DecliningBalance,   // Khấu hao giảm dần
-    UnitsOfProduction   // Khấu hao theo sản lượng
+    StraightLine, // Khấu hao đều
+    DecliningBalance, // Khấu hao giảm dần
+    UnitsOfProduction // Khấu hao theo sản lượng
 }

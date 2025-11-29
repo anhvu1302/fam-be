@@ -97,7 +97,7 @@ public class SupplierTests
         string? newName = null;
 
         // Act
-        Action act = () => supplier.UpdateBasicInfo(newName!, null, null, null, null);
+        var act = () => supplier.UpdateBasicInfo(newName!, null, null, null, null);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -112,7 +112,7 @@ public class SupplierTests
         var newName = string.Empty;
 
         // Act
-        Action act = () => supplier.UpdateBasicInfo(newName, null, null, null, null);
+        var act = () => supplier.UpdateBasicInfo(newName, null, null, null, null);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -127,7 +127,7 @@ public class SupplierTests
         int? employeeCount = -1;
 
         // Act
-        Action act = () => supplier.UpdateBusinessInfo(null, null, null, null, employeeCount);
+        var act = () => supplier.UpdateBusinessInfo(null, null, null, null, employeeCount);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -156,7 +156,7 @@ public class SupplierTests
         int? onTimeDeliveryPercentage = -1;
 
         // Act
-        Action act = () => supplier.UpdatePerformanceMetrics(onTimeDeliveryPercentage, null);
+        var act = () => supplier.UpdatePerformanceMetrics(onTimeDeliveryPercentage, null);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -171,7 +171,7 @@ public class SupplierTests
         int? onTimeDeliveryPercentage = 101;
 
         // Act
-        Action act = () => supplier.UpdatePerformanceMetrics(onTimeDeliveryPercentage, null);
+        var act = () => supplier.UpdatePerformanceMetrics(onTimeDeliveryPercentage, null);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -186,7 +186,7 @@ public class SupplierTests
         int? defectRate = -1;
 
         // Act
-        Action act = () => supplier.UpdatePerformanceMetrics(null, defectRate);
+        var act = () => supplier.UpdatePerformanceMetrics(null, defectRate);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -201,7 +201,7 @@ public class SupplierTests
         int? defectRate = 101;
 
         // Act
-        Action act = () => supplier.UpdatePerformanceMetrics(null, defectRate);
+        var act = () => supplier.UpdatePerformanceMetrics(null, defectRate);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -259,7 +259,7 @@ public class SupplierTests
         var invalidWebsite = "not-a-url";
 
         // Act
-        Action act = () => supplier.UpdateContactInfo(invalidWebsite, null, null, null, null);
+        var act = () => supplier.UpdateContactInfo(invalidWebsite, null, null, null, null);
 
         // Assert
         act.Should().Throw<DomainException>();
@@ -273,7 +273,7 @@ public class SupplierTests
         var invalidEmail = "not-an-email";
 
         // Act
-        Action act = () => supplier.UpdateContactInfo(null, invalidEmail, null, null, null);
+        var act = () => supplier.UpdateContactInfo(null, invalidEmail, null, null, null);
 
         // Assert
         act.Should().Throw<DomainException>();
@@ -312,7 +312,7 @@ public class SupplierTests
         decimal? discountRate = 150m; // Over 100%
 
         // Act
-        Action act = () => supplier.UpdateFinancialTerms(null, null, null, null, discountRate);
+        var act = () => supplier.UpdateFinancialTerms(null, null, null, null, discountRate);
 
         // Assert
         act.Should().Throw<DomainException>();

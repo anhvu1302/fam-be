@@ -39,7 +39,8 @@ public class UserRepositoryMongo : IUserRepository
         return _mapper.Map<IEnumerable<User>>(documents);
     }
 
-    public async Task<IEnumerable<User>> FindAsync(Expression<Func<User, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<User>> FindAsync(Expression<Func<User, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         // Note: Converting domain expressions to MongoDB queries is complex
         // For now, we'll get all and filter in memory
@@ -99,7 +100,8 @@ public class UserRepositoryMongo : IUserRepository
         return document != null ? _mapper.Map<User>(document) : null;
     }
 
-    public async Task<bool> IsUsernameTakenAsync(string username, long? excludeUserId = null, CancellationToken cancellationToken = default)
+    public async Task<bool> IsUsernameTakenAsync(string username, long? excludeUserId = null,
+        CancellationToken cancellationToken = default)
     {
         var filter = Builders<UserMongo>.Filter.And(
             Builders<UserMongo>.Filter.Eq(d => d.Username, username),
@@ -107,18 +109,17 @@ public class UserRepositoryMongo : IUserRepository
         );
 
         if (excludeUserId.HasValue)
-        {
             filter = Builders<UserMongo>.Filter.And(
                 filter,
                 Builders<UserMongo>.Filter.Ne(d => d.DomainId, excludeUserId.Value)
             );
-        }
 
         var count = await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         return count > 0;
     }
 
-    public async Task<bool> IsEmailTakenAsync(string email, long? excludeUserId = null, CancellationToken cancellationToken = default)
+    public async Task<bool> IsEmailTakenAsync(string email, long? excludeUserId = null,
+        CancellationToken cancellationToken = default)
     {
         var filter = Builders<UserMongo>.Filter.And(
             Builders<UserMongo>.Filter.Eq(d => d.Email, email),
@@ -126,12 +127,10 @@ public class UserRepositoryMongo : IUserRepository
         );
 
         if (excludeUserId.HasValue)
-        {
             filter = Builders<UserMongo>.Filter.And(
                 filter,
                 Builders<UserMongo>.Filter.Ne(d => d.DomainId, excludeUserId.Value)
             );
-        }
 
         var count = await _collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
         return count > 0;

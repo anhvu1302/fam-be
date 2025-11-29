@@ -11,35 +11,30 @@ namespace FAM.Infrastructure.PersistenceModels.Mongo;
 [BsonIgnoreExtraElements]
 public class AssetEventMongo : BaseEntityMongo
 {
-    [BsonElement("assetId")]
-    public long AssetId { get; set; }
+    [BsonElement("assetId")] public long AssetId { get; set; }
 
-    [BsonElement("eventCode")]
-    public string EventCode { get; set; } = string.Empty;
+    [BsonElement("eventCode")] public string EventCode { get; set; } = string.Empty;
 
-    [BsonElement("actorId")]
-    public long? ActorId { get; set; }
+    [BsonElement("actorId")] public long? ActorId { get; set; }
 
-    [BsonElement("at")]
-    public DateTime At { get; set; } = DateTime.UtcNow;
+    [BsonElement("at")] public DateTime At { get; set; } = DateTime.UtcNow;
 
-    [BsonElement("fromLifecycleCode")]
-    public string? FromLifecycleCode { get; set; }
+    [BsonElement("fromLifecycleCode")] public string? FromLifecycleCode { get; set; }
 
-    [BsonElement("toLifecycleCode")]
-    public string? ToLifecycleCode { get; set; }
+    [BsonElement("toLifecycleCode")] public string? ToLifecycleCode { get; set; }
 
-    [BsonElement("payload")]
-    public string? Payload { get; set; }
+    [BsonElement("payload")] public string? Payload { get; set; }
 
-    [BsonElement("note")]
-    public string? Note { get; set; }
+    [BsonElement("note")] public string? Note { get; set; }
 
     // Navigation properties (stored as references)
-    [BsonElement("assetEventTypeId")]
-    public long? AssetEventTypeId { get; set; }
+    [BsonElement("assetEventTypeId")] public long? AssetEventTypeId { get; set; }
 
-    public AssetEventMongo() { }
+    public AssetEventMongo()
+    {
+    }
 
-    public AssetEventMongo(long domainId) : base(domainId) { }
+    public AssetEventMongo(long domainId) : base(domainId)
+    {
+    }
 }

@@ -95,7 +95,7 @@ public class RoleCodeTests
         var value = "admin";
 
         // Act
-        RoleCode roleCode = (RoleCode)value;
+        var roleCode = (RoleCode)value;
 
         // Assert
         roleCode.Value.Should().Be("ADMIN");

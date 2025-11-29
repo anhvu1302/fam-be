@@ -28,7 +28,8 @@ public class GlobalExceptionHandler : IExceptionHandler
         var (statusCode, title, errors) = exception switch
         {
             DomainException domainException => HandleDomainException(domainException),
-            UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "Unauthorized", new Dictionary<string, string[]>()),
+            UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "Unauthorized",
+                new Dictionary<string, string[]>()),
             KeyNotFoundException keyNotFoundException => HandleNotFoundException(keyNotFoundException),
             InvalidOperationException invalidOpException => HandleInvalidOperationException(invalidOpException),
             _ => HandleGenericException(exception)
@@ -42,10 +43,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             Instance = httpContext.Request.Path
         };
 
-        if (errors.Any())
-        {
-            problemDetails.Extensions["errors"] = errors;
-        }
+        if (errors.Any()) problemDetails.Extensions["errors"] = errors;
 
         httpContext.Response.StatusCode = statusCode;
         httpContext.Response.ContentType = "application/problem+json";
@@ -68,7 +66,9 @@ public class GlobalExceptionHandler : IExceptionHandler
             ["message"] = new[] { exception.Message }
         };
 
-        return (StatusCodes.Status400BadRequest, "Domain validation error", errors);
+        // RFC 4918: 422 Unprocessable Entity - request body is syntactically correct
+        // but semantically wrong (domain/business rule validation failed)
+        return (StatusCodes.Status422UnprocessableEntity, "Unprocessable Entity", errors);
     }
 
     private (int statusCode, string title, Dictionary<string, string[]> errors) HandleNotFoundException(

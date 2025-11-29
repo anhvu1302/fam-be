@@ -29,7 +29,7 @@ public class AssetTests
         asset.AssetTag!.Value.Should().Be(assetTag);
         asset.LifecycleCode.Should().Be("draft");
         asset.CreatedById.Should().Be(createdBy);
-        asset.CreatedAt.Should().NotBe(default(DateTime));
+        asset.CreatedAt.Should().NotBe(default);
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        Action act = () => asset.UpdateBasicInfo(newName!, null, updatedBy);
+        var act = () => asset.UpdateBasicInfo(newName!, null, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -151,7 +151,7 @@ public class AssetTests
         var updatedBy = 0L;
 
         // Act
-        Action act = () => asset.UpdateBasicInfo(newName, null, updatedBy);
+        var act = () => asset.UpdateBasicInfo(newName, null, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -169,7 +169,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        Action act = () => asset.SetPurchaseInfo(purchaseDate, purchaseCost, supplierId, updatedBy);
+        var act = () => asset.SetPurchaseInfo(purchaseDate, purchaseCost, supplierId, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -208,7 +208,8 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        Action act = () => asset.SetExtendedPurchaseInfo(purchaseOrderNo, invoiceNo, warrantyMonths, warrantyTerms, updatedBy);
+        var act = () =>
+            asset.SetExtendedPurchaseInfo(purchaseOrderNo, invoiceNo, warrantyMonths, warrantyTerms, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -245,7 +246,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        Action act = () => asset.UpdateDepreciation(currentBookValue, accumulatedDepreciation, updatedBy);
+        var act = () => asset.UpdateDepreciation(currentBookValue, accumulatedDepreciation, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -262,7 +263,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        Action act = () => asset.UpdateDepreciation(currentBookValue, accumulatedDepreciation, updatedBy);
+        var act = () => asset.UpdateDepreciation(currentBookValue, accumulatedDepreciation, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -293,11 +294,11 @@ public class AssetTests
     {
         // Arrange
         var asset = Asset.Create("Test Asset", 1L);
-        int intervalDays = 0;
+        var intervalDays = 0;
         var updatedBy = 2L;
 
         // Act
-        Action act = () => asset.ScheduleMaintenance(intervalDays, updatedBy);
+        var act = () => asset.ScheduleMaintenance(intervalDays, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -309,11 +310,11 @@ public class AssetTests
     {
         // Arrange
         var asset = Asset.Create("Test Asset", 1L);
-        int intervalDays = -30;
+        var intervalDays = -30;
         var updatedBy = 2L;
 
         // Act
-        Action act = () => asset.ScheduleMaintenance(intervalDays, updatedBy);
+        var act = () => asset.ScheduleMaintenance(intervalDays, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -325,7 +326,7 @@ public class AssetTests
     {
         // Arrange
         var asset = Asset.Create("Test Asset", 1L);
-        int intervalDays = 90;
+        var intervalDays = 90;
         var contractNo = "MAINT001";
         var updatedBy = 2L;
 
@@ -351,7 +352,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        Action act = () => asset.SetSoftwareInfo(version, licenseKey, licenseExpiry, licenseCount, updatedBy);
+        var act = () => asset.SetSoftwareInfo(version, licenseKey, licenseExpiry, licenseCount, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -392,7 +393,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        Action act = () => asset.SetPhysicalCharacteristics(weight, dimensions, color, material, updatedBy);
+        var act = () => asset.SetPhysicalCharacteristics(weight, dimensions, color, material, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -432,7 +433,8 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        Action act = () => asset.SetEnvironmentalInfo(powerConsumption, energyRating, isEnvironmentallyFriendly, updatedBy);
+        var act = () =>
+            asset.SetEnvironmentalInfo(powerConsumption, energyRating, isEnvironmentallyFriendly, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -469,7 +471,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        Action act = () => asset.SetReplacementInfo(replacementCost, estimatedRemainingLifeMonths, updatedBy);
+        var act = () => asset.SetReplacementInfo(replacementCost, estimatedRemainingLifeMonths, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -486,7 +488,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        Action act = () => asset.SetReplacementInfo(replacementCost, estimatedRemainingLifeMonths, updatedBy);
+        var act = () => asset.SetReplacementInfo(replacementCost, estimatedRemainingLifeMonths, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()

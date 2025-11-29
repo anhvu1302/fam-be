@@ -13,36 +13,26 @@ namespace FAM.Infrastructure.PersistenceModels.Ef;
 public class AssetTypeEf : BaseEntityEf
 {
     // Basic Information
-    [Required]
-    [MaxLength(20)]
-    public string Code { get; set; } = string.Empty;
+    [Required] [MaxLength(20)] public string Code { get; set; } = string.Empty;
 
-    [Required]
-    [MaxLength(200)]
-    public string Name { get; set; } = string.Empty;
+    [Required] [MaxLength(200)] public string Name { get; set; } = string.Empty;
 
-    [MaxLength(500)]
-    public string? Description { get; set; }
+    [MaxLength(500)] public string? Description { get; set; }
 
-    [MaxLength(2000)]
-    public string? LongDescription { get; set; }
+    [MaxLength(2000)] public string? LongDescription { get; set; }
 
     // Hierarchy
     public long? ParentId { get; set; }
     public int Level { get; set; }
 
-    [MaxLength(1000)]
-    public string? Path { get; set; }
+    [MaxLength(1000)] public string? Path { get; set; }
 
     // Classification
-    [MaxLength(100)]
-    public string? AssetClass { get; set; }
+    [MaxLength(100)] public string? AssetClass { get; set; }
 
-    [MaxLength(100)]
-    public string? Category { get; set; }
+    [MaxLength(100)] public string? Category { get; set; }
 
-    [MaxLength(100)]
-    public string? Subcategory { get; set; }
+    [MaxLength(100)] public string? Subcategory { get; set; }
 
     // Properties & Characteristics
     public bool IsDepreciable { get; set; } = true;
@@ -57,47 +47,36 @@ public class AssetTypeEf : BaseEntityEf
     public bool IsITAsset { get; set; }
 
     // Depreciation Defaults
-    [MaxLength(100)]
-    public string? DefaultDepreciationMethod { get; set; }
+    [MaxLength(100)] public string? DefaultDepreciationMethod { get; set; }
 
     public int? DefaultUsefulLifeMonths { get; set; }
     public decimal? DefaultResidualValuePercentage { get; set; }
 
-    [MaxLength(50)]
-    public string? DepreciationAccountCode { get; set; }
+    [MaxLength(50)] public string? DepreciationAccountCode { get; set; }
 
-    [MaxLength(50)]
-    public string? AccumulatedDepreciationAccountCode { get; set; }
+    [MaxLength(50)] public string? AccumulatedDepreciationAccountCode { get; set; }
 
     // Accounting
-    [MaxLength(50)]
-    public string? GLAccountCode { get; set; }
+    [MaxLength(50)] public string? GLAccountCode { get; set; }
 
-    [MaxLength(50)]
-    public string? AssetAccountCode { get; set; }
+    [MaxLength(50)] public string? AssetAccountCode { get; set; }
 
-    [MaxLength(50)]
-    public string? ExpenseAccountCode { get; set; }
+    [MaxLength(50)] public string? ExpenseAccountCode { get; set; }
 
-    [MaxLength(50)]
-    public string? CostCenter { get; set; }
+    [MaxLength(50)] public string? CostCenter { get; set; }
 
     // Lifecycle
     public int? DefaultWarrantyMonths { get; set; }
     public int? DefaultMaintenanceIntervalDays { get; set; }
 
-    [MaxLength(100)]
-    public string? DefaultMaintenanceType { get; set; }
+    [MaxLength(100)] public string? DefaultMaintenanceType { get; set; }
 
     // Valuation
-    [Column(TypeName = "decimal(18,2)")]
-    public decimal? MinimumCapitalizationValue { get; set; }
+    [Column(TypeName = "decimal(18,2)")] public decimal? MinimumCapitalizationValue { get; set; }
 
-    [MaxLength(3)]
-    public string? ValuationCurrency { get; set; }
+    [MaxLength(3)] public string? ValuationCurrency { get; set; }
 
-    [MaxLength(100)]
-    public string? ValuationMethod { get; set; }
+    [MaxLength(100)] public string? ValuationMethod { get; set; }
 
     // Compliance & Regulations
     public bool RequiresCompliance { get; set; }
@@ -107,8 +86,7 @@ public class AssetTypeEf : BaseEntityEf
     public int? AuditIntervalMonths { get; set; }
 
     // Security
-    [MaxLength(50)]
-    public string? DefaultSecurityClassification { get; set; }
+    [MaxLength(50)] public string? DefaultSecurityClassification { get; set; }
 
     public bool RequiresBackgroundCheck { get; set; }
     public bool RequiresAccessControl { get; set; }
@@ -123,14 +101,11 @@ public class AssetTypeEf : BaseEntityEf
     public string? RequiredFields { get; set; }
 
     // Display & UI
-    [MaxLength(100)]
-    public string? IconName { get; set; }
+    [MaxLength(100)] public string? IconName { get; set; }
 
-    [MaxLength(500)]
-    public string? IconUrl { get; set; }
+    [MaxLength(500)] public string? IconUrl { get; set; }
 
-    [MaxLength(20)]
-    public string? Color { get; set; }
+    [MaxLength(20)] public string? Color { get; set; }
 
     public int DisplayOrder { get; set; }
 
@@ -148,16 +123,14 @@ public class AssetTypeEf : BaseEntityEf
     // Statistics
     public int AssetCount { get; set; }
 
-    [Column(TypeName = "decimal(18,2)")]
-    public decimal? TotalValue { get; set; }
+    [Column(TypeName = "decimal(18,2)")] public decimal? TotalValue { get; set; }
 
     // Internal Notes
     public string? InternalNotes { get; set; }
     public string? ProcurementNotes { get; set; }
 
     // Navigation properties
-    [ForeignKey("ParentId")]
-    public AssetTypeEf? Parent { get; set; }
+    [ForeignKey("ParentId")] public AssetTypeEf? Parent { get; set; }
 
     public ICollection<AssetTypeEf> Children { get; set; } = new List<AssetTypeEf>();
     public ICollection<ModelEf> Models { get; set; } = new List<ModelEf>();

@@ -34,7 +34,8 @@ public class OrgNodeRepositoryPostgreSql : IOrgNodeRepository
         return _mapper.Map<IEnumerable<OrgNode>>(entities);
     }
 
-    public async Task<IEnumerable<OrgNode>> FindAsync(Expression<Func<OrgNode, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<OrgNode>> FindAsync(Expression<Func<OrgNode, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
         var allEntities = await _context.OrgNodes.ToListAsync(cancellationToken);
         var allOrgNodes = _mapper.Map<IEnumerable<OrgNode>>(allEntities);
@@ -71,7 +72,8 @@ public class OrgNodeRepositoryPostgreSql : IOrgNodeRepository
         return entity != null ? _mapper.Map<OrgNode>(entity) : null;
     }
 
-    public async Task<IEnumerable<OrgNode>> GetByParentIdAsync(long? parentId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<OrgNode>> GetByParentIdAsync(long? parentId,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.OrgNodes
             .Where(n => n.ParentId == parentId)
@@ -79,7 +81,8 @@ public class OrgNodeRepositoryPostgreSql : IOrgNodeRepository
         return _mapper.Map<IEnumerable<OrgNode>>(entities);
     }
 
-    public async Task<IEnumerable<OrgNode>> GetByTypeAsync(OrgNodeType type, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<OrgNode>> GetByTypeAsync(OrgNodeType type,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.OrgNodes
             .Where(n => n.Type == (int)type)
@@ -87,7 +90,8 @@ public class OrgNodeRepositoryPostgreSql : IOrgNodeRepository
         return _mapper.Map<IEnumerable<OrgNode>>(entities);
     }
 
-    public async Task<IEnumerable<OrgNode>> GetHierarchyAsync(long rootNodeId, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<OrgNode>> GetHierarchyAsync(long rootNodeId,
+        CancellationToken cancellationToken = default)
     {
         // This is a simplified implementation. In a real scenario, you might want to use a recursive CTE or other hierarchical query
         var root = await _context.OrgNodes.FindAsync(new object[] { rootNodeId }, cancellationToken);
@@ -99,7 +103,8 @@ public class OrgNodeRepositoryPostgreSql : IOrgNodeRepository
         return _mapper.Map<IEnumerable<OrgNode>>(hierarchy);
     }
 
-    private async Task GetChildrenRecursiveAsync(long parentId, List<OrgNodeEf> hierarchy, CancellationToken cancellationToken)
+    private async Task GetChildrenRecursiveAsync(long parentId, List<OrgNodeEf> hierarchy,
+        CancellationToken cancellationToken)
     {
         var children = await _context.OrgNodes
             .Where(n => n.ParentId == parentId)
@@ -107,10 +112,7 @@ public class OrgNodeRepositoryPostgreSql : IOrgNodeRepository
 
         hierarchy.AddRange(children);
 
-        foreach (var child in children)
-        {
-            await GetChildrenRecursiveAsync(child.Id, hierarchy, cancellationToken);
-        }
+        foreach (var child in children) await GetChildrenRecursiveAsync(child.Id, hierarchy, cancellationToken);
     }
 
     public async Task<bool> HasChildrenAsync(long nodeId, CancellationToken cancellationToken = default)

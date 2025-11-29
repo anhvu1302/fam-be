@@ -20,13 +20,13 @@ public class RealIpMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         var clientIp = GetClientIpAddress(context);
-        
+
         // Add the real IP to HttpContext.Items for easy access throughout the request pipeline
         context.Items["RealClientIp"] = clientIp;
-        
+
         // Log IP for debugging (remove in production or use debug level)
         _logger.LogDebug("Request from IP: {IpAddress}, Path: {Path}", clientIp, context.Request.Path);
-        
+
         await _next(context);
     }
 
@@ -42,24 +42,15 @@ public class RealIpMiddleware
 
         // Cloudflare header (most reliable when using Cloudflare)
         var cfConnectingIp = context.Request.Headers["CF-Connecting-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(cfConnectingIp) && IsValidIp(cfConnectingIp))
-        {
-            return cfConnectingIp.Trim();
-        }
+        if (!string.IsNullOrEmpty(cfConnectingIp) && IsValidIp(cfConnectingIp)) return cfConnectingIp.Trim();
 
         // Cloudflare Enterprise header
         var trueClientIp = context.Request.Headers["True-Client-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(trueClientIp) && IsValidIp(trueClientIp))
-        {
-            return trueClientIp.Trim();
-        }
+        if (!string.IsNullOrEmpty(trueClientIp) && IsValidIp(trueClientIp)) return trueClientIp.Trim();
 
         // X-Real-IP from Nginx or other reverse proxy
         var realIp = context.Request.Headers["X-Real-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(realIp) && IsValidIp(realIp))
-        {
-            return realIp.Trim();
-        }
+        if (!string.IsNullOrEmpty(realIp) && IsValidIp(realIp)) return realIp.Trim();
 
         // X-Forwarded-For (can contain multiple IPs: client, proxy1, proxy2)
         // Take the first IP which is the original client
@@ -68,36 +59,23 @@ public class RealIpMiddleware
         {
             var ips = forwardedFor.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             foreach (var ip in ips)
-            {
                 if (IsValidIp(ip) && !IsPrivateIp(ip))
-                {
                     return ip;
-                }
-            }
         }
 
         // X-Client-IP header
         var clientIp = context.Request.Headers["X-Client-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(clientIp) && IsValidIp(clientIp))
-        {
-            return clientIp.Trim();
-        }
+        if (!string.IsNullOrEmpty(clientIp) && IsValidIp(clientIp)) return clientIp.Trim();
 
         // Fallback to RemoteIpAddress (direct connection, no proxy)
         var remoteIp = context.Connection.RemoteIpAddress;
         if (remoteIp != null)
         {
             // Handle IPv6 loopback (::1) and map it to IPv4
-            if (remoteIp.IsIPv4MappedToIPv6)
-            {
-                remoteIp = remoteIp.MapToIPv4();
-            }
-            
+            if (remoteIp.IsIPv4MappedToIPv6) remoteIp = remoteIp.MapToIPv4();
+
             // Convert IPv6 loopback to IPv4
-            if (remoteIp.ToString() == "::1")
-            {
-                return "127.0.0.1";
-            }
+            if (remoteIp.ToString() == "::1") return "127.0.0.1";
 
             return remoteIp.ToString();
         }
@@ -117,20 +95,18 @@ public class RealIpMiddleware
 
         // Check for private IP ranges
         var bytes = address.GetAddressBytes();
-        
+
         // IPv4 private ranges:
         // 10.0.0.0 - 10.255.255.255
         // 172.16.0.0 - 172.31.255.255
         // 192.168.0.0 - 192.168.255.255
         // 127.0.0.0 - 127.255.255.255 (loopback)
-        
+
         if (bytes.Length == 4)
-        {
-            return bytes[0] == 10 
-                || (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
-                || (bytes[0] == 192 && bytes[1] == 168)
-                || bytes[0] == 127;
-        }
+            return bytes[0] == 10
+                   || (bytes[0] == 172 && bytes[1] >= 16 && bytes[1] <= 31)
+                   || (bytes[0] == 192 && bytes[1] == 168)
+                   || bytes[0] == 127;
 
         // IPv6 loopback
         if (address.IsIPv6LinkLocal || address.ToString() == "::1")

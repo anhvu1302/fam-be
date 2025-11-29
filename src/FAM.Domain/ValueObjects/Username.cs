@@ -58,17 +58,26 @@ public sealed class Username : ValueObject
     /// <summary>
     /// Implicit conversion từ Username sang string
     /// </summary>
-    public static implicit operator string(Username username) => username.Value;
+    public static implicit operator string(Username username)
+    {
+        return username.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ string sang Username
     /// </summary>
-    public static explicit operator Username(string username) => Create(username);
+    public static explicit operator Username(string username)
+    {
+        return Create(username);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 }

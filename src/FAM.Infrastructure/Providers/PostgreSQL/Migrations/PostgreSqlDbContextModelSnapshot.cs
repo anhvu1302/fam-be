@@ -22,6 +22,109 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("FAM.Domain.Storage.UploadSession", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Checksum")
+                        .HasColumnType("text")
+                        .HasColumnName("checksum");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<int?>("EntityId")
+                        .HasColumnType("integer")
+                        .HasColumnName("entity_id");
+
+                    b.Property<string>("EntityType")
+                        .HasColumnType("text")
+                        .HasColumnName("entity_type");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("file_name");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint")
+                        .HasColumnName("file_size");
+
+                    b.Property<int>("FileType")
+                        .HasColumnType("integer")
+                        .HasColumnName("file_type");
+
+                    b.Property<string>("FinalKey")
+                        .HasColumnType("text")
+                        .HasColumnName("final_key");
+
+                    b.Property<string>("IdempotencyKey")
+                        .HasColumnType("text")
+                        .HasColumnName("idempotency_key");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<string>("TempKey")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("temp_key");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.Property<string>("UploadId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("upload_id");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_upload_sessions");
+
+                    b.ToTable("upload_sessions");
+                });
+
             modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetCategoryEf", b =>
                 {
                     b.Property<long>("Id")
@@ -1771,9 +1874,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("created_by_id");
 
-                    b.Property<long?>("CreatedById1")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
@@ -1814,8 +1914,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     b.HasIndex("CreatedById")
                         .HasDatabaseName("ix_finance_entries_created_by_id");
-
-                    b.HasIndex("CreatedById1");
 
                     b.HasIndex("DeletedById")
                         .HasDatabaseName("ix_finance_entries_deleted_by_id");
@@ -4343,15 +4441,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_finance_entries_assets_asset_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "Creator")
+                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_finance_entries_users_creator_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById1");
+                        .HasConstraintName("fk_finance_entries_users_created_by_id");
 
                     b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "DeletedBy")
                         .WithMany()
@@ -4366,8 +4460,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Navigation("Asset");
 
                     b.Navigation("CreatedBy");
-
-                    b.Navigation("Creator");
 
                     b.Navigation("DeletedBy");
 

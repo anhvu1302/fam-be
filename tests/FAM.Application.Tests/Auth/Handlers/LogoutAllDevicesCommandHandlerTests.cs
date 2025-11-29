@@ -34,9 +34,9 @@ public class LogoutAllDevicesCommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
 
         _mockUserRepository
@@ -58,7 +58,7 @@ public class LogoutAllDevicesCommandHandlerTests
         // Assert
         result.Should().Be(Unit.Value);
         _mockUserDeviceRepository.Verify(
-            x => x.DeactivateAllUserDevicesAsync(user.Id, null, It.IsAny<CancellationToken>()), 
+            x => x.DeactivateAllUserDevicesAsync(user.Id, null, It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -69,9 +69,9 @@ public class LogoutAllDevicesCommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var user = User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: plainPassword
+            "testuser",
+            "test@example.com",
+            plainPassword
         );
         var exceptDeviceId = "current-device-123";
 
@@ -95,7 +95,7 @@ public class LogoutAllDevicesCommandHandlerTests
         // Assert
         result.Should().Be(Unit.Value);
         _mockUserDeviceRepository.Verify(
-            x => x.DeactivateAllUserDevicesAsync(user.Id, exceptDeviceId, It.IsAny<CancellationToken>()), 
+            x => x.DeactivateAllUserDevicesAsync(user.Id, exceptDeviceId, It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -120,7 +120,7 @@ public class LogoutAllDevicesCommandHandlerTests
             _handler.Handle(command, CancellationToken.None));
 
         _mockUserDeviceRepository.Verify(
-            x => x.DeactivateAllUserDevicesAsync(It.IsAny<long>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()), 
+            x => x.DeactivateAllUserDevicesAsync(It.IsAny<long>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()),
             Times.Never);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }

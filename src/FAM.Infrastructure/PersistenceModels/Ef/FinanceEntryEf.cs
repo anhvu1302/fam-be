@@ -16,5 +16,5 @@ public class FinanceEntryEf : EntityEf
 
     // Navigation properties
     public AssetEf Asset { get; set; } = null!;
-    public UserEf? Creator { get; set; }
+    // Note: CreatedBy navigation is inherited from EntityEf base class
 }

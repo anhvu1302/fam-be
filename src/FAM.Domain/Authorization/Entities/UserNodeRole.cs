@@ -18,9 +18,12 @@ public class UserNodeRole : Entity
     public DateTime? StartAt { get; private set; }
     public DateTime? EndAt { get; private set; }
 
-    private UserNodeRole() { }
+    private UserNodeRole()
+    {
+    }
 
-    public static UserNodeRole Create(User user, OrgNode node, Role role, DateTime? startAt = null, DateTime? endAt = null)
+    public static UserNodeRole Create(User user, OrgNode node, Role role, DateTime? startAt = null,
+        DateTime? endAt = null)
     {
         if (endAt.HasValue && startAt.HasValue && endAt.Value <= startAt.Value)
             throw new DomainException("End date must be after start date");

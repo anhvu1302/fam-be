@@ -41,7 +41,7 @@ public class LoginCommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         // User.Create with plain password will hash it internally
-        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: plainPassword);
+        var user = User.Create("testuser", "test@example.com", plainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
 
         var command = new LoginCommand
@@ -74,7 +74,8 @@ public class LoginCommandHandlerTests
             .ReturnsAsync(1);
 
         _mockJwtService
-            .Setup(x => x.GenerateAccessToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<List<string>>()))
+            .Setup(x => x.GenerateAccessToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<List<string>>()))
             .Returns("access_token");
 
         _mockJwtService
@@ -93,7 +94,8 @@ public class LoginCommandHandlerTests
         result.User.Username.Should().Be("testuser");
         result.User.Email.Should().Be("test@example.com");
 
-        _mockUserRepository.Verify(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()), Times.Once);
+        _mockUserRepository.Verify(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()),
+            Times.Once);
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -120,7 +122,8 @@ public class LoginCommandHandlerTests
         await act.Should().ThrowAsync<UnauthorizedAccessException>()
             .WithMessage("Invalid username or password");
 
-        _mockUserRepository.Verify(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()), Times.Once);
+        _mockUserRepository.Verify(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()),
+            Times.Once);
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Never);
     }
 
@@ -196,7 +199,7 @@ public class LoginCommandHandlerTests
         var password = Password.Create("SecurePass123!");
         var user = User.Create("testuser", "test@example.com", password.Hash, password.Salt, null, null);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
-        
+
         // Lock user account
         user.RecordFailedLogin();
         user.RecordFailedLogin();
@@ -228,7 +231,7 @@ public class LoginCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: plainPassword);
+        var user = User.Create("testuser", "test@example.com", plainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
         user.EnableTwoFactor("secret", "{\"codes\":[\"code1\",\"code2\"]}");
 
@@ -244,7 +247,8 @@ public class LoginCommandHandlerTests
             .ReturnsAsync(user);
 
         _mockJwtService
-            .Setup(x => x.GenerateAccessToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<List<string>>()))
+            .Setup(x => x.GenerateAccessToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<List<string>>()))
             .Returns("2fa_session_token");
 
         // Act
@@ -266,7 +270,7 @@ public class LoginCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(username: "testuser", email: "test@example.com", plainPassword: plainPassword);
+        var user = User.Create("testuser", "test@example.com", plainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
 
         var command = new LoginCommand
@@ -300,7 +304,8 @@ public class LoginCommandHandlerTests
             .ReturnsAsync(1);
 
         _mockJwtService
-            .Setup(x => x.GenerateAccessToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<List<string>>()))
+            .Setup(x => x.GenerateAccessToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<List<string>>()))
             .Returns("access_token");
 
         _mockJwtService
@@ -314,7 +319,7 @@ public class LoginCommandHandlerTests
         result.Should().NotBeNull();
         result.AccessToken.Should().NotBeNull();
         capturedDevice.Should().NotBeNull();
-        
+
         // With RememberMe, refresh token should expire in ~30 days
         var expectedExpiry = DateTime.UtcNow.AddDays(30);
         capturedDevice!.RefreshTokenExpiresAt.Should().BeCloseTo(expectedExpiry, TimeSpan.FromMinutes(1));

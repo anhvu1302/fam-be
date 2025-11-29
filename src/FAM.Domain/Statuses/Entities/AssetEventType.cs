@@ -16,9 +16,12 @@ public class AssetEventType : Entity
     // Navigation properties
     public ICollection<Assets.AssetEvent> AssetEvents { get; set; } = new List<Assets.AssetEvent>();
 
-    private AssetEventType() { }
+    private AssetEventType()
+    {
+    }
 
-    public static AssetEventType Create(string code, string name, string? description = null, string? color = null, int? orderNo = null)
+    public static AssetEventType Create(string code, string name, string? description = null, string? color = null,
+        int? orderNo = null)
     {
         return new AssetEventType
         {

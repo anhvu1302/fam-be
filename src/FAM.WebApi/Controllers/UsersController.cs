@@ -1,12 +1,17 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using FAM.Application.Users.Commands;
-using FAM.Application.Users.Queries;
-using FAM.Application.DTOs.Users;
+using FAM.Application.Common;
 using FAM.Application.Querying;
 using FAM.Application.Querying.Extensions;
-using FAM.WebApi.Models.Users;
+using FAM.Application.Settings;
+using FAM.Application.Users.Commands;
+using FAM.Application.Users.Commands.CreateUser;
+using FAM.Application.Users.Commands.UpdateUser;
+using FAM.Application.Users.Commands.DeleteUser;
+using FAM.Application.Users.Queries.GetUsers;
+using FAM.Application.Users.Queries.GetUserById;
+using FAM.WebApi.Contracts.Users;
 
 namespace FAM.WebApi.Controllers;
 
@@ -18,10 +23,12 @@ namespace FAM.WebApi.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly PaginationSettings _pagination;
 
-    public UsersController(IMediator mediator)
+    public UsersController(IMediator mediator, PaginationSettings pagination)
     {
         _mediator = mediator;
+        _pagination = pagination;
     }
 
     /// <summary>
@@ -29,41 +36,43 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="filter">Filter expression (e.g., "isDeleted == false", "username @contains('john') and email @endswith('@example.com')")</param>
     /// <param name="sort">Sort expression (e.g., "createdAt", "-username,email" for descending username then ascending email)</param>
-    /// <param name="page">Page number (default: 1)</param>
-    /// <param name="pageSize">Page size (default: 10)</param>
+    /// <param name="page">Page number (default from config)</param>
+    /// <param name="pageSize">Page size (default from config, max from config)</param>
     /// <param name="fields">Fields to return (comma-separated, e.g., "id,username,email"). If not specified, returns all fields.</param>
     /// <param name="include">Include related entities (comma-separated, e.g., "userDevices,userNodeRoles" or "userNodeRoles.role")</param>
     [HttpGet]
-    [ProducesResponseType(typeof(PageResult<UserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UsersPagedResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(PageResult<Dictionary<string, object?>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetUsers(
         [FromQuery] string? filter = null,
         [FromQuery] string? sort = null,
-        [FromQuery] int? page = 1,
-        [FromQuery] int? pageSize = 10,
+        [FromQuery] int? page = null,
+        [FromQuery] int? pageSize = null,
         [FromQuery] string? fields = null,
         [FromQuery] string? include = null)
     {
-        var query = new GetUsersQuery
+        var queryRequest = new QueryRequest
         {
             Filter = filter,
             Sort = sort,
-            Page = page ?? 1,
-            PageSize = pageSize ?? 10,
-            Fields = string.IsNullOrWhiteSpace(fields) ? null : fields.Split(',', StringSplitOptions.RemoveEmptyEntries),
+            Page = _pagination.NormalizePage(page),
+            PageSize = _pagination.NormalizePageSize(pageSize),
+            Fields =
+                string.IsNullOrWhiteSpace(fields) ? null : fields.Split(',', StringSplitOptions.RemoveEmptyEntries),
             Include = include
         };
 
+        var query = queryRequest.ToGetUsersQuery();
         var result = await _mediator.Send(query);
 
         // Apply field selection if requested
-        if (query.Fields != null && query.Fields.Length > 0)
+        if (queryRequest.Fields != null && queryRequest.Fields.Length > 0)
         {
-            var selectedResult = result.SelectFields(query.Fields);
+            var selectedResult = result.SelectFields(queryRequest.Fields);
             return Ok(selectedResult);
         }
 
-        return Ok(result);
+        return Ok(result.ToUsersPagedResponse());
     }
 
     /// <summary>
@@ -72,79 +81,99 @@ public class UsersController : ControllerBase
     /// <param name="id">User ID</param>
     /// <param name="include">Include related entities (comma-separated, e.g., "userDevices,userNodeRoles" or "userNodeRoles.role")</param>
     [HttpGet("{id:long}")]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUserById(long id, [FromQuery] string? include = null)
     {
-        var query = new GetUserByIdQuery 
-        { 
-            Id = id,
-            Include = include
-        };
+        var query = id.ToGetUserByIdQuery(include);
         var result = await _mediator.Send(query);
 
-        if (result == null)
-        {
-            return NotFound();
-        }
+        if (result == null) return NotFound();
 
-        return Ok(result);
+        return Ok(result.ToUserResponse());
     }
 
     /// <summary>
     /// Create a new user
     /// </summary>
     [HttpPost]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestModel request)
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
     {
         // Web API validation: ModelState checks DataAnnotations
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        // Map Web API model → Application Command
-        var command = new CreateUserCommand
-        {
-            Username = request.Username,
-            Email = request.Email,
-            Password = request.Password,
-            FullName = request.FullName
-        };
-
+        // Map Web API request → Application Command using extension method
+        var command = request.ToCommand();
         var result = await _mediator.Send(command);
-        return CreatedAtAction(nameof(GetUserById), new { id = result.Id }, result);
+
+        return result.Match<IActionResult>(
+            success => CreatedAtAction(nameof(GetUserById), new { id = success.User.Id },
+                success.User.ToUserResponse()),
+            (error, errorType) => MapErrorToResponse(error, errorType)
+        );
     }
 
     /// <summary>
     /// Update an existing user
     /// </summary>
     [HttpPut("{id:long}")]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateUser(long id, [FromBody] UpdateUserRequestModel request)
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    public async Task<IActionResult> UpdateUser(long id, [FromBody] UpdateUserRequest request)
     {
         // Web API validation: ModelState checks DataAnnotations
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        // Map Web API model → Application Command
-        var command = new UpdateUserCommand
+        // Map Web API request → Application Command using extension method
+        var command = request.ToCommand(id);
+        var result = await _mediator.Send(command);
+
+        return result.Match<IActionResult>(
+            success => Ok(success.User.ToUserResponse()),
+            (error, errorType) => MapErrorToResponse(error, errorType)
+        );
+    }
+
+    /// <summary>
+    /// Maps ErrorType to appropriate HTTP response per RFC 7231 / RFC 4918
+    /// </summary>
+    private IActionResult MapErrorToResponse(string error, ErrorType errorType)
+    {
+        var problemDetails = new
         {
-            Id = id,
-            Username = request.Username,
-            Email = request.Email,
-            Password = request.Password,
-            FullName = request.FullName
+            Error = error,
+            Type = $"https://httpstatuses.com/{(int)GetStatusCode(errorType)}"
         };
 
-        var result = await _mediator.Send(command);
-        return Ok(result);
+        return errorType switch
+        {
+            ErrorType.NotFound => NotFound(problemDetails),
+            ErrorType.Conflict => Conflict(problemDetails),
+            ErrorType.Unauthorized => Unauthorized(problemDetails),
+            ErrorType.Forbidden => StatusCode(StatusCodes.Status403Forbidden, problemDetails),
+            ErrorType.UnprocessableEntity => UnprocessableEntity(problemDetails),
+            _ => BadRequest(problemDetails)
+        };
+    }
+
+    private static int GetStatusCode(ErrorType errorType)
+    {
+        return errorType switch
+        {
+            ErrorType.NotFound => 404,
+            ErrorType.Conflict => 409,
+            ErrorType.Unauthorized => 401,
+            ErrorType.Forbidden => 403,
+            ErrorType.UnprocessableEntity => 422,
+            _ => 400
+        };
     }
 
     /// <summary>
@@ -155,7 +184,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteUser(long id)
     {
-        var command = new DeleteUserCommand { Id = id };
+        var command = new DeleteUserCommand(id);
         await _mediator.Send(command);
         return NoContent();
     }
@@ -170,10 +199,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAvatar(long id, [FromBody] UpdateAvatarRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -209,10 +235,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UploadAvatarDirect(long id, IFormFile file)
     {
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest(new { Error = "File is required" });
-        }
+        if (file == null || file.Length == 0) return BadRequest(new { Error = "File is required" });
 
         try
         {

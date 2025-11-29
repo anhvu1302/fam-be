@@ -1,11 +1,8 @@
-using FAM.Application.Abstractions;
-using FAM.Application.DTOs.Users;
 using FAM.Domain.Abstractions;
 using FAM.Infrastructure.Common.Options;
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.Providers.MongoDB.Repositories;
 using FAM.Infrastructure.Providers.MongoDB.Seeders;
-using FAM.Infrastructure.Providers.MongoDB.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FAM.Infrastructure.Providers.MongoDB;
@@ -15,7 +12,8 @@ namespace FAM.Infrastructure.Providers.MongoDB;
 /// </summary>
 public static class ServiceCollectionExtensions
 {
-    public static async Task<IServiceCollection> AddMongoDbAsync(this IServiceCollection services, MongoDbOptions options)
+    public static async Task<IServiceCollection> AddMongoDbAsync(this IServiceCollection services,
+        MongoDbOptions options)
     {
         // Register MongoDB context
         services.AddSingleton<MongoDbContext>(_ => new MongoDbContext(options));
@@ -33,9 +31,6 @@ public static class ServiceCollectionExtensions
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWorkMongo>();
-
-        // Register Query Services (for Filter DSL)
-        services.AddScoped<IQueryService<UserDto>, MongoUserQueryService>();
 
         // Register Data Seeders
         services.AddScoped<IDataSeeder, MongoDbUserSeeder>();
@@ -56,9 +51,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserRepository, UserRepositoryMongo>();
         services.AddScoped<IUserDeviceRepository, UserDeviceRepositoryMongo>();
         services.AddScoped<IUnitOfWork, UnitOfWorkMongo>();
-
-        // Register Query Services (for Filter DSL)
-        services.AddScoped<IQueryService<UserDto>, MongoUserQueryService>();
 
         // Register Data Seeders
         services.AddScoped<IDataSeeder, MongoDbUserSeeder>();

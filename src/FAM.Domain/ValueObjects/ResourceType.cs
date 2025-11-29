@@ -33,17 +33,26 @@ public sealed class ResourceType : ValueObject
     /// <summary>
     /// Implicit conversion từ ResourceType sang string
     /// </summary>
-    public static implicit operator string(ResourceType resourceType) => resourceType.Value;
+    public static implicit operator string(ResourceType resourceType)
+    {
+        return resourceType.Value;
+    }
 
     /// <summary>
     /// Explicit conversion từ string sang ResourceType
     /// </summary>
-    public static explicit operator ResourceType(string resourceType) => Create(resourceType);
+    public static explicit operator ResourceType(string resourceType)
+    {
+        return Create(resourceType);
+    }
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
     }
 
-    public override string ToString() => Value;
+    public override string ToString()
+    {
+        return Value;
+    }
 }
