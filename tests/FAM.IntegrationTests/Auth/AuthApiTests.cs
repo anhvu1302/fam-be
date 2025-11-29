@@ -41,7 +41,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>, IAsyncLifet
         // Arrange
         var loginRequest = new
         {
-            username = "admin",
+            identity = "admin",
             password = "Admin@123",
             rememberMe = false
         };
@@ -61,12 +61,35 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>, IAsyncLifet
     }
 
     [Fact]
+    public async Task Login_WithEmail_ShouldReturnSuccess()
+    {
+        // Arrange - Login with email instead of username
+        var loginRequest = new
+        {
+            identity = "admin@fam.local",
+            password = "Admin@123",
+            rememberMe = false
+        };
+
+        // Act
+        var response = await _client.PostAsJsonAsync("/api/auth/login", loginRequest);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var content = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        content.Should().NotBeNull();
+        content!.AccessToken.Should().NotBeNullOrEmpty();
+        content.User.Username.Should().Be("admin");
+    }
+
+    [Fact]
     public async Task Login_WithInvalidCredentials_ShouldReturnUnauthorized()
     {
         // Arrange
         var loginRequest = new
         {
-            username = "admin",
+            identity = "admin",
             password = "WrongPassword",
             rememberMe = false
         };
@@ -84,7 +107,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>, IAsyncLifet
         // Arrange
         var loginRequest = new
         {
-            username = "admin"
+            identity = "admin"
             // Missing password
         };
 
@@ -420,7 +443,7 @@ public class AuthApiTests : IClassFixture<FamWebApplicationFactory>, IAsyncLifet
     {
         var loginRequest = new
         {
-            username = "admin",
+            identity = "admin",
             password = "Admin@123",
             rememberMe = false
         };

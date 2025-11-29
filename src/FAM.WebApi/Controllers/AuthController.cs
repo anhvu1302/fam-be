@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Login with username and password
+    /// Login with username/email and password
     /// </summary>
     [HttpPost("login")]
     [AllowAnonymous]
@@ -46,14 +46,14 @@ public class AuthController : ControllerBase
             // Map Web API model → Application DTO
             var appRequest = new LoginRequest
             {
-                Username = request.Username,
+                Identity = request.Identity,
                 Password = request.Password,
                 RememberMe = request.RememberMe
             };
 
             var command = new LoginCommand
             {
-                Username = appRequest.Username,
+                Identity = appRequest.Identity,
                 Password = appRequest.Password,
                 DeviceId = GenerateDeviceId(),
                 DeviceName = GetDeviceName(),
@@ -69,12 +69,12 @@ public class AuthController : ControllerBase
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "Login failed for username: {Username}", request.Username);
+            _logger.LogWarning(ex, "Login failed for: {Identity}", request.Identity);
             return Unauthorized(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during login for username: {Username}", request.Username);
+            _logger.LogError(ex, "Error during login for: {Identity}", request.Identity);
             return StatusCode(500, new { message = "An error occurred during login" });
         }
     }

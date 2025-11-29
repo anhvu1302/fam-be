@@ -25,4 +25,9 @@ public interface IUserRepository : IRepository<User>
     /// Find user by email - for password reset
     /// </summary>
     Task<User?> FindByEmailAsync(string email, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Find user by username or email - for authentication
+    /// </summary>
+    Task<User?> FindByIdentityAsync(string identity, CancellationToken cancellationToken = default);
 }

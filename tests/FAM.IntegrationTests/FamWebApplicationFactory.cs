@@ -1,5 +1,7 @@
+using FAM.Application.Abstractions;
 using FAM.Domain.Users;
 using FAM.Infrastructure.Providers.PostgreSQL;
+using FAM.IntegrationTests.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +41,11 @@ public class FamWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLi
                     .EnableSensitiveDataLogging() // Helpful for debugging test failures
                     .EnableDetailedErrors();
             });
+
+            // Replace IStorageService with InMemoryStorageService for tests
+            var storageDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IStorageService));
+            if (storageDescriptor != null) services.Remove(storageDescriptor);
+            services.AddSingleton<IStorageService, InMemoryStorageService>();
         });
 
         // Use test environment

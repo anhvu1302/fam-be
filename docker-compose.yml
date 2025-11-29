@@ -35,3 +35,20 @@ services:
       interval: 30s
       timeout: 20s
       retries: 3
+
+  # Seq - Centralized structured logging server
+  # Web UI: http://localhost:8081
+  # Ingestion: http://localhost:5341
+  seq:
+    image: datalust/seq:latest
+    container_name: fam-seq
+    environment:
+      - ACCEPT_EULA=Y
+      # Admin password for first run (default: Admin@123)
+      - SEQ_FIRSTRUN_ADMINPASSWORD=${SEQ_ADMIN_PASSWORD:-Admin@123}
+    ports:
+      - "${SEQ_PORT:-5341}:5341"      # Log ingestion port
+      - "${SEQ_UI_PORT:-8081}:80"     # Web UI port
+    volumes:
+      - ./data/seq:/data
+    restart: unless-stopped

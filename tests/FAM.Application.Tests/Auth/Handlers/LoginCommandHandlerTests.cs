@@ -46,7 +46,7 @@ public class LoginCommandHandlerTests
 
         var command = new LoginCommand
         {
-            Username = "testuser",
+            Identity = "testuser",
             Password = plainPassword, // Same plain password will verify correctly
             DeviceId = "device123",
             DeviceName = "Chrome Browser",
@@ -55,7 +55,7 @@ public class LoginCommandHandlerTests
         };
 
         _mockUserRepository
-            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _mockUserDeviceRepository
@@ -94,7 +94,7 @@ public class LoginCommandHandlerTests
         result.User.Username.Should().Be("testuser");
         result.User.Email.Should().Be("test@example.com");
 
-        _mockUserRepository.Verify(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()),
+        _mockUserRepository.Verify(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -106,13 +106,13 @@ public class LoginCommandHandlerTests
         // Arrange
         var command = new LoginCommand
         {
-            Username = "nonexistent",
+            Identity = "nonexistent",
             Password = "SecurePass123!",
             DeviceId = "device123"
         };
 
         _mockUserRepository
-            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
         // Act
@@ -120,9 +120,9 @@ public class LoginCommandHandlerTests
 
         // Assert
         await act.Should().ThrowAsync<UnauthorizedAccessException>()
-            .WithMessage("Invalid username or password");
+            .WithMessage("Invalid username/email or password");
 
-        _mockUserRepository.Verify(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()),
+        _mockUserRepository.Verify(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Never);
     }
@@ -137,13 +137,13 @@ public class LoginCommandHandlerTests
 
         var command = new LoginCommand
         {
-            Username = "testuser",
+            Identity = "testuser",
             Password = "WrongPassword123!",
             DeviceId = "device123"
         };
 
         _mockUserRepository
-            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _mockUserRepository
@@ -158,7 +158,7 @@ public class LoginCommandHandlerTests
 
         // Assert
         await act.Should().ThrowAsync<UnauthorizedAccessException>()
-            .WithMessage("Invalid username or password");
+            .WithMessage("Invalid username/email or password");
 
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once); // Failed login recorded
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -175,13 +175,13 @@ public class LoginCommandHandlerTests
 
         var command = new LoginCommand
         {
-            Username = "testuser",
+            Identity = "testuser",
             Password = "SecurePass123!",
             DeviceId = "device123"
         };
 
         _mockUserRepository
-            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         // Act
@@ -209,13 +209,13 @@ public class LoginCommandHandlerTests
 
         var command = new LoginCommand
         {
-            Username = "testuser",
+            Identity = "testuser",
             Password = "SecurePass123!",
             DeviceId = "device123"
         };
 
         _mockUserRepository
-            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         // Act
@@ -237,13 +237,13 @@ public class LoginCommandHandlerTests
 
         var command = new LoginCommand
         {
-            Username = "testuser",
+            Identity = "testuser",
             Password = plainPassword,
             DeviceId = "device123"
         };
 
         _mockUserRepository
-            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _mockJwtService
@@ -275,7 +275,7 @@ public class LoginCommandHandlerTests
 
         var command = new LoginCommand
         {
-            Username = "testuser",
+            Identity = "testuser",
             Password = plainPassword,
             DeviceId = "device123",
             RememberMe = true // Remember me enabled
@@ -284,7 +284,7 @@ public class LoginCommandHandlerTests
         UserDevice? capturedDevice = null;
 
         _mockUserRepository
-            .Setup(x => x.FindByUsernameAsync(command.Username, It.IsAny<CancellationToken>()))
+            .Setup(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         _mockUserDeviceRepository

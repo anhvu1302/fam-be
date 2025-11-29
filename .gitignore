@@ -39,3 +39,7 @@ postgres-data-17/
 # PostgreSQL data
 postgres-data/
 postgres-data-17/
+
+# Log files
+logs/
+*.log

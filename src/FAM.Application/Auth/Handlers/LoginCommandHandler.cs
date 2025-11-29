@@ -26,12 +26,12 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
     public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        // Find user by username
-        var user = await _unitOfWork.Users.FindByUsernameAsync(request.Username, cancellationToken);
+        // Find user by username or email
+        var user = await _unitOfWork.Users.FindByIdentityAsync(request.Identity, cancellationToken);
 
         if (user == null)
             // TODO: Raise UserLoginFailedEvent
-            throw new UnauthorizedAccessException("Invalid username or password");
+            throw new UnauthorizedAccessException("Invalid username/email or password");
 
         // Check if account is locked
         if (user.IsLockedOut())
@@ -56,7 +56,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
             // TODO: Raise UserLoginFailedEvent
 
-            throw new UnauthorizedAccessException("Invalid username or password");
+            throw new UnauthorizedAccessException("Invalid username/email or password");
         }
 
         // TODO: Check if email is verified (Phase 2)

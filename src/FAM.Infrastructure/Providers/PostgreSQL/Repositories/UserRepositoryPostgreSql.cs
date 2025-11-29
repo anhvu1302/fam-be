@@ -126,6 +126,17 @@ public class UserRepositoryPostgreSql : BasePagedRepository<User, UserEf>, IUser
         return entity != null ? Mapper.Map<User>(entity) : null;
     }
 
+    public async Task<User?> FindByIdentityAsync(string identity, CancellationToken cancellationToken = default)
+    {
+        var normalizedInput = identity.ToLower();
+        var entity = await Context.Users
+            .Include(u => u.UserDevices)
+            .FirstOrDefaultAsync(u => 
+                (u.Username.ToLower() == normalizedInput || u.Email.ToLower() == normalizedInput) && !u.IsDeleted, 
+                cancellationToken);
+        return entity != null ? Mapper.Map<User>(entity) : null;
+    }
+
     /// <summary>
     /// Get users with filtering, sorting and pagination applied at database level
     /// </summary>

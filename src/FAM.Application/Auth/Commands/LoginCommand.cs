@@ -4,11 +4,11 @@ using MediatR;
 namespace FAM.Application.Auth.Commands;
 
 /// <summary>
-/// Command to login with username and password
+/// Command to login with username/email and password
 /// </summary>
 public sealed record LoginCommand : IRequest<LoginResponse>
 {
-    public string Username { get; init; } = string.Empty;
+    public string Identity { get; init; } = string.Empty;
     public string Password { get; init; } = string.Empty;
     public string DeviceId { get; init; } = string.Empty;
     public string? DeviceName { get; init; }
@@ -23,7 +23,7 @@ public sealed record LoginCommand : IRequest<LoginResponse>
     {
         return new LoginCommand
         {
-            Username = request.Username,
+            Identity = request.Identity,
             Password = request.Password,
             DeviceId = deviceId,
             DeviceName = deviceName,

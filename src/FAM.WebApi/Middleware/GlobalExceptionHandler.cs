@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using FAM.Domain.Common;
+using Serilog.Context;
 
 namespace FAM.WebApi.Middleware;
 
@@ -23,8 +24,6 @@ public class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-        _logger.LogError(exception, "An unhandled exception occurred: {Message}", exception.Message);
-
         var (statusCode, title, errors) = exception switch
         {
             DomainException domainException => HandleDomainException(domainException),
@@ -34,6 +33,26 @@ public class GlobalExceptionHandler : IExceptionHandler
             InvalidOperationException invalidOpException => HandleInvalidOperationException(invalidOpException),
             _ => HandleGenericException(exception)
         };
+
+        // Log với context phù hợp
+        using (LogContext.PushProperty("ExceptionType", exception.GetType().Name))
+        using (LogContext.PushProperty("StatusCode", statusCode))
+        {
+            if (statusCode >= 500)
+            {
+                // Log Error cho server errors (với full stack trace)
+                _logger.LogError(exception,
+                    "Unhandled exception occurred: {ExceptionMessage}",
+                    exception.Message);
+            }
+            else if (statusCode >= 400)
+            {
+                // Log Warning cho client errors (không cần stack trace)
+                _logger.LogWarning(
+                    "Client error: {StatusCode} {Title} - {ExceptionMessage}",
+                    statusCode, title, exception.Message);
+            }
+        }
 
         var problemDetails = new ProblemDetails
         {

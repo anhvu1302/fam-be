@@ -1,11 +1,11 @@
 namespace FAM.Application.Auth.DTOs;
 
 /// <summary>
-/// Login request DTO
+/// Login request DTO - supports login with username or email
 /// </summary>
 public class LoginRequest
 {
-    public string Username { get; set; } = string.Empty;
+    public string Identity { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
     public bool RememberMe { get; set; }
 }

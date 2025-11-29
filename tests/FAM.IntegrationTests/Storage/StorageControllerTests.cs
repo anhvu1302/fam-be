@@ -38,7 +38,7 @@ public class StorageControllerTests : IClassFixture<FamWebApplicationFactory>, I
 
         var loginRequest = new
         {
-            username = "admin",
+            identity = "admin",
             password = "Admin@123"
         };
 
