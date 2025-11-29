@@ -1,6 +1,8 @@
 using FAM.Application.Abstractions;
 using FAM.Application.Auth.Services;
 using FAM.Application.Common.Services;
+using FAM.Application.Menu.Services;
+using FAM.Application.Settings.Services;
 using FAM.Domain.Abstractions;
 using FAM.Infrastructure.Auth;
 using FAM.Infrastructure.Common.Mapping;
@@ -110,6 +112,10 @@ public static class InfrastructureModule
 
         // Register Signing Key Service
         services.AddScoped<ISigningKeyService, SigningKeyService>();
+
+        // Register Menu & Settings Services
+        services.AddScoped<IMenuItemService, MenuItemService>();
+        services.AddScoped<ISystemSettingService, SystemSettingService>();
 
         // Register only the selected database provider
         switch (provider)

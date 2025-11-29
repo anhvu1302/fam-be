@@ -9,19 +9,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
 /// <summary>
 /// Seeds initial users data for PostgreSQL
 /// </summary>
-public class PostgreSqlAdminUserSeeder : BaseDataSeeder
+public class AdminUserSeeder : BaseDataSeeder
 {
     private readonly PostgreSqlDbContext _dbContext;
 
-    public PostgreSqlAdminUserSeeder(PostgreSqlDbContext dbContext, ILogger<PostgreSqlAdminUserSeeder> logger)
+    public AdminUserSeeder(PostgreSqlDbContext dbContext, ILogger<AdminUserSeeder> logger)
         : base(logger)
     {
         _dbContext = dbContext;
     }
 
-    public override int Order => 1;
-
-    public override string Name => "PostgreSQL User Seeder";
+    public override string Name => "20251129140001_AdminUserSeeder";
 
     public override async Task SeedAsync(CancellationToken cancellationToken = default)
     {

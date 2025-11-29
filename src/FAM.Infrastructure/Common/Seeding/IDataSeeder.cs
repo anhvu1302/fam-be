@@ -2,6 +2,8 @@ namespace FAM.Infrastructure.Common.Seeding;
 
 /// <summary>
 /// Interface for data seeders
+/// Seeders are executed in alphabetical order by Name.
+/// Use timestamp prefix in Name (e.g., "20251129140000_SigningKeySeeder") for ordering.
 /// </summary>
 public interface IDataSeeder
 {
@@ -11,12 +13,8 @@ public interface IDataSeeder
     Task SeedAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Get the order in which this seeder should run (lower numbers run first)
-    /// </summary>
-    int Order { get; }
-
-    /// <summary>
-    /// Get the name of this seeder
+    /// Get the name of this seeder (used for ordering and tracking).
+    /// Should be in format: "{timestamp}_{SeederName}" (e.g., "20251129140000_SigningKeySeeder")
     /// </summary>
     string Name { get; }
 }

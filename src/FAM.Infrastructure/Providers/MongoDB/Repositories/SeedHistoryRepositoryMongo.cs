@@ -33,7 +33,6 @@ public class SeedHistoryRepositoryMongo : ISeedHistoryRepository
         var mongoHistory = new SeedHistoryMongo
         {
             SeederName = history.SeederName,
-            Order = history.Order,
             ExecutedAt = history.ExecutedAt,
             ExecutedBy = history.ExecutedBy,
             Success = history.Success,
@@ -57,7 +56,6 @@ public class SeedHistoryRepositoryMongo : ISeedHistoryRepository
         {
             Id = long.Parse(h.Id),
             SeederName = h.SeederName,
-            Order = h.Order,
             ExecutedAt = h.ExecutedAt,
             ExecutedBy = h.ExecutedBy,
             Success = h.Success,
@@ -71,7 +69,6 @@ public class SeedHistoryMongo
 {
     public string Id { get; set; } = global::MongoDB.Bson.ObjectId.GenerateNewId().ToString();
     public string SeederName { get; set; } = string.Empty;
-    public int Order { get; set; }
     public DateTime ExecutedAt { get; set; }
     public string ExecutedBy { get; set; } = "System";
     public bool Success { get; set; }

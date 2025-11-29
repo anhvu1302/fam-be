@@ -20,9 +20,7 @@ public class MongoDbSigningKeySeeder : BaseDataSeeder
         _context = context;
     }
 
-    public override int Order => 0; // Run first, before other seeders
-
-    public override string Name => "MongoDB Signing Key Seeder";
+    public override string Name => "20251129140000_MongoDbSigningKeySeeder";
 
     public override async Task SeedAsync(CancellationToken cancellationToken = default)
     {

@@ -9,19 +9,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
 /// <summary>
 /// Seeds initial roles data for PostgreSQL
 /// </summary>
-public class PostgreSqlRoleSeeder : BaseDataSeeder
+public class RoleSeeder : BaseDataSeeder
 {
     private readonly PostgreSqlDbContext _dbContext;
 
-    public PostgreSqlRoleSeeder(PostgreSqlDbContext dbContext, ILogger<PostgreSqlRoleSeeder> logger)
+    public RoleSeeder(PostgreSqlDbContext dbContext, ILogger<RoleSeeder> logger)
         : base(logger)
     {
         _dbContext = dbContext;
     }
 
-    public override int Order => 2;
-
-    public override string Name => "PostgreSQL Role Seeder";
+    public override string Name => "20251129140002_RoleSeeder";
 
     public override async Task SeedAsync(CancellationToken cancellationToken = default)
     {

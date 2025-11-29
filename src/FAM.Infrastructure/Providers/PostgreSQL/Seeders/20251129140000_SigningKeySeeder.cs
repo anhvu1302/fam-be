@@ -11,19 +11,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
 /// Seeds initial RSA signing key for JWT tokens
 /// This ensures there's always a signing key available for token generation
 /// </summary>
-public class PostgreSqlSigningKeySeeder : BaseDataSeeder
+public class SigningKeySeeder : BaseDataSeeder
 {
     private readonly PostgreSqlDbContext _dbContext;
 
-    public PostgreSqlSigningKeySeeder(PostgreSqlDbContext dbContext, ILogger<PostgreSqlSigningKeySeeder> logger)
+    public SigningKeySeeder(PostgreSqlDbContext dbContext, ILogger<SigningKeySeeder> logger)
         : base(logger)
     {
         _dbContext = dbContext;
     }
 
-    public override int Order => 0; // Run first, before other seeders
-
-    public override string Name => "PostgreSQL Signing Key Seeder";
+    public override string Name => "20251129140000_SigningKeySeeder";
 
     public override async Task SeedAsync(CancellationToken cancellationToken = default)
     {

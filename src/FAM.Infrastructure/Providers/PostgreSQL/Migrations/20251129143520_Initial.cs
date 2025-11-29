@@ -218,6 +218,46 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "menu_items",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    code = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    icon = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    route = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    external_url = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    parent_id = table.Column<long>(type: "bigint", nullable: true),
+                    sort_order = table.Column<int>(type: "integer", nullable: false),
+                    level = table.Column<int>(type: "integer", nullable: false),
+                    is_visible = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    is_enabled = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    required_permission = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    required_roles = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    open_in_new_tab = table.Column<bool>(type: "boolean", nullable: false),
+                    css_class = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    badge = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    badge_variant = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    metadata = table.Column<string>(type: "text", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_menu_items", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_menu_items_menu_items_parent_id",
+                        column: x => x.parent_id,
+                        principalTable: "menu_items",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "org_nodes",
                 columns: table => new
                 {
@@ -278,6 +318,68 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_roles", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "signing_keys",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    key_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    public_key = table.Column<string>(type: "text", nullable: false),
+                    private_key = table.Column<string>(type: "text", nullable: false),
+                    algorithm = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    key_size = table.Column<int>(type: "integer", nullable: false),
+                    use = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    key_type = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    is_revoked = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    revoked_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    revocation_reason = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    last_used_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_signing_keys", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "system_settings",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    key = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    value = table.Column<string>(type: "text", nullable: true),
+                    default_value = table.Column<string>(type: "text", nullable: true),
+                    data_type = table.Column<int>(type: "integer", nullable: false),
+                    group = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    display_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    sort_order = table.Column<int>(type: "integer", nullable: false),
+                    is_visible = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    is_editable = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    is_sensitive = table.Column<bool>(type: "boolean", nullable: false),
+                    is_required = table.Column<bool>(type: "boolean", nullable: false),
+                    validation_rules = table.Column<string>(type: "text", nullable: true),
+                    options = table.Column<string>(type: "text", nullable: true),
+                    metadata = table.Column<string>(type: "text", nullable: true),
+                    last_modified_by = table.Column<long>(type: "bigint", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_system_settings", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -1948,6 +2050,28 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 column: "updated_by_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_menu_items_code",
+                table: "menu_items",
+                column: "code",
+                unique: true,
+                filter: "is_deleted = false");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_menu_items_is_visible",
+                table: "menu_items",
+                column: "is_visible");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_menu_items_parent_id",
+                table: "menu_items",
+                column: "parent_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_menu_items_sort_order",
+                table: "menu_items",
+                column: "sort_order");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_models_category_id",
                 table: "models",
                 column: "category_id");
@@ -2053,6 +2177,28 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 column: "rank");
 
             migrationBuilder.CreateIndex(
+                name: "ix_signing_keys_expires_at",
+                table: "signing_keys",
+                column: "expires_at");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_signing_keys_is_active",
+                table: "signing_keys",
+                column: "is_active");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_signing_keys_is_revoked",
+                table: "signing_keys",
+                column: "is_revoked");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_signing_keys_key_id",
+                table: "signing_keys",
+                column: "key_id",
+                unique: true,
+                filter: "is_deleted = false");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_suppliers_code",
                 table: "suppliers",
                 column: "code",
@@ -2105,6 +2251,23 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 name: "ix_suppliers_updated_by_id",
                 table: "suppliers",
                 column: "updated_by_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_system_settings_group",
+                table: "system_settings",
+                column: "group");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_system_settings_is_visible",
+                table: "system_settings",
+                column: "is_visible");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_system_settings_key",
+                table: "system_settings",
+                column: "key",
+                unique: true,
+                filter: "is_deleted = false");
 
             migrationBuilder.CreateIndex(
                 name: "ix_usage_statuses_code",
@@ -2196,10 +2359,19 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 name: "finance_entries");
 
             migrationBuilder.DropTable(
+                name: "menu_items");
+
+            migrationBuilder.DropTable(
                 name: "resources");
 
             migrationBuilder.DropTable(
                 name: "role_permissions");
+
+            migrationBuilder.DropTable(
+                name: "signing_keys");
+
+            migrationBuilder.DropTable(
+                name: "system_settings");
 
             migrationBuilder.DropTable(
                 name: "upload_sessions");

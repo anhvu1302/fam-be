@@ -5,7 +5,8 @@ using System.Diagnostics;
 namespace FAM.Infrastructure.Common.Seeding;
 
 /// <summary>
-/// Orchestrates the execution of all data seeders in the correct order
+/// Orchestrates the execution of all data seeders in the correct order.
+/// Seeders are sorted alphabetically by Name (use timestamp prefix for ordering).
 /// </summary>
 public class DataSeederOrchestrator
 {
@@ -19,14 +20,14 @@ public class DataSeederOrchestrator
     }
 
     /// <summary>
-    /// Execute all registered data seeders in order
+    /// Execute all registered data seeders in order (sorted by Name)
     /// </summary>
     public async Task SeedAllAsync(bool forceReseed = false, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("=== Starting Data Seeding ===");
 
         var seeders = _serviceProvider.GetServices<IDataSeeder>()
-            .OrderBy(s => s.Order)
+            .OrderBy(s => s.Name, StringComparer.Ordinal)
             .ToList();
 
         if (!seeders.Any())
@@ -62,7 +63,7 @@ public class DataSeederOrchestrator
 
             try
             {
-                _logger.LogInformation("Executing seeder: {SeederName} (Order: {Order})", seeder.Name, seeder.Order);
+                _logger.LogInformation("Executing seeder: {SeederName}", seeder.Name);
                 await seeder.SeedAsync(cancellationToken);
                 stopwatch.Stop();
                 success = true;
@@ -80,7 +81,6 @@ public class DataSeederOrchestrator
                     await historyRepo.RecordExecutionAsync(new SeedHistory
                     {
                         SeederName = seeder.Name,
-                        Order = seeder.Order,
                         ExecutedAt = DateTime.UtcNow,
                         Success = false,
                         ErrorMessage = errorMessage,
@@ -95,7 +95,6 @@ public class DataSeederOrchestrator
                 await historyRepo.RecordExecutionAsync(new SeedHistory
                 {
                     SeederName = seeder.Name,
-                    Order = seeder.Order,
                     ExecutedAt = DateTime.UtcNow,
                     Success = true,
                     Duration = stopwatch.Elapsed

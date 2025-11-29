@@ -50,12 +50,17 @@ public class SeedHistoryRepositoryPostgreSql : ISeedHistoryRepository
         using var command = connection.CreateCommand();
         command.CommandText = @"
             INSERT INTO __seed_history 
-                (seeder_name, ""order"", executed_at, executed_by, success, error_message, duration_ms)
+                (seeder_name, executed_at, executed_by, success, error_message, duration_ms)
             VALUES 
-                (@seederName, @order, @executedAt, @executedBy, @success, @errorMessage, @durationMs)";
+                (@seederName, @executedAt, @executedBy, @success, @errorMessage, @durationMs)
+            ON CONFLICT (seeder_name) DO UPDATE SET
+                executed_at = EXCLUDED.executed_at,
+                executed_by = EXCLUDED.executed_by,
+                success = EXCLUDED.success,
+                error_message = EXCLUDED.error_message,
+                duration_ms = EXCLUDED.duration_ms";
 
         AddParameter(command, "@seederName", history.SeederName);
-        AddParameter(command, "@order", history.Order);
         AddParameter(command, "@executedAt", history.ExecutedAt);
         AddParameter(command, "@executedBy", history.ExecutedBy);
         AddParameter(command, "@success", history.Success);
@@ -92,12 +97,11 @@ public class SeedHistoryRepositoryPostgreSql : ISeedHistoryRepository
             {
                 Id = reader.GetInt64(0),
                 SeederName = reader.GetString(1),
-                Order = reader.GetInt32(2),
-                ExecutedAt = reader.GetDateTime(3),
-                ExecutedBy = reader.GetString(4),
-                Success = reader.GetBoolean(5),
-                ErrorMessage = reader.IsDBNull(6) ? null : reader.GetString(6),
-                Duration = TimeSpan.FromMilliseconds(reader.GetDouble(7))
+                ExecutedAt = reader.GetDateTime(2),
+                ExecutedBy = reader.GetString(3),
+                Success = reader.GetBoolean(4),
+                ErrorMessage = reader.IsDBNull(5) ? null : reader.GetString(5),
+                Duration = TimeSpan.FromMilliseconds(reader.GetDouble(6))
             });
 
         return histories;
@@ -109,7 +113,6 @@ public class SeedHistoryRepositoryPostgreSql : ISeedHistoryRepository
             CREATE TABLE IF NOT EXISTS __seed_history (
                 id BIGSERIAL PRIMARY KEY,
                 seeder_name VARCHAR(255) NOT NULL,
-                ""order"" INT NOT NULL,
                 executed_at TIMESTAMP NOT NULL,
                 executed_by VARCHAR(100) NOT NULL,
                 success BOOLEAN NOT NULL,

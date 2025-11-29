@@ -18,9 +18,7 @@ public class MongoDbUserSeeder : BaseDataSeeder
         _dbContext = dbContext;
     }
 
-    public override int Order => 1;
-
-    public override string Name => "MongoDB User Seeder";
+    public override string Name => "20251129140001_MongoDbUserSeeder";
 
     public override async Task SeedAsync(CancellationToken cancellationToken = default)
     {

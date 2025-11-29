@@ -97,11 +97,11 @@ public class SigningKey : BaseEntity
         string? description = null)
     {
         if (string.IsNullOrWhiteSpace(keyId))
-            throw new DomainException("KeyId is required");
+            throw new DomainException(ErrorCodes.VAL_REQUIRED, "KeyId is required");
         if (string.IsNullOrWhiteSpace(publicKey))
-            throw new DomainException("PublicKey is required");
+            throw new DomainException(ErrorCodes.VAL_REQUIRED, "PublicKey is required");
         if (string.IsNullOrWhiteSpace(privateKey))
-            throw new DomainException("PrivateKey is required");
+            throw new DomainException(ErrorCodes.VAL_REQUIRED, "PrivateKey is required");
 
         return new SigningKey
         {
@@ -126,9 +126,9 @@ public class SigningKey : BaseEntity
     public void Activate()
     {
         if (IsRevoked)
-            throw new DomainException("Cannot activate a revoked key");
+            throw new DomainException(ErrorCodes.KEY_ALREADY_REVOKED, "Cannot activate a revoked key");
         if (ExpiresAt.HasValue && ExpiresAt.Value < DateTime.UtcNow)
-            throw new DomainException("Cannot activate an expired key");
+            throw new DomainException(ErrorCodes.KEY_EXPIRED, "Cannot activate an expired key");
 
         IsActive = true;
         UpdatedAt = DateTime.UtcNow;
@@ -149,7 +149,7 @@ public class SigningKey : BaseEntity
     public void Revoke(string? reason = null)
     {
         if (IsRevoked)
-            throw new DomainException("Key is already revoked");
+            throw new DomainException(ErrorCodes.KEY_ALREADY_REVOKED);
 
         IsRevoked = true;
         IsActive = false;

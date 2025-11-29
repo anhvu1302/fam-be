@@ -66,6 +66,10 @@ public class PostgreSqlDbContext : DbContext
     // Security
     public DbSet<SigningKeyEf> SigningKeys { get; set; }
 
+    // UI & Configuration
+    public DbSet<MenuItemEf> MenuItems { get; set; }
+    public DbSet<SystemSettingEf> SystemSettings { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(_options.ConnectionString, npgsqlOptions =>
@@ -827,6 +831,62 @@ public class PostgreSqlDbContext : DbContext
             entity.HasIndex(sk => sk.IsActive).HasDatabaseName("ix_signing_keys_is_active");
             entity.HasIndex(sk => sk.IsRevoked).HasDatabaseName("ix_signing_keys_is_revoked");
             entity.HasIndex(sk => sk.ExpiresAt).HasDatabaseName("ix_signing_keys_expires_at");
+        });
+
+        // MenuItem configuration
+        modelBuilder.Entity<MenuItemEf>(entity =>
+        {
+            entity.HasKey(m => m.Id);
+            entity.Property(m => m.Code).IsRequired().HasMaxLength(100);
+            entity.Property(m => m.Name).IsRequired().HasMaxLength(200);
+            entity.Property(m => m.Description).HasMaxLength(500);
+            entity.Property(m => m.Icon).HasMaxLength(100);
+            entity.Property(m => m.Route).HasMaxLength(500);
+            entity.Property(m => m.ExternalUrl).HasMaxLength(1000);
+            entity.Property(m => m.RequiredPermission).HasMaxLength(100);
+            entity.Property(m => m.RequiredRoles).HasMaxLength(500);
+            entity.Property(m => m.CssClass).HasMaxLength(200);
+            entity.Property(m => m.Badge).HasMaxLength(50);
+            entity.Property(m => m.BadgeVariant).HasMaxLength(50);
+            entity.Property(m => m.IsVisible).HasDefaultValue(true);
+            entity.Property(m => m.IsEnabled).HasDefaultValue(true);
+            entity.Property(m => m.IsDeleted).HasDefaultValue(false);
+
+            entity.HasQueryFilter(m => !m.IsDeleted);
+
+            // Self-referencing relationship for parent-child
+            entity.HasOne(m => m.Parent)
+                .WithMany(m => m.Children)
+                .HasForeignKey(m => m.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes
+            entity.HasIndex(m => m.Code).IsUnique().HasFilter("is_deleted = false")
+                .HasDatabaseName("ix_menu_items_code");
+            entity.HasIndex(m => m.ParentId).HasDatabaseName("ix_menu_items_parent_id");
+            entity.HasIndex(m => m.SortOrder).HasDatabaseName("ix_menu_items_sort_order");
+            entity.HasIndex(m => m.IsVisible).HasDatabaseName("ix_menu_items_is_visible");
+        });
+
+        // SystemSetting configuration
+        modelBuilder.Entity<SystemSettingEf>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.Key).IsRequired().HasMaxLength(200);
+            entity.Property(s => s.DisplayName).IsRequired().HasMaxLength(200);
+            entity.Property(s => s.Group).IsRequired().HasMaxLength(100);
+            entity.Property(s => s.Description).HasMaxLength(500);
+            entity.Property(s => s.IsVisible).HasDefaultValue(true);
+            entity.Property(s => s.IsEditable).HasDefaultValue(true);
+            entity.Property(s => s.IsDeleted).HasDefaultValue(false);
+
+            entity.HasQueryFilter(s => !s.IsDeleted);
+
+            // Indexes
+            entity.HasIndex(s => s.Key).IsUnique().HasFilter("is_deleted = false")
+                .HasDatabaseName("ix_system_settings_key");
+            entity.HasIndex(s => s.Group).HasDatabaseName("ix_system_settings_group");
+            entity.HasIndex(s => s.IsVisible).HasDatabaseName("ix_system_settings_is_visible");
         });
     }
 }

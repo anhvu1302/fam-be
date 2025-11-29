@@ -23,6 +23,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUserRepository, UserRepositoryPostgreSql>();
         services.AddScoped<IUserDeviceRepository, UserDeviceRepositoryPostgreSql>();
         services.AddScoped<ISigningKeyRepository, SigningKeyRepository>();
+        services.AddScoped<IMenuItemRepository, MenuItemRepository>();
+        services.AddScoped<ISystemSettingRepository, SystemSettingRepository>();
 
         // Authorization repositories
         services.AddScoped<IPermissionRepository, PermissionRepositoryPostgreSql>();
@@ -43,9 +45,15 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUnitOfWork, UnitOfWorkPostgreSql>();
 
         // Register Data Seeders
-        services.AddScoped<IDataSeeder, PostgreSqlSigningKeySeeder>();
-        services.AddScoped<IDataSeeder, PostgreSqlAdminUserSeeder>();
-        services.AddScoped<IDataSeeder, PostgreSqlRoleSeeder>();
+        services.AddScoped<IDataSeeder, SigningKeySeeder>();
+        services.AddScoped<IDataSeeder, AdminUserSeeder>();
+        services.AddScoped<IDataSeeder, RoleSeeder>();
+        services.AddScoped<IDataSeeder, LifecycleStatusSeeder>();
+        services.AddScoped<IDataSeeder, UsageStatusSeeder>();
+        services.AddScoped<IDataSeeder, CountrySeeder>();
+        services.AddScoped<IDataSeeder, OrganizationSeeder>();
+        services.AddScoped<IDataSeeder, MenuSeeder>();
+        services.AddScoped<IDataSeeder, SystemSettingSeeder>();
 
         // Register Seed History Repository
         services.AddScoped<ISeedHistoryRepository, SeedHistoryRepositoryPostgreSql>();

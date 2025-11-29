@@ -3,6 +3,7 @@ using FAM.Application.Auth.DTOs;
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
+using FAM.Domain.Common;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
@@ -67,12 +68,12 @@ public class SigningKeyService : ISigningKeyService
         // Validate algorithm
         var validAlgorithms = new[] { "RS256", "RS384", "RS512" };
         if (!validAlgorithms.Contains(algorithm))
-            throw new ArgumentException($"Invalid algorithm. Must be one of: {string.Join(", ", validAlgorithms)}");
+            throw new DomainException(ErrorCodes.KEY_INVALID_ALGORITHM);
 
         // Validate key size
         var validKeySizes = new[] { 2048, 3072, 4096 };
         if (!validKeySizes.Contains(keySize))
-            throw new ArgumentException($"Invalid key size. Must be one of: {string.Join(", ", validKeySizes)}");
+            throw new DomainException(ErrorCodes.KEY_INVALID_SIZE);
 
         // Generate RSA key pair
         using var rsa = RSA.Create(keySize);
@@ -119,7 +120,7 @@ public class SigningKeyService : ISigningKeyService
     public async Task ActivateKeyAsync(long keyId, CancellationToken cancellationToken = default)
     {
         var key = await _repository.GetByIdAsync(keyId, cancellationToken);
-        if (key == null) throw new KeyNotFoundException($"Signing key with ID {keyId} not found");
+        if (key == null) throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
 
         key.Activate();
         _repository.Update(key);
@@ -135,7 +136,7 @@ public class SigningKeyService : ISigningKeyService
     public async Task DeactivateKeyAsync(long keyId, CancellationToken cancellationToken = default)
     {
         var key = await _repository.GetByIdAsync(keyId, cancellationToken);
-        if (key == null) throw new KeyNotFoundException($"Signing key with ID {keyId} not found");
+        if (key == null) throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
 
         key.Deactivate();
         _repository.Update(key);
@@ -147,7 +148,7 @@ public class SigningKeyService : ISigningKeyService
     public async Task RevokeKeyAsync(long keyId, string? reason = null, CancellationToken cancellationToken = default)
     {
         var key = await _repository.GetByIdAsync(keyId, cancellationToken);
-        if (key == null) throw new KeyNotFoundException($"Signing key with ID {keyId} not found");
+        if (key == null) throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
 
         key.Revoke(reason);
         _repository.Update(key);
@@ -216,9 +217,9 @@ public class SigningKeyService : ISigningKeyService
     public async Task DeleteKeyAsync(long keyId, CancellationToken cancellationToken = default)
     {
         var key = await _repository.GetByIdAsync(keyId, cancellationToken);
-        if (key == null) throw new KeyNotFoundException($"Signing key with ID {keyId} not found");
+        if (key == null) throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
 
-        if (!key.IsRevoked) throw new InvalidOperationException("Cannot delete a key that has not been revoked");
+        if (!key.IsRevoked) throw new DomainException(ErrorCodes.KEY_MUST_REVOKE_FIRST);
 
         _repository.Delete(key);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -1,5 +1,6 @@
 using FAM.Application.Auth.DTOs;
 using FAM.Application.Auth.Services;
+using FAM.Domain.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,21 +28,13 @@ public class JwksController : ControllerBase
     /// Get the JSON Web Key Set (JWKS) containing public keys for JWT verification
     /// This is a standard endpoint that should be publicly accessible
     /// </summary>
-    [HttpGet(".well-known/jwks.json")]
+    [HttpGet("api/.well-known/jwks.json")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(JwksDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<JwksDto>> GetJwks(CancellationToken cancellationToken)
     {
-        try
-        {
-            var jwks = await _signingKeyService.GetJwksAsync(cancellationToken);
-            return Ok(jwks);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving JWKS");
-            return StatusCode(500, new { message = "An error occurred retrieving JWKS" });
-        }
+        var jwks = await _signingKeyService.GetJwksAsync(cancellationToken);
+        return Ok(jwks);
     }
 
     /// <summary>
@@ -69,16 +62,8 @@ public class JwksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<IEnumerable<SigningKeyResponse>>> GetAllKeys(CancellationToken cancellationToken)
     {
-        try
-        {
-            var keys = await _signingKeyService.GetAllKeysAsync(cancellationToken);
-            return Ok(keys);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving signing keys");
-            return StatusCode(500, new { message = "An error occurred retrieving signing keys" });
-        }
+        var keys = await _signingKeyService.GetAllKeysAsync(cancellationToken);
+        return Ok(keys);
     }
 
     /// <summary>
@@ -92,17 +77,10 @@ public class JwksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<SigningKeyResponse>> GetKeyById(long id, CancellationToken cancellationToken)
     {
-        try
-        {
-            var key = await _signingKeyService.GetKeyByIdAsync(id, cancellationToken);
-            if (key == null) return NotFound(new { message = $"Signing key with ID {id} not found" });
-            return Ok(key);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving signing key {KeyId}", id);
-            return StatusCode(500, new { message = "An error occurred retrieving signing key" });
-        }
+        var key = await _signingKeyService.GetKeyByIdAsync(id, cancellationToken);
+        if (key == null) 
+            throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", id);
+        return Ok(key);
     }
 
     /// <summary>
@@ -118,30 +96,18 @@ public class JwksController : ControllerBase
         [FromBody] GenerateSigningKeyRequest request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var key = await _signingKeyService.GenerateKeyAsync(
-                request.Algorithm,
-                request.KeySize,
-                request.ExpiresAt,
-                request.Description,
-                request.ActivateImmediately,
-                cancellationToken);
+        var key = await _signingKeyService.GenerateKeyAsync(
+            request.Algorithm,
+            request.KeySize,
+            request.ExpiresAt,
+            request.Description,
+            request.ActivateImmediately,
+            cancellationToken);
 
-            var response = await _signingKeyService.GetKeyByIdAsync(key.Id, cancellationToken);
-            _logger.LogInformation("Generated new signing key {KeyId}", key.KeyId);
+        var response = await _signingKeyService.GetKeyByIdAsync(key.Id, cancellationToken);
+        _logger.LogInformation("Generated new signing key {KeyId}", key.KeyId);
 
-            return CreatedAtAction(nameof(GetKeyById), new { id = key.Id }, response);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error generating signing key");
-            return StatusCode(500, new { message = "An error occurred generating signing key" });
-        }
+        return CreatedAtAction(nameof(GetKeyById), new { id = key.Id }, response);
     }
 
     /// <summary>
@@ -157,31 +123,19 @@ public class JwksController : ControllerBase
         [FromBody] RotateKeyRequest request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var key = await _signingKeyService.RotateKeyAsync(
-                request.Algorithm,
-                request.KeySize,
-                request.ExpiresAt,
-                request.Description,
-                request.RevokeOldKey,
-                request.RevocationReason,
-                cancellationToken);
+        var key = await _signingKeyService.RotateKeyAsync(
+            request.Algorithm,
+            request.KeySize,
+            request.ExpiresAt,
+            request.Description,
+            request.RevokeOldKey,
+            request.RevocationReason,
+            cancellationToken);
 
-            var response = await _signingKeyService.GetKeyByIdAsync(key.Id, cancellationToken);
-            _logger.LogInformation("Rotated signing keys. New key: {KeyId}", key.KeyId);
+        var response = await _signingKeyService.GetKeyByIdAsync(key.Id, cancellationToken);
+        _logger.LogInformation("Rotated signing keys. New key: {KeyId}", key.KeyId);
 
-            return Ok(response);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error rotating signing keys");
-            return StatusCode(500, new { message = "An error occurred rotating signing keys" });
-        }
+        return Ok(response);
     }
 
     /// <summary>
@@ -196,25 +150,9 @@ public class JwksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> ActivateKey(long id, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _signingKeyService.ActivateKeyAsync(id, cancellationToken);
-            _logger.LogInformation("Activated signing key {KeyId}", id);
-            return Ok(new { message = "Key activated successfully" });
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound(new { message = $"Signing key with ID {id} not found" });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error activating signing key {KeyId}", id);
-            return StatusCode(500, new { message = "An error occurred activating signing key" });
-        }
+        await _signingKeyService.ActivateKeyAsync(id, cancellationToken);
+        _logger.LogInformation("Activated signing key {KeyId}", id);
+        return Ok(new { message = "Key activated successfully" });
     }
 
     /// <summary>
@@ -228,21 +166,9 @@ public class JwksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> DeactivateKey(long id, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _signingKeyService.DeactivateKeyAsync(id, cancellationToken);
-            _logger.LogInformation("Deactivated signing key {KeyId}", id);
-            return Ok(new { message = "Key deactivated successfully" });
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound(new { message = $"Signing key with ID {id} not found" });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error deactivating signing key {KeyId}", id);
-            return StatusCode(500, new { message = "An error occurred deactivating signing key" });
-        }
+        await _signingKeyService.DeactivateKeyAsync(id, cancellationToken);
+        _logger.LogInformation("Deactivated signing key {KeyId}", id);
+        return Ok(new { message = "Key deactivated successfully" });
     }
 
     /// <summary>
@@ -261,25 +187,9 @@ public class JwksController : ControllerBase
         [FromBody] RevokeSigningKeyRequest request,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            await _signingKeyService.RevokeKeyAsync(id, request.Reason, cancellationToken);
-            _logger.LogWarning("Revoked signing key {KeyId}. Reason: {Reason}", id, request.Reason ?? "Not specified");
-            return Ok(new { message = "Key revoked successfully" });
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound(new { message = $"Signing key with ID {id} not found" });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error revoking signing key {KeyId}", id);
-            return StatusCode(500, new { message = "An error occurred revoking signing key" });
-        }
+        await _signingKeyService.RevokeKeyAsync(id, request.Reason, cancellationToken);
+        _logger.LogWarning("Revoked signing key {KeyId}. Reason: {Reason}", id, request.Reason ?? "Not specified");
+        return Ok(new { message = "Key revoked successfully" });
     }
 
     /// <summary>
@@ -294,25 +204,9 @@ public class JwksController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult> DeleteKey(long id, CancellationToken cancellationToken)
     {
-        try
-        {
-            await _signingKeyService.DeleteKeyAsync(id, cancellationToken);
-            _logger.LogInformation("Deleted signing key {KeyId}", id);
-            return Ok(new { message = "Key deleted successfully" });
-        }
-        catch (KeyNotFoundException)
-        {
-            return NotFound(new { message = $"Signing key with ID {id} not found" });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error deleting signing key {KeyId}", id);
-            return StatusCode(500, new { message = "An error occurred deleting signing key" });
-        }
+        await _signingKeyService.DeleteKeyAsync(id, cancellationToken);
+        _logger.LogInformation("Deleted signing key {KeyId}", id);
+        return Ok(new { message = "Key deleted successfully" });
     }
 
     /// <summary>
@@ -327,16 +221,8 @@ public class JwksController : ControllerBase
         [FromQuery] int days = 7,
         CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var keys = await _signingKeyService.GetExpiringKeysAsync(TimeSpan.FromDays(days), cancellationToken);
-            return Ok(keys);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving expiring signing keys");
-            return StatusCode(500, new { message = "An error occurred retrieving expiring signing keys" });
-        }
+        var keys = await _signingKeyService.GetExpiringKeysAsync(TimeSpan.FromDays(days), cancellationToken);
+        return Ok(keys);
     }
 
     #endregion

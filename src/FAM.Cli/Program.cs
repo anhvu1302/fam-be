@@ -213,7 +213,7 @@ internal class Program
         }
 
         var grouped = history
-            .OrderBy(h => h.Order)
+            .OrderBy(h => h.SeederName, StringComparer.Ordinal)
             .ThenByDescending(h => h.ExecutedAt)
             .GroupBy(h => h.SeederName);
 
@@ -226,9 +226,8 @@ internal class Program
             Console.ForegroundColor = color;
             Console.Write($"{status} ");
             Console.ResetColor();
-            Console.Write($"{latest.SeederName,-40} ");
+            Console.Write($"{latest.SeederName,-50} ");
             Console.ForegroundColor = ConsoleColor.Gray;
-            Console.Write($"Order: {latest.Order,2}  ");
             Console.Write($"Duration: {latest.Duration.TotalMilliseconds,6:F0}ms  ");
             Console.Write($"Last: {latest.ExecutedAt:yyyy-MM-dd HH:mm:ss}");
 
@@ -256,7 +255,7 @@ internal class Program
     {
         using var scope = host.Services.CreateScope();
         var seeders = scope.ServiceProvider.GetServices<IDataSeeder>()
-            .OrderBy(s => s.Order)
+            .OrderBy(s => s.Name, StringComparer.Ordinal)
             .ToList();
 
         Console.WriteLine();
@@ -276,6 +275,7 @@ internal class Program
         var history = await orchestrator.GetHistoryAsync();
         var executedNames = history.Where(h => h.Success).Select(h => h.SeederName).ToHashSet();
 
+        var index = 1;
         foreach (var seeder in seeders)
         {
             var executed = executedNames.Contains(seeder.Name);
@@ -285,12 +285,13 @@ internal class Program
             Console.ForegroundColor = statusColor;
             Console.Write($"{statusIcon} ");
             Console.ResetColor();
-            Console.Write($"{seeder.Name,-40} ");
+            Console.Write($"{index,2}. ");
+            Console.Write($"{seeder.Name,-50} ");
             Console.ForegroundColor = ConsoleColor.Gray;
-            Console.Write($"Order: {seeder.Order,2}  ");
             Console.Write(executed ? "Executed" : "Pending");
             Console.ResetColor();
             Console.WriteLine();
+            index++;
         }
 
         Console.WriteLine();

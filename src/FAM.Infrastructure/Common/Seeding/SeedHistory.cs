@@ -7,7 +7,6 @@ public class SeedHistory
 {
     public long Id { get; set; }
     public string SeederName { get; set; } = string.Empty;
-    public int Order { get; set; }
     public DateTime ExecutedAt { get; set; }
     public string ExecutedBy { get; set; } = "System";
     public bool Success { get; set; }

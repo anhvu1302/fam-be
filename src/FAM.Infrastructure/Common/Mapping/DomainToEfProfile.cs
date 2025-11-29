@@ -8,6 +8,7 @@ using FAM.Infrastructure.Providers.PostgreSQL;
 using FAM.Domain.Authorization;
 using FAM.Domain.Organizations;
 using FAM.Domain.Users.Entities;
+using FAM.Domain.Common.Entities;
 
 namespace FAM.Infrastructure.Common.Mapping;
 
@@ -354,6 +355,110 @@ public class DomainToEfProfile : Profile
             .ForMember(dest => dest.RevokedAt, opt => opt.MapFrom(src => src.RevokedAt))
             .ForMember(dest => dest.RevocationReason, opt => opt.MapFrom(src => src.RevocationReason))
             .ForMember(dest => dest.LastUsedAt, opt => opt.MapFrom(src => src.LastUsedAt))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
+            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+
+        // MenuItem mappings
+        CreateMap<MenuItem, MenuItemEf>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Code))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+            .ForMember(dest => dest.Icon, opt => opt.MapFrom(src => src.Icon))
+            .ForMember(dest => dest.Route, opt => opt.MapFrom(src => src.Route))
+            .ForMember(dest => dest.ExternalUrl, opt => opt.MapFrom(src => src.ExternalUrl))
+            .ForMember(dest => dest.ParentId, opt => opt.MapFrom(src => src.ParentId))
+            .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
+            .ForMember(dest => dest.Level, opt => opt.MapFrom(src => src.Level))
+            .ForMember(dest => dest.IsVisible, opt => opt.MapFrom(src => src.IsVisible))
+            .ForMember(dest => dest.IsEnabled, opt => opt.MapFrom(src => src.IsEnabled))
+            .ForMember(dest => dest.RequiredPermission, opt => opt.MapFrom(src => src.RequiredPermission))
+            .ForMember(dest => dest.RequiredRoles, opt => opt.MapFrom(src => src.RequiredRoles))
+            .ForMember(dest => dest.OpenInNewTab, opt => opt.MapFrom(src => src.OpenInNewTab))
+            .ForMember(dest => dest.CssClass, opt => opt.MapFrom(src => src.CssClass))
+            .ForMember(dest => dest.Badge, opt => opt.MapFrom(src => src.Badge))
+            .ForMember(dest => dest.BadgeVariant, opt => opt.MapFrom(src => src.BadgeVariant))
+            .ForMember(dest => dest.Metadata, opt => opt.MapFrom(src => src.Metadata))
+            .ForMember(dest => dest.Parent, opt => opt.Ignore())
+            .ForMember(dest => dest.Children, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
+            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+
+        CreateMap<MenuItemEf, MenuItem>()
+            .ConstructUsing(src => MenuItem.Create(
+                src.Code,
+                src.Name,
+                src.Description,
+                src.Icon,
+                src.Route,
+                src.ParentId,
+                src.SortOrder,
+                src.RequiredPermission,
+                src.RequiredRoles))
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.ExternalUrl, opt => opt.Ignore())
+            .ForMember(dest => dest.Level, opt => opt.MapFrom(src => src.Level))
+            .ForMember(dest => dest.IsVisible, opt => opt.MapFrom(src => src.IsVisible))
+            .ForMember(dest => dest.IsEnabled, opt => opt.MapFrom(src => src.IsEnabled))
+            .ForMember(dest => dest.OpenInNewTab, opt => opt.MapFrom(src => src.OpenInNewTab))
+            .ForMember(dest => dest.CssClass, opt => opt.MapFrom(src => src.CssClass))
+            .ForMember(dest => dest.Badge, opt => opt.MapFrom(src => src.Badge))
+            .ForMember(dest => dest.BadgeVariant, opt => opt.MapFrom(src => src.BadgeVariant))
+            .ForMember(dest => dest.Metadata, opt => opt.MapFrom(src => src.Metadata))
+            .ForMember(dest => dest.Parent, opt => opt.Ignore())
+            .ForMember(dest => dest.Children, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
+            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+
+        // SystemSetting mappings
+        CreateMap<SystemSetting, SystemSettingEf>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Key, opt => opt.MapFrom(src => src.Key))
+            .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Value))
+            .ForMember(dest => dest.DefaultValue, opt => opt.MapFrom(src => src.DefaultValue))
+            .ForMember(dest => dest.DataType, opt => opt.MapFrom(src => (int)src.DataType))
+            .ForMember(dest => dest.Group, opt => opt.MapFrom(src => src.Group))
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.DisplayName))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+            .ForMember(dest => dest.SortOrder, opt => opt.MapFrom(src => src.SortOrder))
+            .ForMember(dest => dest.IsVisible, opt => opt.MapFrom(src => src.IsVisible))
+            .ForMember(dest => dest.IsEditable, opt => opt.MapFrom(src => src.IsEditable))
+            .ForMember(dest => dest.IsSensitive, opt => opt.MapFrom(src => src.IsSensitive))
+            .ForMember(dest => dest.IsRequired, opt => opt.MapFrom(src => src.IsRequired))
+            .ForMember(dest => dest.ValidationRules, opt => opt.MapFrom(src => src.ValidationRules))
+            .ForMember(dest => dest.Options, opt => opt.MapFrom(src => src.Options))
+            .ForMember(dest => dest.Metadata, opt => opt.MapFrom(src => src.Metadata))
+            .ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.LastModifiedBy))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
+            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+
+        CreateMap<SystemSettingEf, SystemSetting>()
+            .ConstructUsing(src => SystemSetting.Create(
+                src.Key,
+                src.DisplayName,
+                src.Value,
+                src.DefaultValue,
+                (SettingDataType)src.DataType,
+                src.Group,
+                src.Description,
+                src.SortOrder,
+                src.IsRequired,
+                src.IsSensitive))
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.IsVisible, opt => opt.MapFrom(src => src.IsVisible))
+            .ForMember(dest => dest.IsEditable, opt => opt.MapFrom(src => src.IsEditable))
+            .ForMember(dest => dest.ValidationRules, opt => opt.MapFrom(src => src.ValidationRules))
+            .ForMember(dest => dest.Options, opt => opt.MapFrom(src => src.Options))
+            .ForMember(dest => dest.Metadata, opt => opt.MapFrom(src => src.Metadata))
+            .ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.LastModifiedBy))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
             .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
