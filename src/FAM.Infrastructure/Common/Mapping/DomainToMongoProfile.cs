@@ -270,5 +270,48 @@ public class DomainToMongoProfile : Profile
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
             .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
             .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+
+        // SigningKey mappings
+        CreateMap<SigningKey, SigningKeyMongo>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore()) // MongoDB generates ObjectId
+            .ForMember(dest => dest.DomainId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.KeyId, opt => opt.MapFrom(src => src.KeyId))
+            .ForMember(dest => dest.PublicKey, opt => opt.MapFrom(src => src.PublicKey))
+            .ForMember(dest => dest.PrivateKey, opt => opt.MapFrom(src => src.PrivateKey))
+            .ForMember(dest => dest.Algorithm, opt => opt.MapFrom(src => src.Algorithm))
+            .ForMember(dest => dest.KeySize, opt => opt.MapFrom(src => src.KeySize))
+            .ForMember(dest => dest.Use, opt => opt.MapFrom(src => src.Use))
+            .ForMember(dest => dest.KeyType, opt => opt.MapFrom(src => src.KeyType))
+            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
+            .ForMember(dest => dest.IsRevoked, opt => opt.MapFrom(src => src.IsRevoked))
+            .ForMember(dest => dest.RevokedAt, opt => opt.MapFrom(src => src.RevokedAt))
+            .ForMember(dest => dest.RevocationReason, opt => opt.MapFrom(src => src.RevocationReason))
+            .ForMember(dest => dest.ExpiresAt, opt => opt.MapFrom(src => src.ExpiresAt))
+            .ForMember(dest => dest.LastUsedAt, opt => opt.MapFrom(src => src.LastUsedAt))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
+            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+
+        CreateMap<SigningKeyMongo, SigningKey>()
+            .ConstructUsing(src => SigningKey.Create(
+                src.KeyId,
+                src.PublicKey,
+                src.PrivateKey,
+                src.Algorithm,
+                src.KeySize,
+                src.ExpiresAt,
+                src.Description))
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.DomainId))
+            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
+            .ForMember(dest => dest.IsRevoked, opt => opt.MapFrom(src => src.IsRevoked))
+            .ForMember(dest => dest.RevokedAt, opt => opt.MapFrom(src => src.RevokedAt))
+            .ForMember(dest => dest.RevocationReason, opt => opt.MapFrom(src => src.RevocationReason))
+            .ForMember(dest => dest.LastUsedAt, opt => opt.MapFrom(src => src.LastUsedAt))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
+            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
     }
 }

@@ -12,7 +12,7 @@ public class RequestLoggingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<RequestLoggingMiddleware> _logger;
-    
+
     // Các field nhạy cảm cần mask
     private static readonly HashSet<string> SensitiveFields = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -41,7 +41,7 @@ public class RequestLoggingMiddleware
     {
         var stopwatch = Stopwatch.StartNew();
         var request = context.Request;
-        
+
         // Lấy thông tin cơ bản
         var method = request.Method;
         var path = request.Path.Value ?? "/";
@@ -59,19 +59,13 @@ public class RequestLoggingMiddleware
         {
             // Log request body (nếu không phải upload và là POST/PUT/PATCH)
             string? requestBody = null;
-            if (ShouldLogRequestBody(request))
-            {
-                requestBody = await ReadAndMaskRequestBodyAsync(request);
-            }
+            if (ShouldLogRequestBody(request)) requestBody = await ReadAndMaskRequestBodyAsync(request);
 
             _logger.LogInformation(
                 "HTTP {Method} {Path}{QueryString} started - IP: {ClientIp}, User: {UserId}",
                 method, path, queryString, clientIp, userId ?? "anonymous");
 
-            if (!string.IsNullOrEmpty(requestBody))
-            {
-                _logger.LogDebug("Request Body: {RequestBody}", requestBody);
-            }
+            if (!string.IsNullOrEmpty(requestBody)) _logger.LogDebug("Request Body: {RequestBody}", requestBody);
 
             // Capture response
             var originalBodyStream = context.Response.Body;
@@ -139,11 +133,11 @@ public class RequestLoggingMiddleware
         try
         {
             request.EnableBuffering();
-            
+
             using var reader = new StreamReader(
                 request.Body,
                 Encoding.UTF8,
-                detectEncodingFromByteOrderMarks: false,
+                false,
                 leaveOpen: true);
 
             var body = await reader.ReadToEndAsync();

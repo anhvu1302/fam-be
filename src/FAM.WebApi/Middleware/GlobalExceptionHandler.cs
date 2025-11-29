@@ -39,19 +39,15 @@ public class GlobalExceptionHandler : IExceptionHandler
         using (LogContext.PushProperty("StatusCode", statusCode))
         {
             if (statusCode >= 500)
-            {
                 // Log Error cho server errors (với full stack trace)
                 _logger.LogError(exception,
                     "Unhandled exception occurred: {ExceptionMessage}",
                     exception.Message);
-            }
             else if (statusCode >= 400)
-            {
                 // Log Warning cho client errors (không cần stack trace)
                 _logger.LogWarning(
                     "Client error: {StatusCode} {Title} - {ExceptionMessage}",
                     statusCode, title, exception.Message);
-            }
         }
 
         var problemDetails = new ProblemDetails

@@ -153,7 +153,7 @@ public class UserRepositoryMongo : IUserRepository
     public async Task<User?> FindByIdentityAsync(string identity, CancellationToken cancellationToken = default)
     {
         var normalizedInput = identity.ToLower();
-        var document = await _collection.Find(d => 
+        var document = await _collection.Find(d =>
                 (d.Username.ToLower() == normalizedInput || d.Email.ToLower() == normalizedInput) && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? _mapper.Map<User>(document) : null;

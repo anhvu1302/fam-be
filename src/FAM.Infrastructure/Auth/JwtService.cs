@@ -9,7 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace FAM.Infrastructure.Auth;
 
 /// <summary>
-/// JWT service implementation
+/// JWT service implementation supporting both HMAC (symmetric) and RSA (asymmetric) signing
 /// </summary>
 public class JwtService : IJwtService
 {
@@ -36,19 +36,12 @@ public class JwtService : IJwtService
             throw new InvalidOperationException("JWT_SECRET must be at least 32 characters");
     }
 
+    /// <summary>
+    /// Generate access token using HMAC-SHA256 (symmetric key)
+    /// </summary>
     public string GenerateAccessToken(long userId, string username, string email, IEnumerable<string> roles)
     {
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.NameIdentifier, userId.ToString()),
-            new(ClaimTypes.Name, username),
-            new(ClaimTypes.Email, email),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
-                ClaimValueTypes.Integer64)
-        };
-
-        foreach (var role in roles) claims.Add(new Claim(ClaimTypes.Role, role));
+        var claims = CreateClaims(userId, username, email, roles);
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -64,6 +57,52 @@ public class JwtService : IJwtService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    /// <summary>
+    /// Generate access token using RSA (asymmetric key)
+    /// </summary>
+    public string GenerateAccessTokenWithRsa(
+        long userId,
+        string username,
+        string email,
+        IEnumerable<string> roles,
+        string keyId,
+        string privateKeyPem,
+        string algorithm = "RS256")
+    {
+        var claims = CreateClaims(userId, username, email, roles);
+
+        using var rsa = RSA.Create();
+        rsa.ImportFromPem(privateKeyPem);
+
+        var rsaSecurityKey = new RsaSecurityKey(rsa)
+        {
+            KeyId = keyId
+        };
+
+        var signingAlgorithm = algorithm switch
+        {
+            "RS256" => SecurityAlgorithms.RsaSha256,
+            "RS384" => SecurityAlgorithms.RsaSha384,
+            "RS512" => SecurityAlgorithms.RsaSha512,
+            _ => SecurityAlgorithms.RsaSha256
+        };
+
+        var credentials = new SigningCredentials(rsaSecurityKey, signingAlgorithm);
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(claims),
+            Expires = DateTime.UtcNow.AddMinutes(_accessTokenExpiryMinutes),
+            Issuer = _issuer,
+            Audience = _audience,
+            SigningCredentials = credentials
+        };
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
+    }
+
     public string GenerateRefreshToken()
     {
         var randomBytes = new byte[64];
@@ -72,6 +111,9 @@ public class JwtService : IJwtService
         return Convert.ToBase64String(randomBytes);
     }
 
+    /// <summary>
+    /// Validate token using HMAC (symmetric key)
+    /// </summary>
     public bool ValidateToken(string token)
     {
         try
@@ -83,6 +125,40 @@ public class JwtService : IJwtService
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = true,
+                ValidIssuer = _issuer,
+                ValidateAudience = true,
+                ValidAudience = _audience,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            tokenHandler.ValidateToken(token, validationParameters, out _);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Validate token using RSA public key
+    /// </summary>
+    public bool ValidateTokenWithRsa(string token, string publicKeyPem)
+    {
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            using var rsa = RSA.Create();
+            rsa.ImportFromPem(publicKeyPem);
+            var rsaSecurityKey = new RsaSecurityKey(rsa);
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = rsaSecurityKey,
                 ValidateIssuer = true,
                 ValidIssuer = _issuer,
                 ValidateAudience = true,
@@ -117,4 +193,43 @@ public class JwtService : IJwtService
             throw new InvalidOperationException("Invalid token", ex);
         }
     }
+
+    /// <summary>
+    /// Get Key ID (kid) from JWT token header
+    /// </summary>
+    public string? GetKeyIdFromToken(string token)
+    {
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            return jwtToken.Header.Kid;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    #region Helper Methods
+
+    private List<Claim> CreateClaims(long userId, string username, string email, IEnumerable<string> roles)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, userId.ToString()),
+            new(ClaimTypes.Name, username),
+            new(ClaimTypes.Email, email),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
+                ClaimValueTypes.Integer64)
+        };
+
+        foreach (var role in roles)
+            claims.Add(new Claim(ClaimTypes.Role, role));
+
+        return claims;
+    }
+
+    #endregion
 }

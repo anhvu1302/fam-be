@@ -30,6 +30,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\FAM.Application\FAM.Application.csproj"/>
+        <ProjectReference Include="..\..\src\FAM.Infrastructure\FAM.Infrastructure.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -105,8 +105,10 @@ public class AppConfiguration
         return value;
     }
 
-    private static string? GetOptional(string key) =>
-        System.Environment.GetEnvironmentVariable(key);
+    private static string? GetOptional(string key)
+    {
+        return System.Environment.GetEnvironmentVariable(key);
+    }
 
     private static int GetInt(string key, int defaultValue)
     {

@@ -13,15 +13,18 @@ public class UnitOfWorkPostgreSql : IUnitOfWork
     public UnitOfWorkPostgreSql(
         PostgreSqlDbContext context,
         IUserRepository userRepository,
-        IUserDeviceRepository userDeviceRepository)
+        IUserDeviceRepository userDeviceRepository,
+        ISigningKeyRepository signingKeyRepository)
     {
         _context = context;
         Users = userRepository;
         UserDevices = userDeviceRepository;
+        SigningKeys = signingKeyRepository;
     }
 
     public IUserRepository Users { get; }
     public IUserDeviceRepository UserDevices { get; }
+    public ISigningKeyRepository SigningKeys { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

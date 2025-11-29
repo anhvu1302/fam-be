@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
         // Register repositories
         services.AddScoped<IUserRepository, UserRepositoryPostgreSql>();
         services.AddScoped<IUserDeviceRepository, UserDeviceRepositoryPostgreSql>();
+        services.AddScoped<ISigningKeyRepository, SigningKeyRepository>();
 
         // Authorization repositories
         services.AddScoped<IPermissionRepository, PermissionRepositoryPostgreSql>();
@@ -42,6 +43,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUnitOfWork, UnitOfWorkPostgreSql>();
 
         // Register Data Seeders
+        services.AddScoped<IDataSeeder, PostgreSqlSigningKeySeeder>();
         services.AddScoped<IDataSeeder, PostgreSqlAdminUserSeeder>();
         services.AddScoped<IDataSeeder, PostgreSqlRoleSeeder>();
 

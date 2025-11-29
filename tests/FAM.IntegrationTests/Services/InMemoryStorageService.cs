@@ -38,7 +38,7 @@ public class InMemoryStorageService : IStorageService
         var objectName = GenerateObjectName(fileName, fileType);
         using var ms = new MemoryStream();
         stream.CopyTo(ms);
-        
+
         _files[objectName] = new StoredFile
         {
             Data = ms.ToArray(),
@@ -77,9 +77,7 @@ public class InMemoryStorageService : IStorageService
         CancellationToken cancellationToken = default)
     {
         if (!_multipartUploads.TryGetValue(uploadId, out var upload))
-        {
             throw new InvalidOperationException($"Upload {uploadId} not found");
-        }
 
         using var ms = new MemoryStream();
         stream.CopyTo(ms);
@@ -97,9 +95,7 @@ public class InMemoryStorageService : IStorageService
         CancellationToken cancellationToken = default)
     {
         if (!_multipartUploads.TryGetValue(uploadId, out var upload))
-        {
             throw new InvalidOperationException($"Upload {uploadId} not found");
-        }
 
         // Merge all parts
         var sortedParts = upload.Parts.OrderBy(p => p.Key).SelectMany(p => p.Value).ToArray();
@@ -141,7 +137,8 @@ public class InMemoryStorageService : IStorageService
         int expiryInSeconds = 3600)
     {
         var objectName = GenerateObjectName(fileName, fileType);
-        var url = $"http://localhost:9000/test-bucket/{objectName}?X-Amz-Expires={expiryInSeconds}&X-Amz-Signature=test";
+        var url =
+            $"http://localhost:9000/test-bucket/{objectName}?X-Amz-Expires={expiryInSeconds}&X-Amz-Signature=test";
         return Task.FromResult(url);
     }
 
@@ -160,10 +157,7 @@ public class InMemoryStorageService : IStorageService
         string destKey,
         CancellationToken cancellationToken = default)
     {
-        if (_files.TryRemove(sourceKey, out var file))
-        {
-            _files[destKey] = file;
-        }
+        if (_files.TryRemove(sourceKey, out var file)) _files[destKey] = file;
         return Task.CompletedTask;
     }
 
@@ -173,14 +167,12 @@ public class InMemoryStorageService : IStorageService
         CancellationToken cancellationToken = default)
     {
         if (_files.TryGetValue(sourceKey, out var file))
-        {
             _files[destKey] = new StoredFile
             {
                 Data = file.Data.ToArray(),
                 ContentType = file.ContentType,
                 CreatedAt = DateTime.UtcNow
             };
-        }
         return Task.CompletedTask;
     }
 
@@ -188,10 +180,7 @@ public class InMemoryStorageService : IStorageService
         IEnumerable<string> objectKeys,
         CancellationToken cancellationToken = default)
     {
-        foreach (var key in objectKeys)
-        {
-            _files.TryRemove(key, out _);
-        }
+        foreach (var key in objectKeys) _files.TryRemove(key, out _);
         return Task.CompletedTask;
     }
 
@@ -206,16 +195,13 @@ public class InMemoryStorageService : IStorageService
         return Task.FromResult(_files.ContainsKey(filePath));
     }
 
-    public Task<FAM.Application.Abstractions.FileInfo> GetFileInfoAsync(
+    public Task<Application.Abstractions.FileInfo> GetFileInfoAsync(
         string filePath,
         CancellationToken cancellationToken = default)
     {
-        if (!_files.TryGetValue(filePath, out var file))
-        {
-            throw new FileNotFoundException($"File {filePath} not found");
-        }
+        if (!_files.TryGetValue(filePath, out var file)) throw new FileNotFoundException($"File {filePath} not found");
 
-        return Task.FromResult(new FAM.Application.Abstractions.FileInfo
+        return Task.FromResult(new Application.Abstractions.FileInfo
         {
             FileName = Path.GetFileName(filePath),
             FilePath = filePath,

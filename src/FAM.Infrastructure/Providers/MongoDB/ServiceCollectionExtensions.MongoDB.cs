@@ -28,11 +28,13 @@ public static class ServiceCollectionExtensions
         // Register repositories
         services.AddScoped<IUserRepository, UserRepositoryMongo>();
         services.AddScoped<IUserDeviceRepository, UserDeviceRepositoryMongo>();
+        services.AddScoped<ISigningKeyRepository, SigningKeyRepositoryMongo>();
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWorkMongo>();
 
         // Register Data Seeders
+        services.AddScoped<IDataSeeder, MongoDbSigningKeySeeder>();
         services.AddScoped<IDataSeeder, MongoDbUserSeeder>();
         services.AddScoped<IDataSeeder, MongoDbRoleSeeder>();
 
@@ -50,9 +52,11 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IUserRepository, UserRepositoryMongo>();
         services.AddScoped<IUserDeviceRepository, UserDeviceRepositoryMongo>();
+        services.AddScoped<ISigningKeyRepository, SigningKeyRepositoryMongo>();
         services.AddScoped<IUnitOfWork, UnitOfWorkMongo>();
 
         // Register Data Seeders
+        services.AddScoped<IDataSeeder, MongoDbSigningKeySeeder>();
         services.AddScoped<IDataSeeder, MongoDbUserSeeder>();
         services.AddScoped<IDataSeeder, MongoDbRoleSeeder>();
 

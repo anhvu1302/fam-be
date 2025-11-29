@@ -5,7 +5,7 @@ namespace FAM.Infrastructure.PersistenceModels.Ef;
 /// </summary>
 public abstract class BaseEntityEf
 {
-    public long Id { get; protected set; }
+    public long Id { get; set; }
 
     // Audit fields
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

@@ -1,6 +1,8 @@
 using FAM.Application.Abstractions;
+using FAM.Application.Auth.Services;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
+using FAM.Infrastructure.Auth;
 using FAM.Infrastructure.Common.Mapping;
 using FAM.Infrastructure.Common.Options;
 using FAM.Infrastructure.Common.Seeding;
@@ -105,6 +107,9 @@ public static class InfrastructureModule
         // Register Storage Services
         services.AddScoped<IStorageService, MinioStorageService>();
         services.AddScoped<IFileValidator, Application.Storage.FileValidator>();
+
+        // Register Signing Key Service
+        services.AddScoped<ISigningKeyService, SigningKeyService>();
 
         // Register only the selected database provider
         switch (provider)

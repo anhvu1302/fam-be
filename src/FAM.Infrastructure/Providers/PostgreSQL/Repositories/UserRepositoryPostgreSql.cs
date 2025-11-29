@@ -131,8 +131,8 @@ public class UserRepositoryPostgreSql : BasePagedRepository<User, UserEf>, IUser
         var normalizedInput = identity.ToLower();
         var entity = await Context.Users
             .Include(u => u.UserDevices)
-            .FirstOrDefaultAsync(u => 
-                (u.Username.ToLower() == normalizedInput || u.Email.ToLower() == normalizedInput) && !u.IsDeleted, 
+            .FirstOrDefaultAsync(u =>
+                    (u.Username.ToLower() == normalizedInput || u.Email.ToLower() == normalizedInput) && !u.IsDeleted,
                 cancellationToken);
         return entity != null ? Mapper.Map<User>(entity) : null;
     }

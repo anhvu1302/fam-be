@@ -7,6 +7,7 @@ public interface IUnitOfWork : IDisposable
 {
     IUserRepository Users { get; }
     IUserDeviceRepository UserDevices { get; }
+    ISigningKeyRepository SigningKeys { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);

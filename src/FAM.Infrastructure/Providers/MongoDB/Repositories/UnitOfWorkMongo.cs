@@ -14,15 +14,18 @@ public class UnitOfWorkMongo : IUnitOfWork
     public UnitOfWorkMongo(
         MongoDbContext context,
         IUserRepository userRepository,
-        IUserDeviceRepository userDeviceRepository)
+        IUserDeviceRepository userDeviceRepository,
+        ISigningKeyRepository signingKeyRepository)
     {
         _context = context;
         Users = userRepository;
         UserDevices = userDeviceRepository;
+        SigningKeys = signingKeyRepository;
     }
 
     public IUserRepository Users { get; }
     public IUserDeviceRepository UserDevices { get; }
+    public ISigningKeyRepository SigningKeys { get; }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
