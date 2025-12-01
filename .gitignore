@@ -27,6 +27,7 @@ data/
 
 # Environment files
 .env
+.env.production
 .env.local
 .env.*.local
 postgres-data-17/

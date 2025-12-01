@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
+using System.Security.Cryptography;
 using System.Text;
 using Serilog;
 using Serilog.Events;
@@ -170,9 +171,7 @@ builder.Services.AddScoped<FAM.Application.Common.Services.IEmailService>(sp =>
 });
 builder.Services.AddScoped<FAM.Application.Common.Services.IOtpService, FAM.Infrastructure.Services.OtpService>();
 
-// Add JWT Authentication
-var secretKey = appConfig.JwtSecret;
-
+// Add JWT Authentication using RSA keys from database
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -191,8 +190,40 @@ builder.Services.AddAuthentication(options =>
             ValidateIssuerSigningKey = true,
             ValidIssuer = appConfig.JwtIssuer,
             ValidAudience = appConfig.JwtAudience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
             ClockSkew = TimeSpan.Zero // Remove default 5 minute tolerance
+        };
+        
+        // Load RSA signing keys dynamically from database on each request
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = async context =>
+            {
+                // Get signing key service from request scope
+                var signingKeyService = context.HttpContext.RequestServices
+                    .GetRequiredService<ISigningKeyService>();
+                
+                // Get JWKS from database
+                var jwks = await signingKeyService.GetJwksAsync(context.HttpContext.RequestAborted);
+                
+                // Convert JWKs to SecurityKeys
+                var keys = new List<SecurityKey>();
+                foreach (var jwk in jwks.Keys)
+                {
+                    if (jwk.Kty == "RSA")
+                    {
+                        using var rsa = RSA.Create();
+                        rsa.ImportParameters(new RSAParameters
+                        {
+                            Modulus = Base64UrlEncoder.DecodeBytes(jwk.N),
+                            Exponent = Base64UrlEncoder.DecodeBytes(jwk.E)
+                        });
+                        keys.Add(new RsaSecurityKey(rsa) { KeyId = jwk.Kid });
+                    }
+                }
+                
+                // Set the signing keys for this request
+                context.Options.TokenValidationParameters.IssuerSigningKeys = keys;
+            }
         };
     });
 
@@ -282,11 +313,10 @@ app.UseSerilogRequestLogging(options =>
 });
 
 if (app.Environment.IsDevelopment())
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fixed Asset Management API v1"); });
-    }
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fixed Asset Management API v1"); });
+}
 
 app.UseHttpsRedirection();
 app.UseCors(); // Enable CORS

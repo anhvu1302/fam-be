@@ -19,8 +19,7 @@ public class AppConfiguration
     public string DbUser { get; }
     public string DbPassword { get; }
 
-    // Authentication (from .env - sensitive)
-    public string JwtSecret { get; }
+    // Authentication (from .env)
     public string JwtIssuer { get; }
     public string JwtAudience { get; }
     public int AccessTokenExpirationMinutes { get; }
@@ -78,10 +77,7 @@ public class AppConfiguration
         MongoDbConnectionString = BuildMongoDbConnectionString();
         MongoDbDatabase = DbName;
 
-        // Authentication (Required - Sensitive)
-        JwtSecret = GetRequired("JWT_SECRET");
-        ValidateJwtSecret(JwtSecret);
-
+        // Authentication (JWT signing keys are managed in database)
         JwtIssuer = GetOptional("JWT_ISSUER") ?? "FAM.API";
         JwtAudience = GetOptional("JWT_AUDIENCE") ?? "FAM.Client";
         AccessTokenExpirationMinutes = GetInt("ACCESS_TOKEN_EXPIRATION_MINUTES", 60);
@@ -172,12 +168,6 @@ public class AppConfiguration
         if (!bool.TryParse(value, out var result))
             throw new InvalidOperationException($"'{key}' must be 'true' or 'false'. Got: '{value}'");
         return result;
-    }
-
-    private static void ValidateJwtSecret(string secret)
-    {
-        if (secret.Length < 32)
-            throw new InvalidOperationException("JWT_SECRET must be at least 32 characters.");
     }
 
     private static void ValidatePort(int port)
