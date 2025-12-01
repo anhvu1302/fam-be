@@ -28,7 +28,7 @@ public class JwksController : ControllerBase
     /// Get the JSON Web Key Set (JWKS) containing public keys for JWT verification
     /// This is a standard endpoint that should be publicly accessible
     /// </summary>
-    [HttpGet("api/.well-known/jwks.json")]
+    [HttpGet(".well-known/jwks.json")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(JwksDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<JwksDto>> GetJwks(CancellationToken cancellationToken)

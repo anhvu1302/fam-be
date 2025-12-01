@@ -46,6 +46,19 @@ public class DomainException : Exception
     }
 
     /// <summary>
+    /// Create a domain exception with error code and details for i18n.
+    /// Details will be sent to frontend for parameter substitution.
+    /// Example: new DomainException(ErrorCodes.VAL_TOO_SHORT, new { field = "Username", minLength = 3 })
+    /// Frontend: i18n.t("VAL_TOO_SHORT", { field: "Username", minLength: 3 })
+    /// </summary>
+    public DomainException(string errorCode, object details)
+        : base(ErrorMessages.GetMessage(errorCode))
+    {
+        ErrorCode = errorCode;
+        Details = ConvertToDictionary(details);
+    }
+
+    /// <summary>
     /// Create a domain exception with error code, message, and details.
     /// </summary>
     public DomainException(string errorCode, string message, IDictionary<string, object> details)
@@ -71,6 +84,34 @@ public class DomainException : Exception
         : base(message, innerException)
     {
         ErrorCode = errorCode;
+    }
+
+    /// <summary>
+    /// Convert anonymous object to dictionary for details.
+    /// </summary>
+    private static IDictionary<string, object> ConvertToDictionary(object obj)
+    {
+        if (obj is IDictionary<string, object> dict)
+            return dict;
+
+        var dictionary = new Dictionary<string, object>();
+        foreach (var prop in obj.GetType().GetProperties())
+        {
+            var value = prop.GetValue(obj);
+            if (value != null)
+                dictionary[ToCamelCase(prop.Name)] = value;
+        }
+        return dictionary;
+    }
+
+    /// <summary>
+    /// Convert property name to camelCase for JSON compatibility.
+    /// </summary>
+    private static string ToCamelCase(string str)
+    {
+        if (string.IsNullOrEmpty(str) || char.IsLower(str[0]))
+            return str;
+        return char.ToLower(str[0]) + str.Substring(1);
     }
 }
 

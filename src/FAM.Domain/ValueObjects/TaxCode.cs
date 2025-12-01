@@ -20,16 +20,19 @@ public sealed class TaxCode : ValueObject
     public static TaxCode Create(string taxCode)
     {
         if (string.IsNullOrWhiteSpace(taxCode))
-            throw new DomainException("Tax code cannot be empty");
+            throw new DomainException(ErrorCodes.VO_TAX_CODE_EMPTY);
 
         taxCode = taxCode.Trim().ToUpperInvariant();
 
-        if (taxCode.Length < 8 || taxCode.Length > 15)
-            throw new DomainException("Tax code must be between 8 and 15 characters");
+        if (taxCode.Length < 8)
+            throw new DomainException(ErrorCodes.VO_TAX_CODE_TOO_SHORT);
+            
+        if (taxCode.Length > 15)
+            throw new DomainException(ErrorCodes.VO_TAX_CODE_TOO_LONG);
 
         // Basic validation for Vietnamese tax code format (simplified)
         if (!System.Text.RegularExpressions.Regex.IsMatch(taxCode, @"^[0-9\-]+$"))
-            throw new DomainException("Tax code can only contain numbers and hyphens");
+            throw new DomainException(ErrorCodes.VO_TAX_CODE_INVALID);
 
         return new TaxCode(taxCode);
     }

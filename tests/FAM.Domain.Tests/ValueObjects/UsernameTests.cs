@@ -162,7 +162,7 @@ public class UsernameTests
         var value = "john_doe";
 
         // Act
-        var username = (Username)value;
+        var username = Username.Create(value);
 
         // Assert
         username.Value.Should().Be("john_doe");

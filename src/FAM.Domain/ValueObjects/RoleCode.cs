@@ -20,15 +20,15 @@ public sealed class RoleCode : ValueObject
     public static RoleCode Create(string roleCode)
     {
         if (string.IsNullOrWhiteSpace(roleCode))
-            throw new DomainException("Role code cannot be empty");
+            throw new DomainException(ErrorCodes.VO_ROLE_CODE_EMPTY);
 
         roleCode = roleCode.Trim().ToUpperInvariant();
 
         if (roleCode.Length > 20)
-            throw new DomainException("Role code cannot exceed 20 characters");
+            throw new DomainException(ErrorCodes.VO_ROLE_CODE_TOO_LONG);
 
         if (!System.Text.RegularExpressions.Regex.IsMatch(roleCode, @"^[A-Z0-9_]+$"))
-            throw new DomainException("Role code can only contain uppercase letters, numbers, and underscores");
+            throw new DomainException(ErrorCodes.VO_ROLE_CODE_INVALID);
 
         return new RoleCode(roleCode);
     }

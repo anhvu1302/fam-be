@@ -16,6 +16,8 @@ using Microsoft.Extensions.Options;
 using System.Text;
 using Serilog;
 using Serilog.Events;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 // Load environment variables from .env file
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
@@ -87,6 +89,10 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 builder.Services.AddControllers();
 
+// Add FluentValidation - auto-validate all requests
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
 // Add global exception handler
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -140,6 +146,30 @@ builder.Services.AddSingleton<IFilterParser, PrattFilterParser>();
 // Register JWT Service
 builder.Services.AddScoped<IJwtService, JwtService>();
 
+// Register Redis Distributed Cache for OTP storage (from .env)
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = appConfig.RedisConnectionString;
+    options.InstanceName = appConfig.RedisInstanceName;
+});
+
+// Register Email and OTP Services (Email uses config from .env)
+builder.Services.AddScoped<FAM.Application.Common.Services.IEmailService>(sp =>
+{
+    var logger = sp.GetRequiredService<ILogger<FAM.Infrastructure.Services.EmailService>>();
+    return new FAM.Infrastructure.Services.EmailService(
+        logger,
+        appConfig.SmtpHost,
+        appConfig.SmtpPort,
+        appConfig.SmtpUsername,
+        appConfig.SmtpPassword,
+        appConfig.SmtpEnableSsl,
+        appConfig.EmailFrom,
+        appConfig.EmailFromName
+    );
+});
+builder.Services.AddScoped<FAM.Application.Common.Services.IOtpService, FAM.Infrastructure.Services.OtpService>();
+
 // Add JWT Authentication
 var secretKey = appConfig.JwtSecret;
 
@@ -167,6 +197,9 @@ builder.Services.AddAuthentication(options =>
     });
 
 builder.Services.AddAuthorization();
+
+// Add Rate Limiting
+builder.Services.AddRateLimitingPolicies();
 
 // Add infrastructure (database provider) - no longer needs IConfiguration
 builder.Services.AddInfrastructure();
@@ -257,6 +290,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(); // Enable CORS
+
+// Add Rate Limiting middleware (after CORS, before Authentication)
+app.UseRateLimiter();
+
 app.UseAuthentication(); // Add authentication middleware
 app.UseAuthorization();
 app.MapControllers();

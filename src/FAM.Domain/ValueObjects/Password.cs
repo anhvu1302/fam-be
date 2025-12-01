@@ -23,7 +23,7 @@ public sealed class Password : ValueObject
     public static Password Create(string plainPassword)
     {
         if (string.IsNullOrWhiteSpace(plainPassword))
-            throw new DomainException("Password cannot be empty");
+            throw new DomainException(ErrorCodes.VO_PASSWORD_EMPTY);
 
         // Validate password strength
         ValidatePasswordStrength(plainPassword);
@@ -41,33 +41,37 @@ public sealed class Password : ValueObject
     public static Password FromHash(string hash, string salt)
     {
         if (string.IsNullOrWhiteSpace(hash))
-            throw new DomainException("Password hash cannot be empty");
+            throw new DomainException(ErrorCodes.VO_PASSWORD_EMPTY);
 
         if (string.IsNullOrWhiteSpace(salt))
-            throw new DomainException("Password salt cannot be empty");
+            throw new DomainException(ErrorCodes.VO_PASSWORD_EMPTY);
 
         return new Password(hash, salt);
     }
 
     /// <summary>
-    /// Validate password strength requirements
+    /// Validate password strength requirements.
+    /// Uses centralized rules from DomainRules.Password.
     /// </summary>
     private static void ValidatePasswordStrength(string password)
     {
-        if (password.Length < 8)
-            throw new DomainException("Password must be at least 8 characters long");
+        if (password.Length < DomainRules.Password.MinLength)
+            throw new DomainException(ErrorCodes.VO_PASSWORD_TOO_SHORT, DomainRules.Password.MinLength);
 
-        if (!Regex.IsMatch(password, @"[A-Z]"))
-            throw new DomainException("Password must contain at least one uppercase letter");
+        if (password.Length > DomainRules.Password.MaxLength)
+            throw new DomainException(ErrorCodes.VO_PASSWORD_TOO_LONG, DomainRules.Password.MaxLength);
 
-        if (!Regex.IsMatch(password, @"[a-z]"))
-            throw new DomainException("Password must contain at least one lowercase letter");
+        if (!DomainRules.Password.HasUppercase(password))
+            throw new DomainException(ErrorCodes.VO_PASSWORD_NO_UPPERCASE);
 
-        if (!Regex.IsMatch(password, @"[0-9]"))
-            throw new DomainException("Password must contain at least one number");
+        if (!DomainRules.Password.HasLowercase(password))
+            throw new DomainException(ErrorCodes.VO_PASSWORD_NO_LOWERCASE);
 
-        if (!Regex.IsMatch(password, @"[!@#$%^&*()_+\-=\[\]{};':""\\|,.<>\/?]"))
-            throw new DomainException("Password must contain at least one special character");
+        if (!DomainRules.Password.HasDigit(password))
+            throw new DomainException(ErrorCodes.VO_PASSWORD_NO_NUMBER);
+
+        if (!DomainRules.Password.HasSpecialChar(password))
+            throw new DomainException(ErrorCodes.VO_PASSWORD_NO_SPECIAL);
     }
 
     /// <summary>

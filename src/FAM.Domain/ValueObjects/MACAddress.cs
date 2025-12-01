@@ -19,13 +19,13 @@ public sealed class MACAddress : ValueObject
     public static MACAddress Create(string macAddress)
     {
         if (string.IsNullOrWhiteSpace(macAddress))
-            throw new DomainException("MAC address is required");
+            throw new DomainException(ErrorCodes.VO_MAC_EMPTY);
 
         macAddress = macAddress.Trim().ToUpperInvariant();
 
         var format = DetermineFormat(macAddress);
         if (format == MACAddressFormat.Invalid)
-            throw new DomainException($"Invalid MAC address format: {macAddress}");
+            throw new DomainException(ErrorCodes.VO_MAC_INVALID);
 
         return new MACAddress(macAddress, format);
     }

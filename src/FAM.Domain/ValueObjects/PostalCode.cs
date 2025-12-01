@@ -20,12 +20,12 @@ public sealed class PostalCode : ValueObject
     public static PostalCode Create(string postalCode)
     {
         if (string.IsNullOrWhiteSpace(postalCode))
-            throw new DomainException("Postal code cannot be empty");
+            throw new DomainException(ErrorCodes.VO_POSTAL_CODE_EMPTY);
 
         postalCode = postalCode.Trim().ToUpperInvariant();
 
         if (!IsValidPostalCode(postalCode))
-            throw new DomainException("Invalid postal code format");
+            throw new DomainException(ErrorCodes.VO_POSTAL_CODE_INVALID);
 
         return new PostalCode(postalCode);
     }

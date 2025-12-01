@@ -20,12 +20,12 @@ public sealed class CostCenter : ValueObject
     public static CostCenter Create(string costCenter)
     {
         if (string.IsNullOrWhiteSpace(costCenter))
-            throw new DomainException("Cost center cannot be empty");
+            throw new DomainException(ErrorCodes.VO_COST_CENTER_EMPTY);
 
         costCenter = costCenter.Trim();
 
         if (costCenter.Length > 30)
-            throw new DomainException("Cost center cannot exceed 30 characters");
+            throw new DomainException(ErrorCodes.VO_COST_CENTER_TOO_LONG);
 
         return new CostCenter(costCenter);
     }

@@ -143,6 +143,37 @@ public class JwtService : IJwtService
     }
 
     /// <summary>
+    /// Validate token and return ClaimsPrincipal
+    /// </summary>
+    public ClaimsPrincipal? ValidateTokenAndGetPrincipal(string token)
+    {
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_secret);
+
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = true,
+                ValidIssuer = _issuer,
+                ValidateAudience = true,
+                ValidAudience = _audience,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
+            return principal;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
     /// Validate token using RSA public key
     /// </summary>
     public bool ValidateTokenWithRsa(string token, string publicKeyPem)

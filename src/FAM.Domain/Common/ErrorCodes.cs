@@ -105,6 +105,119 @@ public static class ErrorCodes
     
     /// <summary>Duplicate value</summary>
     public const string VAL_DUPLICATE = "VAL_DUPLICATE";
+    
+    // Auth Request Validations
+    /// <summary>Identity (username or email) is required</summary>
+    public const string VAL_IDENTITY_REQUIRED = "VAL_IDENTITY_REQUIRED";
+    
+    /// <summary>Identity too short</summary>
+    public const string VAL_IDENTITY_TOO_SHORT = "VAL_IDENTITY_TOO_SHORT";
+    
+    /// <summary>Identity too long</summary>
+    public const string VAL_IDENTITY_TOO_LONG = "VAL_IDENTITY_TOO_LONG";
+    
+    /// <summary>Password is required</summary>
+    public const string VAL_PASSWORD_REQUIRED = "VAL_PASSWORD_REQUIRED";
+    
+    /// <summary>Password too short</summary>
+    public const string VAL_PASSWORD_TOO_SHORT = "VAL_PASSWORD_TOO_SHORT";
+    
+    /// <summary>Password too long</summary>
+    public const string VAL_PASSWORD_TOO_LONG = "VAL_PASSWORD_TOO_LONG";
+    
+    /// <summary>Current password is required</summary>
+    public const string VAL_CURRENT_PASSWORD_REQUIRED = "VAL_CURRENT_PASSWORD_REQUIRED";
+    
+    /// <summary>New password is required</summary>
+    public const string VAL_NEW_PASSWORD_REQUIRED = "VAL_NEW_PASSWORD_REQUIRED";
+    
+    /// <summary>New password too short</summary>
+    public const string VAL_NEW_PASSWORD_TOO_SHORT = "VAL_NEW_PASSWORD_TOO_SHORT";
+    
+    /// <summary>New password too long</summary>
+    public const string VAL_NEW_PASSWORD_TOO_LONG = "VAL_NEW_PASSWORD_TOO_LONG";
+    
+    /// <summary>New password must contain uppercase letter</summary>
+    public const string VAL_NEW_PASSWORD_NO_UPPERCASE = "VAL_NEW_PASSWORD_NO_UPPERCASE";
+    
+    /// <summary>New password must contain lowercase letter</summary>
+    public const string VAL_NEW_PASSWORD_NO_LOWERCASE = "VAL_NEW_PASSWORD_NO_LOWERCASE";
+    
+    /// <summary>New password must contain digit</summary>
+    public const string VAL_NEW_PASSWORD_NO_DIGIT = "VAL_NEW_PASSWORD_NO_DIGIT";
+    
+    /// <summary>New password must contain special character</summary>
+    public const string VAL_NEW_PASSWORD_NO_SPECIAL = "VAL_NEW_PASSWORD_NO_SPECIAL";
+    
+    /// <summary>Confirm password is required</summary>
+    public const string VAL_CONFIRM_PASSWORD_REQUIRED = "VAL_CONFIRM_PASSWORD_REQUIRED";
+    
+    /// <summary>Passwords do not match</summary>
+    public const string VAL_PASSWORDS_MISMATCH = "VAL_PASSWORDS_MISMATCH";
+    
+    /// <summary>Email is required</summary>
+    public const string VAL_EMAIL_REQUIRED = "VAL_EMAIL_REQUIRED";
+    
+    /// <summary>Email too long</summary>
+    public const string VAL_EMAIL_TOO_LONG = "VAL_EMAIL_TOO_LONG";
+    
+    /// <summary>Invalid email format</summary>
+    public const string VAL_EMAIL_INVALID = "VAL_EMAIL_INVALID";
+    
+    /// <summary>Username is required</summary>
+    public const string VAL_USERNAME_REQUIRED = "VAL_USERNAME_REQUIRED";
+    
+    /// <summary>Username too short</summary>
+    public const string VAL_USERNAME_TOO_SHORT = "VAL_USERNAME_TOO_SHORT";
+    
+    /// <summary>Username too long</summary>
+    public const string VAL_USERNAME_TOO_LONG = "VAL_USERNAME_TOO_LONG";
+    
+    // 2FA Validations
+    /// <summary>Two-factor code is required</summary>
+    public const string VAL_2FA_CODE_REQUIRED = "VAL_2FA_CODE_REQUIRED";
+    
+    /// <summary>Two-factor code invalid length</summary>
+    public const string VAL_2FA_CODE_INVALID_LENGTH = "VAL_2FA_CODE_INVALID_LENGTH";
+    
+    /// <summary>Two-factor code invalid format</summary>
+    public const string VAL_2FA_CODE_INVALID_FORMAT = "VAL_2FA_CODE_INVALID_FORMAT";
+    
+    /// <summary>Two-factor session token is required</summary>
+    public const string VAL_2FA_SESSION_REQUIRED = "VAL_2FA_SESSION_REQUIRED";
+    
+    /// <summary>Authentication method is required</summary>
+    public const string VAL_AUTH_METHOD_REQUIRED = "VAL_AUTH_METHOD_REQUIRED";
+    
+    /// <summary>Invalid authentication method</summary>
+    public const string VAL_AUTH_METHOD_INVALID = "VAL_AUTH_METHOD_INVALID";
+    
+    /// <summary>Email OTP is required</summary>
+    public const string VAL_EMAIL_OTP_REQUIRED = "VAL_EMAIL_OTP_REQUIRED";
+    
+    /// <summary>Email OTP invalid length</summary>
+    public const string VAL_EMAIL_OTP_INVALID_LENGTH = "VAL_EMAIL_OTP_INVALID_LENGTH";
+    
+    /// <summary>Email OTP invalid format</summary>
+    public const string VAL_EMAIL_OTP_INVALID_FORMAT = "VAL_EMAIL_OTP_INVALID_FORMAT";
+    
+    /// <summary>Recovery code is required</summary>
+    public const string VAL_RECOVERY_CODE_REQUIRED = "VAL_RECOVERY_CODE_REQUIRED";
+    
+    /// <summary>Recovery code too short</summary>
+    public const string VAL_RECOVERY_CODE_TOO_SHORT = "VAL_RECOVERY_CODE_TOO_SHORT";
+    
+    /// <summary>Recovery code too long</summary>
+    public const string VAL_RECOVERY_CODE_TOO_LONG = "VAL_RECOVERY_CODE_TOO_LONG";
+    
+    /// <summary>Backup code is required</summary>
+    public const string VAL_BACKUP_CODE_REQUIRED = "VAL_BACKUP_CODE_REQUIRED";
+    
+    /// <summary>Refresh token is required</summary>
+    public const string VAL_REFRESH_TOKEN_REQUIRED = "VAL_REFRESH_TOKEN_REQUIRED";
+    
+    /// <summary>Reset token is required</summary>
+    public const string VAL_RESET_TOKEN_REQUIRED = "VAL_RESET_TOKEN_REQUIRED";
 
     #endregion
 
@@ -296,6 +409,230 @@ public static class ErrorCodes
     
     /// <summary>Invalid setting value</summary>
     public const string SETTING_INVALID_VALUE = "SETTING_INVALID_VALUE";
+
+    #endregion
+
+    #region Value Objects (VO_xxx)
+    
+    // PostalCode
+    /// <summary>Postal code cannot be empty</summary>
+    public const string VO_POSTAL_CODE_EMPTY = "VO_POSTAL_CODE_EMPTY";
+    
+    /// <summary>Invalid postal code format</summary>
+    public const string VO_POSTAL_CODE_INVALID = "VO_POSTAL_CODE_INVALID";
+    
+    // Email
+    /// <summary>Email cannot be empty</summary>
+    public const string VO_EMAIL_EMPTY = "VO_EMAIL_EMPTY";
+    
+    /// <summary>Invalid email format</summary>
+    public const string VO_EMAIL_INVALID = "VO_EMAIL_INVALID";
+    
+    /// <summary>Email too long</summary>
+    public const string VO_EMAIL_TOO_LONG = "VO_EMAIL_TOO_LONG";
+    
+    // PhoneNumber
+    /// <summary>Phone number cannot be empty</summary>
+    public const string VO_PHONE_EMPTY = "VO_PHONE_EMPTY";
+    
+    /// <summary>Invalid phone number format</summary>
+    public const string VO_PHONE_INVALID = "VO_PHONE_INVALID";
+    
+    // IPAddress
+    /// <summary>IP address cannot be empty</summary>
+    public const string VO_IP_EMPTY = "VO_IP_EMPTY";
+    
+    /// <summary>Invalid IP address format</summary>
+    public const string VO_IP_INVALID = "VO_IP_INVALID";
+    
+    // Address
+    /// <summary>Street cannot be empty</summary>
+    public const string VO_ADDRESS_STREET_EMPTY = "VO_ADDRESS_STREET_EMPTY";
+    
+    /// <summary>City cannot be empty</summary>
+    public const string VO_ADDRESS_CITY_EMPTY = "VO_ADDRESS_CITY_EMPTY";
+    
+    /// <summary>Country cannot be empty</summary>
+    public const string VO_ADDRESS_COUNTRY_EMPTY = "VO_ADDRESS_COUNTRY_EMPTY";
+    
+    // Password
+    /// <summary>Password cannot be empty</summary>
+    public const string VO_PASSWORD_EMPTY = "VO_PASSWORD_EMPTY";
+    
+    /// <summary>Password too short</summary>
+    public const string VO_PASSWORD_TOO_SHORT = "VO_PASSWORD_TOO_SHORT";
+    
+    /// <summary>Password too long</summary>
+    public const string VO_PASSWORD_TOO_LONG = "VO_PASSWORD_TOO_LONG";
+    
+    /// <summary>Password must contain uppercase letter</summary>
+    public const string VO_PASSWORD_NO_UPPERCASE = "VO_PASSWORD_NO_UPPERCASE";
+    
+    /// <summary>Password must contain lowercase letter</summary>
+    public const string VO_PASSWORD_NO_LOWERCASE = "VO_PASSWORD_NO_LOWERCASE";
+    
+    /// <summary>Password must contain digit</summary>
+    public const string VO_PASSWORD_NO_DIGIT = "VO_PASSWORD_NO_DIGIT";
+    
+    /// <summary>Password must contain at least one number</summary>
+    public const string VO_PASSWORD_NO_NUMBER = "VO_PASSWORD_NO_NUMBER";
+    
+    /// <summary>Password must contain special character</summary>
+    public const string VO_PASSWORD_NO_SPECIAL = "VO_PASSWORD_NO_SPECIAL";
+    
+    // Money
+    /// <summary>Amount cannot be negative</summary>
+    public const string VO_MONEY_NEGATIVE = "VO_MONEY_NEGATIVE";
+    
+    /// <summary>Currency code cannot be empty</summary>
+    public const string VO_MONEY_CURRENCY_EMPTY = "VO_MONEY_CURRENCY_EMPTY";
+    
+    /// <summary>Invalid currency code</summary>
+    public const string VO_MONEY_CURRENCY_INVALID = "VO_MONEY_CURRENCY_INVALID";
+    
+    // Percentage
+    /// <summary>Percentage out of range</summary>
+    public const string VO_PERCENTAGE_OUT_OF_RANGE = "VO_PERCENTAGE_OUT_OF_RANGE";
+    
+    /// <summary>Percentage cannot be negative</summary>
+    public const string VO_PERCENTAGE_NEGATIVE = "VO_PERCENTAGE_NEGATIVE";
+    
+    /// <summary>Percentage cannot exceed 100%</summary>
+    public const string VO_PERCENTAGE_EXCEED = "VO_PERCENTAGE_EXCEED";
+    
+    // SerialNumber
+    /// <summary>Serial number cannot be empty</summary>
+    public const string VO_SERIAL_EMPTY = "VO_SERIAL_EMPTY";
+    
+    /// <summary>Invalid serial number format</summary>
+    public const string VO_SERIAL_INVALID = "VO_SERIAL_INVALID";
+    
+    // TaxCode
+    /// <summary>Tax code cannot be empty</summary>
+    public const string VO_TAX_CODE_EMPTY = "VO_TAX_CODE_EMPTY";
+    
+    /// <summary>Invalid tax code format</summary>
+    public const string VO_TAX_CODE_INVALID = "VO_TAX_CODE_INVALID";
+    
+    /// <summary>Tax code length is invalid</summary>
+    public const string VO_TAX_CODE_TOO_SHORT = "VO_TAX_CODE_TOO_SHORT";
+    public const string VO_TAX_CODE_TOO_LONG = "VO_TAX_CODE_TOO_LONG";
+    
+    // MACAddress
+    /// <summary>MAC address cannot be empty</summary>
+    public const string VO_MAC_EMPTY = "VO_MAC_EMPTY";
+    
+    /// <summary>Invalid MAC address format</summary>
+    public const string VO_MAC_INVALID = "VO_MAC_INVALID";
+    
+    // DateRange
+    /// <summary>Start date cannot be after end date</summary>
+    public const string VO_DATE_RANGE_INVALID = "VO_DATE_RANGE_INVALID";
+    
+    // Rating
+    /// <summary>Rating out of range</summary>
+    public const string VO_RATING_OUT_OF_RANGE = "VO_RATING_OUT_OF_RANGE";
+    
+    // Dimensions
+    /// <summary>Dimension value must be positive</summary>
+    public const string VO_DIMENSION_INVALID = "VO_DIMENSION_INVALID";
+    
+    /// <summary>Unit cannot be empty</summary>
+    public const string VO_DIMENSION_UNIT_EMPTY = "VO_DIMENSION_UNIT_EMPTY";
+    
+    // DomainName
+    /// <summary>Domain name cannot be empty</summary>
+    public const string VO_DOMAIN_EMPTY = "VO_DOMAIN_EMPTY";
+    
+    /// <summary>Domain name too long</summary>
+    public const string VO_DOMAIN_TOO_LONG = "VO_DOMAIN_TOO_LONG";
+    
+    /// <summary>Invalid domain name format</summary>
+    public const string VO_DOMAIN_INVALID = "VO_DOMAIN_INVALID";
+    
+    // URL
+    /// <summary>URL cannot be empty</summary>
+    public const string VO_URL_EMPTY = "VO_URL_EMPTY";
+    
+    /// <summary>Invalid URL format</summary>
+    public const string VO_URL_INVALID = "VO_URL_INVALID";
+    
+    // CountryCode
+    /// <summary>Country code cannot be empty</summary>
+    public const string VO_COUNTRY_CODE_EMPTY = "VO_COUNTRY_CODE_EMPTY";
+    
+    /// <summary>Country code must be 2 characters</summary>
+    public const string VO_COUNTRY_CODE_INVALID = "VO_COUNTRY_CODE_INVALID";
+    
+    // ResourceType
+    /// <summary>Resource type cannot be empty</summary>
+    public const string VO_RESOURCE_TYPE_EMPTY = "VO_RESOURCE_TYPE_EMPTY";
+    
+    /// <summary>Resource type too long</summary>
+    public const string VO_RESOURCE_TYPE_TOO_LONG = "VO_RESOURCE_TYPE_TOO_LONG";
+    
+    // ResourceAction
+    /// <summary>Resource action cannot be empty</summary>
+    public const string VO_RESOURCE_ACTION_EMPTY = "VO_RESOURCE_ACTION_EMPTY";
+    
+    /// <summary>Resource action cannot exceed 50 characters</summary>
+    public const string VO_RESOURCE_ACTION_TOO_LONG = "VO_RESOURCE_ACTION_TOO_LONG";
+    
+    // Warranty, Insurance, Depreciation
+    /// <summary>Warranty duration must be positive</summary>
+    public const string VO_WARRANTY_DURATION_INVALID = "VO_WARRANTY_DURATION_INVALID";
+    
+    /// <summary>End date must be after start date</summary>
+    public const string VO_DATE_INVALID = "VO_DATE_INVALID";
+    
+    /// <summary>Policy number is required</summary>
+    public const string VO_INSURANCE_POLICY_EMPTY = "VO_INSURANCE_POLICY_EMPTY";
+    
+    /// <summary>Insured value must be positive</summary>
+    public const string VO_INSURANCE_VALUE_INVALID = "VO_INSURANCE_VALUE_INVALID";
+    
+    /// <summary>Depreciation method is required</summary>
+    public const string VO_DEPRECIATION_METHOD_EMPTY = "VO_DEPRECIATION_METHOD_EMPTY";
+    
+    /// <summary>Useful life must be positive</summary>
+    public const string VO_DEPRECIATION_LIFE_INVALID = "VO_DEPRECIATION_LIFE_INVALID";
+    
+    /// <summary>Residual value cannot be negative</summary>
+    public const string VO_DEPRECIATION_RESIDUAL_INVALID = "VO_DEPRECIATION_RESIDUAL_INVALID";
+    
+    // CostCenter, AssetTag, Username, RoleCode
+    /// <summary>Cost center cannot be empty</summary>
+    public const string VO_COST_CENTER_EMPTY = "VO_COST_CENTER_EMPTY";
+    
+    /// <summary>Cost center too long</summary>
+    public const string VO_COST_CENTER_TOO_LONG = "VO_COST_CENTER_TOO_LONG";
+    
+    /// <summary>Asset tag cannot be empty</summary>
+    public const string VO_ASSET_TAG_EMPTY = "VO_ASSET_TAG_EMPTY";
+    
+    /// <summary>Asset tag too long</summary>
+    public const string VO_ASSET_TAG_TOO_LONG = "VO_ASSET_TAG_TOO_LONG";
+    
+    /// <summary>Username cannot be empty</summary>
+    public const string VO_USERNAME_EMPTY = "VO_USERNAME_EMPTY";
+    
+    /// <summary>Username too short</summary>
+    public const string VO_USERNAME_TOO_SHORT = "VO_USERNAME_TOO_SHORT";
+    
+    /// <summary>Username too long</summary>
+    public const string VO_USERNAME_TOO_LONG = "VO_USERNAME_TOO_LONG";
+    
+    /// <summary>Invalid username format</summary>
+    public const string VO_USERNAME_INVALID = "VO_USERNAME_INVALID";
+    
+    /// <summary>Role code cannot be empty</summary>
+    public const string VO_ROLE_CODE_EMPTY = "VO_ROLE_CODE_EMPTY";
+    
+    /// <summary>Role code too long</summary>
+    public const string VO_ROLE_CODE_TOO_LONG = "VO_ROLE_CODE_TOO_LONG";
+    
+    /// <summary>Invalid role code format</summary>
+    public const string VO_ROLE_CODE_INVALID = "VO_ROLE_CODE_INVALID";
 
     #endregion
 }

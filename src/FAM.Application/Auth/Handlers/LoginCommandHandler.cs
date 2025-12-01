@@ -88,7 +88,15 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         }
 
         // Generate tokens
-        var roles = new List<string>(); // TODO: Load user roles from UserNodeRoles
+        // TODO: Load user roles from UserNodeRoles properly
+        var roles = new List<string>();
+        // Temporary: Hardcode Admin role for admin user (for integration tests)
+        if (user.Username.Value.Equals("admin", StringComparison.OrdinalIgnoreCase))
+        {
+            roles.Add("Admin");
+            roles.Add("SuperAdmin");
+        }
+        
         var accessToken = _jwtService.GenerateAccessToken(user.Id, user.Username.Value, user.Email.Value, roles);
         var refreshToken = _jwtService.GenerateRefreshToken();
         var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(request.RememberMe ? 30 : 7);

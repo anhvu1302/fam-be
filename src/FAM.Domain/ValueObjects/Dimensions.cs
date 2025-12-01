@@ -23,17 +23,17 @@ public sealed class Dimensions : ValueObject
     public static Dimensions Create(decimal length, decimal width, decimal height, string unit = "cm")
     {
         if (length <= 0)
-            throw new DomainException("Length must be positive");
+            throw new DomainException(ErrorCodes.VO_DIMENSION_INVALID);
 
         if (width <= 0)
-            throw new DomainException("Width must be positive");
+            throw new DomainException(ErrorCodes.VO_DIMENSION_INVALID);
 
         if (height <= 0)
-            throw new DomainException("Height must be positive");
+            throw new DomainException(ErrorCodes.VO_DIMENSION_INVALID);
 
         var validUnits = new[] { "cm", "m", "mm", "in", "ft" };
         if (!validUnits.Contains(unit.ToLowerInvariant()))
-            throw new DomainException($"Invalid unit: {unit}. Must be one of: {string.Join(", ", validUnits)}");
+            throw new DomainException(ErrorCodes.VO_DIMENSION_UNIT_EMPTY);
 
         return new Dimensions(length, width, height, unit.ToLowerInvariant());
     }

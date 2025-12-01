@@ -20,15 +20,15 @@ public sealed class CountryCode : ValueObject
     public static CountryCode Create(string countryCode)
     {
         if (string.IsNullOrWhiteSpace(countryCode))
-            throw new DomainException("Country code cannot be empty");
+            throw new DomainException(ErrorCodes.VO_COUNTRY_CODE_EMPTY);
 
         countryCode = countryCode.Trim().ToUpperInvariant();
 
         if (countryCode.Length != 2)
-            throw new DomainException("Country code must be exactly 2 characters");
+            throw new DomainException(ErrorCodes.VO_COUNTRY_CODE_INVALID);
 
         if (!IsValidCountryCode(countryCode))
-            throw new DomainException($"Invalid country code: {countryCode}");
+            throw new DomainException(ErrorCodes.VO_COUNTRY_CODE_INVALID);
 
         return new CountryCode(countryCode);
     }

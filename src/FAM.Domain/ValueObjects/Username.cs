@@ -1,9 +1,11 @@
 using FAM.Domain.Common;
+using System.Text.RegularExpressions;
 
 namespace FAM.Domain.ValueObjects;
 
 /// <summary>
-/// Username Value Object - đảm bảo tính toàn vẹn của username trong domain
+/// Username Value Object - đảm bảo tính toàn vẹn của username trong domain.
+/// Validation rules are centralized in DomainRules.Username.
 /// </summary>
 public sealed class Username : ValueObject
 {
@@ -15,33 +17,45 @@ public sealed class Username : ValueObject
     }
 
     /// <summary>
-    /// Tạo Username từ string với validation
+    /// Tạo Username từ string với validation.
+    /// Throws DomainException with error code và details cho i18n.
+    /// Validation rules được định nghĩa trong DomainRules.Username.
     /// </summary>
     public static Username Create(string username)
     {
         if (string.IsNullOrWhiteSpace(username))
-            throw new DomainException("Username cannot be empty");
+            throw new DomainException(ErrorCodes.VO_USERNAME_EMPTY, new
+            {
+                field = "Username"
+            });
 
         username = username.Trim();
 
-        if (username.Length < 3)
-            throw new DomainException("Username must be at least 3 characters long");
+        if (username.Length < DomainRules.Username.MinLength)
+            throw new DomainException(ErrorCodes.VO_USERNAME_TOO_SHORT, new
+            {
+                field = "Username",
+                minLength = DomainRules.Username.MinLength,
+                actualLength = username.Length
+            });
 
-        if (username.Length > 50)
-            throw new DomainException("Username cannot exceed 50 characters");
+        if (username.Length > DomainRules.Username.MaxLength)
+            throw new DomainException(ErrorCodes.VO_USERNAME_TOO_LONG, new
+            {
+                field = "Username",
+                maxLength = DomainRules.Username.MaxLength,
+                actualLength = username.Length
+            });
 
-        if (!IsValidUsernameFormat(username))
-            throw new DomainException("Username can only contain letters, numbers, underscores, and hyphens");
+        if (!DomainRules.Username.IsValidFormat(username))
+            throw new DomainException(ErrorCodes.VO_USERNAME_INVALID, new
+            {
+                field = "Username",
+                allowedChars = DomainRules.Username.AllowedCharacters,
+                pattern = DomainRules.Username.Pattern
+            });
 
         return new Username(username);
-    }
-
-    /// <summary>
-    /// Kiểm tra format username hợp lệ
-    /// </summary>
-    private static bool IsValidUsernameFormat(string username)
-    {
-        return username.All(c => char.IsLetterOrDigit(c) || c == '_' || c == '-');
     }
 
     /// <summary>
@@ -61,14 +75,6 @@ public sealed class Username : ValueObject
     public static implicit operator string(Username username)
     {
         return username.Value;
-    }
-
-    /// <summary>
-    /// Explicit conversion từ string sang Username
-    /// </summary>
-    public static explicit operator Username(string username)
-    {
-        return Create(username);
     }
 
     protected override IEnumerable<object> GetEqualityComponents()

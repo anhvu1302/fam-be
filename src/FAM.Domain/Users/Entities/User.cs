@@ -29,6 +29,11 @@ public class User : BaseEntity
     public string? TwoFactorBackupCodes { get; private set; } // JSON array of backup codes
     public DateTime? TwoFactorSetupDate { get; private set; }
 
+    // Password Reset
+    public string? PasswordResetToken { get; private set; }
+    public DateTime? PasswordResetTokenExpiresAt { get; private set; }
+    public DateTime? PasswordChangedAt { get; private set; }
+
     // Account Status
     public bool IsActive { get; private set; } = true;
     public bool IsEmailVerified { get; private set; }
@@ -171,6 +176,37 @@ public class User : BaseEntity
     public void UpdatePassword(string newPasswordHash, string newPasswordSalt)
     {
         Password = Password.FromHash(newPasswordHash, newPasswordSalt);
+        PasswordChangedAt = DateTime.UtcNow;
+        
+        // Clear any pending reset token
+        PasswordResetToken = null;
+        PasswordResetTokenExpiresAt = null;
+    }
+
+    public void SetPasswordResetToken(string token, int expirationMinutes = 60)
+    {
+        PasswordResetToken = token;
+        PasswordResetTokenExpiresAt = DateTime.UtcNow.AddMinutes(expirationMinutes);
+    }
+
+    public bool IsPasswordResetTokenValid(string token)
+    {
+        if (string.IsNullOrWhiteSpace(PasswordResetToken))
+            return false;
+
+        if (PasswordResetToken != token)
+            return false;
+
+        if (!PasswordResetTokenExpiresAt.HasValue)
+            return false;
+
+        return PasswordResetTokenExpiresAt.Value > DateTime.UtcNow;
+    }
+
+    public void ClearPasswordResetToken()
+    {
+        PasswordResetToken = null;
+        PasswordResetTokenExpiresAt = null;
     }
 
     public void EnableTwoFactor(string secret, string? backupCodes = null)
@@ -187,6 +223,11 @@ public class User : BaseEntity
         TwoFactorSecret = null;
         TwoFactorBackupCodes = null;
         TwoFactorSetupDate = null;
+    }
+
+    public void UpdateRecoveryCodes(string backupCodes)
+    {
+        TwoFactorBackupCodes = backupCodes;
     }
 
     public void VerifyEmail()

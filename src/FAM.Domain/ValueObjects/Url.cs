@@ -20,12 +20,12 @@ public sealed class Url : ValueObject
     public static Url Create(string url)
     {
         if (string.IsNullOrWhiteSpace(url))
-            throw new DomainException("URL cannot be empty");
+            throw new DomainException(ErrorCodes.VO_URL_EMPTY);
 
         url = url.Trim();
 
         if (!IsValidUrl(url))
-            throw new DomainException("Invalid URL format");
+            throw new DomainException(ErrorCodes.VO_URL_INVALID);
 
         return new Url(url);
     }

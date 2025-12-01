@@ -19,7 +19,7 @@ public sealed class IPAddress : ValueObject
     public static IPAddress Create(string ipAddress)
     {
         if (string.IsNullOrWhiteSpace(ipAddress))
-            throw new DomainException("IP address is required");
+            throw new DomainException(ErrorCodes.VO_IP_EMPTY);
 
         ipAddress = ipAddress.Trim();
 
@@ -30,7 +30,7 @@ public sealed class IPAddress : ValueObject
 
         var type = DetermineType(ipAddress);
         if (type == IPAddressType.Invalid)
-            throw new DomainException($"Invalid IP address format: {ipAddress}");
+            throw new DomainException(ErrorCodes.VO_IP_INVALID);
 
         return new IPAddress(ipAddress, type);
     }

@@ -19,10 +19,10 @@ public sealed class Money : ValueObject
     public static Money Create(decimal amount, string currency)
     {
         if (amount < 0)
-            throw new DomainException("Amount cannot be negative");
+            throw new DomainException(ErrorCodes.VO_MONEY_NEGATIVE);
 
         if (string.IsNullOrWhiteSpace(currency))
-            throw new DomainException("Currency is required");
+            throw new DomainException(ErrorCodes.VO_MONEY_CURRENCY_EMPTY);
 
         return new Money(amount, currency.ToUpperInvariant());
     }

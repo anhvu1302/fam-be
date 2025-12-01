@@ -91,7 +91,7 @@ public class MACAddressTests
 
         // Assert
         act.Should().Throw<DomainException>()
-            .WithMessage($"Invalid MAC address format: {value.ToUpper()}");
+            .WithMessage("Invalid MAC address format");
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class MACAddressTests
 
         // Assert
         act.Should().Throw<DomainException>()
-            .WithMessage($"Invalid MAC address format: {value.ToUpper()}");
+            .WithMessage("Invalid MAC address format");
     }
 
     [Fact]

@@ -20,12 +20,12 @@ public sealed class SerialNumber : ValueObject
     public static SerialNumber Create(string serialNumber)
     {
         if (string.IsNullOrWhiteSpace(serialNumber))
-            throw new DomainException("Serial number cannot be empty");
+            throw new DomainException(ErrorCodes.VO_SERIAL_EMPTY);
 
         serialNumber = serialNumber.Trim();
 
         if (serialNumber.Length > 100)
-            throw new DomainException("Serial number cannot exceed 100 characters");
+            throw new DomainException(ErrorCodes.VO_SERIAL_INVALID);
 
         return new SerialNumber(serialNumber);
     }

@@ -27,13 +27,13 @@ public sealed class DepreciationInfo : ValueObject
     public static DepreciationInfo Create(string method, int usefulLifeMonths, decimal residualValue)
     {
         if (string.IsNullOrWhiteSpace(method))
-            throw new DomainException("Depreciation method is required");
+            throw new DomainException(ErrorCodes.VO_DEPRECIATION_METHOD_EMPTY);
 
         if (usefulLifeMonths <= 0)
-            throw new DomainException("Useful life must be positive");
+            throw new DomainException(ErrorCodes.VO_DEPRECIATION_LIFE_INVALID);
 
         if (residualValue < 0)
-            throw new DomainException("Residual value cannot be negative");
+            throw new DomainException(ErrorCodes.VO_DEPRECIATION_RESIDUAL_INVALID);
 
         return new DepreciationInfo(method, usefulLifeMonths, residualValue, null);
     }

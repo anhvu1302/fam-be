@@ -20,7 +20,7 @@ public sealed class Rating : ValueObject
     public static Rating Create(int value)
     {
         if (value < 1 || value > 5)
-            throw new DomainException("Rating must be between 1 and 5");
+            throw new DomainException(ErrorCodes.VO_RATING_OUT_OF_RANGE);
 
         return new Rating(value);
     }

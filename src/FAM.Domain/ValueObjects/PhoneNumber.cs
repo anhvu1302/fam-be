@@ -19,13 +19,13 @@ public sealed class PhoneNumber : ValueObject
     public static PhoneNumber Create(string phoneNumber, string? countryCode = "+84")
     {
         if (string.IsNullOrWhiteSpace(phoneNumber))
-            throw new DomainException("Phone number is required");
+            throw new DomainException(ErrorCodes.VO_PHONE_EMPTY);
 
         // Remove all non-digit characters
         var cleaned = new string(phoneNumber.Where(char.IsDigit).ToArray());
 
         if (cleaned.Length < 9 || cleaned.Length > 15)
-            throw new DomainException("Invalid phone number length");
+            throw new DomainException(ErrorCodes.VO_PHONE_INVALID);
 
         // Use default country code if null
         var finalCountryCode = countryCode ?? "+84";

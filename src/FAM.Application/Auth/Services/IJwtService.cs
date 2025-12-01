@@ -40,6 +40,11 @@ public interface IJwtService
     bool ValidateTokenWithRsa(string token, string publicKeyPem);
 
     /// <summary>
+    /// Validate JWT token and return ClaimsPrincipal
+    /// </summary>
+    System.Security.Claims.ClaimsPrincipal? ValidateTokenAndGetPrincipal(string token);
+
+    /// <summary>
     /// Get user ID from token
     /// </summary>
     long GetUserIdFromToken(string token);

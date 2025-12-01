@@ -43,13 +43,13 @@ public sealed class Address : ValueObject
         string? postalCode = null)
     {
         if (string.IsNullOrWhiteSpace(street))
-            throw new DomainException("Street is required");
+            throw new DomainException(ErrorCodes.VO_ADDRESS_STREET_EMPTY);
 
         if (string.IsNullOrWhiteSpace(city))
-            throw new DomainException("City is required");
+            throw new DomainException(ErrorCodes.VO_ADDRESS_CITY_EMPTY);
 
         if (string.IsNullOrWhiteSpace(countryCode))
-            throw new DomainException("Country code is required");
+            throw new DomainException(ErrorCodes.VO_ADDRESS_COUNTRY_EMPTY);
 
         return new Address(street, city, countryCode.ToUpperInvariant(), ward, district, province, postalCode);
     }

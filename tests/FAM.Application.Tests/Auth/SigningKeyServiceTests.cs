@@ -3,6 +3,7 @@ using FAM.Application.Auth.DTOs;
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
+using FAM.Domain.Common;
 using FAM.Infrastructure.Auth;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -198,7 +199,7 @@ public class SigningKeyServiceTests
         var act = async () => await _service.GenerateKeyAsync("INVALID");
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>()
+        await act.Should().ThrowAsync<DomainException>()
             .WithMessage("*algorithm*");
     }
 
@@ -227,7 +228,7 @@ public class SigningKeyServiceTests
         var act = async () => await _service.GenerateKeyAsync(keySize: 1024);
 
         // Assert
-        await act.Should().ThrowAsync<ArgumentException>()
+        await act.Should().ThrowAsync<DomainException>()
             .WithMessage("*key size*");
     }
 
@@ -304,10 +305,10 @@ public class SigningKeyServiceTests
             .ReturnsAsync((SigningKey?)null);
 
         // Act
-        var act = async () => await _service.ActivateKeyAsync(999L);
+        Func<Task> act = async () => await _service.ActivateKeyAsync(999);
 
         // Assert
-        await act.Should().ThrowAsync<KeyNotFoundException>();
+        await act.Should().ThrowAsync<NotFoundException>();
     }
 
     #endregion
@@ -340,10 +341,10 @@ public class SigningKeyServiceTests
             .ReturnsAsync((SigningKey?)null);
 
         // Act
-        var act = async () => await _service.DeactivateKeyAsync(999L);
+        Func<Task> act = async () => await _service.DeactivateKeyAsync(999);
 
         // Assert
-        await act.Should().ThrowAsync<KeyNotFoundException>();
+        await act.Should().ThrowAsync<NotFoundException>();
     }
 
     #endregion
@@ -382,7 +383,7 @@ public class SigningKeyServiceTests
         var act = async () => await _service.RevokeKeyAsync(999L);
 
         // Assert
-        await act.Should().ThrowAsync<KeyNotFoundException>();
+        await act.Should().ThrowAsync<NotFoundException>();
     }
 
     #endregion
@@ -472,8 +473,8 @@ public class SigningKeyServiceTests
         var act = async () => await _service.DeleteKeyAsync(1L);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*not been revoked*");
+        await act.Should().ThrowAsync<DomainException>()
+            .WithMessage("*revoke the key before deleting*");
     }
 
     [Fact]
@@ -485,10 +486,10 @@ public class SigningKeyServiceTests
             .ReturnsAsync((SigningKey?)null);
 
         // Act
-        var act = async () => await _service.DeleteKeyAsync(999L);
+        Func<Task> act = async () => await _service.DeleteKeyAsync(999);
 
         // Assert
-        await act.Should().ThrowAsync<KeyNotFoundException>();
+        await act.Should().ThrowAsync<NotFoundException>();
     }
 
     #endregion

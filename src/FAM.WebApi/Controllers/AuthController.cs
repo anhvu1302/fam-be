@@ -1,10 +1,13 @@
 using FAM.Application.Auth.Commands;
 using FAM.Application.Auth.DTOs;
+using FAM.Application.Auth.Queries;
 using FAM.Application.Common.Services;
-using FAM.WebApi.Models.Auth;
+using FAM.WebApi.Configuration;
+using WebApiContracts = FAM.WebApi.Contracts.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 namespace FAM.WebApi.Controllers;
@@ -33,7 +36,8 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequestModel request)
+    [EnableRateLimiting(RateLimitConfiguration.AuthenticationPolicy)]
+    public async Task<ActionResult<LoginResponse>> Login([FromBody] WebApiContracts.LoginRequest request)
     {
         // Web API validation: ModelState checks DataAnnotations
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -82,10 +86,11 @@ public class AuthController : ControllerBase
     /// <summary>
     /// Verify 2FA code to complete login
     /// </summary>
+    [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
     [HttpPost("verify-2fa")]
     [AllowAnonymous]
     public async Task<ActionResult<VerifyTwoFactorResponse>> VerifyTwoFactor(
-        [FromBody] VerifyTwoFactorRequestModel request)
+        [FromBody] WebApiContracts.VerifyTwoFactorRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -134,7 +139,7 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("refresh")]
     [AllowAnonymous]
-    public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] RefreshTokenRequestModel request)
+    public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] WebApiContracts.RefreshTokenRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -228,20 +233,13 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("change-password")]
     [Authorize]
-    public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequestModel request)
+    public async Task<ActionResult> ChangePassword([FromBody] WebApiContracts.ChangePasswordRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
             var userId = GetCurrentUserId();
-
-            var appRequest = new ChangePasswordRequest
-            {
-                CurrentPassword = request.CurrentPassword,
-                NewPassword = request.NewPassword,
-                LogoutAllDevices = request.LogoutAllDevices
-            };
 
             var command = new ChangePasswordCommand
             {
@@ -257,13 +255,236 @@ public class AuthController : ControllerBase
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "Password change failed for user: {UserId}", GetCurrentUserId());
+            _logger.LogWarning(ex, "Password change failed");
             return Unauthorized(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error during password change for user: {UserId}", GetCurrentUserId());
-            return StatusCode(500, new { message = "An error occurred during password change" });
+            _logger.LogError(ex, "Error during password change");
+            return StatusCode(500, new { message = "An error occurred while changing password" });
+        }
+    }
+
+    /// <summary>
+    /// Get authentication methods for current user
+    /// </summary>
+    [HttpGet("authentication-methods")]
+    [Authorize]
+    public async Task<ActionResult> GetAuthenticationMethods()
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            var query = new GetAuthenticationMethodsQuery { UserId = userId };
+            var response = await _mediator.Send(query);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting authentication methods");
+            return StatusCode(500, new { message = "An error occurred" });
+        }
+    }
+
+    /// <summary>
+    /// Select authentication method for 2FA
+    /// </summary>
+    [EnableRateLimiting(RateLimitConfiguration.AuthenticationPolicy)]
+    [HttpPost("select-authentication-method")]
+    [AllowAnonymous]
+    public async Task<ActionResult> SelectAuthenticationMethod([FromBody] WebApiContracts.SelectAuthenticationMethodRequest request)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        try
+        {
+            var command = new SelectAuthenticationMethodCommand
+            {
+                TwoFactorSessionToken = request.TwoFactorSessionToken,
+                SelectedMethod = request.SelectedMethod
+            };
+
+            var response = await _mediator.Send(command);
+            return Ok(response);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogWarning(ex, "Authentication method selection failed");
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error selecting authentication method");
+            return StatusCode(500, new { message = "An error occurred" });
+        }
+    }
+
+    /// <summary>
+    /// Verify email OTP
+    /// </summary>
+    [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
+    [HttpPost("verify-email-otp")]
+    [AllowAnonymous]
+    public async Task<ActionResult> VerifyEmailOtp([FromBody] WebApiContracts.VerifyEmailOtpRequest request)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        try
+        {
+            var ipAddress = GetClientIpAddress();
+            var location = await _locationService.GetLocationFromIpAsync(ipAddress);
+
+            var command = new VerifyEmailOtpCommand
+            {
+                TwoFactorSessionToken = request.TwoFactorSessionToken,
+                EmailOtp = request.EmailOtp,
+                RememberMe = request.RememberMe,
+                DeviceId = GenerateDeviceId(),
+                DeviceName = GetDeviceName(),
+                DeviceType = GetDeviceType(),
+                IpAddress = ipAddress,
+                UserAgent = Request.Headers["User-Agent"].ToString(),
+                Location = location
+            };
+
+            var response = await _mediator.Send(command);
+            return Ok(response);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogWarning(ex, "Email OTP verification failed");
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error verifying email OTP");
+            return StatusCode(500, new { message = "An error occurred" });
+        }
+    }
+
+    /// <summary>
+    /// Verify recovery code
+    /// </summary>
+    [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
+    [HttpPost("verify-recovery-code")]
+    [AllowAnonymous]
+    public async Task<ActionResult> VerifyRecoveryCode([FromBody] WebApiContracts.VerifyRecoveryCodeRequest request)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        try
+        {
+            var ipAddress = GetClientIpAddress();
+            var location = await _locationService.GetLocationFromIpAsync(ipAddress);
+
+            var command = new VerifyRecoveryCodeCommand
+            {
+                TwoFactorSessionToken = request.TwoFactorSessionToken,
+                RecoveryCode = request.RecoveryCode,
+                RememberMe = request.RememberMe,
+                DeviceId = GenerateDeviceId(),
+                DeviceName = GetDeviceName(),
+                DeviceType = GetDeviceType(),
+                IpAddress = ipAddress,
+                UserAgent = Request.Headers["User-Agent"].ToString(),
+                Location = location
+            };
+
+            var response = await _mediator.Send(command);
+            return Ok(response);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogWarning(ex, "Recovery code verification failed");
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error verifying recovery code");
+            return StatusCode(500, new { message = "An error occurred" });
+        }
+    }
+
+    /// <summary>
+    /// Request password reset (forgot password)
+    /// </summary>
+    [EnableRateLimiting(RateLimitConfiguration.AuthenticationPolicy)]
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    public async Task<ActionResult> ForgotPassword([FromBody] WebApiContracts.ForgotPasswordRequest request)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        try
+        {
+            var command = new ForgotPasswordCommand { Email = request.Email };
+            var response = await _mediator.Send(command);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error processing forgot password request");
+            return StatusCode(500, new { message = "An error occurred" });
+        }
+    }
+
+    /// <summary>
+    /// Verify reset token
+    /// </summary>
+    [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
+    [HttpPost("verify-reset-token")]
+    [AllowAnonymous]
+    public async Task<ActionResult> VerifyResetToken([FromBody] WebApiContracts.VerifyResetTokenRequest request)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        try
+        {
+            var command = new VerifyResetTokenCommand
+            {
+                Email = request.Email,
+                ResetToken = request.ResetToken
+            };
+            var response = await _mediator.Send(command);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error verifying reset token");
+            return StatusCode(500, new { message = "An error occurred" });
+        }
+    }
+
+    /// <summary>
+    /// Reset password with token
+    /// </summary>
+    [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    public async Task<ActionResult> ResetPassword([FromBody] WebApiContracts.ResetPasswordRequest request)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+
+        try
+        {
+            var command = new ResetPasswordCommand
+            {
+                Email = request.Email,
+                ResetToken = request.ResetToken,
+                NewPassword = request.NewPassword
+            };
+            var response = await _mediator.Send(command);
+            return Ok(response);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            _logger.LogWarning(ex, "Password reset failed");
+            return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error resetting password");
+            return StatusCode(500, new { message = "An error occurred" });
         }
     }
 
@@ -272,7 +493,7 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("enable-2fa")]
     [Authorize]
-    public async Task<ActionResult<Enable2FAResponse>> Enable2FA([FromBody] Enable2FARequestModel request)
+    public async Task<ActionResult<Enable2FAResponse>> Enable2FA([FromBody] WebApiContracts.Enable2FARequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -311,7 +532,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(Confirm2FAResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<Confirm2FAResponse>> Confirm2FA([FromBody] Confirm2FARequestModel request)
+    public async Task<ActionResult<Confirm2FAResponse>> Confirm2FA([FromBody] WebApiContracts.Confirm2FARequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -376,7 +597,7 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("disable-2fa")]
     [Authorize]
-    public async Task<ActionResult> Disable2FA([FromBody] Disable2FARequestModel request)
+    public async Task<ActionResult> Disable2FA([FromBody] WebApiContracts.Disable2FARequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
         try
@@ -411,7 +632,7 @@ public class AuthController : ControllerBase
     [HttpPost("disable-2fa-with-backup")]
     [AllowAnonymous]
     public async Task<ActionResult> DisableTwoFactorWithBackup(
-        [FromBody] DisableTwoFactorWithBackupRequestModel request)
+        [FromBody] WebApiContracts.DisableTwoFactorWithBackupRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 

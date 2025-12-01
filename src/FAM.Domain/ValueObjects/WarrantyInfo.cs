@@ -34,7 +34,7 @@ public sealed class WarrantyInfo : ValueObject
         string? provider = null)
     {
         if (durationMonths <= 0)
-            throw new DomainException("Warranty duration must be positive");
+            throw new DomainException(ErrorCodes.VO_WARRANTY_DURATION_INVALID);
 
         var endDate = startDate?.AddMonths(durationMonths);
         return new WarrantyInfo(startDate, endDate, durationMonths, terms, provider);
@@ -47,7 +47,7 @@ public sealed class WarrantyInfo : ValueObject
         string? provider = null)
     {
         if (endDate < startDate)
-            throw new DomainException("End date must be after start date");
+            throw new DomainException(ErrorCodes.VO_DATE_INVALID);
 
         var months = (endDate.Year - startDate.Year) * 12 + endDate.Month - startDate.Month;
         return new WarrantyInfo(startDate, endDate, months, terms, provider);

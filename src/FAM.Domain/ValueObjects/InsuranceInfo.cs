@@ -30,10 +30,10 @@ public sealed class InsuranceInfo : ValueObject
     public static InsuranceInfo Create(string policyNumber, decimal insuredValue, DateTime? expiryDate = null)
     {
         if (string.IsNullOrWhiteSpace(policyNumber))
-            throw new DomainException("Policy number is required");
+            throw new DomainException(ErrorCodes.VO_INSURANCE_POLICY_EMPTY);
 
         if (insuredValue <= 0)
-            throw new DomainException("Insured value must be positive");
+            throw new DomainException(ErrorCodes.VO_INSURANCE_VALUE_INVALID);
 
         return new InsuranceInfo(policyNumber, insuredValue, expiryDate, null, null);
     }

@@ -75,7 +75,7 @@ public class IPAddressTests
 
         // Assert
         act.Should().Throw<DomainException>()
-            .WithMessage($"Invalid IP address format: {value}");
+            .WithMessage("Invalid IP address format");
     }
 
     [Fact]

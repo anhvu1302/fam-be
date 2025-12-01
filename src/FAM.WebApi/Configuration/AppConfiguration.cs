@@ -35,6 +35,22 @@ public class AppConfiguration
     public bool MinioUseSsl { get; }
     public string MinioBucketName { get; }
 
+    // Redis (from .env - optional)
+    public string RedisHost { get; } = string.Empty;
+    public int RedisPort { get; }
+    public string RedisPassword { get; } = string.Empty;
+    public string RedisInstanceName { get; } = string.Empty;
+    public string RedisConnectionString { get; }
+
+    // Email/SMTP (from .env - sensitive, optional)
+    public string SmtpHost { get; } = string.Empty;
+    public int SmtpPort { get; }
+    public string SmtpUsername { get; } = string.Empty;
+    public string SmtpPassword { get; } = string.Empty;
+    public bool SmtpEnableSsl { get; }
+    public string EmailFrom { get; } = string.Empty;
+    public string EmailFromName { get; } = string.Empty;
+
     // Environment
     public string Environment { get; }
     public bool IsDevelopment => Environment.Equals("Development", StringComparison.OrdinalIgnoreCase);
@@ -79,11 +95,41 @@ public class AppConfiguration
         MinioSecretKey = GetRequired("MINIO_SECRET_KEY");
         MinioUseSsl = GetBool("MINIO_USE_SSL", false);
         MinioBucketName = GetOptional("MINIO_BUCKET_NAME") ?? "fam-assets";
+
+        // Redis (Optional)
+        RedisHost = GetOptional("REDIS_HOST") ?? "localhost";
+        RedisPort = GetInt("REDIS_PORT", 6379);
+        RedisPassword = GetOptional("REDIS_PASSWORD") ?? "";
+        RedisInstanceName = GetOptional("REDIS_INSTANCE_NAME") ?? "fam:";
+        
+        // Build Redis connection string
+        RedisConnectionString = BuildRedisConnectionString();
+
+        // Email/SMTP (Optional - Sensitive)
+        SmtpHost = GetOptional("SMTP_HOST") ?? "smtp.gmail.com";
+        SmtpPort = GetInt("SMTP_PORT", 587);
+        SmtpUsername = GetOptional("SMTP_USERNAME") ?? "";
+        SmtpPassword = GetOptional("SMTP_PASSWORD") ?? "";
+        SmtpEnableSsl = GetBool("SMTP_ENABLE_SSL", true);
+        EmailFrom = GetOptional("EMAIL_FROM") ?? "noreply@fam.com";
+        EmailFromName = GetOptional("EMAIL_FROM_NAME") ?? "FAM System";
     }
 
     private string BuildPostgresConnectionString()
     {
         return $"Host={DbHost};Port={DbPort};Database={DbName};Username={DbUser};Password={DbPassword}";
+    }
+
+    private string BuildRedisConnectionString()
+    {
+        var connectionString = $"{RedisHost}:{RedisPort}";
+        
+        if (!string.IsNullOrEmpty(RedisPassword))
+        {
+            connectionString += $",password={RedisPassword}";
+        }
+        
+        return connectionString;
     }
 
     private string BuildMongoDbConnectionString()

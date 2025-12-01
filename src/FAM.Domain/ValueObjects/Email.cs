@@ -17,12 +17,12 @@ public sealed class Email : ValueObject
     public static Email Create(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
-            throw new DomainException("Email is required");
+            throw new DomainException(ErrorCodes.VO_EMAIL_EMPTY);
 
         email = email.Trim().ToLowerInvariant();
 
         if (!IsValidEmail(email))
-            throw new DomainException("Invalid email format");
+            throw new DomainException(ErrorCodes.VO_EMAIL_INVALID);
 
         return new Email(email);
     }
