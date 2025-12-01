@@ -240,7 +240,7 @@ prod-deploy:
 		echo "❌ Error: $(ENV_FILE) not found. Run 'make prod-setup' first"; \
 		exit 1; \
 	fi
-	@docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) up -d
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) up -d
 	@echo "⏳ Waiting for services to be healthy..."
 	@sleep 5
 	@make prod-health
@@ -253,42 +253,42 @@ prod-deploy:
 
 prod-start:
 	@echo "▶️  Starting production services..."
-	@docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) start
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) start
 	@echo "✅ Services started!"
 
 prod-stop:
 	@echo "⏸️  Stopping production services..."
-	@docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) stop
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) stop
 	@echo "✅ Services stopped!"
 
 prod-restart:
 	@echo "🔄 Restarting production services..."
 	@if [ -n "$(SERVICE)" ]; then \
 		echo "Restarting service: $(SERVICE)"; \
-		docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) restart $(SERVICE); \
+		docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) restart $(SERVICE); \
 	else \
-		docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) restart; \
+		docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) restart; \
 	fi
 	@echo "✅ Services restarted!"
 
 prod-logs:
 	@if [ -n "$(SERVICE)" ]; then \
 		echo "📋 Viewing logs for $(SERVICE)..."; \
-		docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) logs -f $(SERVICE); \
+		docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) logs -f $(SERVICE); \
 	else \
 		echo "📋 Viewing all logs..."; \
-		docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) logs -f; \
+		docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) logs -f; \
 	fi
 
 prod-status:
 	@echo "📊 Production services status:"
-	@docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) ps
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) ps
 
 prod-health:
 	@echo "🏥 Checking services health..."
 	@echo ""
 	@echo "PostgreSQL:"
-	@docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec -T postgres pg_isready -U postgres && echo "  ✅ Healthy" || echo "  ❌ Unhealthy"
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec -T postgres pg_isready -U postgres && echo "  ✅ Healthy" || echo "  ❌ Unhealthy"
 	@echo ""
 	@echo "MinIO:"
 	@curl -sf http://localhost:9000/minio/health/live > /dev/null && echo "  ✅ Healthy" || echo "  ❌ Unhealthy"
@@ -301,14 +301,14 @@ prod-health:
 
 prod-down:
 	@echo "🛑 Stopping and removing production containers..."
-	@docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) down
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) down
 	@echo "✅ Containers removed!"
 
 prod-down-volumes:
 	@echo "⚠️  WARNING: This will delete all data volumes!"
 	@read -p "Are you sure? (yes/no): " confirm; \
 	if [ "$$confirm" = "yes" ]; then \
-		docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) down -v; \
+		docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) down -v; \
 		echo "✅ Containers and volumes removed!"; \
 	else \
 		echo "❌ Cancelled"; \
@@ -319,7 +319,7 @@ prod-backup:
 	@mkdir -p backups
 	@BACKUP_DATE=$$(date +%Y%m%d_%H%M%S); \
 	echo "Backing up PostgreSQL..."; \
-	docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec -T postgres pg_dump -U postgres fam_db > backups/postgres_$$BACKUP_DATE.sql; \
+	docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec -T postgres pg_dump -U postgres fam_db > backups/postgres_$$BACKUP_DATE.sql; \
 	echo "Backing up MinIO data..."; \
 	docker run --rm -v fam-be_minio_data:/data -v $$(pwd)/backups:/backup alpine tar czf /backup/minio_$$BACKUP_DATE.tar.gz -C /data .; \
 	echo "Backing up Seq data..."; \
@@ -341,7 +341,7 @@ prod-restore:
 	if [ "$$confirm" = "yes" ]; then \
 		if [[ "$(BACKUP)" == *".sql"* ]]; then \
 			echo "Restoring PostgreSQL..."; \
-			docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec -T postgres psql -U postgres fam_db < backups/$(BACKUP); \
+			docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec -T postgres psql -U postgres fam_db < backups/$(BACKUP); \
 		elif [[ "$(BACKUP)" == *"minio"* ]]; then \
 			echo "Restoring MinIO..."; \
 			docker run --rm -v fam-be_minio_data:/data -v $$(pwd)/backups:/backup alpine tar xzf /backup/$(BACKUP) -C /data; \
@@ -364,16 +364,17 @@ prod-shell:
 		echo "Usage: make prod-shell SERVICE=fam-api"; \
 		exit 1; \
 	fi
-	@docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec $(SERVICE) /bin/sh
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec $(SERVICE) /bin/sh
 
 prod-db-shell:
 	@echo "🗄️  Connecting to PostgreSQL..."
-	@docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec postgres psql -U postgres fam_db
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec postgres psql -U postgres fam_db
+	@echo "✅ Connected!"
 
 prod-update-api:
 	@echo "🔄 Updating API service..."
-	@docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) pull fam-api
-	@docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) up -d --no-deps fam-api
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) pull fam-api
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) up -d --no-deps fam-api
 	@echo "✅ API updated!"
 
 prod-scale:
@@ -382,7 +383,7 @@ prod-scale:
 		echo "Usage: make prod-scale SERVICE=fam-api REPLICAS=3"; \
 		exit 1; \
 	fi
-	@docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) up -d --scale $(SERVICE)=$(REPLICAS)
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) up -d --scale $(SERVICE)=$(REPLICAS)
 	@echo "✅ Scaled $(SERVICE) to $(REPLICAS) replicas"
 
 # ============================================
@@ -391,7 +392,7 @@ prod-scale:
 
 prod-migrate:
 	@echo "🔄 Running database migrations in production..."
-	@docker-compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec -T postgres psql -U postgres -d fam_db -c "\dt" > /dev/null 2>&1 || (echo "❌ Database not ready"; exit 1)
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec -T postgres psql -U postgres -d fam_db -c "\dt" > /dev/null 2>&1 || (echo "❌ Database not ready"; exit 1)
 	@if ! docker images $(DOCKER_IMAGE):build | grep -q "$(DOCKER_IMAGE).*build"; then \
 		echo "📦 SDK image not found, building..."; \
 		make docker-build-sdk; \
