@@ -28,7 +28,9 @@ public class AppConfiguration
     public int AccountLockoutMinutes { get; }
 
     // MinIO (from .env - sensitive)
-    public string MinioEndpoint { get; }
+    public string MinioHost { get; }
+    public int MinioPort { get; }
+    public string MinioEndpoint => $"{MinioHost}:{MinioPort}";
     public string MinioAccessKey { get; }
     public string MinioSecretKey { get; }
     public bool MinioUseSsl { get; }
@@ -86,7 +88,8 @@ public class AppConfiguration
         AccountLockoutMinutes = GetInt("ACCOUNT_LOCKOUT_MINUTES", 15);
 
         // MinIO (Required - Sensitive)
-        MinioEndpoint = GetOptional("MINIO_ENDPOINT") ?? "localhost:9000";
+        MinioHost = GetOptional("MINIO_HOST") ?? "localhost";
+        MinioPort = GetInt("MINIO_PORT", 9000);
         MinioAccessKey = GetRequired("MINIO_ACCESS_KEY");
         MinioSecretKey = GetRequired("MINIO_SECRET_KEY");
         MinioUseSsl = GetBool("MINIO_USE_SSL", false);

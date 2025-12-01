@@ -161,8 +161,8 @@ prod-seed:
 	docker run --rm --network fam-be_fam-network -w /src \
 		-e DB_HOST=postgres -e DB_PORT=5432 \
 		-e DB_NAME=$${DB_NAME} -e DB_USER=$${DB_USER} -e DB_PASSWORD=$${DB_PASSWORD} \
-		-e MINIO_ENDPOINT=minio:9000 \
-		-e MINIO_ACCESS_KEY=$${MINIO_ROOT_USER} -e MINIO_SECRET_KEY=$${MINIO_ROOT_PASSWORD} \
+		-e MINIO_HOST=minio -e MINIO_PORT=9000 \
+		-e MINIO_ACCESS_KEY=$${MINIO_ACCESS_KEY} -e MINIO_SECRET_KEY=$${MINIO_SECRET_KEY} \
 		$(DOCKER_IMAGE):build \
 		dotnet run --project src/FAM.Cli seed
 	@echo "✅ Done!"
