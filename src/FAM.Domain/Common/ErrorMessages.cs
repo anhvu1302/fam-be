@@ -9,7 +9,7 @@ public static class ErrorMessages
     private static readonly Dictionary<string, string> Messages = new()
     {
         #region Authentication
-        
+
         [ErrorCodes.AUTH_INVALID_CREDENTIALS] = "Invalid username or password",
         [ErrorCodes.AUTH_ACCOUNT_LOCKED] = "Your account has been locked. Please contact support",
         [ErrorCodes.AUTH_ACCOUNT_INACTIVE] = "Your account is not active. Please contact support",
@@ -27,12 +27,13 @@ public static class ErrorMessages
         #endregion
 
         #region User
-        
+
         [ErrorCodes.USER_NOT_FOUND] = "User not found",
         [ErrorCodes.USER_USERNAME_EXISTS] = "This username is already taken",
         [ErrorCodes.USER_EMAIL_EXISTS] = "This email address is already registered",
         [ErrorCodes.USER_PHONE_EXISTS] = "This phone number is already registered",
-        [ErrorCodes.USER_INVALID_USERNAME] = "Username format is invalid. Use only letters, numbers, dots, underscores, and hyphens",
+        [ErrorCodes.USER_INVALID_USERNAME] =
+            "Username format is invalid. Use only letters, numbers, dots, underscores, and hyphens",
         [ErrorCodes.USER_INVALID_EMAIL] = "Email address format is invalid",
         [ErrorCodes.USER_INVALID_PHONE] = "Phone number format is invalid",
         [ErrorCodes.USER_ALREADY_ACTIVE] = "User is already active",
@@ -42,7 +43,7 @@ public static class ErrorMessages
         #endregion
 
         #region Validation
-        
+
         [ErrorCodes.VAL_REQUIRED] = "This field is required",
         [ErrorCodes.VAL_TOO_SHORT] = "The value is too short",
         [ErrorCodes.VAL_TOO_LONG] = "The value is too long",
@@ -50,7 +51,7 @@ public static class ErrorMessages
         [ErrorCodes.VAL_INVALID_FORMAT] = "The format is invalid",
         [ErrorCodes.VAL_INVALID_VALUE] = "The value is invalid",
         [ErrorCodes.VAL_DUPLICATE] = "This value already exists",
-        
+
         // Auth Request Validations
         [ErrorCodes.VAL_IDENTITY_REQUIRED] = "Username or email is required",
         [ErrorCodes.VAL_IDENTITY_TOO_SHORT] = "Username or email must be at least {0} characters",
@@ -74,7 +75,7 @@ public static class ErrorMessages
         [ErrorCodes.VAL_USERNAME_REQUIRED] = "Username is required",
         [ErrorCodes.VAL_USERNAME_TOO_SHORT] = "Username must be at least {0} characters",
         [ErrorCodes.VAL_USERNAME_TOO_LONG] = "Username must not exceed {0} characters",
-        
+
         // 2FA Validations
         [ErrorCodes.VAL_2FA_CODE_REQUIRED] = "Two-factor code is required",
         [ErrorCodes.VAL_2FA_CODE_INVALID_LENGTH] = "Two-factor code must be exactly 6 digits",
@@ -95,7 +96,7 @@ public static class ErrorMessages
         #endregion
 
         #region Signing Key
-        
+
         [ErrorCodes.KEY_NOT_FOUND] = "Signing key not found",
         [ErrorCodes.KEY_NO_ACTIVE_KEY] = "No active signing key is available",
         [ErrorCodes.KEY_ALREADY_ACTIVE] = "The signing key is already active",
@@ -110,7 +111,7 @@ public static class ErrorMessages
         #endregion
 
         #region Organization
-        
+
         [ErrorCodes.ORG_NOT_FOUND] = "Organization not found",
         [ErrorCodes.ORG_NAME_EXISTS] = "An organization with this name already exists",
         [ErrorCodes.ORG_CODE_EXISTS] = "An organization with this code already exists",
@@ -122,7 +123,7 @@ public static class ErrorMessages
         #endregion
 
         #region Role & Permission
-        
+
         [ErrorCodes.ROLE_NOT_FOUND] = "Role not found",
         [ErrorCodes.ROLE_NAME_EXISTS] = "A role with this name already exists",
         [ErrorCodes.ROLE_SYSTEM_PROTECTED] = "System roles cannot be modified or deleted",
@@ -133,7 +134,7 @@ public static class ErrorMessages
         #endregion
 
         #region Storage
-        
+
         [ErrorCodes.STOR_FILE_NOT_FOUND] = "File not found",
         [ErrorCodes.STOR_FILE_TYPE_NOT_ALLOWED] = "This file type is not allowed",
         [ErrorCodes.STOR_FILE_TOO_LARGE] = "File size exceeds the maximum allowed limit",
@@ -144,7 +145,7 @@ public static class ErrorMessages
         #endregion
 
         #region Asset
-        
+
         [ErrorCodes.ASSET_NOT_FOUND] = "Asset not found",
         [ErrorCodes.ASSET_CODE_EXISTS] = "An asset with this code already exists",
         [ErrorCodes.ASSET_ALREADY_ASSIGNED] = "This asset is already assigned",
@@ -155,7 +156,7 @@ public static class ErrorMessages
         #endregion
 
         #region General
-        
+
         [ErrorCodes.GEN_NOT_FOUND] = "The requested resource was not found",
         [ErrorCodes.GEN_INVALID_OPERATION] = "This operation is not valid",
         [ErrorCodes.GEN_CONFLICT] = "A conflict occurred. The resource may already exist",
@@ -167,7 +168,7 @@ public static class ErrorMessages
         #endregion
 
         #region Menu
-        
+
         [ErrorCodes.MENU_NOT_FOUND] = "Menu item not found",
         [ErrorCodes.MENU_CODE_EXISTS] = "A menu item with this code already exists",
         [ErrorCodes.MENU_HAS_CHILDREN] = "Cannot delete menu item that has children",
@@ -178,7 +179,7 @@ public static class ErrorMessages
         #endregion
 
         #region System Setting
-        
+
         [ErrorCodes.SETTING_NOT_FOUND] = "Setting not found",
         [ErrorCodes.SETTING_KEY_EXISTS] = "A setting with this key already exists",
         [ErrorCodes.SETTING_NOT_EDITABLE] = "This setting is read-only and cannot be modified",
@@ -188,29 +189,29 @@ public static class ErrorMessages
         #endregion
 
         #region Value Objects
-        
+
         // PostalCode
         [ErrorCodes.VO_POSTAL_CODE_EMPTY] = "Postal code cannot be empty",
         [ErrorCodes.VO_POSTAL_CODE_INVALID] = "Invalid postal code format",
-        
+
         // Email
         [ErrorCodes.VO_EMAIL_EMPTY] = "Email is required",
         [ErrorCodes.VO_EMAIL_INVALID] = "Invalid email format",
         [ErrorCodes.VO_EMAIL_TOO_LONG] = "Email is too long (maximum 256 characters)",
-        
+
         // PhoneNumber
         [ErrorCodes.VO_PHONE_EMPTY] = "Phone number is required",
         [ErrorCodes.VO_PHONE_INVALID] = "Invalid phone number length",
-        
+
         // IPAddress
         [ErrorCodes.VO_IP_EMPTY] = "IP address is required",
         [ErrorCodes.VO_IP_INVALID] = "Invalid IP address format",
-        
+
         // Address
         [ErrorCodes.VO_ADDRESS_STREET_EMPTY] = "Street is required",
         [ErrorCodes.VO_ADDRESS_CITY_EMPTY] = "City is required",
         [ErrorCodes.VO_ADDRESS_COUNTRY_EMPTY] = "Country code is required",
-        
+
         // Password
         [ErrorCodes.VO_PASSWORD_EMPTY] = "Password cannot be empty",
         [ErrorCodes.VO_PASSWORD_TOO_SHORT] = "Password must be at least 8 characters long",
@@ -220,62 +221,62 @@ public static class ErrorMessages
         [ErrorCodes.VO_PASSWORD_NO_DIGIT] = "Password must contain at least one digit",
         [ErrorCodes.VO_PASSWORD_NO_NUMBER] = "Password must contain at least one number",
         [ErrorCodes.VO_PASSWORD_NO_SPECIAL] = "Password must contain at least one special character",
-        
+
         // Money
         [ErrorCodes.VO_MONEY_NEGATIVE] = "Amount cannot be negative",
         [ErrorCodes.VO_MONEY_CURRENCY_EMPTY] = "Currency is required",
         [ErrorCodes.VO_MONEY_CURRENCY_INVALID] = "Invalid currency code. Must be a valid ISO 4217 code",
-        
+
         // Percentage
         [ErrorCodes.VO_PERCENTAGE_OUT_OF_RANGE] = "Percentage must be between 0 and 100",
         [ErrorCodes.VO_PERCENTAGE_NEGATIVE] = "Percentage cannot be negative",
         [ErrorCodes.VO_PERCENTAGE_EXCEED] = "Percentage cannot exceed 100%",
-        
+
         // SerialNumber
         [ErrorCodes.VO_SERIAL_EMPTY] = "Serial number cannot be empty",
         [ErrorCodes.VO_SERIAL_INVALID] = "Serial number cannot exceed 100 characters",
-        
+
         // TaxCode
         [ErrorCodes.VO_TAX_CODE_EMPTY] = "Tax code cannot be empty",
         [ErrorCodes.VO_TAX_CODE_INVALID] = "Tax code can only contain numbers and hyphens",
         [ErrorCodes.VO_TAX_CODE_TOO_SHORT] = "Tax code must be between 8 and 15 characters",
         [ErrorCodes.VO_TAX_CODE_TOO_LONG] = "Tax code must be between 8 and 15 characters",
-        
+
         // MACAddress
         [ErrorCodes.VO_MAC_EMPTY] = "MAC address is required",
         [ErrorCodes.VO_MAC_INVALID] = "Invalid MAC address format",
-        
+
         // DateRange
         [ErrorCodes.VO_DATE_RANGE_INVALID] = "Start date cannot be after end date",
-        
+
         // Rating
         [ErrorCodes.VO_RATING_OUT_OF_RANGE] = "Rating must be between 1 and 5",
-        
+
         // Dimensions
         [ErrorCodes.VO_DIMENSION_INVALID] = "Dimension value must be positive",
         [ErrorCodes.VO_DIMENSION_UNIT_EMPTY] = "Measurement unit cannot be empty",
-        
+
         // DomainName
         [ErrorCodes.VO_DOMAIN_EMPTY] = "Domain cannot be empty",
         [ErrorCodes.VO_DOMAIN_TOO_LONG] = "Domain cannot exceed 253 characters",
         [ErrorCodes.VO_DOMAIN_INVALID] = "Invalid domain format",
-        
+
         // URL
         [ErrorCodes.VO_URL_EMPTY] = "URL cannot be empty",
         [ErrorCodes.VO_URL_INVALID] = "Invalid URL format",
-        
+
         // CountryCode
         [ErrorCodes.VO_COUNTRY_CODE_EMPTY] = "Country code cannot be empty",
         [ErrorCodes.VO_COUNTRY_CODE_INVALID] = "Country code must be exactly 2 characters (ISO 3166-1 alpha-2)",
-        
+
         // ResourceType
         [ErrorCodes.VO_RESOURCE_TYPE_EMPTY] = "Resource type cannot be empty",
         [ErrorCodes.VO_RESOURCE_TYPE_TOO_LONG] = "Resource type cannot exceed 50 characters",
-        
+
         // ResourceAction
         [ErrorCodes.VO_RESOURCE_ACTION_EMPTY] = "Resource action cannot be empty",
         [ErrorCodes.VO_RESOURCE_ACTION_TOO_LONG] = "Resource action cannot exceed 50 characters",
-        
+
         // Warranty, Insurance, Depreciation
         [ErrorCodes.VO_WARRANTY_DURATION_INVALID] = "Warranty duration must be positive",
         [ErrorCodes.VO_DATE_INVALID] = "End date must be after start date",
@@ -284,7 +285,7 @@ public static class ErrorMessages
         [ErrorCodes.VO_DEPRECIATION_METHOD_EMPTY] = "Depreciation method is required",
         [ErrorCodes.VO_DEPRECIATION_LIFE_INVALID] = "Useful life must be positive",
         [ErrorCodes.VO_DEPRECIATION_RESIDUAL_INVALID] = "Residual value cannot be negative",
-        
+
         // Rating, CostCenter, AssetTag, Username, RoleCode
         [ErrorCodes.VO_RATING_OUT_OF_RANGE] = "Rating must be between 1 and 5",
         [ErrorCodes.VO_COST_CENTER_EMPTY] = "Cost center cannot be empty",
@@ -308,8 +309,8 @@ public static class ErrorMessages
     /// </summary>
     public static string GetMessage(string errorCode)
     {
-        return Messages.TryGetValue(errorCode, out var message) 
-            ? message 
+        return Messages.TryGetValue(errorCode, out var message)
+            ? message
             : errorCode; // Return the input as message (backwards compatible)
     }
 

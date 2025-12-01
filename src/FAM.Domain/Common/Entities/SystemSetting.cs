@@ -91,7 +91,9 @@ public class SystemSetting : BaseEntity
     public long? LastModifiedBy { get; private set; }
 
     // Required for EF
-    private SystemSetting() { }
+    private SystemSetting()
+    {
+    }
 
     /// <summary>
     /// Create a new system setting
@@ -260,52 +262,52 @@ public enum SettingDataType
 {
     /// <summary>Plain text string</summary>
     String = 0,
-    
+
     /// <summary>Multi-line text</summary>
     Text = 1,
-    
+
     /// <summary>Integer number</summary>
     Integer = 2,
-    
+
     /// <summary>Decimal number</summary>
     Decimal = 3,
-    
+
     /// <summary>Boolean (true/false)</summary>
     Boolean = 4,
-    
+
     /// <summary>Date only</summary>
     Date = 5,
-    
+
     /// <summary>Date and time</summary>
     DateTime = 6,
-    
+
     /// <summary>JSON object</summary>
     Json = 7,
-    
+
     /// <summary>URL</summary>
     Url = 8,
-    
+
     /// <summary>Email address</summary>
     Email = 9,
-    
+
     /// <summary>Color (hex)</summary>
     Color = 10,
-    
+
     /// <summary>File path or URL (for images, files)</summary>
     File = 11,
-    
+
     /// <summary>Image URL</summary>
     Image = 12,
-    
+
     /// <summary>HTML content</summary>
     Html = 13,
-    
+
     /// <summary>Select from predefined options</summary>
     Select = 14,
-    
+
     /// <summary>Multiple select</summary>
     MultiSelect = 15,
-    
+
     /// <summary>Password/Secret (will be encrypted)</summary>
     Secret = 16
 }

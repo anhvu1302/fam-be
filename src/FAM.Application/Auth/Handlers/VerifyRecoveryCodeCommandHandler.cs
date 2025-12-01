@@ -63,7 +63,6 @@ public class VerifyRecoveryCodeCommandHandler : IRequestHandler<VerifyRecoveryCo
         var codeFound = false;
 
         for (var i = 0; i < recoveryCodes.Count; i++)
-        {
             if (recoveryCodes[i].Trim().ToUpperInvariant() == normalizedInput)
             {
                 // Remove the used code
@@ -71,7 +70,6 @@ public class VerifyRecoveryCodeCommandHandler : IRequestHandler<VerifyRecoveryCo
                 codeFound = true;
                 break;
             }
-        }
 
         if (!codeFound)
         {
@@ -127,9 +125,7 @@ public class VerifyRecoveryCodeCommandHandler : IRequestHandler<VerifyRecoveryCo
 
         // Warn if running low on recovery codes
         if (recoveryCodes.Count <= 2)
-        {
             _logger.LogWarning("User {UserId} has only {Count} recovery codes remaining", userId, recoveryCodes.Count);
-        }
 
         return new VerifyTwoFactorResponse
         {

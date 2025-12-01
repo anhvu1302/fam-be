@@ -50,7 +50,8 @@ public class MenuSeeder : BaseDataSeeder
         menus.Add(reports);
 
         // Settings (Parent)
-        var settings = CreateMenu("settings", "Settings", "settings", null, sortOrder: 3, requiredRoles: "Admin,SuperAdmin");
+        var settings = CreateMenu("settings", "Settings", "settings", null, sortOrder: 3,
+            requiredRoles: "Admin,SuperAdmin");
         menus.Add(settings);
 
         await _dbContext.MenuItems.AddRangeAsync(menus, cancellationToken);
@@ -61,21 +62,29 @@ public class MenuSeeder : BaseDataSeeder
 
         // Asset Management children
         childMenus.Add(CreateMenu("assets.list", "All Assets", "list", "/assets", assets.Id, 0, 1));
-        childMenus.Add(CreateMenu("assets.categories", "Categories", "category", "/assets/categories", assets.Id, 1, 1));
+        childMenus.Add(CreateMenu("assets.categories", "Categories", "category", "/assets/categories", assets.Id, 1,
+            1));
         childMenus.Add(CreateMenu("assets.types", "Asset Types", "type_specimen", "/assets/types", assets.Id, 2, 1));
-        childMenus.Add(CreateMenu("assets.locations", "Locations", "location_on", "/assets/locations", assets.Id, 3, 1));
+        childMenus.Add(CreateMenu("assets.locations", "Locations", "location_on", "/assets/locations", assets.Id, 3,
+            1));
 
         // Reports children
         childMenus.Add(CreateMenu("reports.overview", "Overview", "dashboard", "/reports/overview", reports.Id, 0, 1));
-        childMenus.Add(CreateMenu("reports.depreciation", "Depreciation", "trending_down", "/reports/depreciation", reports.Id, 1, 1));
+        childMenus.Add(CreateMenu("reports.depreciation", "Depreciation", "trending_down", "/reports/depreciation",
+            reports.Id, 1, 1));
         childMenus.Add(CreateMenu("reports.audit", "Audit Trail", "history", "/reports/audit", reports.Id, 2, 1));
 
         // Settings children
-        childMenus.Add(CreateMenu("settings.general", "General", "tune", "/settings/general", settings.Id, 0, 1, "Admin,SuperAdmin"));
-        childMenus.Add(CreateMenu("settings.users", "Users", "people", "/settings/users", settings.Id, 1, 1, "Admin,SuperAdmin"));
-        childMenus.Add(CreateMenu("settings.roles", "Roles", "admin_panel_settings", "/settings/roles", settings.Id, 2, 1, "Admin,SuperAdmin"));
-        childMenus.Add(CreateMenu("settings.menus", "Menu Management", "menu", "/settings/menus", settings.Id, 3, 1, "SuperAdmin"));
-        childMenus.Add(CreateMenu("settings.system", "System Settings", "settings_applications", "/settings/system", settings.Id, 4, 1, "SuperAdmin"));
+        childMenus.Add(CreateMenu("settings.general", "General", "tune", "/settings/general", settings.Id, 0, 1,
+            "Admin,SuperAdmin"));
+        childMenus.Add(CreateMenu("settings.users", "Users", "people", "/settings/users", settings.Id, 1, 1,
+            "Admin,SuperAdmin"));
+        childMenus.Add(CreateMenu("settings.roles", "Roles", "admin_panel_settings", "/settings/roles", settings.Id, 2,
+            1, "Admin,SuperAdmin"));
+        childMenus.Add(CreateMenu("settings.menus", "Menu Management", "menu", "/settings/menus", settings.Id, 3, 1,
+            "SuperAdmin"));
+        childMenus.Add(CreateMenu("settings.system", "System Settings", "settings_applications", "/settings/system",
+            settings.Id, 4, 1, "SuperAdmin"));
 
         await _dbContext.MenuItems.AddRangeAsync(childMenus, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);

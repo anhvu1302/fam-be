@@ -55,7 +55,7 @@ public static class RateLimitConfiguration
             options.OnRejected = async (context, cancellationToken) =>
             {
                 context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
-                
+
                 var retryAfter = TimeSpan.Zero;
                 if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfterValue))
                 {
@@ -67,17 +67,17 @@ public static class RateLimitConfiguration
                 {
                     message = "Too many requests. Please try again later.",
                     retryAfterSeconds = (int)retryAfter.TotalSeconds
-                }, cancellationToken: cancellationToken);
+                }, cancellationToken);
             };
 
             // Use IP address as partition key
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
             {
                 var ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-                
+
                 return RateLimitPartition.GetFixedWindowLimiter(
-                    partitionKey: ipAddress,
-                    factory: _ => new FixedWindowRateLimiterOptions
+                    ipAddress,
+                    _ => new FixedWindowRateLimiterOptions
                     {
                         PermitLimit = 1000, // Global limit: 1000 requests per minute
                         Window = TimeSpan.FromMinutes(1),

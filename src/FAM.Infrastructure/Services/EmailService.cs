@@ -21,8 +21,8 @@ public class EmailService : IEmailService
     private readonly string _fromName;
     private readonly bool _enableSsl;
 
-    public EmailService(ILogger<EmailService> logger, string smtpHost, int smtpPort, 
-        string smtpUsername, string smtpPassword, bool smtpEnableSsl, 
+    public EmailService(ILogger<EmailService> logger, string smtpHost, int smtpPort,
+        string smtpUsername, string smtpPassword, bool smtpEnableSsl,
         string emailFrom, string emailFromName)
     {
         _logger = logger;
@@ -35,7 +35,8 @@ public class EmailService : IEmailService
         _enableSsl = smtpEnableSsl;
     }
 
-    public async Task SendOtpEmailAsync(string toEmail, string otpCode, string userName, CancellationToken cancellationToken = default)
+    public async Task SendOtpEmailAsync(string toEmail, string otpCode, string userName,
+        CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Sending OTP email to {Email}", toEmail);
 
@@ -45,7 +46,8 @@ public class EmailService : IEmailService
         await SendEmailAsync(toEmail, subject, body, cancellationToken);
     }
 
-    public async Task SendPasswordResetEmailAsync(string toEmail, string resetToken, string userName, string resetUrl, CancellationToken cancellationToken = default)
+    public async Task SendPasswordResetEmailAsync(string toEmail, string resetToken, string userName, string resetUrl,
+        CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Sending password reset email to {Email}", toEmail);
 
@@ -56,7 +58,8 @@ public class EmailService : IEmailService
         await SendEmailAsync(toEmail, subject, body, cancellationToken);
     }
 
-    public async Task SendPasswordChangedEmailAsync(string toEmail, string userName, CancellationToken cancellationToken = default)
+    public async Task SendPasswordChangedEmailAsync(string toEmail, string userName,
+        CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Sending password changed confirmation to {Email}", toEmail);
 
@@ -66,14 +69,16 @@ public class EmailService : IEmailService
         await SendEmailAsync(toEmail, subject, body, cancellationToken);
     }
 
-    private async Task SendEmailAsync(string toEmail, string subject, string htmlBody, CancellationToken cancellationToken)
+    private async Task SendEmailAsync(string toEmail, string subject, string htmlBody,
+        CancellationToken cancellationToken)
     {
         try
         {
             // Check if SMTP is configured
             if (string.IsNullOrWhiteSpace(_smtpUser) || string.IsNullOrWhiteSpace(_smtpPassword))
             {
-                _logger.LogWarning("SMTP not configured. Email would be sent to {Email} with subject: {Subject}", toEmail, subject);
+                _logger.LogWarning("SMTP not configured. Email would be sent to {Email} with subject: {Subject}",
+                    toEmail, subject);
                 _logger.LogDebug("Email body: {Body}", htmlBody);
                 return; // Skip actual sending in development
             }

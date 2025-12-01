@@ -57,9 +57,9 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
 
         // Generate reset token
         var resetToken = GenerateSecureToken();
-        
+
         // Save reset token (expires in 1 hour)
-        user.SetPasswordResetToken(resetToken, expirationMinutes: 60);
+        user.SetPasswordResetToken(resetToken, 60);
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -68,7 +68,7 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         {
             // TODO: Get reset URL from configuration or pass from frontend
             var resetUrl = "https://fam.yourdomain.com/reset-password";
-            
+
             await _emailService.SendPasswordResetEmailAsync(
                 user.Email.Value,
                 resetToken,

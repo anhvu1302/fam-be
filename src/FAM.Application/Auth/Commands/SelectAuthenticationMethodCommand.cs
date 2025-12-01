@@ -12,7 +12,7 @@ public sealed record SelectAuthenticationMethodCommand : IRequest<SelectAuthenti
     /// Token session 2FA từ bước login ban đầu
     /// </summary>
     public string TwoFactorSessionToken { get; init; } = string.Empty;
-    
+
     /// <summary>
     /// Phương thức được chọn: "email_otp", "authenticator_app", "recovery_code"
     /// </summary>

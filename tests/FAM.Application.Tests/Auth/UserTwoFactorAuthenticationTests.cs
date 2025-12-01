@@ -137,7 +137,7 @@ public class UserTwoFactorAuthenticationTests
         // Assert
         secondDevice.Should().BeSameAs(firstDevice);
         user.UserDevices.Should().HaveCount(1);
-        
+
         // GetOrCreateDevice only updates IP and location via UpdateActivity
         // It does NOT update deviceName or deviceType
         secondDevice.DeviceName.Should().Be("First Device");
@@ -187,9 +187,9 @@ public class UserTwoFactorAuthenticationTests
         // Act
         user.EnableTwoFactor(firstSecret);
         var firstSetupDate = user.TwoFactorSetupDate;
-        
+
         // Wait a bit and enable again
-        System.Threading.Thread.Sleep(10);
+        Thread.Sleep(10);
         user.EnableTwoFactor(secondSecret);
 
         // Assert
@@ -200,9 +200,9 @@ public class UserTwoFactorAuthenticationTests
     private static User CreateTestUser()
     {
         return User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: "Password123!",
+            "testuser",
+            "test@example.com",
+            "Password123!",
             firstName: "Test",
             lastName: "User"
         );

@@ -68,7 +68,7 @@ public class OrganizationSeeder : BaseDataSeeder
             CreateDepartment("Finance", company.Id),
             CreateDepartment("Operations", company.Id),
             CreateDepartment("Sales & Marketing", company.Id),
-            CreateDepartment("Administration", company.Id),
+            CreateDepartment("Administration", company.Id)
         };
 
         await _dbContext.OrgNodes.AddRangeAsync(departments, cancellationToken);
@@ -77,12 +77,12 @@ public class OrganizationSeeder : BaseDataSeeder
         // Create department details
         var deptDetails = new List<DepartmentDetailsEf>
         {
-            CreateDepartmentDetails(departments[0].Id, "IT-001", 25, 500000),      // IT
-            CreateDepartmentDetails(departments[1].Id, "HR-001", 10, 200000),      // HR
-            CreateDepartmentDetails(departments[2].Id, "FIN-001", 15, 300000),     // Finance
-            CreateDepartmentDetails(departments[3].Id, "OPS-001", 50, 800000),     // Operations
-            CreateDepartmentDetails(departments[4].Id, "SALES-001", 30, 600000),   // Sales
-            CreateDepartmentDetails(departments[5].Id, "ADM-001", 8, 150000),      // Admin
+            CreateDepartmentDetails(departments[0].Id, "IT-001", 25, 500000), // IT
+            CreateDepartmentDetails(departments[1].Id, "HR-001", 10, 200000), // HR
+            CreateDepartmentDetails(departments[2].Id, "FIN-001", 15, 300000), // Finance
+            CreateDepartmentDetails(departments[3].Id, "OPS-001", 50, 800000), // Operations
+            CreateDepartmentDetails(departments[4].Id, "SALES-001", 30, 600000), // Sales
+            CreateDepartmentDetails(departments[5].Id, "ADM-001", 8, 150000) // Admin
         };
 
         await _dbContext.DepartmentDetails.AddRangeAsync(deptDetails, cancellationToken);
@@ -93,7 +93,7 @@ public class OrganizationSeeder : BaseDataSeeder
         {
             CreateDepartment("Software Development", itDept.Id),
             CreateDepartment("Infrastructure", itDept.Id),
-            CreateDepartment("IT Support", itDept.Id),
+            CreateDepartment("IT Support", itDept.Id)
         };
 
         await _dbContext.OrgNodes.AddRangeAsync(itSubDepts, cancellationToken);
@@ -103,7 +103,7 @@ public class OrganizationSeeder : BaseDataSeeder
         {
             CreateDepartmentDetails(itSubDepts[0].Id, "IT-DEV-001", 15, 300000),
             CreateDepartmentDetails(itSubDepts[1].Id, "IT-INFRA-001", 5, 100000),
-            CreateDepartmentDetails(itSubDepts[2].Id, "IT-SUP-001", 5, 100000),
+            CreateDepartmentDetails(itSubDepts[2].Id, "IT-SUP-001", 5, 100000)
         };
 
         await _dbContext.DepartmentDetails.AddRangeAsync(itSubDeptDetails, cancellationToken);
@@ -114,7 +114,7 @@ public class OrganizationSeeder : BaseDataSeeder
         {
             CreateDepartment("Domestic Sales", salesDept.Id),
             CreateDepartment("International Sales", salesDept.Id),
-            CreateDepartment("Marketing", salesDept.Id),
+            CreateDepartment("Marketing", salesDept.Id)
         };
 
         await _dbContext.OrgNodes.AddRangeAsync(salesSubDepts, cancellationToken);
@@ -124,14 +124,15 @@ public class OrganizationSeeder : BaseDataSeeder
         {
             CreateDepartmentDetails(salesSubDepts[0].Id, "SALES-DOM-001", 12, 250000),
             CreateDepartmentDetails(salesSubDepts[1].Id, "SALES-INT-001", 8, 200000),
-            CreateDepartmentDetails(salesSubDepts[2].Id, "MKT-001", 10, 150000),
+            CreateDepartmentDetails(salesSubDepts[2].Id, "MKT-001", 10, 150000)
         };
 
         await _dbContext.DepartmentDetails.AddRangeAsync(salesSubDeptDetails, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         var totalNodes = 1 + departments.Count + itSubDepts.Count + salesSubDepts.Count;
-        LogInfo($"Created {totalNodes} organization nodes (1 company, {departments.Count + itSubDepts.Count + salesSubDepts.Count} departments)");
+        LogInfo(
+            $"Created {totalNodes} organization nodes (1 company, {departments.Count + itSubDepts.Count + salesSubDepts.Count} departments)");
     }
 
     private static OrgNodeEf CreateDepartment(string name, long parentId)
@@ -145,7 +146,8 @@ public class OrganizationSeeder : BaseDataSeeder
         };
     }
 
-    private static DepartmentDetailsEf CreateDepartmentDetails(long nodeId, string costCenter, int? headcount = null, decimal? budgetYear = null)
+    private static DepartmentDetailsEf CreateDepartmentDetails(long nodeId, string costCenter, int? headcount = null,
+        decimal? budgetYear = null)
     {
         return new DepartmentDetailsEf
         {

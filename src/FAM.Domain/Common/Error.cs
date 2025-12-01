@@ -70,7 +70,13 @@ public sealed class Error
     /// <summary>
     /// Implicit conversion from string (error code) to Error
     /// </summary>
-    public static implicit operator Error(string code) => new(code);
+    public static implicit operator Error(string code)
+    {
+        return new Error(code);
+    }
 
-    public override string ToString() => $"[{Code}] {Message}";
+    public override string ToString()
+    {
+        return $"[{Code}] {Message}";
+    }
 }

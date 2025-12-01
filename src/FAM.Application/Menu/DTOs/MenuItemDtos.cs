@@ -75,17 +75,16 @@ public record MenuItemResponse(
     DateTime? UpdatedAt,
     List<MenuItemResponse>? Children = null)
 {
-    public static MenuItemResponse FromDomain(MenuItem menu, bool includeChildren = true, int maxDepth = 3, int currentDepth = 0)
+    public static MenuItemResponse FromDomain(MenuItem menu, bool includeChildren = true, int maxDepth = 3,
+        int currentDepth = 0)
     {
         List<MenuItemResponse>? children = null;
-        
+
         if (includeChildren && menu.Children.Any() && currentDepth < maxDepth)
-        {
             children = menu.Children
                 .OrderBy(c => c.SortOrder)
                 .Select(c => FromDomain(c, true, maxDepth, currentDepth + 1))
                 .ToList();
-        }
 
         return new MenuItemResponse(
             menu.Id,
@@ -134,24 +133,27 @@ public record MenuItemFlatResponse(
     DateTime CreatedAt,
     DateTime? UpdatedAt)
 {
-    public static MenuItemFlatResponse FromDomain(MenuItem menu) => new(
-        menu.Id,
-        menu.Code,
-        menu.Name,
-        menu.Description,
-        menu.Icon,
-        menu.Route,
-        menu.ExternalUrl,
-        menu.ParentId,
-        menu.SortOrder,
-        menu.Level,
-        menu.IsVisible,
-        menu.IsEnabled,
-        menu.RequiredPermission,
-        menu.RequiredRoles,
-        menu.OpenInNewTab,
-        menu.CreatedAt,
-        menu.UpdatedAt);
+    public static MenuItemFlatResponse FromDomain(MenuItem menu)
+    {
+        return new MenuItemFlatResponse(
+            menu.Id,
+            menu.Code,
+            menu.Name,
+            menu.Description,
+            menu.Icon,
+            menu.Route,
+            menu.ExternalUrl,
+            menu.ParentId,
+            menu.SortOrder,
+            menu.Level,
+            menu.IsVisible,
+            menu.IsEnabled,
+            menu.RequiredPermission,
+            menu.RequiredRoles,
+            menu.OpenInNewTab,
+            menu.CreatedAt,
+            menu.UpdatedAt);
+    }
 }
 
 #endregion

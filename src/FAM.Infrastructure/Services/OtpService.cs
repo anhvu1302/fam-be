@@ -25,15 +25,16 @@ public class OtpService : IOtpService
         _logger = logger;
     }
 
-    public async Task<string> GenerateOtpAsync(long userId, string sessionToken, int expirationMinutes = 10, CancellationToken cancellationToken = default)
+    public async Task<string> GenerateOtpAsync(long userId, string sessionToken, int expirationMinutes = 10,
+        CancellationToken cancellationToken = default)
     {
         // Generate 6-digit OTP
         var otp = GenerateSixDigitOtp();
-        
+
         // SECURITY: Sử dụng hash của sessionToken để làm key
         // Điều này đảm bảo OTP chỉ dùng được với đúng session
         var cacheKey = GenerateSecureCacheKey(userId, sessionToken);
-        
+
         var otpData = new OtpData
         {
             Code = otp,
@@ -50,21 +51,23 @@ public class OtpService : IOtpService
         };
 
         await _cache.SetStringAsync(cacheKey, serialized, options, cancellationToken);
-        
+
         // Reset attempt counter
         var attemptKey = GenerateAttemptKey(userId, sessionToken);
         await _cache.RemoveAsync(attemptKey, cancellationToken);
-        
-        _logger.LogInformation("Generated OTP for user {UserId} with session binding, expires in {Minutes} minutes", userId, expirationMinutes);
-        
+
+        _logger.LogInformation("Generated OTP for user {UserId} with session binding, expires in {Minutes} minutes",
+            userId, expirationMinutes);
+
         return otp;
     }
 
-    public async Task<bool> VerifyOtpAsync(long userId, string sessionToken, string otpCode, CancellationToken cancellationToken = default)
+    public async Task<bool> VerifyOtpAsync(long userId, string sessionToken, string otpCode,
+        CancellationToken cancellationToken = default)
     {
         var cacheKey = GenerateSecureCacheKey(userId, sessionToken);
         var attemptKey = GenerateAttemptKey(userId, sessionToken);
-        
+
         // Check attempts (rate limiting)
         var attempts = await GetAttemptsAsync(attemptKey, cancellationToken);
         if (attempts >= MaxAttempts)
@@ -110,7 +113,7 @@ public class OtpService : IOtpService
             }
 
             var isValid = otpData.Code == otpCode;
-            
+
             if (isValid)
             {
                 _logger.LogInformation("OTP verified successfully for user {UserId}", userId);
@@ -138,10 +141,10 @@ public class OtpService : IOtpService
     {
         var cacheKey = GenerateSecureCacheKey(userId, sessionToken);
         var attemptKey = GenerateAttemptKey(userId, sessionToken);
-        
+
         await _cache.RemoveAsync(cacheKey, cancellationToken);
         await _cache.RemoveAsync(attemptKey, cancellationToken);
-        
+
         _logger.LogInformation("Removed OTP for user {UserId}", userId);
     }
 
@@ -191,11 +194,8 @@ public class OtpService : IOtpService
         };
 
         await _cache.SetStringAsync(attemptKey, newCount.ToString(), options, cancellationToken);
-        
-        if (newCount >= MaxAttempts)
-        {
-            _logger.LogWarning("User reached max OTP attempts: {Attempts}", newCount);
-        }
+
+        if (newCount >= MaxAttempts) _logger.LogWarning("User reached max OTP attempts: {Attempts}", newCount);
     }
 
     private static string GenerateSixDigitOtp()

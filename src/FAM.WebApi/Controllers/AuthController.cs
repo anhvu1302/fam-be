@@ -292,7 +292,8 @@ public class AuthController : ControllerBase
     [EnableRateLimiting(RateLimitConfiguration.AuthenticationPolicy)]
     [HttpPost("select-authentication-method")]
     [AllowAnonymous]
-    public async Task<ActionResult> SelectAuthenticationMethod([FromBody] WebApiContracts.SelectAuthenticationMethodRequest request)
+    public async Task<ActionResult> SelectAuthenticationMethod(
+        [FromBody] WebApiContracts.SelectAuthenticationMethodRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 

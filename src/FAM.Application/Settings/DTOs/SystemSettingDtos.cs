@@ -78,7 +78,7 @@ public record SystemSettingResponse(
     {
         var value = setting.Value;
         var effectiveValue = setting.GetEffectiveValue();
-        
+
         // Mask sensitive values
         if (maskSensitive && setting.IsSensitive && !string.IsNullOrEmpty(value))
         {
@@ -120,7 +120,7 @@ public record PublicSettingResponse(
     public static PublicSettingResponse FromDomain(SystemSetting setting)
     {
         var value = setting.IsSensitive ? null : setting.GetEffectiveValue();
-        
+
         return new PublicSettingResponse(
             setting.Key,
             value,

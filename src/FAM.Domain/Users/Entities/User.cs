@@ -177,7 +177,7 @@ public class User : BaseEntity
     {
         Password = Password.FromHash(newPasswordHash, newPasswordSalt);
         PasswordChangedAt = DateTime.UtcNow;
-        
+
         // Clear any pending reset token
         PasswordResetToken = null;
         PasswordResetTokenExpiresAt = null;

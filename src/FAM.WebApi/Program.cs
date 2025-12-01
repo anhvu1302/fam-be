@@ -5,16 +5,12 @@ using FAM.Application.Settings;
 using FAM.Infrastructure;
 using FAM.Infrastructure.Auth;
 using FAM.WebApi.Configuration;
-using FAM.WebApi.Controllers;
 using FAM.WebApi.Middleware;
-using MediatR;
-using Microsoft.OpenApi;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
-using System.Text;
 using Serilog;
 using Serilog.Events;
 using FluentValidation;
@@ -192,7 +188,7 @@ builder.Services.AddAuthentication(options =>
             ValidAudience = appConfig.JwtAudience,
             ClockSkew = TimeSpan.Zero // Remove default 5 minute tolerance
         };
-        
+
         // Load RSA signing keys dynamically from database on each request
         options.Events = new JwtBearerEvents
         {
@@ -201,14 +197,13 @@ builder.Services.AddAuthentication(options =>
                 // Get signing key service from request scope
                 var signingKeyService = context.HttpContext.RequestServices
                     .GetRequiredService<ISigningKeyService>();
-                
+
                 // Get JWKS from database
                 var jwks = await signingKeyService.GetJwksAsync(context.HttpContext.RequestAborted);
-                
+
                 // Convert JWKs to SecurityKeys
                 var keys = new List<SecurityKey>();
                 foreach (var jwk in jwks.Keys)
-                {
                     if (jwk.Kty == "RSA")
                     {
                         using var rsa = RSA.Create();
@@ -219,8 +214,7 @@ builder.Services.AddAuthentication(options =>
                         });
                         keys.Add(new RsaSecurityKey(rsa) { KeyId = jwk.Kid });
                     }
-                }
-                
+
                 // Set the signing keys for this request
                 context.Options.TokenValidationParameters.IssuerSigningKeys = keys;
             }

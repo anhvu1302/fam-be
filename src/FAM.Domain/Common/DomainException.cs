@@ -101,6 +101,7 @@ public class DomainException : Exception
             if (value != null)
                 dictionary[ToCamelCase(prop.Name)] = value;
         }
+
         return dictionary;
     }
 

@@ -25,7 +25,8 @@ public interface IMenuItemService
     /// <summary>
     /// Get full menu tree (root items with all children up to maxDepth)
     /// </summary>
-    Task<IEnumerable<MenuItemResponse>> GetMenuTreeAsync(int maxDepth = 3, CancellationToken cancellationToken = default);
+    Task<IEnumerable<MenuItemResponse>> GetMenuTreeAsync(int maxDepth = 3,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get visible menu tree for user permissions/roles
@@ -44,7 +45,8 @@ public interface IMenuItemService
     /// <summary>
     /// Update a menu item
     /// </summary>
-    Task<MenuItemResponse> UpdateAsync(long id, UpdateMenuItemRequest request, CancellationToken cancellationToken = default);
+    Task<MenuItemResponse> UpdateAsync(long id, UpdateMenuItemRequest request,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Delete a menu item
@@ -59,5 +61,6 @@ public interface IMenuItemService
     /// <summary>
     /// Move menu item to new parent
     /// </summary>
-    Task<MenuItemResponse> MoveAsync(long id, long? newParentId, int sortOrder, CancellationToken cancellationToken = default);
+    Task<MenuItemResponse> MoveAsync(long id, long? newParentId, int sortOrder,
+        CancellationToken cancellationToken = default);
 }

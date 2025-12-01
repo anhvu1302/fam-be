@@ -54,7 +54,7 @@ public class MenusController : ControllerBase
             .Where(c => c.Type == "permission")
             .Select(c => c.Value)
             .ToList();
-        
+
         var roles = User.Claims
             .Where(c => c.Type == System.Security.Claims.ClaimTypes.Role)
             .Select(c => c.Value)
@@ -74,7 +74,8 @@ public class MenusController : ControllerBase
     [HttpGet]
     [Authorize(Roles = "Admin,SuperAdmin")]
     [ProducesResponseType(typeof(IEnumerable<MenuItemFlatResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<MenuItemFlatResponse>>> GetAllMenus(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<MenuItemFlatResponse>>> GetAllMenus(
+        CancellationToken cancellationToken = default)
     {
         var menus = await _menuService.GetAllAsync(cancellationToken);
         return Ok(menus);
@@ -87,7 +88,8 @@ public class MenusController : ControllerBase
     [Authorize(Roles = "Admin,SuperAdmin")]
     [ProducesResponseType(typeof(MenuItemResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<MenuItemResponse>> GetMenuById(long id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<MenuItemResponse>> GetMenuById(long id,
+        CancellationToken cancellationToken = default)
     {
         var menu = await _menuService.GetByIdAsync(id, cancellationToken);
         if (menu == null)
@@ -102,7 +104,8 @@ public class MenusController : ControllerBase
     [Authorize(Roles = "Admin,SuperAdmin")]
     [ProducesResponseType(typeof(MenuItemResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<MenuItemResponse>> GetMenuByCode(string code, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<MenuItemResponse>> GetMenuByCode(string code,
+        CancellationToken cancellationToken = default)
     {
         var menu = await _menuService.GetByCodeAsync(code, cancellationToken);
         if (menu == null)

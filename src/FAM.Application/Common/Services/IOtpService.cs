@@ -14,8 +14,9 @@ public interface IOtpService
     /// <param name="expirationMinutes">Thời gian hết hạn (mặc định 10 phút)</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>OTP code 6 chữ số</returns>
-    Task<string> GenerateOtpAsync(long userId, string sessionToken, int expirationMinutes = 10, CancellationToken cancellationToken = default);
-    
+    Task<string> GenerateOtpAsync(long userId, string sessionToken, int expirationMinutes = 10,
+        CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Verify OTP code với session token (đảm bảo OTP đúng với session)
     /// Rate limit: Tối đa 5 lần thử sai
@@ -25,8 +26,9 @@ public interface IOtpService
     /// <param name="otpCode">Mã OTP cần verify</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>True nếu OTP đúng, False nếu sai hoặc hết hạn</returns>
-    Task<bool> VerifyOtpAsync(long userId, string sessionToken, string otpCode, CancellationToken cancellationToken = default);
-    
+    Task<bool> VerifyOtpAsync(long userId, string sessionToken, string otpCode,
+        CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Xóa OTP code sau khi verify thành công hoặc hết hạn
     /// </summary>

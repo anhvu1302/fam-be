@@ -40,10 +40,12 @@ public interface ISystemSettingRepository : IRepository<SystemSetting>
     /// <summary>
     /// Update setting value
     /// </summary>
-    Task UpdateValueAsync(string key, string? value, long? modifiedBy = null, CancellationToken cancellationToken = default);
+    Task UpdateValueAsync(string key, string? value, long? modifiedBy = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Bulk update settings
     /// </summary>
-    Task BulkUpdateAsync(Dictionary<string, string?> keyValues, long? modifiedBy = null, CancellationToken cancellationToken = default);
+    Task BulkUpdateAsync(Dictionary<string, string?> keyValues, long? modifiedBy = null,
+        CancellationToken cancellationToken = default);
 }

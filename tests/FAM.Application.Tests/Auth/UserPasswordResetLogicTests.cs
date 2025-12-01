@@ -26,7 +26,7 @@ public class UserPasswordResetLogicTests
         user.PasswordResetTokenExpiresAt.Should().NotBeNull();
         // expiryHours is in HOURS, not minutes
         user.PasswordResetTokenExpiresAt.Should().BeCloseTo(
-            DateTime.UtcNow.AddMinutes(expiryHours), 
+            DateTime.UtcNow.AddMinutes(expiryHours),
             TimeSpan.FromSeconds(5)
         );
     }

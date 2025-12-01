@@ -76,7 +76,8 @@ public sealed class CreateUserRequestValidator : AbstractValidator<CreateUserReq
             RuleFor(x => x.PhoneNumber)
                 .Must(phone => phone == null || DomainRules.PhoneNumber.IsValidLength(phone))
                 .WithErrorCode(ErrorCodes.USER_INVALID_PHONE)
-                .WithMessage($"Phone number must be between {DomainRules.PhoneNumber.MinLength} and {DomainRules.PhoneNumber.MaxLength} digits");
+                .WithMessage(
+                    $"Phone number must be between {DomainRules.PhoneNumber.MinLength} and {DomainRules.PhoneNumber.MaxLength} digits");
         });
     }
 }
@@ -133,7 +134,8 @@ public sealed class UpdateUserRequestValidator : AbstractValidator<UpdateUserReq
             RuleFor(x => x.PhoneNumber)
                 .Must(phone => phone == null || DomainRules.PhoneNumber.IsValidLength(phone))
                 .WithErrorCode(ErrorCodes.USER_INVALID_PHONE)
-                .WithMessage($"Phone number must be between {DomainRules.PhoneNumber.MinLength} and {DomainRules.PhoneNumber.MaxLength} digits");
+                .WithMessage(
+                    $"Phone number must be between {DomainRules.PhoneNumber.MinLength} and {DomainRules.PhoneNumber.MaxLength} digits");
         });
 
         When(x => x.Bio != null, () =>

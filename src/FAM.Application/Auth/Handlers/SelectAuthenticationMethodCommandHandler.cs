@@ -11,7 +11,9 @@ namespace FAM.Application.Auth.Handlers;
 /// <summary>
 /// Handler để chọn phương thức xác thực và gửi OTP nếu cần
 /// </summary>
-public class SelectAuthenticationMethodCommandHandler : IRequestHandler<SelectAuthenticationMethodCommand, SelectAuthenticationMethodResponse>
+public class
+    SelectAuthenticationMethodCommandHandler : IRequestHandler<SelectAuthenticationMethodCommand,
+    SelectAuthenticationMethodResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
@@ -52,12 +54,15 @@ public class SelectAuthenticationMethodCommandHandler : IRequestHandler<SelectAu
         {
             case "email_otp":
                 if (!user.IsEmailVerified)
-                    throw new InvalidOperationException("Email authentication is not available. Please verify your email first.");
+                    throw new InvalidOperationException(
+                        "Email authentication is not available. Please verify your email first.");
 
                 // Generate và gửi OTP qua email
                 // SECURITY: Bind OTP với session token
-                var otpCode = await _otpService.GenerateOtpAsync(userId, request.TwoFactorSessionToken, expirationMinutes: 10, cancellationToken);
-                await _emailService.SendOtpEmailAsync(user.Email.Value, otpCode, user.Username.Value, cancellationToken);
+                var otpCode =
+                    await _otpService.GenerateOtpAsync(userId, request.TwoFactorSessionToken, 10, cancellationToken);
+                await _emailService.SendOtpEmailAsync(user.Email.Value, otpCode, user.Username.Value,
+                    cancellationToken);
 
                 response.Success = true;
                 response.Message = "OTP code has been sent to your email";
@@ -70,7 +75,8 @@ public class SelectAuthenticationMethodCommandHandler : IRequestHandler<SelectAu
 
             case "authenticator_app":
                 if (!user.TwoFactorEnabled)
-                    throw new InvalidOperationException("Authenticator app is not configured. Please set up 2FA first.");
+                    throw new InvalidOperationException(
+                        "Authenticator app is not configured. Please set up 2FA first.");
 
                 response.Success = true;
                 response.Message = "Please enter the code from your authenticator app";

@@ -305,7 +305,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync((SigningKey?)null);
 
         // Act
-        Func<Task> act = async () => await _service.ActivateKeyAsync(999);
+        var act = async () => await _service.ActivateKeyAsync(999);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();
@@ -341,7 +341,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync((SigningKey?)null);
 
         // Act
-        Func<Task> act = async () => await _service.DeactivateKeyAsync(999);
+        var act = async () => await _service.DeactivateKeyAsync(999);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();
@@ -486,7 +486,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync((SigningKey?)null);
 
         // Act
-        Func<Task> act = async () => await _service.DeleteKeyAsync(999);
+        var act = async () => await _service.DeleteKeyAsync(999);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();

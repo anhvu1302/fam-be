@@ -100,7 +100,7 @@ public class AppConfiguration
         RedisPort = GetInt("REDIS_PORT", 6379);
         RedisPassword = GetOptional("REDIS_PASSWORD") ?? "";
         RedisInstanceName = GetOptional("REDIS_INSTANCE_NAME") ?? "fam:";
-        
+
         // Build Redis connection string
         RedisConnectionString = BuildRedisConnectionString();
 
@@ -122,12 +122,9 @@ public class AppConfiguration
     private string BuildRedisConnectionString()
     {
         var connectionString = $"{RedisHost}:{RedisPort}";
-        
-        if (!string.IsNullOrEmpty(RedisPassword))
-        {
-            connectionString += $",password={RedisPassword}";
-        }
-        
+
+        if (!string.IsNullOrEmpty(RedisPassword)) connectionString += $",password={RedisPassword}";
+
         return connectionString;
     }
 

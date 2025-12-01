@@ -40,7 +40,8 @@ public interface ISystemSettingService
     /// <summary>
     /// Get settings by group
     /// </summary>
-    Task<IEnumerable<SystemSettingResponse>> GetByGroupAsync(string group, CancellationToken cancellationToken = default);
+    Task<IEnumerable<SystemSettingResponse>> GetByGroupAsync(string group,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Get all groups
@@ -50,22 +51,26 @@ public interface ISystemSettingService
     /// <summary>
     /// Create a new setting
     /// </summary>
-    Task<SystemSettingResponse> CreateAsync(CreateSystemSettingRequest request, CancellationToken cancellationToken = default);
+    Task<SystemSettingResponse> CreateAsync(CreateSystemSettingRequest request,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Update a setting
     /// </summary>
-    Task<SystemSettingResponse> UpdateAsync(long id, UpdateSystemSettingRequest request, CancellationToken cancellationToken = default);
+    Task<SystemSettingResponse> UpdateAsync(long id, UpdateSystemSettingRequest request,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Update setting value by key
     /// </summary>
-    Task<SystemSettingResponse> UpdateValueAsync(string key, UpdateSettingValueRequest request, long? modifiedBy = null, CancellationToken cancellationToken = default);
+    Task<SystemSettingResponse> UpdateValueAsync(string key, UpdateSettingValueRequest request, long? modifiedBy = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Bulk update settings
     /// </summary>
-    Task BulkUpdateAsync(BulkUpdateSettingsRequest request, long? modifiedBy = null, CancellationToken cancellationToken = default);
+    Task BulkUpdateAsync(BulkUpdateSettingsRequest request, long? modifiedBy = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Delete a setting

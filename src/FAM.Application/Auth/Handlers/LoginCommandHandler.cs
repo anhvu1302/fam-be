@@ -96,7 +96,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             roles.Add("Admin");
             roles.Add("SuperAdmin");
         }
-        
+
         var accessToken = _jwtService.GenerateAccessToken(user.Id, user.Username.Value, user.Email.Value, roles);
         var refreshToken = _jwtService.GenerateRefreshToken();
         var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(request.RememberMe ? 30 : 7);

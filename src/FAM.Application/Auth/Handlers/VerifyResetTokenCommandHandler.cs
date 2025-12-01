@@ -29,13 +29,11 @@ public class VerifyResetTokenCommandHandler : IRequestHandler<VerifyResetTokenCo
         var user = await _unitOfWork.Users.FindByEmailAsync(request.Email, cancellationToken);
 
         if (user == null)
-        {
             return new VerifyResetTokenResponse
             {
                 IsValid = false,
                 Message = "Invalid reset link"
             };
-        }
 
         var isValid = user.IsPasswordResetTokenValid(request.ResetToken);
 

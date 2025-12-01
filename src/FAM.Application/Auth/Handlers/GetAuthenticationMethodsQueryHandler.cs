@@ -10,7 +10,8 @@ namespace FAM.Application.Auth.Handlers;
 /// <summary>
 /// Handler để lấy thông tin các phương thức xác thực đang bật
 /// </summary>
-public class GetAuthenticationMethodsQueryHandler : IRequestHandler<GetAuthenticationMethodsQuery, AuthenticationMethodsResponse>
+public class
+    GetAuthenticationMethodsQueryHandler : IRequestHandler<GetAuthenticationMethodsQuery, AuthenticationMethodsResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<GetAuthenticationMethodsQueryHandler> _logger;
@@ -37,7 +38,6 @@ public class GetAuthenticationMethodsQueryHandler : IRequestHandler<GetAuthentic
         var recoveryCodesConfigured = false;
 
         if (!string.IsNullOrWhiteSpace(user.TwoFactorBackupCodes))
-        {
             try
             {
                 var codes = JsonSerializer.Deserialize<List<string>>(user.TwoFactorBackupCodes);
@@ -51,7 +51,6 @@ public class GetAuthenticationMethodsQueryHandler : IRequestHandler<GetAuthentic
             {
                 _logger.LogWarning(ex, "Failed to parse recovery codes for user {UserId}", request.UserId);
             }
-        }
 
         // Mask email để hiển thị
         var maskedEmail = MaskEmail(user.Email.Value);
@@ -69,7 +68,6 @@ public class GetAuthenticationMethodsQueryHandler : IRequestHandler<GetAuthentic
 
         // Thêm email OTP method nếu email đã verified
         if (user.IsEmailVerified)
-        {
             response.AvailableMethods.Add(new AuthenticationMethodInfo
             {
                 MethodType = "email_otp",
@@ -78,11 +76,9 @@ public class GetAuthenticationMethodsQueryHandler : IRequestHandler<GetAuthentic
                 IsPrimary = !user.TwoFactorEnabled, // Email là primary nếu chưa bật 2FA
                 AdditionalInfo = $"Send code to {maskedEmail}"
             });
-        }
 
         // Thêm authenticator app method nếu đã bật 2FA
         if (user.TwoFactorEnabled)
-        {
             response.AvailableMethods.Add(new AuthenticationMethodInfo
             {
                 MethodType = "authenticator_app",
@@ -93,11 +89,9 @@ public class GetAuthenticationMethodsQueryHandler : IRequestHandler<GetAuthentic
                     ? $"Enabled since {user.TwoFactorSetupDate.Value:yyyy-MM-dd}"
                     : "Enabled"
             });
-        }
 
         // Thêm recovery code method nếu có recovery codes
         if (recoveryCodesConfigured)
-        {
             response.AvailableMethods.Add(new AuthenticationMethodInfo
             {
                 MethodType = "recovery_code",
@@ -106,7 +100,6 @@ public class GetAuthenticationMethodsQueryHandler : IRequestHandler<GetAuthentic
                 IsPrimary = false,
                 AdditionalInfo = $"{remainingRecoveryCodes} codes remaining"
             });
-        }
 
         return response;
     }

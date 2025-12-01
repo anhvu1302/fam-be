@@ -14,19 +14,19 @@ public class ProblemDetailsResponse
 {
     /// <summary>URI reference identifying the problem type</summary>
     public string Type { get; set; } = "about:blank";
-    
+
     /// <summary>Short, human-readable summary of the problem type</summary>
     public string Title { get; set; } = default!;
-    
+
     /// <summary>HTTP status code</summary>
     public int Status { get; set; }
-    
+
     /// <summary>Human-readable explanation specific to this occurrence</summary>
     public string Detail { get; set; } = default!;
-    
+
     /// <summary>URI reference identifying the specific occurrence</summary>
     public string? Instance { get; set; }
-    
+
     /// <summary>Array of validation errors (for 400/422 responses)</summary>
     public List<ErrorDetail>? Errors { get; set; }
 }
@@ -38,13 +38,13 @@ public class ErrorDetail
 {
     /// <summary>Error code for frontend i18n translation</summary>
     public string Code { get; set; } = default!;
-    
+
     /// <summary>Field name that caused the error (if applicable)</summary>
     public string? Field { get; set; }
-    
+
     /// <summary>Human-readable error message (fallback)</summary>
     public string Detail { get; set; } = default!;
-    
+
     /// <summary>Additional contextual information (minLength, maxLength, etc.)</summary>
     public IDictionary<string, object>? Details { get; set; }
 }
@@ -117,22 +117,16 @@ public class GlobalExceptionHandler : IExceptionHandler
     private static (int statusCode, ProblemDetailsResponse response) HandleValidationException(ValidationException ex)
     {
         var errors = new List<ErrorDetail>();
-        
+
         if (ex.Errors != null)
-        {
             foreach (var (field, messages) in ex.Errors)
-            {
-                foreach (var message in messages)
+            foreach (var message in messages)
+                errors.Add(new ErrorDetail
                 {
-                    errors.Add(new ErrorDetail
-                    {
-                        Code = ex.ErrorCode,
-                        Field = field,
-                        Detail = message
-                    });
-                }
-            }
-        }
+                    Code = ex.ErrorCode,
+                    Field = field,
+                    Detail = message
+                });
 
         return (StatusCodes.Status400BadRequest, new ProblemDetailsResponse
         {
@@ -193,7 +187,8 @@ public class GlobalExceptionHandler : IExceptionHandler
         });
     }
 
-    private static (int statusCode, ProblemDetailsResponse response) HandleUnauthorizedException(UnauthorizedException ex)
+    private static (int statusCode, ProblemDetailsResponse response) HandleUnauthorizedException(
+        UnauthorizedException ex)
     {
         return (StatusCodes.Status401Unauthorized, new ProblemDetailsResponse
         {
@@ -226,7 +221,7 @@ public class GlobalExceptionHandler : IExceptionHandler
                 {
                     Code = ex.ErrorCode,
                     Detail = ex.Message,
-                    Details = ex.RequiredPermission != null 
+                    Details = ex.RequiredPermission != null
                         ? new Dictionary<string, object> { ["requiredPermission"] = ex.RequiredPermission }
                         : null
                 }
@@ -235,15 +230,12 @@ public class GlobalExceptionHandler : IExceptionHandler
     }
 
     private static (int statusCode, ProblemDetailsResponse response) HandleDomainException(
-        DomainException ex, 
+        DomainException ex,
         HttpContext httpContext)
     {
         // Extract field name from details if available
         string? fieldName = null;
-        if (ex.Details?.TryGetValue("field", out var field) == true)
-        {
-            fieldName = field?.ToString();
-        }
+        if (ex.Details?.TryGetValue("field", out var field) == true) fieldName = field?.ToString();
 
         return (StatusCodes.Status422UnprocessableEntity, new ProblemDetailsResponse
         {
@@ -302,7 +294,8 @@ public class GlobalExceptionHandler : IExceptionHandler
         });
     }
 
-    private static (int statusCode, ProblemDetailsResponse response) HandleInvalidOperationException(InvalidOperationException ex)
+    private static (int statusCode, ProblemDetailsResponse response) HandleInvalidOperationException(
+        InvalidOperationException ex)
     {
         return (StatusCodes.Status409Conflict, new ProblemDetailsResponse
         {

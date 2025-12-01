@@ -99,7 +99,8 @@ public class MenuItemRepository : IMenuItemRepository
         return entities.Select(e => _mapper.Map<MenuItem>(e)).ToList();
     }
 
-    public async Task<IReadOnlyList<MenuItem>> GetByParentIdAsync(long parentId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<MenuItem>> GetByParentIdAsync(long parentId,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.MenuItems
             .Where(m => m.ParentId == parentId && !m.IsDeleted)
@@ -108,7 +109,8 @@ public class MenuItemRepository : IMenuItemRepository
         return entities.Select(e => _mapper.Map<MenuItem>(e)).ToList();
     }
 
-    public async Task<IReadOnlyList<MenuItem>> GetMenuTreeAsync(int maxDepth = 3, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<MenuItem>> GetMenuTreeAsync(int maxDepth = 3,
+        CancellationToken cancellationToken = default)
     {
         maxDepth = Math.Min(maxDepth, MaxMenuDepth);
 
@@ -124,7 +126,6 @@ public class MenuItemRepository : IMenuItemRepository
         var rootMenus = new List<MenuItemEf>();
 
         foreach (var menu in allMenus)
-        {
             if (menu.ParentId == null)
             {
                 rootMenus.Add(menu);
@@ -134,7 +135,6 @@ public class MenuItemRepository : IMenuItemRepository
                 parent.Children.Add(menu);
                 menu.Parent = parent;
             }
-        }
 
         return rootMenus.Select(e => _mapper.Map<MenuItem>(e)).ToList();
     }
@@ -146,7 +146,7 @@ public class MenuItemRepository : IMenuItemRepository
         CancellationToken cancellationToken = default)
     {
         var tree = await GetMenuTreeAsync(maxDepth, cancellationToken);
-        
+
         // Filter visible menus based on permissions/roles
         var permissionSet = userPermissions?.ToHashSet() ?? new HashSet<string>();
         var roleSet = userRoles?.ToHashSet() ?? new HashSet<string>();
@@ -160,17 +160,14 @@ public class MenuItemRepository : IMenuItemRepository
         HashSet<string> roles)
     {
         foreach (var menu in menus)
-        {
             if (menu.CanView(permissions, roles))
-            {
                 // Note: Children filtering would need to be done at domain level
                 // since MenuItem.Children is read-only
                 yield return menu;
-            }
-        }
     }
 
-    public async Task<bool> CodeExistsAsync(string code, long? excludeId = null, CancellationToken cancellationToken = default)
+    public async Task<bool> CodeExistsAsync(string code, long? excludeId = null,
+        CancellationToken cancellationToken = default)
     {
         var query = _context.MenuItems.Where(m => m.Code == code.ToLowerInvariant() && !m.IsDeleted);
         if (excludeId.HasValue)
@@ -183,16 +180,15 @@ public class MenuItemRepository : IMenuItemRepository
         return await _context.MenuItems.AnyAsync(m => m.ParentId == menuId && !m.IsDeleted, cancellationToken);
     }
 
-    public async Task UpdateSortOrdersAsync(Dictionary<long, int> sortOrders, CancellationToken cancellationToken = default)
+    public async Task UpdateSortOrdersAsync(Dictionary<long, int> sortOrders,
+        CancellationToken cancellationToken = default)
     {
         foreach (var kvp in sortOrders)
-        {
             await _context.MenuItems
                 .Where(m => m.Id == kvp.Key && !m.IsDeleted)
                 .ExecuteUpdateAsync(s => s
-                    .SetProperty(m => m.SortOrder, kvp.Value)
-                    .SetProperty(m => m.UpdatedAt, DateTime.UtcNow),
+                        .SetProperty(m => m.SortOrder, kvp.Value)
+                        .SetProperty(m => m.UpdatedAt, DateTime.UtcNow),
                     cancellationToken);
-        }
     }
 }

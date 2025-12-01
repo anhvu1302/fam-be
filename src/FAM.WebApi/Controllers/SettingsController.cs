@@ -32,7 +32,8 @@ public class SettingsController : ControllerBase
     [HttpGet("public")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(IEnumerable<PublicSettingResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<PublicSettingResponse>>> GetPublicSettings(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<PublicSettingResponse>>> GetPublicSettings(
+        CancellationToken cancellationToken = default)
     {
         var settings = await _settingService.GetAllPublicAsync(cancellationToken);
         return Ok(settings);
@@ -44,7 +45,8 @@ public class SettingsController : ControllerBase
     [HttpGet("public/grouped")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(IEnumerable<PublicSettingsGroupResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<PublicSettingsGroupResponse>>> GetPublicSettingsGrouped(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<PublicSettingsGroupResponse>>> GetPublicSettingsGrouped(
+        CancellationToken cancellationToken = default)
     {
         var settings = await _settingService.GetPublicGroupedAsync(cancellationToken);
         return Ok(settings);
@@ -57,7 +59,8 @@ public class SettingsController : ControllerBase
     [AllowAnonymous]
     [ProducesResponseType(typeof(PublicSettingResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<PublicSettingResponse>> GetPublicSettingByKey(string key, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<PublicSettingResponse>> GetPublicSettingByKey(string key,
+        CancellationToken cancellationToken = default)
     {
         var value = await _settingService.GetValueAsync(key, cancellationToken);
         if (value == null)
@@ -66,7 +69,7 @@ public class SettingsController : ControllerBase
             if (setting == null)
                 throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", key);
         }
-        
+
         var result = await _settingService.GetByKeyAsync(key, cancellationToken);
         return Ok(new PublicSettingResponse(
             result!.Key,
@@ -86,7 +89,8 @@ public class SettingsController : ControllerBase
     [HttpGet]
     [Authorize(Roles = "Admin,SuperAdmin")]
     [ProducesResponseType(typeof(IEnumerable<SystemSettingResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<SystemSettingResponse>>> GetAllSettings(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<SystemSettingResponse>>> GetAllSettings(
+        CancellationToken cancellationToken = default)
     {
         var settings = await _settingService.GetAllAsync(cancellationToken);
         return Ok(settings);
@@ -98,7 +102,8 @@ public class SettingsController : ControllerBase
     [HttpGet("grouped")]
     [Authorize(Roles = "Admin,SuperAdmin")]
     [ProducesResponseType(typeof(IEnumerable<SettingsGroupResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<SettingsGroupResponse>>> GetSettingsGrouped(CancellationToken cancellationToken = default)
+    public async Task<ActionResult<IEnumerable<SettingsGroupResponse>>> GetSettingsGrouped(
+        CancellationToken cancellationToken = default)
     {
         var settings = await _settingService.GetGroupedAsync(cancellationToken);
         return Ok(settings);
@@ -137,7 +142,8 @@ public class SettingsController : ControllerBase
     [Authorize(Roles = "Admin,SuperAdmin")]
     [ProducesResponseType(typeof(SystemSettingResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<SystemSettingResponse>> GetSettingById(long id, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<SystemSettingResponse>> GetSettingById(long id,
+        CancellationToken cancellationToken = default)
     {
         var setting = await _settingService.GetByIdAsync(id, cancellationToken);
         if (setting == null)
@@ -152,7 +158,8 @@ public class SettingsController : ControllerBase
     [Authorize(Roles = "Admin,SuperAdmin")]
     [ProducesResponseType(typeof(SystemSettingResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<SystemSettingResponse>> GetSettingByKey(string key, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<SystemSettingResponse>> GetSettingByKey(string key,
+        CancellationToken cancellationToken = default)
     {
         var setting = await _settingService.GetByKeyAsync(key, cancellationToken);
         if (setting == null)

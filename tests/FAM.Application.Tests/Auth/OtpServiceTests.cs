@@ -27,10 +27,7 @@ public class OtpServiceTests
     {
         // Arrange & Act
         var otps = new HashSet<string>();
-        for (int i = 0; i < 100; i++)
-        {
-            otps.Add(GenerateRandomOtp(6));
-        }
+        for (var i = 0; i < 100; i++) otps.Add(GenerateRandomOtp(6));
 
         // Assert
         otps.Should().HaveCountGreaterThan(90); // At least 90% unique
@@ -88,10 +85,7 @@ public class OtpServiceTests
     {
         var random = new Random();
         var otp = new char[length];
-        for (int i = 0; i < length; i++)
-        {
-            otp[i] = (char)('0' + random.Next(0, 10));
-        }
+        for (var i = 0; i < length; i++) otp[i] = (char)('0' + random.Next(0, 10));
         return new string(otp);
     }
 

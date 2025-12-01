@@ -115,7 +115,9 @@ public class MenuItem : BaseEntity
     public string? Metadata { get; private set; }
 
     // Required for EF
-    private MenuItem() { }
+    private MenuItem()
+    {
+    }
 
     /// <summary>
     /// Create a new menu item
@@ -208,6 +210,7 @@ public class MenuItem : BaseEntity
                 return true;
             current = current.Parent;
         }
+
         return false;
     }
 
@@ -313,10 +316,8 @@ public class MenuItem : BaseEntity
 
         // Check required permission
         if (!string.IsNullOrEmpty(RequiredPermission))
-        {
             if (userPermissions == null || !userPermissions.Contains(RequiredPermission))
                 return false;
-        }
 
         // Check required roles
         if (!string.IsNullOrEmpty(RequiredRoles))

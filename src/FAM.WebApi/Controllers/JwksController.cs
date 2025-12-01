@@ -78,7 +78,7 @@ public class JwksController : ControllerBase
     public async Task<ActionResult<SigningKeyResponse>> GetKeyById(long id, CancellationToken cancellationToken)
     {
         var key = await _signingKeyService.GetKeyByIdAsync(id, cancellationToken);
-        if (key == null) 
+        if (key == null)
             throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", id);
         return Ok(key);
     }

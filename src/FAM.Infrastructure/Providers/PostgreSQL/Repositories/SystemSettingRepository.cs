@@ -98,7 +98,8 @@ public class SystemSettingRepository : ISystemSettingRepository
         return entities.Select(e => _mapper.Map<SystemSetting>(e)).ToList();
     }
 
-    public async Task<IReadOnlyList<SystemSetting>> GetByGroupAsync(string group, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<SystemSetting>> GetByGroupAsync(string group,
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.SystemSettings
             .Where(s => s.Group == group.ToLowerInvariant() && !s.IsDeleted)
@@ -107,7 +108,8 @@ public class SystemSettingRepository : ISystemSettingRepository
         return entities.Select(e => _mapper.Map<SystemSetting>(e)).ToList();
     }
 
-    public async Task<IReadOnlyList<SystemSetting>> GetVisibleSettingsAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<SystemSetting>> GetVisibleSettingsAsync(
+        CancellationToken cancellationToken = default)
     {
         var entities = await _context.SystemSettings
             .Where(s => s.IsVisible && !s.IsDeleted)
@@ -127,7 +129,8 @@ public class SystemSettingRepository : ISystemSettingRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<bool> KeyExistsAsync(string key, long? excludeId = null, CancellationToken cancellationToken = default)
+    public async Task<bool> KeyExistsAsync(string key, long? excludeId = null,
+        CancellationToken cancellationToken = default)
     {
         var query = _context.SystemSettings.Where(s => s.Key == key.ToLowerInvariant() && !s.IsDeleted);
         if (excludeId.HasValue)
@@ -135,22 +138,21 @@ public class SystemSettingRepository : ISystemSettingRepository
         return await query.AnyAsync(cancellationToken);
     }
 
-    public async Task UpdateValueAsync(string key, string? value, long? modifiedBy = null, CancellationToken cancellationToken = default)
+    public async Task UpdateValueAsync(string key, string? value, long? modifiedBy = null,
+        CancellationToken cancellationToken = default)
     {
         await _context.SystemSettings
             .Where(s => s.Key == key.ToLowerInvariant() && !s.IsDeleted)
             .ExecuteUpdateAsync(s => s
-                .SetProperty(x => x.Value, value)
-                .SetProperty(x => x.LastModifiedBy, modifiedBy)
-                .SetProperty(x => x.UpdatedAt, DateTime.UtcNow),
+                    .SetProperty(x => x.Value, value)
+                    .SetProperty(x => x.LastModifiedBy, modifiedBy)
+                    .SetProperty(x => x.UpdatedAt, DateTime.UtcNow),
                 cancellationToken);
     }
 
-    public async Task BulkUpdateAsync(Dictionary<string, string?> keyValues, long? modifiedBy = null, CancellationToken cancellationToken = default)
+    public async Task BulkUpdateAsync(Dictionary<string, string?> keyValues, long? modifiedBy = null,
+        CancellationToken cancellationToken = default)
     {
-        foreach (var kvp in keyValues)
-        {
-            await UpdateValueAsync(kvp.Key, kvp.Value, modifiedBy, cancellationToken);
-        }
+        foreach (var kvp in keyValues) await UpdateValueAsync(kvp.Key, kvp.Value, modifiedBy, cancellationToken);
     }
 }

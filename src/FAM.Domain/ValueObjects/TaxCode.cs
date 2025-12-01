@@ -26,7 +26,7 @@ public sealed class TaxCode : ValueObject
 
         if (taxCode.Length < 8)
             throw new DomainException(ErrorCodes.VO_TAX_CODE_TOO_SHORT);
-            
+
         if (taxCode.Length > 15)
             throw new DomainException(ErrorCodes.VO_TAX_CODE_TOO_LONG);
 

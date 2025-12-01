@@ -108,7 +108,7 @@ public class UserPasswordResetTests
         // Arrange
         var user = CreateTestUser();
         user.SetPasswordResetToken("reset-token", 60);
-        
+
         var oldPasswordHash = user.Password.Hash;
         var newPassword = Password.Create("NewSecurePassword456!");
 
@@ -163,9 +163,9 @@ public class UserPasswordResetTests
     private static User CreateTestUser()
     {
         return User.Create(
-            username: "testuser",
-            email: "test@example.com",
-            plainPassword: "Password123!",
+            "testuser",
+            "test@example.com",
+            "Password123!",
             firstName: "Test",
             lastName: "User"
         );

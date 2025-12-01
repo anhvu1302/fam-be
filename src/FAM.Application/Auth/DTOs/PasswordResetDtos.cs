@@ -20,12 +20,12 @@ public class ForgotPasswordResponse
     /// Có thành công không
     /// </summary>
     public bool Success { get; set; }
-    
+
     /// <summary>
     /// Message thông báo
     /// </summary>
     public string Message { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Email đã mask để confirm (vd: ab***@gmail.com)
     /// </summary>
@@ -41,17 +41,17 @@ public class ResetPasswordRequest
     /// Email của user
     /// </summary>
     public string Email { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Reset token nhận được qua email
     /// </summary>
     public string ResetToken { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Password mới
     /// </summary>
     public string NewPassword { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Confirm password mới
     /// </summary>
@@ -67,7 +67,7 @@ public class ResetPasswordResponse
     /// Có thành công không
     /// </summary>
     public bool Success { get; set; }
-    
+
     /// <summary>
     /// Message thông báo
     /// </summary>
@@ -83,7 +83,7 @@ public class VerifyResetTokenRequest
     /// Email của user
     /// </summary>
     public string Email { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Reset token cần verify
     /// </summary>
@@ -99,12 +99,12 @@ public class VerifyResetTokenResponse
     /// Token có valid không
     /// </summary>
     public bool IsValid { get; set; }
-    
+
     /// <summary>
     /// Message thông báo
     /// </summary>
     public string Message { get; set; } = string.Empty;
-    
+
     /// <summary>
     /// Email (masked)
     /// </summary>

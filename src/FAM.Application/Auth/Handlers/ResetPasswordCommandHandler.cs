@@ -33,10 +33,7 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
     {
         var user = await _unitOfWork.Users.FindByEmailAsync(request.Email, cancellationToken);
 
-        if (user == null)
-        {
-            throw new UnauthorizedAccessException("Invalid reset link");
-        }
+        if (user == null) throw new UnauthorizedAccessException("Invalid reset link");
 
         // Verify reset token
         if (!user.IsPasswordResetTokenValid(request.ResetToken))

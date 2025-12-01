@@ -45,7 +45,8 @@ public class VerifyEmailOtpCommandHandler : IRequestHandler<VerifyEmailOtpComman
             throw new UnauthorizedAccessException("User not found");
 
         // Verify OTP with session token
-        var isOtpValid = await _otpService.VerifyOtpAsync(userId, request.TwoFactorSessionToken, request.EmailOtp, cancellationToken);
+        var isOtpValid = await _otpService.VerifyOtpAsync(userId, request.TwoFactorSessionToken, request.EmailOtp,
+            cancellationToken);
         if (!isOtpValid)
         {
             _logger.LogWarning("Invalid email OTP provided for user {UserId}", userId);
