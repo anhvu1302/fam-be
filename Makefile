@@ -9,6 +9,12 @@ DOCKER_IMAGE=fam-api
 DOCKER_TAG=latest
 ENV_FILE=.env.production
 
+# Load environment variables from .env.production
+ifneq (,$(wildcard $(ENV_FILE)))
+    include $(ENV_FILE)
+    export
+endif
+
 .PHONY: help add remove update list seed seed-force
 .PHONY: docker-build docker-build-sdk docker-clean
 .PHONY: prod-deploy prod-start prod-stop prod-restart prod-logs prod-status prod-down
