@@ -1,4 +1,5 @@
 using FAM.Domain.Common;
+using FAM.Domain.Users;
 
 namespace FAM.Domain.Assets;
 
@@ -15,7 +16,7 @@ public class Attachment : Entity
 
     // Navigation properties
     public Asset? Asset { get; set; }
-    public Users.User? Uploader { get; set; }
+    public User? Uploader { get; set; }
 
     private Attachment()
     {

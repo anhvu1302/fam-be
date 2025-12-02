@@ -2,91 +2,149 @@ using System.Linq.Expressions;
 using AutoMapper;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
-using FAM.Domain.ValueObjects;
 using FAM.Infrastructure.PersistenceModels.Ef;
-using FAM.Infrastructure.Providers.PostgreSQL;
+using FAM.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
 /// <summary>
 /// PostgreSQL implementation of IPermissionRepository
+/// Inherits from BasePostgreSqlRepository for common query operations
 /// </summary>
-public class PermissionRepositoryPostgreSql : IPermissionRepository
+public class PermissionRepositoryPostgreSql : BasePostgreSqlRepository<Permission, PermissionEf>, IPermissionRepository
 {
-    private readonly PostgreSqlDbContext _context;
-    private readonly IMapper _mapper;
-
-    public PermissionRepositoryPostgreSql(PostgreSqlDbContext context, IMapper mapper)
+    public PermissionRepositoryPostgreSql(PostgreSqlDbContext context, IMapper mapper) : base(context, mapper)
     {
-        _context = context;
-        _mapper = mapper;
     }
 
     public async Task<Permission?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.Permissions.FindAsync(new object[] { id }, cancellationToken);
-        return entity != null ? _mapper.Map<Permission>(entity) : null;
+        var entity = await Context.Permissions.FindAsync(new object[] { id }, cancellationToken);
+        return entity != null ? Mapper.Map<Permission>(entity) : null;
     }
 
     public async Task<IEnumerable<Permission>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var entities = await _context.Permissions.ToListAsync(cancellationToken);
-        return _mapper.Map<IEnumerable<Permission>>(entities);
+        var entities = await Context.Permissions.ToListAsync(cancellationToken);
+        return Mapper.Map<IEnumerable<Permission>>(entities);
     }
 
     public async Task<IEnumerable<Permission>> FindAsync(Expression<Func<Permission, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        var allEntities = await _context.Permissions.ToListAsync(cancellationToken);
-        var allPermissions = _mapper.Map<IEnumerable<Permission>>(allEntities);
+        var allEntities = await Context.Permissions.ToListAsync(cancellationToken);
+        var allPermissions = Mapper.Map<IEnumerable<Permission>>(allEntities);
         return allPermissions.Where(predicate.Compile());
     }
 
     public async Task AddAsync(Permission entity, CancellationToken cancellationToken = default)
     {
-        var efEntity = _mapper.Map<PermissionEf>(entity);
-        await _context.Permissions.AddAsync(efEntity, cancellationToken);
+        var efEntity = Mapper.Map<PermissionEf>(entity);
+        await Context.Permissions.AddAsync(efEntity, cancellationToken);
     }
 
     public void Update(Permission entity)
     {
-        var efEntity = _mapper.Map<PermissionEf>(entity);
-        _context.Permissions.Update(efEntity);
+        var efEntity = Mapper.Map<PermissionEf>(entity);
+        Context.Permissions.Update(efEntity);
     }
 
     public void Delete(Permission entity)
     {
-        var efEntity = _mapper.Map<PermissionEf>(entity);
-        _context.Permissions.Remove(efEntity);
+        var efEntity = Mapper.Map<PermissionEf>(entity);
+        Context.Permissions.Remove(efEntity);
     }
 
     public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _context.Permissions.AnyAsync(p => p.Id == id, cancellationToken);
+        return await Context.Permissions.AnyAsync(p => p.Id == id, cancellationToken);
     }
 
     public async Task<Permission?> GetByResourceAndActionAsync(string resource, string action,
         CancellationToken cancellationToken = default)
     {
-        var entity = await _context.Permissions
+        var entity = await Context.Permissions
             .FirstOrDefaultAsync(p => p.Resource == resource && p.Action == action, cancellationToken);
-        return entity != null ? _mapper.Map<Permission>(entity) : null;
+        return entity != null ? Mapper.Map<Permission>(entity) : null;
     }
 
     public async Task<IEnumerable<Permission>> GetByResourceAsync(string resource,
         CancellationToken cancellationToken = default)
     {
-        var entities = await _context.Permissions
+        var entities = await Context.Permissions
             .Where(p => p.Resource == resource)
             .ToListAsync(cancellationToken);
-        return _mapper.Map<IEnumerable<Permission>>(entities);
+        return Mapper.Map<IEnumerable<Permission>>(entities);
     }
 
     public async Task<bool> ExistsByResourceAndActionAsync(string resource, string action,
         CancellationToken cancellationToken = default)
     {
-        return await _context.Permissions
+        return await Context.Permissions
             .AnyAsync(p => p.Resource == resource && p.Action == action, cancellationToken);
+    }
+
+    public async Task<(IEnumerable<Permission> Items, long Total)> GetPagedAsync(
+        Expression<Func<Permission, bool>>? filter = null,
+        string? sort = null,
+        int page = 1,
+        int pageSize = 10,
+        IEnumerable<Expression<Func<Permission, object>>>? includes = null,
+        CancellationToken cancellationToken = default)
+    {
+        // Build base query for counting
+        var countQuery = Context.Permissions.AsQueryable();
+
+        // Build query for data
+        var dataQuery = Context.Permissions.AsQueryable();
+
+        // Apply includes dynamically if provided
+        if (includes != null && includes.Any())
+            foreach (var include in includes)
+            {
+                var propertyPath = GetPropertyName(include.Body);
+                dataQuery = dataQuery.Include(propertyPath);
+            }
+
+        // Apply filter at database level
+        if (filter != null)
+        {
+            var efFilter = ConvertToEfExpression(filter);
+            countQuery = countQuery.Where(efFilter);
+            dataQuery = dataQuery.Where(efFilter);
+        }
+
+        // Get total count from count query
+        var total = await countQuery.LongCountAsync(cancellationToken);
+
+        // Apply sorting to data query
+        dataQuery = ApplySort(dataQuery, sort, GetSortExpression, p => p.Id);
+
+        // Apply pagination and execute
+        var entities = await dataQuery
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        // Map to domain entities
+        var permissions = Mapper.Map<List<Permission>>(entities);
+
+        return (permissions, total);
+    }
+
+    private Expression<Func<PermissionEf, object>> GetSortExpression(string fieldName)
+    {
+        return fieldName switch
+        {
+            "id" => p => p.Id,
+            "resource" => p => p.Resource,
+            "action" => p => p.Action,
+            "description" => p => p.Description ?? "",
+            "createdat" => p => p.CreatedAt,
+            "updatedat" => p => p.UpdatedAt ?? DateTime.MinValue,
+            _ => throw new InvalidOperationException($"Field '{fieldName}' cannot be used for sorting")
+        };
     }
 }

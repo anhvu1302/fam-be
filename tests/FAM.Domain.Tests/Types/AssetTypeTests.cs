@@ -1,7 +1,6 @@
-using FluentAssertions;
 using FAM.Domain.Common;
 using FAM.Domain.Types;
-using Xunit;
+using FluentAssertions;
 
 namespace FAM.Domain.Tests.Types;
 

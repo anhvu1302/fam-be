@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using FAM.Domain.Common;
 
 namespace FAM.Domain.ValueObjects;
@@ -31,7 +32,7 @@ public sealed class Email : ValueObject
     {
         try
         {
-            var addr = new System.Net.Mail.MailAddress(email);
+            var addr = new MailAddress(email);
             return addr.Address == email;
         }
         catch

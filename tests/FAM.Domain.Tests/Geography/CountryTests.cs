@@ -1,8 +1,6 @@
-using FluentAssertions;
 using FAM.Domain.Common;
 using FAM.Domain.Geography;
-using FAM.Domain.ValueObjects;
-using Xunit;
+using FluentAssertions;
 
 namespace FAM.Domain.Tests.Geography;
 

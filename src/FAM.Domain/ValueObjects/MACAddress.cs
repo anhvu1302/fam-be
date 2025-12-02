@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using FAM.Domain.Common;
 
 namespace FAM.Domain.ValueObjects;
@@ -36,7 +37,7 @@ public sealed class MACAddress : ValueObject
         var cleanMac = mac.Replace(":", "").Replace("-", "").Replace(".", "");
 
         // Must be exactly 12 hexadecimal characters
-        if (cleanMac.Length != 12 || !System.Text.RegularExpressions.Regex.IsMatch(cleanMac, "^[0-9A-F]{12}$"))
+        if (cleanMac.Length != 12 || !Regex.IsMatch(cleanMac, "^[0-9A-F]{12}$"))
             return MACAddressFormat.Invalid;
 
         // Determine format based on separators

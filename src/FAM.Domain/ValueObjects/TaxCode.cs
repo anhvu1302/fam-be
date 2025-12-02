@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using FAM.Domain.Common;
 
 namespace FAM.Domain.ValueObjects;
@@ -31,7 +32,7 @@ public sealed class TaxCode : ValueObject
             throw new DomainException(ErrorCodes.VO_TAX_CODE_TOO_LONG);
 
         // Basic validation for Vietnamese tax code format (simplified)
-        if (!System.Text.RegularExpressions.Regex.IsMatch(taxCode, @"^[0-9\-]+$"))
+        if (!Regex.IsMatch(taxCode, @"^[0-9\-]+$"))
             throw new DomainException(ErrorCodes.VO_TAX_CODE_INVALID);
 
         return new TaxCode(taxCode);

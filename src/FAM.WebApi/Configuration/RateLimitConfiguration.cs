@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace FAM.WebApi.Configuration;
 

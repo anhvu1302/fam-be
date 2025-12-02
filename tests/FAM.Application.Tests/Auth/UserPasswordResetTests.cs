@@ -1,7 +1,6 @@
 using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
 using FluentAssertions;
-using Xunit;
 
 namespace FAM.Application.Tests.Auth;
 

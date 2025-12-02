@@ -1,6 +1,20 @@
 using System.Linq.Expressions;
+using FAM.Domain.Common;
 
 namespace FAM.Domain.Abstractions;
+
+/// <summary>
+/// Generic repository interface for junction entities (many-to-many relationships)
+/// Junction entities don't have Id, they use composite keys
+/// </summary>
+public interface IJunctionRepository<T> where T : class
+{
+    Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
+
+    Task AddAsync(T entity, CancellationToken cancellationToken = default);
+    void Delete(T entity);
+}
 
 /// <summary>
 /// Generic repository interface cho tất cả aggregates
@@ -20,14 +34,14 @@ public interface IRepository<T, TId> where T : class
 
     /// <summary>
     /// Get entities with filtering, sorting and pagination applied at database level.
-    /// Default implementation throws NotImplementedException - override in repository that needs paging.
+    /// Follows auth-service pattern for efficient querying.
     /// </summary>
-    Task<(List<T> Items, int Total)> GetPagedAsync(
+    Task<(IEnumerable<T> Items, long Total)> GetPagedAsync(
         Expression<Func<T, bool>>? filter,
         string? sort,
         int page,
         int pageSize,
-        Expression<Func<T, object>>[]? includes = null,
+        IEnumerable<Expression<Func<T, object>>>? includes = null,
         CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException(
@@ -38,7 +52,7 @@ public interface IRepository<T, TId> where T : class
 /// <summary>
 /// Repository for entities with long Id (backward compatibility)
 /// </summary>
-public interface IRepository<T> : IRepository<T, long> where T : Common.BaseEntity
+public interface IRepository<T> : IRepository<T, long> where T : BaseEntity
 {
 }
 
@@ -57,6 +71,6 @@ public interface IQueryableRepository<T, TId> : IRepository<T, TId> where T : cl
 /// <summary>
 /// Queryable repository for entities with long Id (backward compatibility)
 /// </summary>
-public interface IQueryableRepository<T> : IQueryableRepository<T, long>, IRepository<T> where T : Common.BaseEntity
+public interface IQueryableRepository<T> : IQueryableRepository<T, long>, IRepository<T> where T : BaseEntity
 {
 }

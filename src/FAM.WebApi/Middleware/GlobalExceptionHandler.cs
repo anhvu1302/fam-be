@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using FAM.Domain.Common;
+using Microsoft.AspNetCore.Diagnostics;
 using Serilog.Context;
 
 namespace FAM.WebApi.Middleware;
@@ -107,7 +107,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             JsonSerializer.Serialize(problemDetails, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             }),
             cancellationToken);
 

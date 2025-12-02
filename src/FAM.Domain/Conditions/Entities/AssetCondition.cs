@@ -1,3 +1,4 @@
+using FAM.Domain.Assets;
 using FAM.Domain.Common;
 
 namespace FAM.Domain.Conditions;
@@ -11,7 +12,7 @@ public class AssetCondition : Entity
     public string? Description { get; private set; }
 
     // Navigation properties
-    public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
+    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
 
     private AssetCondition()
     {

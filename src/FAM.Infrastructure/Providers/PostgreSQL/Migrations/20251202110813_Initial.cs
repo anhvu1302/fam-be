@@ -57,9 +57,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     total_value = table.Column<decimal>(type: "numeric(18,2)", nullable: true),
                     internal_notes = table.Column<string>(type: "text", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -81,9 +84,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -102,9 +108,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     color = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
                     order_no = table.Column<int>(type: "integer", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -181,9 +190,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     internal_notes = table.Column<string>(type: "text", nullable: true),
                     procurement_notes = table.Column<string>(type: "text", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -208,9 +220,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     color = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
                     order_no = table.Column<int>(type: "integer", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -242,9 +257,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     badge_variant = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     metadata = table.Column<string>(type: "text", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -267,9 +285,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     parent_id = table.Column<long>(type: "bigint", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -290,10 +311,14 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     resource = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     action = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -310,10 +335,14 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "text", nullable: true),
                     rank = table.Column<int>(type: "integer", nullable: false),
+                    is_system_role = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -341,9 +370,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     last_used_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -373,9 +405,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     metadata = table.Column<string>(type: "text", nullable: true),
                     last_modified_by = table.Column<long>(type: "bigint", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -403,11 +438,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     user_id = table.Column<int>(type: "integer", nullable: false),
                     idempotency_key = table.Column<string>(type: "text", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -427,9 +462,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     color = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
                     order_no = table.Column<int>(type: "integer", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -472,9 +510,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     receive_notifications = table.Column<bool>(type: "boolean", nullable: false),
                     receive_marketing_emails = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -493,9 +534,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     address = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     established_on = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -519,9 +563,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     headcount = table.Column<int>(type: "integer", nullable: true),
                     budget_year = table.Column<decimal>(type: "numeric", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -544,9 +591,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     node_id = table.Column<long>(type: "bigint", nullable: false),
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -563,18 +613,14 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 name: "role_permissions",
                 columns: table => new
                 {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     role_id = table.Column<long>(type: "bigint", nullable: false),
                     permission_id = table.Column<long>(type: "bigint", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    granted_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_role_permissions", x => x.id);
+                    table.PrimaryKey("PK_role_permissions", x => new { x.role_id, x.permission_id });
                     table.ForeignKey(
                         name: "fk_role_permissions_permissions_permission_id",
                         column: x => x.permission_id,
@@ -625,11 +671,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     population = table.Column<long>(type: "bigint", nullable: true),
                     area = table.Column<decimal>(type: "numeric", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -673,9 +719,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     refresh_token = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     refresh_token_expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -692,19 +741,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 name: "user_node_roles",
                 columns: table => new
                 {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     user_id = table.Column<long>(type: "bigint", nullable: false),
                     node_id = table.Column<long>(type: "bigint", nullable: false),
                     role_id = table.Column<long>(type: "bigint", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    start_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    end_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    assigned_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_user_node_roles", x => x.id);
+                    table.PrimaryKey("PK_user_node_roles", x => new { x.user_id, x.node_id, x.role_id });
                     table.ForeignKey(
                         name: "fk_user_node_roles_org_nodes_node_id",
                         column: x => x.node_id,
@@ -742,9 +789,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     CountryEfId = table.Column<long>(type: "bigint", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -843,11 +893,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     minimum_order_quantity = table.Column<string>(type: "text", nullable: true),
                     CountryEfId = table.Column<long>(type: "bigint", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -1012,11 +1062,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     references = table.Column<string>(type: "text", nullable: true),
                     CountryEfId = table.Column<long>(type: "bigint", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -1142,11 +1192,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     tags = table.Column<string>(type: "text", nullable: true),
                     keywords = table.Column<string>(type: "text", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -1277,9 +1327,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     internal_notes = table.Column<string>(type: "text", nullable: true),
                     CountryEfId = table.Column<long>(type: "bigint", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1389,11 +1442,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     by_user_id = table.Column<long>(type: "bigint", nullable: true),
                     comments = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -1440,11 +1493,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     uploaded_by = table.Column<long>(type: "bigint", nullable: true),
                     uploaded_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -1495,11 +1548,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     payload = table.Column<string>(type: "text", nullable: true),
                     note = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -1552,11 +1605,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     amount = table.Column<decimal>(type: "numeric", nullable: false),
                     book_value_after = table.Column<decimal>(type: "numeric", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -2158,13 +2211,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 column: "permission_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_role_permissions_role_permission",
-                table: "role_permissions",
-                columns: new[] { "role_id", "permission_id" },
-                unique: true,
-                filter: "is_deleted = false");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_roles_code",
                 table: "roles",
                 column: "code",
@@ -2317,13 +2363,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 name: "ix_user_node_roles_user_id",
                 table: "user_node_roles",
                 column: "user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_user_node_roles_user_node_role",
-                table: "user_node_roles",
-                columns: new[] { "user_id", "node_id", "role_id" },
-                unique: true,
-                filter: "is_deleted = false");
 
             migrationBuilder.CreateIndex(
                 name: "ix_users_email",

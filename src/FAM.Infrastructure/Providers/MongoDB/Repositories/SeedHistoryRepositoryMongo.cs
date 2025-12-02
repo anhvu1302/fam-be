@@ -1,4 +1,5 @@
 using FAM.Infrastructure.Common.Seeding;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace FAM.Infrastructure.Providers.MongoDB.Repositories;
@@ -67,7 +68,7 @@ public class SeedHistoryRepositoryMongo : ISeedHistoryRepository
 
 public class SeedHistoryMongo
 {
-    public string Id { get; set; } = global::MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+    public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
     public string SeederName { get; set; } = string.Empty;
     public DateTime ExecutedAt { get; set; }
     public string ExecutedBy { get; set; } = "System";

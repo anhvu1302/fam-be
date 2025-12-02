@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 {
     [DbContext(typeof(PostgreSqlDbContext))]
-    [Migration("20251130052334_Initial")]
+    [Migration("20251202110813_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -177,6 +177,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<string>("DefaultDepreciationMethod")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
@@ -193,6 +197,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("DepreciationAccountCode")
                         .HasMaxLength(50)
@@ -319,6 +327,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
                     b.Property<string>("ValuationMethod")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
@@ -360,9 +372,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -384,6 +404,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
                         .HasName("pk_asset_conditions");
@@ -470,6 +494,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("created_by");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<decimal?>("CurrentBookValue")
                         .HasColumnType("numeric")
                         .HasColumnName("current_book_value");
@@ -489,6 +517,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<int?>("DepartmentId")
                         .HasColumnType("integer")
@@ -741,6 +773,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("updated_by");
 
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
                     b.Property<long?>("UsageStatusId")
                         .HasColumnType("bigint")
                         .HasColumnName("usage_status_id");
@@ -969,9 +1005,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -997,6 +1041,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
                         .HasName("pk_asset_event_types");
@@ -1078,6 +1126,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<string>("CustomFieldsSchema")
                         .HasColumnType("text")
                         .HasColumnName("custom_fields_schema");
@@ -1116,6 +1168,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("DepreciationAccountCode")
                         .HasMaxLength(50)
@@ -1301,6 +1357,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.Property<string>("ValuationCurrency")
                         .HasMaxLength(3)
@@ -1539,9 +1599,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("Domain")
                         .HasMaxLength(255)
@@ -1570,6 +1638,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
                         .HasName("pk_company_details");
@@ -1810,9 +1882,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<int?>("Headcount")
                         .HasColumnType("integer")
@@ -1831,6 +1911,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
                         .HasName("pk_department_details");
@@ -1957,9 +2041,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -1985,6 +2077,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
                         .HasName("pk_lifecycle_statuses");
@@ -2026,9 +2122,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -2069,6 +2173,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
                         .HasName("pk_locations");
@@ -2454,6 +2562,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<string>("CssClass")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
@@ -2462,6 +2574,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -2540,6 +2656,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
                         .HasName("pk_menu_items");
@@ -2997,9 +3117,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -3024,6 +3152,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
                         .HasName("pk_org_nodes");
@@ -3056,9 +3188,21 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -3075,6 +3219,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
                         .HasName("pk_permissions");
@@ -3100,9 +3248,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -3129,6 +3285,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
                         .HasName("pk_resources");
@@ -3161,9 +3321,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("Description")
                         .HasColumnType("text")
@@ -3174,6 +3342,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsSystemRole")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_system_role");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -3188,6 +3360,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
                         .HasName("pk_roles");
@@ -3205,49 +3381,28 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
             modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.RolePermissionEf", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<long>("RoleId")
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("role_id");
 
                     b.Property<long>("PermissionId")
                         .HasColumnType("bigint")
                         .HasColumnName("permission_id");
 
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("role_id");
-
-                    b.Property<DateTime?>("UpdatedAt")
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.HasKey("Id")
-                        .HasName("pk_role_permissions");
+                    b.Property<long?>("GrantedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("granted_by_id");
+
+                    b.HasKey("RoleId", "PermissionId");
 
                     b.HasIndex("PermissionId")
                         .HasDatabaseName("ix_role_permissions_permission_id");
-
-                    b.HasIndex("RoleId", "PermissionId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_role_permissions_role_permission")
-                        .HasFilter("is_deleted = false");
 
                     b.ToTable("role_permissions");
                 });
@@ -3271,9 +3426,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -3344,6 +3507,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.Property<string>("Use")
                         .IsRequired()
@@ -3970,6 +4137,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<int>("DataType")
                         .HasColumnType("integer")
                         .HasColumnName("data_type");
@@ -3981,6 +4152,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -4051,6 +4226,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
                     b.Property<string>("ValidationRules")
                         .HasColumnType("text")
                         .HasColumnName("validation_rules");
@@ -4100,9 +4279,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -4128,6 +4315,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
                         .HasName("pk_usage_statuses");
@@ -4157,9 +4348,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("DeviceId")
                         .IsRequired()
@@ -4233,6 +4432,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
                     b.Property<string>("UserAgent")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
@@ -4286,6 +4489,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("date_of_birth");
@@ -4293,6 +4500,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -4409,6 +4620,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -4433,26 +4648,9 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
             modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserNodeRoleEf", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("user_id");
 
                     b.Property<long>("NodeId")
                         .HasColumnType("bigint")
@@ -4462,16 +4660,25 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("role_id");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long>("UserId")
+                    b.Property<long?>("AssignedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("user_id");
+                        .HasColumnName("assigned_by_id");
 
-                    b.HasKey("Id")
-                        .HasName("pk_user_node_roles");
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<DateTime?>("EndAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("end_at");
+
+                    b.Property<DateTime?>("StartAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("start_at");
+
+                    b.HasKey("UserId", "NodeId", "RoleId");
 
                     b.HasIndex("NodeId")
                         .HasDatabaseName("ix_user_node_roles_node_id");
@@ -4481,11 +4688,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_user_node_roles_user_id");
-
-                    b.HasIndex("UserId", "NodeId", "RoleId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_user_node_roles_user_node_role")
-                        .HasFilter("is_deleted = false");
 
                     b.ToTable("user_node_roles");
                 });

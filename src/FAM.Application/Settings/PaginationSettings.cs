@@ -9,39 +9,34 @@ public class PaginationSettings
     public const string SectionName = "Pagination";
 
     /// <summary>
-    /// Default page number when not specified. Default: 1
+    ///     Default page size when not specified
     /// </summary>
-    public int DefaultPage { get; set; } = 1;
+    public static int DefaultPageSize { get; set; } = 20;
 
     /// <summary>
-    /// Default number of items per page. Default: 10
+    ///     Maximum allowed page size to prevent performance issues
     /// </summary>
-    public int DefaultPageSize { get; set; } = 10;
+    public static int MaxPageSize { get; set; } = 100;
 
     /// <summary>
-    /// Maximum allowed page size to prevent performance issues. Default: 100
+    ///     Minimum page size
     /// </summary>
-    public int MaxPageSize { get; set; } = 100;
+    public static int MinPageSize { get; } = 1;
 
     /// <summary>
-    /// Normalize page size to be within valid bounds
+    ///     Clamp page size to valid range
     /// </summary>
-    public int NormalizePageSize(int? requestedSize)
+    public static int ClampPageSize(int pageSize)
     {
-        if (!requestedSize.HasValue || requestedSize.Value <= 0)
-            return DefaultPageSize;
-
-        return Math.Min(requestedSize.Value, MaxPageSize);
+        if (pageSize <= 0) return DefaultPageSize;
+        return Math.Clamp(pageSize, MinPageSize, MaxPageSize);
     }
 
     /// <summary>
-    /// Normalize page number to be at least 1
+    ///     Ensure valid page number (1-based)
     /// </summary>
-    public int NormalizePage(int? requestedPage)
+    public static int EnsureValidPage(int page)
     {
-        if (!requestedPage.HasValue || requestedPage.Value <= 0)
-            return DefaultPage;
-
-        return requestedPage.Value;
+        return Math.Max(1, page);
     }
 }

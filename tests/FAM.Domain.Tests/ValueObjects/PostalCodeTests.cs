@@ -1,6 +1,6 @@
-using FluentAssertions;
-using FAM.Domain.ValueObjects;
 using FAM.Domain.Common;
+using FAM.Domain.ValueObjects;
+using FluentAssertions;
 
 namespace FAM.Domain.Tests.ValueObjects;
 

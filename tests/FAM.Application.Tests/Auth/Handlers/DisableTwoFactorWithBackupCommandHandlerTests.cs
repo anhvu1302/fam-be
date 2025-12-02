@@ -1,3 +1,4 @@
+using System.Text.Json;
 using FAM.Application.Auth.Commands;
 using FAM.Application.Auth.Handlers;
 using FAM.Domain.Abstractions;
@@ -6,7 +7,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OtpNet;
-using Xunit;
 
 namespace FAM.Application.Tests.Auth.Handlers;
 
@@ -44,7 +44,7 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
-        var backupCodesJson = System.Text.Json.JsonSerializer.Serialize(new List<string> { hashedBackupCode });
+        var backupCodesJson = JsonSerializer.Serialize(new List<string> { hashedBackupCode });
         user.EnableTwoFactor(base32Secret, backupCodesJson);
 
         _mockUserRepository
@@ -87,7 +87,7 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
-        var backupCodesJson = System.Text.Json.JsonSerializer.Serialize(new List<string> { hashedBackupCode });
+        var backupCodesJson = JsonSerializer.Serialize(new List<string> { hashedBackupCode });
         user.EnableTwoFactor(base32Secret, backupCodesJson);
 
         _mockUserRepository
@@ -126,7 +126,7 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
-        var backupCodesJson = System.Text.Json.JsonSerializer.Serialize(new List<string> { hashedBackupCode });
+        var backupCodesJson = JsonSerializer.Serialize(new List<string> { hashedBackupCode });
         user.EnableTwoFactor(base32Secret, backupCodesJson);
 
         _mockUserRepository
@@ -222,7 +222,7 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
         var backupCodesJson =
-            System.Text.Json.JsonSerializer.Serialize(new List<string> { hashedCode1, hashedCode2, hashedCode3 });
+            JsonSerializer.Serialize(new List<string> { hashedCode1, hashedCode2, hashedCode3 });
         user.EnableTwoFactor(base32Secret, backupCodesJson);
 
         _mockUserRepository

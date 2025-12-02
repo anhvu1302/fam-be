@@ -1,8 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using FAM.Domain.Categories;
-using FAM.Domain.ValueObjects;
-using FAM.Infrastructure.PersistenceModels.Ef;
 
 namespace FAM.Infrastructure.PersistenceModels.Ef;
 

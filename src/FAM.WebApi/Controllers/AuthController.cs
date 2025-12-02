@@ -1,14 +1,17 @@
+using System.Net;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using FAM.Application.Auth.Commands;
 using FAM.Application.Auth.DTOs;
 using FAM.Application.Auth.Queries;
 using FAM.Application.Common.Services;
 using FAM.WebApi.Configuration;
-using WebApiContracts = FAM.WebApi.Contracts.Auth;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using System.Security.Claims;
+using WebApiContracts = FAM.WebApi.Contracts.Auth;
 
 namespace FAM.WebApi.Controllers;
 
@@ -743,7 +746,7 @@ public class AuthController : ControllerBase
             {
                 var clientIp = ips[0];
                 // Validate it's a proper IP address
-                if (System.Net.IPAddress.TryParse(clientIp, out _)) return clientIp;
+                if (IPAddress.TryParse(clientIp, out _)) return clientIp;
             }
         }
 
@@ -772,8 +775,8 @@ public class AuthController : ControllerBase
         // Generate a unique device ID based on user agent and IP
         var userAgent = Request.Headers["User-Agent"].ToString();
         var ip = GetClientIpAddress();
-        var hash = System.Security.Cryptography.SHA256.HashData(
-            System.Text.Encoding.UTF8.GetBytes($"{userAgent}_{ip}_{DateTime.UtcNow.Ticks}"));
+        var hash = SHA256.HashData(
+            Encoding.UTF8.GetBytes($"{userAgent}_{ip}_{DateTime.UtcNow.Ticks}"));
         return Convert.ToBase64String(hash)[..32];
     }
 

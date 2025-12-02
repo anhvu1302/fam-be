@@ -1,4 +1,4 @@
-using FAM.Application.Auth.DTOs;
+using System.Security.Claims;
 
 namespace FAM.Application.Auth.Services;
 
@@ -42,7 +42,7 @@ public interface IJwtService
     /// <summary>
     /// Validate JWT token and return ClaimsPrincipal
     /// </summary>
-    System.Security.Claims.ClaimsPrincipal? ValidateTokenAndGetPrincipal(string token);
+    ClaimsPrincipal? ValidateTokenAndGetPrincipal(string token);
 
     /// <summary>
     /// Get user ID from token

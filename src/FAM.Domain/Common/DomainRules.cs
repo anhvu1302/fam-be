@@ -1,3 +1,6 @@
+using System.Net.Mail;
+using System.Text.RegularExpressions;
+
 namespace FAM.Domain.Common;
 
 /// <summary>
@@ -23,7 +26,7 @@ public static class DomainRules
         public static bool IsValidFormat(string username)
         {
             return !string.IsNullOrWhiteSpace(username)
-                   && System.Text.RegularExpressions.Regex.IsMatch(username, Pattern);
+                   && Regex.IsMatch(username, Pattern);
         }
 
         /// <summary>
@@ -62,7 +65,7 @@ public static class DomainRules
         /// </summary>
         public static bool HasUppercase(string password)
         {
-            return System.Text.RegularExpressions.Regex.IsMatch(password, UppercasePattern);
+            return Regex.IsMatch(password, UppercasePattern);
         }
 
         /// <summary>
@@ -70,7 +73,7 @@ public static class DomainRules
         /// </summary>
         public static bool HasLowercase(string password)
         {
-            return System.Text.RegularExpressions.Regex.IsMatch(password, LowercasePattern);
+            return Regex.IsMatch(password, LowercasePattern);
         }
 
         /// <summary>
@@ -78,7 +81,7 @@ public static class DomainRules
         /// </summary>
         public static bool HasDigit(string password)
         {
-            return System.Text.RegularExpressions.Regex.IsMatch(password, DigitPattern);
+            return Regex.IsMatch(password, DigitPattern);
         }
 
         /// <summary>
@@ -86,7 +89,7 @@ public static class DomainRules
         /// </summary>
         public static bool HasSpecialChar(string password)
         {
-            return System.Text.RegularExpressions.Regex.IsMatch(password, SpecialCharPattern);
+            return Regex.IsMatch(password, SpecialCharPattern);
         }
 
         /// <summary>
@@ -121,7 +124,7 @@ public static class DomainRules
             if (string.IsNullOrWhiteSpace(email)) return false;
             try
             {
-                var addr = new System.Net.Mail.MailAddress(email);
+                var addr = new MailAddress(email);
                 return addr.Address == email;
             }
             catch
@@ -195,7 +198,7 @@ public static class DomainRules
         {
             return !string.IsNullOrWhiteSpace(domain)
                    && domain.Length <= MaxLength
-                   && System.Text.RegularExpressions.Regex.IsMatch(domain, Pattern);
+                   && Regex.IsMatch(domain, Pattern);
         }
     }
 
@@ -216,7 +219,7 @@ public static class DomainRules
         public static bool IsValidFormat(string code)
         {
             return !string.IsNullOrWhiteSpace(code)
-                   && System.Text.RegularExpressions.Regex.IsMatch(code, Pattern);
+                   && Regex.IsMatch(code, Pattern);
         }
     }
 
@@ -268,7 +271,7 @@ public static class DomainRules
         public static bool IsValidFormat(string taxCode)
         {
             return !string.IsNullOrWhiteSpace(taxCode)
-                   && System.Text.RegularExpressions.Regex.IsMatch(taxCode, Pattern);
+                   && Regex.IsMatch(taxCode, Pattern);
         }
     }
 

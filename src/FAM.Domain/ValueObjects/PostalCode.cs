@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using FAM.Domain.Common;
 
 namespace FAM.Domain.ValueObjects;
@@ -50,7 +51,7 @@ public sealed class PostalCode : ValueObject
             @"^\d{4,6}$" // General numeric
         };
 
-        return patterns.Any(pattern => System.Text.RegularExpressions.Regex.IsMatch(postalCode, pattern));
+        return patterns.Any(pattern => Regex.IsMatch(postalCode, pattern));
     }
 
     /// <summary>
@@ -58,7 +59,7 @@ public sealed class PostalCode : ValueObject
     /// </summary>
     public bool IsVietnamesePostalCode()
     {
-        return System.Text.RegularExpressions.Regex.IsMatch(Value, @"^\d{4,6}$");
+        return Regex.IsMatch(Value, @"^\d{4,6}$");
     }
 
     /// <summary>
@@ -66,7 +67,7 @@ public sealed class PostalCode : ValueObject
     /// </summary>
     public bool IsUSPostalCode()
     {
-        return System.Text.RegularExpressions.Regex.IsMatch(Value, @"^\d{5}$");
+        return Regex.IsMatch(Value, @"^\d{5}$");
     }
 
     /// <summary>

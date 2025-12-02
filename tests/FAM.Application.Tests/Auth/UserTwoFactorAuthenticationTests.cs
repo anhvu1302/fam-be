@@ -1,8 +1,5 @@
 using FAM.Domain.Users;
-using FAM.Domain.ValueObjects;
 using FluentAssertions;
-using System.Text.Json;
-using Xunit;
 
 namespace FAM.Application.Tests.Auth;
 

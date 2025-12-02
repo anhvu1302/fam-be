@@ -1,11 +1,8 @@
-using FAM.Application.Common;
 using FAM.Application.Users.Commands.CreateUser;
-using FAM.Application.Users.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
 using FluentAssertions;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.Users.Handlers;
 

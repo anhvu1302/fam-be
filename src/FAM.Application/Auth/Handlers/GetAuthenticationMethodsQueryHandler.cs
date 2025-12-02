@@ -1,9 +1,9 @@
+using System.Text.Json;
 using FAM.Application.Auth.DTOs;
 using FAM.Application.Auth.Queries;
 using FAM.Domain.Abstractions;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace FAM.Application.Auth.Handlers;
 

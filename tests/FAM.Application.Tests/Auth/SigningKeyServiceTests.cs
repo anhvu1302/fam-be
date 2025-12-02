@@ -1,6 +1,4 @@
 using System.Security.Cryptography;
-using FAM.Application.Auth.DTOs;
-using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common;
@@ -8,7 +6,6 @@ using FAM.Infrastructure.Auth;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.Auth;
 

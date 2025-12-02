@@ -1,6 +1,5 @@
+using FAM.Infrastructure.Common.Options;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
-using System.IO;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL;
 
@@ -38,7 +37,7 @@ public class DesignTimePostgreSqlDbContextFactory : IDesignTimeDbContextFactory<
         var enableSensitiveDataLogging =
             bool.Parse(Environment.GetEnvironmentVariable("ENABLE_SENSITIVE_DATA_LOGGING") ?? "false");
 
-        var options = new Common.Options.PostgreSqlOptions
+        var options = new PostgreSqlOptions
         {
             ConnectionString = connectionString,
             EnableDetailedErrors = enableDetailedErrors,

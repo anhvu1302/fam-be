@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using FAM.Application.Menu.DTOs;
 using FAM.Application.Menu.Services;
 using FAM.Domain.Common;
@@ -56,7 +57,7 @@ public class MenusController : ControllerBase
             .ToList();
 
         var roles = User.Claims
-            .Where(c => c.Type == System.Security.Claims.ClaimTypes.Role)
+            .Where(c => c.Type == ClaimTypes.Role)
             .Select(c => c.Value)
             .ToList();
 

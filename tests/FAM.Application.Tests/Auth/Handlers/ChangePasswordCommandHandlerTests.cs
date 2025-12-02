@@ -1,11 +1,11 @@
 using FAM.Application.Auth.Commands;
 using FAM.Application.Auth.Handlers;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common;
 using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
 using FluentAssertions;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.Auth.Handlers;
 
@@ -198,7 +198,7 @@ public class ChangePasswordCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<FAM.Domain.Common.DomainException>();
+        await act.Should().ThrowAsync<DomainException>();
 
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Never);
     }

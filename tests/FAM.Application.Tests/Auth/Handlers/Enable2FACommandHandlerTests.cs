@@ -4,7 +4,6 @@ using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
 using FluentAssertions;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.Auth.Handlers;
 

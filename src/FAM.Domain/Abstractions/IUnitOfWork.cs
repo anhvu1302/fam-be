@@ -5,8 +5,21 @@ namespace FAM.Domain.Abstractions;
 /// </summary>
 public interface IUnitOfWork : IDisposable
 {
+    // User repositories
     IUserRepository Users { get; }
     IUserDeviceRepository UserDevices { get; }
+
+    // Authorization repositories
+    IRoleRepository Roles { get; }
+    IPermissionRepository Permissions { get; }
+    IRolePermissionRepository RolePermissions { get; }
+    IUserNodeRoleRepository UserNodeRoles { get; }
+    IResourceRepository Resources { get; }
+
+    // Organization repositories
+    IOrgNodeRepository OrgNodes { get; }
+
+    // System repositories
     ISigningKeyRepository SigningKeys { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

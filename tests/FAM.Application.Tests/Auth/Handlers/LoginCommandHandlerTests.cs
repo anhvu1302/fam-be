@@ -2,13 +2,13 @@ using FAM.Application.Auth.Commands;
 using FAM.Application.Auth.Handlers;
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Authorization;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
 using FAM.Domain.ValueObjects;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.Auth.Handlers;
 
@@ -18,6 +18,7 @@ public class LoginCommandHandlerTests
     private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly Mock<IUserDeviceRepository> _mockUserDeviceRepository;
     private readonly Mock<IJwtService> _mockJwtService;
+    private readonly Mock<ISigningKeyService> _mockSigningKeyService;
     private readonly Mock<ILogger<LoginCommandHandler>> _mockLogger;
     private readonly LoginCommandHandler _handler;
 
@@ -27,12 +28,17 @@ public class LoginCommandHandlerTests
         _mockUserRepository = new Mock<IUserRepository>();
         _mockUserDeviceRepository = new Mock<IUserDeviceRepository>();
         _mockJwtService = new Mock<IJwtService>();
+        _mockSigningKeyService = new Mock<ISigningKeyService>();
         _mockLogger = new Mock<ILogger<LoginCommandHandler>>();
 
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
         _mockUnitOfWork.Setup(x => x.UserDevices).Returns(_mockUserDeviceRepository.Object);
 
-        _handler = new LoginCommandHandler(_mockUnitOfWork.Object, _mockJwtService.Object, _mockLogger.Object);
+        _handler = new LoginCommandHandler(
+            _mockUnitOfWork.Object,
+            _mockJwtService.Object,
+            _mockSigningKeyService.Object,
+            _mockLogger.Object);
     }
 
     [Fact]
@@ -73,9 +79,26 @@ public class LoginCommandHandlerTests
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
+        // Mock signing key
+        var mockSigningKey = SigningKey.Create(
+            "test_key_id",
+            "-----BEGIN PUBLIC KEY-----\ntest\n-----END PUBLIC KEY-----",
+            "-----BEGIN RSA PRIVATE KEY-----\ntest\n-----END RSA PRIVATE KEY-----",
+            "RS256");
+
+        _mockSigningKeyService
+            .Setup(x => x.GetOrCreateActiveKeyAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockSigningKey);
+
         _mockJwtService
-            .Setup(x => x.GenerateAccessToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<List<string>>()))
+            .Setup(x => x.GenerateAccessTokenWithRsa(
+                It.IsAny<long>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<IEnumerable<string>>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
             .Returns("access_token");
 
         _mockJwtService
@@ -246,9 +269,26 @@ public class LoginCommandHandlerTests
             .Setup(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
+        // Mock signing key
+        var mockSigningKey = SigningKey.Create(
+            "test_key_id",
+            "-----BEGIN PUBLIC KEY-----\ntest\n-----END PUBLIC KEY-----",
+            "-----BEGIN RSA PRIVATE KEY-----\ntest\n-----END RSA PRIVATE KEY-----",
+            "RS256");
+
+        _mockSigningKeyService
+            .Setup(x => x.GetOrCreateActiveKeyAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockSigningKey);
+
         _mockJwtService
-            .Setup(x => x.GenerateAccessToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<List<string>>()))
+            .Setup(x => x.GenerateAccessTokenWithRsa(
+                It.IsAny<long>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<IEnumerable<string>>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
             .Returns("2fa_session_token");
 
         // Act
@@ -303,9 +343,26 @@ public class LoginCommandHandlerTests
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
 
+        // Mock signing key
+        var mockSigningKey = SigningKey.Create(
+            "test_key_id",
+            "-----BEGIN PUBLIC KEY-----\ntest\n-----END PUBLIC KEY-----",
+            "-----BEGIN RSA PRIVATE KEY-----\ntest\n-----END RSA PRIVATE KEY-----",
+            "RS256");
+
+        _mockSigningKeyService
+            .Setup(x => x.GetOrCreateActiveKeyAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockSigningKey);
+
         _mockJwtService
-            .Setup(x => x.GenerateAccessToken(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<List<string>>()))
+            .Setup(x => x.GenerateAccessTokenWithRsa(
+                It.IsAny<long>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<IEnumerable<string>>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()))
             .Returns("access_token");
 
         _mockJwtService

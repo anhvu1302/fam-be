@@ -1,5 +1,4 @@
 using MediatR;
-using System.IO;
 
 namespace FAM.Application.Users.Commands;
 

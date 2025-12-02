@@ -95,7 +95,7 @@ public sealed record UserDeviceResponse(
 /// Response for user node role reference
 /// </summary>
 public sealed record UserNodeRoleResponse(
-    long Id,
+    long UserId,
     long NodeId,
     string? NodeName,
     long RoleId,

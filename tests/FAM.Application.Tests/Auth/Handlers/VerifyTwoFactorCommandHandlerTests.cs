@@ -8,7 +8,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OtpNet;
-using Xunit;
 
 namespace FAM.Application.Tests.Auth.Handlers;
 

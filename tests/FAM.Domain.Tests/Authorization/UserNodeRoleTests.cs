@@ -1,8 +1,8 @@
-using FluentAssertions;
 using FAM.Domain.Authorization;
+using FAM.Domain.Common;
 using FAM.Domain.Organizations;
 using FAM.Domain.Users;
-using FAM.Domain.Common;
+using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Authorization;
 

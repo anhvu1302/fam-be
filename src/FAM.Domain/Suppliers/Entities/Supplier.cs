@@ -1,4 +1,6 @@
+using FAM.Domain.Assets;
 using FAM.Domain.Common;
+using FAM.Domain.Geography;
 using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Suppliers;
@@ -170,8 +172,8 @@ public class Supplier : Entity
 
     // Navigation properties
     // public Companies.Company? Company { get; set; }
-    public Geography.Country? Country { get; set; }
-    public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
+    public Country? Country { get; set; }
+    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
 
     private Supplier()
     {

@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace FAM.Domain.Abstractions;
 
 /// <summary>
@@ -5,7 +7,7 @@ namespace FAM.Domain.Abstractions;
 /// </summary>
 public interface ISpecification<T>
 {
-    System.Linq.Expressions.Expression<Func<T, bool>> ToExpression();
+    Expression<Func<T, bool>> ToExpression();
     bool IsSatisfiedBy(T entity);
 }
 
@@ -14,7 +16,7 @@ public interface ISpecification<T>
 /// </summary>
 public abstract class Specification<T> : ISpecification<T>
 {
-    public abstract System.Linq.Expressions.Expression<Func<T, bool>> ToExpression();
+    public abstract Expression<Func<T, bool>> ToExpression();
 
     public bool IsSatisfiedBy(T entity)
     {
@@ -50,16 +52,16 @@ internal class AndSpecification<T> : Specification<T>
         _right = right;
     }
 
-    public override System.Linq.Expressions.Expression<Func<T, bool>> ToExpression()
+    public override Expression<Func<T, bool>> ToExpression()
     {
         var leftExpr = _left.ToExpression();
         var rightExpr = _right.ToExpression();
-        var param = System.Linq.Expressions.Expression.Parameter(typeof(T));
-        var body = System.Linq.Expressions.Expression.AndAlso(
-            System.Linq.Expressions.Expression.Invoke(leftExpr, param),
-            System.Linq.Expressions.Expression.Invoke(rightExpr, param)
+        var param = Expression.Parameter(typeof(T));
+        var body = Expression.AndAlso(
+            Expression.Invoke(leftExpr, param),
+            Expression.Invoke(rightExpr, param)
         );
-        return System.Linq.Expressions.Expression.Lambda<Func<T, bool>>(body, param);
+        return Expression.Lambda<Func<T, bool>>(body, param);
     }
 }
 
@@ -74,16 +76,16 @@ internal class OrSpecification<T> : Specification<T>
         _right = right;
     }
 
-    public override System.Linq.Expressions.Expression<Func<T, bool>> ToExpression()
+    public override Expression<Func<T, bool>> ToExpression()
     {
         var leftExpr = _left.ToExpression();
         var rightExpr = _right.ToExpression();
-        var param = System.Linq.Expressions.Expression.Parameter(typeof(T));
-        var body = System.Linq.Expressions.Expression.OrElse(
-            System.Linq.Expressions.Expression.Invoke(leftExpr, param),
-            System.Linq.Expressions.Expression.Invoke(rightExpr, param)
+        var param = Expression.Parameter(typeof(T));
+        var body = Expression.OrElse(
+            Expression.Invoke(leftExpr, param),
+            Expression.Invoke(rightExpr, param)
         );
-        return System.Linq.Expressions.Expression.Lambda<Func<T, bool>>(body, param);
+        return Expression.Lambda<Func<T, bool>>(body, param);
     }
 }
 
@@ -96,13 +98,13 @@ internal class NotSpecification<T> : Specification<T>
         _spec = spec;
     }
 
-    public override System.Linq.Expressions.Expression<Func<T, bool>> ToExpression()
+    public override Expression<Func<T, bool>> ToExpression()
     {
         var expr = _spec.ToExpression();
-        var param = System.Linq.Expressions.Expression.Parameter(typeof(T));
-        var body = System.Linq.Expressions.Expression.Not(
-            System.Linq.Expressions.Expression.Invoke(expr, param)
+        var param = Expression.Parameter(typeof(T));
+        var body = Expression.Not(
+            Expression.Invoke(expr, param)
         );
-        return System.Linq.Expressions.Expression.Lambda<Func<T, bool>>(body, param);
+        return Expression.Lambda<Func<T, bool>>(body, param);
     }
 }

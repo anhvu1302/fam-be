@@ -1,6 +1,5 @@
-using FluentAssertions;
 using FAM.Domain.Statuses;
-using Xunit;
+using FluentAssertions;
 
 namespace FAM.Domain.Tests.Statuses;
 

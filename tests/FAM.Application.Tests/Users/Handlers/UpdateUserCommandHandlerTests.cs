@@ -1,12 +1,8 @@
-using FAM.Application.Common;
 using FAM.Application.Users.Commands.UpdateUser;
-using FAM.Application.Users.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
-using FAM.Domain.ValueObjects;
 using FluentAssertions;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.Users.Handlers;
 

@@ -1,20 +1,25 @@
-using FAM.Application.Common.Options;
-using FAM.Application.Querying.Parsing;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using FAM.Application.Auth.Services;
+using FAM.Application.Common.Options;
+using FAM.Application.Common.Services;
+using FAM.Application.Querying.Parsing;
 using FAM.Application.Settings;
+using FAM.Application.Users.Commands.CreateUser;
 using FAM.Infrastructure;
 using FAM.Infrastructure.Auth;
+using FAM.Infrastructure.Services;
 using FAM.WebApi.Configuration;
 using FAM.WebApi.Middleware;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Options;
-using System.Security.Cryptography;
-using Serilog;
-using Serilog.Events;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using Serilog;
+using Serilog.Events;
 
 // Load environment variables from .env file
 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
@@ -97,45 +102,35 @@ builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Fixed Asset Management API",
         Version = "v1",
         Description = "API for managing fixed assets, companies, and users"
     });
 
+    // Enable annotations
+    c.EnableAnnotations();
+
     // Add JWT authentication to Swagger
-    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description =
             "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
         Name = "Authorization",
-        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
 
-    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    c.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
     {
-        {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-            {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
+        [new OpenApiSecuritySchemeReference("Bearer")] = new List<string>()
     });
 });
 
 // Register MediatR (no validation pipeline - validation is at Web API layer)
-builder.Services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(typeof(FAM.Application.Users.Commands.CreateUser.CreateUserCommand).Assembly);
-});
+builder.Services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(CreateUserCommand).Assembly); });
 
 // Register Filter Parser (singleton - stateless)
 builder.Services.AddSingleton<IFilterParser, PrattFilterParser>();
@@ -151,10 +146,10 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 
 // Register Email and OTP Services (Email uses config from .env)
-builder.Services.AddScoped<FAM.Application.Common.Services.IEmailService>(sp =>
+builder.Services.AddScoped<IEmailService>(sp =>
 {
-    var logger = sp.GetRequiredService<ILogger<FAM.Infrastructure.Services.EmailService>>();
-    return new FAM.Infrastructure.Services.EmailService(
+    var logger = sp.GetRequiredService<ILogger<EmailService>>();
+    return new EmailService(
         logger,
         appConfig.SmtpHost,
         appConfig.SmtpPort,
@@ -165,7 +160,7 @@ builder.Services.AddScoped<FAM.Application.Common.Services.IEmailService>(sp =>
         appConfig.EmailFromName
     );
 });
-builder.Services.AddScoped<FAM.Application.Common.Services.IOtpService, FAM.Infrastructure.Services.OtpService>();
+builder.Services.AddScoped<IOtpService, OtpService>();
 
 // Add JWT Authentication using RSA keys from database
 builder.Services.AddAuthentication(options =>
@@ -194,29 +189,70 @@ builder.Services.AddAuthentication(options =>
         {
             OnMessageReceived = async context =>
             {
-                // Get signing key service from request scope
-                var signingKeyService = context.HttpContext.RequestServices
-                    .GetRequiredService<ISigningKeyService>();
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
 
-                // Get JWKS from database
-                var jwks = await signingKeyService.GetJwksAsync(context.HttpContext.RequestAborted);
+                try
+                {
+                    var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                    logger.LogInformation("JWT Token received (first 20 chars): {Token}",
+                        token.Length > 20 ? token.Substring(0, 20) + "..." : token);
 
-                // Convert JWKs to SecurityKeys
-                var keys = new List<SecurityKey>();
-                foreach (var jwk in jwks.Keys)
-                    if (jwk.Kty == "RSA")
-                    {
-                        using var rsa = RSA.Create();
-                        rsa.ImportParameters(new RSAParameters
+                    // Get signing key service from request scope
+                    var signingKeyService = context.HttpContext.RequestServices
+                        .GetRequiredService<ISigningKeyService>();
+
+                    // Get JWKS from database
+                    var jwks = await signingKeyService.GetJwksAsync(context.HttpContext.RequestAborted);
+                    logger.LogInformation("Loaded {Count} keys from database", jwks.Keys.Count);
+
+                    // Convert JWKs to SecurityKeys
+                    var keys = new List<SecurityKey>();
+                    foreach (var jwk in jwks.Keys)
+                        if (jwk.Kty == "RSA")
                         {
-                            Modulus = Base64UrlEncoder.DecodeBytes(jwk.N),
-                            Exponent = Base64UrlEncoder.DecodeBytes(jwk.E)
-                        });
-                        keys.Add(new RsaSecurityKey(rsa) { KeyId = jwk.Kid });
-                    }
+                            var rsa = RSA.Create(); // Don't use 'using' - key needs to live longer
+                            rsa.ImportParameters(new RSAParameters
+                            {
+                                Modulus = Base64UrlEncoder.DecodeBytes(jwk.N),
+                                Exponent = Base64UrlEncoder.DecodeBytes(jwk.E)
+                            });
+                            keys.Add(new RsaSecurityKey(rsa) { KeyId = jwk.Kid });
+                            logger.LogInformation("Added RSA key with Kid: {Kid}", jwk.Kid);
+                        }
 
-                // Set the signing keys for this request
-                context.Options.TokenValidationParameters.IssuerSigningKeys = keys;
+                    // Set the signing keys for this request
+                    context.Options.TokenValidationParameters.IssuerSigningKeys = keys;
+                    logger.LogInformation("Set {Count} signing keys for token validation", keys.Count);
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error loading signing keys from database");
+                }
+            },
+            OnAuthenticationFailed = context =>
+            {
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                logger.LogError(context.Exception, "JWT Authentication failed: {Message}", context.Exception.Message);
+
+                if (context.Exception is SecurityTokenExpiredException)
+                    logger.LogWarning("Token expired at {Expires}",
+                        ((SecurityTokenExpiredException)context.Exception).Expires);
+                else if (context.Exception is SecurityTokenInvalidSignatureException)
+                    logger.LogError("Invalid token signature - key mismatch");
+                else if (context.Exception is SecurityTokenInvalidIssuerException)
+                    logger.LogError("Invalid issuer in token");
+                else if (context.Exception is SecurityTokenInvalidAudienceException)
+                    logger.LogError("Invalid audience in token");
+
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                var userId = context.Principal?.FindFirst("user_id")?.Value ??
+                             context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                logger.LogInformation("JWT Token validated successfully for user: {UserId}", userId ?? "Unknown");
+                return Task.CompletedTask;
             }
         };
     });

@@ -1,6 +1,5 @@
-using System.Dynamic;
+using System.Collections;
 using System.Reflection;
-using System.Text.Json;
 
 namespace FAM.Application.Querying.Extensions;
 
@@ -60,6 +59,30 @@ public static class FieldSelectionExtensions
             pageResult.Page,
             pageResult.PageSize,
             pageResult.Total);
+    }
+
+    /// <summary>
+    /// Apply field selection to a PageResult and return standard response format
+    /// Returns object with { data: [...], pagination: {...} } structure
+    /// </summary>
+    public static object SelectFieldsToResponse<T>(
+        this PageResult<T> pageResult,
+        string[]? fields) where T : class
+    {
+        var selectedItems = pageResult.Items.SelectFields(fields);
+        return new
+        {
+            data = selectedItems,
+            pagination = new
+            {
+                page = pageResult.Page,
+                pageSize = pageResult.PageSize,
+                total = pageResult.Total,
+                totalPages = pageResult.TotalPages,
+                hasPrevPage = pageResult.HasPrevPage,
+                hasNextPage = pageResult.HasNextPage
+            }
+        };
     }
 
     /// <summary>
@@ -141,7 +164,7 @@ public static class FieldSelectionExtensions
                 {
                     result[ToCamelCase(prop.Name)] = null;
                 }
-                else if (value is System.Collections.IEnumerable enumerable && !(value is string))
+                else if (value is IEnumerable enumerable && !(value is string))
                 {
                     // Collection - apply to each item
                     var selectedItems = new List<Dictionary<string, object?>>();

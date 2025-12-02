@@ -1,4 +1,3 @@
-using FAM.Application.Abstractions;
 using FAM.Domain.Common.Enums;
 using MediatR;
 

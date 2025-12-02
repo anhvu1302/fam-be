@@ -1,3 +1,5 @@
+using FAM.Application.Settings;
+
 namespace FAM.Application.Querying;
 
 /// <summary>
@@ -21,9 +23,10 @@ public sealed record QueryRequest
     public int Page { get; init; } = 1;
 
     /// <summary>
-    /// Page size (number of items per page)
+    /// Page size (number of items per page).
+    /// Default and max values can be configured via PaginationSettings.
     /// </summary>
-    public int PageSize { get; init; } = 100;
+    public int PageSize { get; init; }
 
     /// <summary>
     /// Fields to select (projection). Null means select all.
@@ -31,8 +34,24 @@ public sealed record QueryRequest
     public string[]? Fields { get; init; }
 
     /// <summary>
-    /// Include relationships (e.g.: "userNodeRoles,userDevices" or "departments.manager").
+    /// Include relationships (e.g.: "rolepermissions").
     /// Comma-separated list. Supports nested includes with dot notation.
     /// </summary>
     public string? Include { get; init; }
+
+    /// <summary>
+    /// Get effective page size using global settings
+    /// </summary>
+    public int GetEffectivePageSize()
+    {
+        return PageSize > 0 ? PaginationSettings.ClampPageSize(PageSize) : PaginationSettings.DefaultPageSize;
+    }
+
+    /// <summary>
+    /// Get effective page number
+    /// </summary>
+    public int GetEffectivePage()
+    {
+        return PaginationSettings.EnsureValidPage(Page);
+    }
 }

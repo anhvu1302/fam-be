@@ -1,3 +1,4 @@
+using FAM.Domain.Assets;
 using FAM.Domain.Common;
 
 namespace FAM.Domain.Statuses;
@@ -14,7 +15,7 @@ public class AssetEventType : Entity
     public int? OrderNo { get; private set; }
 
     // Navigation properties
-    public ICollection<Assets.AssetEvent> AssetEvents { get; set; } = new List<Assets.AssetEvent>();
+    public ICollection<AssetEvent> AssetEvents { get; set; } = new List<AssetEvent>();
 
     private AssetEventType()
     {

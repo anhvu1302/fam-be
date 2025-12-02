@@ -79,6 +79,86 @@ public static class ProjectionBinder
         return query.Select(lambda);
     }
 
+    /// <summary>
+    /// Build a projection expression that selects specified fields into a Dictionary
+    /// This is useful for dynamic field selection at database level
+    /// </summary>
+    /// <typeparam name="TSource">Source entity type</typeparam>
+    /// <param name="fields">Fields to select (null/empty means all fields)</param>
+    /// <param name="fieldMap">Field mapping configuration</param>
+    /// <returns>Expression for use with IQueryable.Select()</returns>
+    public static Expression<Func<TSource, Dictionary<string, object?>>> BuildDictionaryProjection<TSource>(
+        string[]? fields,
+        FieldMap<TSource> fieldMap)
+    {
+        var parameter = Expression.Parameter(typeof(TSource), "x");
+        var dictType = typeof(Dictionary<string, object?>);
+        var addMethod = dictType.GetMethod("Add", new[] { typeof(string), typeof(object) })!;
+
+        var bindings = new List<ElementInit>();
+
+        // Get all available fields from fieldMap if no specific fields requested
+        var fieldsToSelect = fields != null && fields.Length > 0
+            ? fields
+            : fieldMap.GetFieldNames().ToArray();
+
+        foreach (var fieldName in fieldsToSelect)
+        {
+            if (!fieldMap.TryGet(fieldName, out var sourceExpression, out _))
+                continue;
+
+            if (!fieldMap.CanSelect(fieldName))
+                continue;
+
+            // Replace parameter in source expression
+            var visitor = new ParameterReplacerVisitor(sourceExpression.Parameters[0], parameter);
+            var sourceBody = visitor.Visit(sourceExpression.Body);
+
+            // Convert to object
+            var objectValue = Expression.Convert(sourceBody, typeof(object));
+
+            // Use camelCase for dictionary key
+            var key = Expression.Constant(ToCamelCase(fieldName));
+            bindings.Add(Expression.ElementInit(addMethod, key, objectValue));
+        }
+
+        var dictInit = Expression.ListInit(Expression.New(dictType), bindings);
+        return Expression.Lambda<Func<TSource, Dictionary<string, object?>>>(dictInit, parameter);
+    }
+
+    /// <summary>
+    /// Check if fields parameter has any values
+    /// </summary>
+    public static bool HasFieldSelection(string[]? fields)
+    {
+        return fields != null && fields.Length > 0;
+    }
+
+    /// <summary>
+    /// Validate that all requested fields exist in the field map
+    /// </summary>
+    public static (bool IsValid, string[] InvalidFields) ValidateFields<TSource>(
+        string[]? fields,
+        FieldMap<TSource> fieldMap)
+    {
+        if (fields == null || fields.Length == 0)
+            return (true, Array.Empty<string>());
+
+        var invalidFields = fields
+            .Where(f => !fieldMap.TryGet(f, out _, out _) || !fieldMap.CanSelect(f))
+            .ToArray();
+
+        return (invalidFields.Length == 0, invalidFields);
+    }
+
+    private static string ToCamelCase(string str)
+    {
+        if (string.IsNullOrEmpty(str) || char.IsLower(str[0]))
+            return str;
+
+        return char.ToLowerInvariant(str[0]) + str.Substring(1);
+    }
+
     private class ParameterReplacerVisitor : ExpressionVisitor
     {
         private readonly ParameterExpression _oldParameter;

@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using FAM.Domain.Abstractions;
 
 namespace FAM.Domain.Assets.Specifications;
@@ -7,7 +8,7 @@ namespace FAM.Domain.Assets.Specifications;
 /// </summary>
 public class ActiveAssetSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset => !asset.IsDeleted;
     }
@@ -25,7 +26,7 @@ public class AssetByCompanySpecification : Specification<Asset>
         _companyId = companyId;
     }
 
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset => asset.CompanyId == _companyId && !asset.IsDeleted;
     }
@@ -36,7 +37,7 @@ public class AssetByCompanySpecification : Specification<Asset>
 /// </summary>
 public class ActiveLifecycleAssetSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset => asset.LifecycleCode == "active" && !asset.IsDeleted;
     }
@@ -47,7 +48,7 @@ public class ActiveLifecycleAssetSpecification : Specification<Asset>
 /// </summary>
 public class AvailableAssetSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset =>
             asset.UsageCode == "available" &&
@@ -61,7 +62,7 @@ public class AvailableAssetSpecification : Specification<Asset>
 /// </summary>
 public class InUseAssetSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset => asset.UsageCode == "in_use" && !asset.IsDeleted;
     }
@@ -79,7 +80,7 @@ public class AssetNeedingDepreciationSpecification : Specification<Asset>
         _period = period;
     }
 
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset =>
             !asset.IsDeleted &&
@@ -104,7 +105,7 @@ public class AssetByPriceRangeSpecification : Specification<Asset>
         _maxPrice = maxPrice;
     }
 
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset =>
             !asset.IsDeleted &&
@@ -126,7 +127,7 @@ public class WarrantyExpiringSoonSpecification : Specification<Asset>
         _daysBeforeExpiry = daysBeforeExpiry;
     }
 
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         var checkDate = DateTime.UtcNow.AddDays(_daysBeforeExpiry);
         return asset =>

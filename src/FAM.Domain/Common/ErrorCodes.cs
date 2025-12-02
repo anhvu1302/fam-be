@@ -278,27 +278,8 @@ public static class ErrorCodes
     /// <summary>Circular reference detected</summary>
     public const string ORG_CIRCULAR_REFERENCE = "ORG_CIRCULAR_REFERENCE";
 
-    #endregion
-
-    #region Role & Permission (ROLE_xxx / PERM_xxx)
-
-    /// <summary>Role not found</summary>
-    public const string ROLE_NOT_FOUND = "ROLE_NOT_FOUND";
-
-    /// <summary>Role name already exists</summary>
-    public const string ROLE_NAME_EXISTS = "ROLE_NAME_EXISTS";
-
-    /// <summary>Cannot delete system role</summary>
-    public const string ROLE_SYSTEM_PROTECTED = "ROLE_SYSTEM_PROTECTED";
-
-    /// <summary>Cannot delete role with users</summary>
-    public const string ROLE_HAS_USERS = "ROLE_HAS_USERS";
-
-    /// <summary>Permission not found</summary>
-    public const string PERM_NOT_FOUND = "PERM_NOT_FOUND";
-
-    /// <summary>Permission already assigned</summary>
-    public const string PERM_ALREADY_ASSIGNED = "PERM_ALREADY_ASSIGNED";
+    /// <summary>Organization node not found</summary>
+    public const string NODE_NOT_FOUND = "NODE_NOT_FOUND";
 
     #endregion
 
@@ -634,6 +615,58 @@ public static class ErrorCodes
 
     /// <summary>Invalid role code format</summary>
     public const string VO_ROLE_CODE_INVALID = "VO_ROLE_CODE_INVALID";
+
+    #endregion
+
+    #region Role & Permission (ROLE_xxx, PERMISSION_xxx)
+
+    /// <summary>Role not found</summary>
+    public const string ROLE_NOT_FOUND = "ROLE_NOT_FOUND";
+
+    /// <summary>Role name is required</summary>
+    public const string ROLE_NAME_REQUIRED = "ROLE_NAME_REQUIRED";
+
+    /// <summary>Role code already exists</summary>
+    public const string ROLE_CODE_EXISTS = "ROLE_CODE_EXISTS";
+
+    /// <summary>Invalid role rank</summary>
+    public const string ROLE_INVALID_RANK = "ROLE_INVALID_RANK";
+
+    /// <summary>System role cannot be updated</summary>
+    public const string ROLE_SYSTEM_ROLE_CANNOT_UPDATE = "ROLE_SYSTEM_ROLE_CANNOT_UPDATE";
+
+    /// <summary>System role cannot be deleted</summary>
+    public const string ROLE_SYSTEM_ROLE_CANNOT_DELETE = "ROLE_SYSTEM_ROLE_CANNOT_DELETE";
+
+    /// <summary>No permissions provided</summary>
+    public const string ROLE_NO_PERMISSIONS_PROVIDED = "ROLE_NO_PERMISSIONS_PROVIDED";
+
+    /// <summary>Role is in use and cannot be deleted</summary>
+    public const string ROLE_IN_USE = "ROLE_IN_USE";
+
+    /// <summary>Permission not found</summary>
+    public const string PERMISSION_NOT_FOUND = "PERMISSION_NOT_FOUND";
+
+    /// <summary>Invalid permission</summary>
+    public const string PERMISSION_INVALID = "PERMISSION_INVALID";
+
+    /// <summary>Permission already exists</summary>
+    public const string PERMISSION_EXISTS = "PERMISSION_EXISTS";
+
+    /// <summary>Permission already assigned to role</summary>
+    public const string PERMISSION_ALREADY_ASSIGNED = "PERMISSION_ALREADY_ASSIGNED";
+
+    /// <summary>Permission not assigned to role</summary>
+    public const string PERMISSION_NOT_ASSIGNED = "PERMISSION_NOT_ASSIGNED";
+
+    /// <summary>Role assignment invalid date range</summary>
+    public const string ROLE_ASSIGNMENT_INVALID_DATE_RANGE = "ROLE_ASSIGNMENT_INVALID_DATE_RANGE";
+
+    /// <summary>Role already assigned to user at node</summary>
+    public const string ROLE_ALREADY_ASSIGNED_TO_USER = "ROLE_ALREADY_ASSIGNED_TO_USER";
+
+    /// <summary>Role assignment not found</summary>
+    public const string ROLE_ASSIGNMENT_NOT_FOUND = "ROLE_ASSIGNMENT_NOT_FOUND";
 
     #endregion
 }

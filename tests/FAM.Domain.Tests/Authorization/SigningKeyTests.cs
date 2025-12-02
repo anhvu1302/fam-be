@@ -1,7 +1,6 @@
 using FAM.Domain.Authorization;
 using FAM.Domain.Common;
 using FluentAssertions;
-using Xunit;
 
 namespace FAM.Domain.Tests.Authorization;
 

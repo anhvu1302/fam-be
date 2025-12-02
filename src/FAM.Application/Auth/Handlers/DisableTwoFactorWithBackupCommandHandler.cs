@@ -1,3 +1,4 @@
+using System.Text.Json;
 using FAM.Application.Auth.Commands;
 using FAM.Domain.Abstractions;
 using MediatR;
@@ -51,7 +52,7 @@ public sealed class DisableTwoFactorWithBackupCommandHandler : IRequestHandler<D
         List<string>? hashedBackupCodes;
         try
         {
-            hashedBackupCodes = System.Text.Json.JsonSerializer.Deserialize<List<string>>(user.TwoFactorBackupCodes);
+            hashedBackupCodes = JsonSerializer.Deserialize<List<string>>(user.TwoFactorBackupCodes);
         }
         catch (Exception ex)
         {

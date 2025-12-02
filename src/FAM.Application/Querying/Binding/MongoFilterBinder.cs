@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using FAM.Application.Querying.Ast;
 using FAM.Application.Querying.Validation;
 using MongoDB.Bson;
@@ -336,7 +338,7 @@ public static class MongoFilterBinder<T>
         // Extract property name from expression
         // For MongoDB, we need the actual property name on the document
         // This is a simple implementation - you might need more sophisticated logic
-        var memberExpr = expression.Body as System.Linq.Expressions.MemberExpression;
+        var memberExpr = expression.Body as MemberExpression;
         return memberExpr?.Member.Name ?? field.Name;
     }
 
@@ -351,6 +353,6 @@ public static class MongoFilterBinder<T>
     private static string EscapeRegex(string input)
     {
         // Escape special regex characters
-        return System.Text.RegularExpressions.Regex.Escape(input);
+        return Regex.Escape(input);
     }
 }

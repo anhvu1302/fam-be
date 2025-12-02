@@ -1,4 +1,6 @@
+using FAM.Domain.Assets;
 using FAM.Domain.Common;
+using FAM.Domain.Models;
 using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Types;
@@ -108,8 +110,8 @@ public class AssetType : Entity
     // Navigation properties
     public AssetType? Parent { get; set; }
     public ICollection<AssetType> Children { get; set; } = new List<AssetType>();
-    public ICollection<Models.Model> Models { get; set; } = new List<Models.Model>();
-    public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
+    public ICollection<Model> Models { get; set; } = new List<Model>();
+    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
 
     private AssetType()
     {

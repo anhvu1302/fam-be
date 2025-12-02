@@ -1,7 +1,6 @@
-using FluentAssertions;
 using FAM.Domain.Common;
 using FAM.Domain.Locations;
-using Xunit;
+using FluentAssertions;
 
 namespace FAM.Domain.Tests.Locations;
 

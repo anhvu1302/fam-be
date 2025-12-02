@@ -1,7 +1,4 @@
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using FAM.Domain.Locations;
-using FAM.Infrastructure.PersistenceModels.Mongo;
 
 namespace FAM.Infrastructure.PersistenceModels.Mongo;
 

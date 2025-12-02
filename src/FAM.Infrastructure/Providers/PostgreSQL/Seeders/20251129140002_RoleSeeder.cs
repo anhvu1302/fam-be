@@ -1,5 +1,4 @@
 using FAM.Infrastructure.Common.Seeding;
-using FAM.Infrastructure.Providers.PostgreSQL;
 using FAM.Infrastructure.PersistenceModels.Ef;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -36,48 +35,52 @@ public class RoleSeeder : BaseDataSeeder
         {
             new RoleEf
             {
-                Name = "Admin",
-                Description =
-                    "System Administrator: Full access to all system features including role and permission management",
+                Name = "Administrator",
+                Description = "System Administrator: Full access to all system features",
                 Code = "ADMIN",
-                Rank = 1
+                Rank = 1,
+                IsSystemRole = true
             },
             new RoleEf
             {
-                Name = "FA_MANAGER",
-                Description = "FA Manager: phê duyệt tạo FA, phê duyệt thanh lý (write-off). Xem được tất cả",
-                Code = "FA_MANAGER",
-                Rank = 2
-            },
-            new RoleEf
-            {
-                Name = "FA_WORKER",
-                Description =
-                    "FA Worker: trực tiếp thao tác tất cả action. Tạo, sửa, report... vào làm và xem được tất cả",
-                Code = "FA_WORKER",
-                Rank = 3
-            },
-            new RoleEf
-            {
-                Name = "FIN_STAFF",
-                Description = "FIN Staff: xem, sửa được thông tin finance thôi. Report FIN",
-                Code = "FIN_STAFF",
-                Rank = 4
-            },
-            new RoleEf
-            {
-                Name = "PIC",
-                Description =
-                    "PIC: người quản lý tài sản, sửa tình trạng, location của FA, nhưng không dc cấp phát hay thu hồi",
-                Code = "PIC",
-                Rank = 5
-            },
-            new RoleEf
-            {
-                Name = "STAFF",
-                Description = "Staff: người được cấp tài sản, chỉ dc xem thông tin tài sản dc cấp",
+                Name = "Staff",
+                Description = "General staff role - parent role for specific staff roles",
                 Code = "STAFF",
-                Rank = 6
+                Rank = 10,
+                IsSystemRole = true
+            },
+            new RoleEf
+            {
+                Name = "FA Manager",
+                Description =
+                    "Fixed Asset Manager: All FA Worker permissions + management capabilities (approve/disapprove, reports)",
+                Code = "FA_MANAGER",
+                Rank = 15,
+                IsSystemRole = true
+            },
+            new RoleEf
+            {
+                Name = "FA Worker",
+                Description = "Fixed Asset Worker: Search, create, approve/disapprove assets",
+                Code = "FA_WORKER",
+                Rank = 20,
+                IsSystemRole = true
+            },
+            new RoleEf
+            {
+                Name = "Finance Staff",
+                Description = "Finance Staff: View all reports and export to Excel",
+                Code = "FIN_STAFF",
+                Rank = 25,
+                IsSystemRole = true
+            },
+            new RoleEf
+            {
+                Name = "PIC (Person In Charge)",
+                Description = "Person In Charge: Can only view assets they manage",
+                Code = "PIC",
+                Rank = 30,
+                IsSystemRole = true
             }
         };
 

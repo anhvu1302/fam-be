@@ -1,5 +1,6 @@
+using System.Security.Cryptography;
+using System.Text;
 using FluentAssertions;
-using Xunit;
 
 namespace FAM.Application.Tests.Auth;
 
@@ -91,8 +92,8 @@ public class OtpServiceTests
 
     private static string GenerateSecureCacheKey(int userId, string sessionToken)
     {
-        using var sha256 = System.Security.Cryptography.SHA256.Create();
-        var hashBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(sessionToken));
+        using var sha256 = SHA256.Create();
+        var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(sessionToken));
         var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
         return $"otp:{userId}:{hashString}";
     }

@@ -1,7 +1,18 @@
-using FAM.Domain.Common;
 using FAM.Domain.Assets.Events;
-using FAM.Domain.ValueObjects;
+using FAM.Domain.Categories;
+using FAM.Domain.Common;
+using FAM.Domain.Conditions;
+using FAM.Domain.Finance;
+using FAM.Domain.Geography;
+using FAM.Domain.Locations;
+using FAM.Domain.Manufacturers;
+using FAM.Domain.Models;
 using FAM.Domain.Organizations;
+using FAM.Domain.Statuses;
+using FAM.Domain.Suppliers;
+using FAM.Domain.Types;
+using FAM.Domain.Users;
+using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Assets;
 
@@ -120,24 +131,24 @@ public class Asset : AggregateRoot
 
     // Navigation properties - EF Core
     public CompanyDetails? Company { get; set; }
-    public Types.AssetType? AssetType { get; set; }
-    public Categories.AssetCategory? Category { get; set; }
-    public Models.Model? Model { get; set; }
-    public Manufacturers.Manufacturer? Manufacturer { get; set; }
-    public Suppliers.Supplier? Supplier { get; set; }
-    public Conditions.AssetCondition? Condition { get; set; }
-    public Locations.Location? Location { get; set; }
+    public AssetType? AssetType { get; set; }
+    public AssetCategory? Category { get; set; }
+    public Model? Model { get; set; }
+    public Manufacturer? Manufacturer { get; set; }
+    public Supplier? Supplier { get; set; }
+    public AssetCondition? Condition { get; set; }
+    public Location? Location { get; set; }
 
-    public Geography.Country? Country { get; set; }
+    public Country? Country { get; set; }
 
     // public Departments.Department? Department { get; set; }
-    public Users.User? Owner { get; set; }
-    public Statuses.LifecycleStatus? LifecycleStatus { get; set; }
-    public Statuses.UsageStatus? UsageStatus { get; set; }
+    public User? Owner { get; set; }
+    public LifecycleStatus? LifecycleStatus { get; set; }
+    public UsageStatus? UsageStatus { get; set; }
 
     public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
     public ICollection<AssetEvent> AssetEvents { get; set; } = new List<AssetEvent>();
-    public ICollection<Finance.FinanceEntry> FinanceEntries { get; set; } = new List<Finance.FinanceEntry>();
+    public ICollection<FinanceEntry> FinanceEntries { get; set; } = new List<FinanceEntry>();
     public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
 
     // EF Core constructor

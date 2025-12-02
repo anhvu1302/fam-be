@@ -1,4 +1,8 @@
+using FAM.Domain.Assets;
+using FAM.Domain.Categories;
 using FAM.Domain.Common;
+using FAM.Domain.Manufacturers;
+using FAM.Domain.Types;
 using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Models;
@@ -122,10 +126,10 @@ public class Model : Entity
     public string? Keywords { get; private set; }
 
     // Navigation properties
-    public Manufacturers.Manufacturer? Manufacturer { get; set; }
-    public Categories.AssetCategory? Category { get; set; }
-    public Types.AssetType? Type { get; set; }
-    public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
+    public Manufacturer? Manufacturer { get; set; }
+    public AssetCategory? Category { get; set; }
+    public AssetType? Type { get; set; }
+    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
 
     private Model()
     {

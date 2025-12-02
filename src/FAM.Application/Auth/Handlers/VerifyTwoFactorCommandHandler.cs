@@ -1,9 +1,7 @@
-using FAM.Application.Abstractions;
 using FAM.Application.Auth.Commands;
 using FAM.Application.Auth.DTOs;
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Authorization;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using OtpNet;

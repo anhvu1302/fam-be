@@ -5,7 +5,6 @@ using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace FAM.Application.Auth.Handlers;
 

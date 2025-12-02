@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using FAM.Application.Auth.DTOs;
 using FAM.Application.Auth.Services;
 using Microsoft.IdentityModel.Tokens;
 
@@ -71,7 +70,7 @@ public class JwtService : IJwtService
     {
         var claims = CreateClaims(userId, username, email, roles);
 
-        using var rsa = RSA.Create();
+        var rsa = RSA.Create(); // Don't dispose - key must live until token is written
         rsa.ImportFromPem(privateKeyPem);
 
         var rsaSecurityKey = new RsaSecurityKey(rsa)
@@ -89,17 +88,20 @@ public class JwtService : IJwtService
 
         var credentials = new SigningCredentials(rsaSecurityKey, signingAlgorithm);
 
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(_accessTokenExpiryMinutes),
-            Issuer = _issuer,
-            Audience = _audience,
-            SigningCredentials = credentials
-        };
-
         var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var token = tokenHandler.CreateJwtSecurityToken(
+            _issuer,
+            _audience,
+            new ClaimsIdentity(claims),
+            null,
+            DateTime.UtcNow.AddMinutes(_accessTokenExpiryMinutes),
+            DateTime.UtcNow,
+            credentials
+        );
+
+        // Explicitly set the kid in the header
+        token.Header["kid"] = keyId;
+
         return tokenHandler.WriteToken(token);
     }
 

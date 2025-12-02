@@ -1,4 +1,6 @@
+using FAM.Domain.Assets;
 using FAM.Domain.Common;
+using FAM.Domain.Geography;
 using FAM.Domain.Organizations;
 
 namespace FAM.Domain.Locations;
@@ -20,10 +22,10 @@ public class Location : AggregateRoot
 
     // Navigation properties
     public CompanyDetails? Company { get; set; }
-    public Geography.Country? Country { get; set; }
+    public Country? Country { get; set; }
     public Location? Parent { get; set; }
     public ICollection<Location> Children { get; set; } = new List<Location>();
-    public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
+    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
 
     private Location()
     {

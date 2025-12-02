@@ -1,4 +1,5 @@
 using FAM.Domain.Storage;
+using FAM.Infrastructure.Common.Extensions;
 using FAM.Infrastructure.Common.Options;
 using FAM.Infrastructure.PersistenceModels.Ef;
 using Microsoft.EntityFrameworkCore;
@@ -90,7 +91,7 @@ public class PostgreSqlDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // Apply centralized snake_case naming convention (tables, columns, constraints, indexes)
-        Common.Extensions.ModelBuilderExtensions.ApplySnakeCaseNamingConvention(modelBuilder);
+        ModelBuilderExtensions.ApplySnakeCaseNamingConvention(modelBuilder);
 
         // User configuration
         modelBuilder.Entity<UserEf>(entity =>
@@ -199,14 +200,12 @@ public class PostgreSqlDbContext : DbContext
 
         modelBuilder.Entity<RolePermissionEf>(entity =>
         {
-            entity.HasKey(rp => rp.Id);
+            // Composite key
+            entity.HasKey(rp => new { rp.RoleId, rp.PermissionId });
+
             entity.Property(rp => rp.RoleId).IsRequired();
             entity.Property(rp => rp.PermissionId).IsRequired();
-            entity.Property(rp => rp.IsDeleted).HasDefaultValue(false);
-
-            entity.HasQueryFilter(rp => !rp.IsDeleted);
-            entity.HasIndex(rp => new { rp.RoleId, rp.PermissionId }).IsUnique().HasFilter("is_deleted = false")
-                .HasDatabaseName("ix_role_permissions_role_permission");
+            entity.Property(rp => rp.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             // Relationships
             entity.HasOne(rp => rp.Role)
@@ -222,15 +221,15 @@ public class PostgreSqlDbContext : DbContext
 
         modelBuilder.Entity<UserNodeRoleEf>(entity =>
         {
-            entity.HasKey(unr => unr.Id);
+            // Composite key
+            entity.HasKey(unr => new { unr.UserId, unr.NodeId, unr.RoleId });
+
             entity.Property(unr => unr.UserId).IsRequired();
             entity.Property(unr => unr.NodeId).IsRequired();
             entity.Property(unr => unr.RoleId).IsRequired();
-            entity.Property(unr => unr.IsDeleted).HasDefaultValue(false);
+            entity.Property(unr => unr.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            entity.HasQueryFilter(unr => !unr.IsDeleted);
-            entity.HasIndex(unr => new { unr.UserId, unr.NodeId, unr.RoleId }).IsUnique()
-                .HasFilter("is_deleted = false").HasDatabaseName("ix_user_node_roles_user_node_role");
+            // Indexes for query performance
             entity.HasIndex(unr => unr.UserId).HasDatabaseName("ix_user_node_roles_user_id");
             entity.HasIndex(unr => unr.NodeId).HasDatabaseName("ix_user_node_roles_node_id");
             entity.HasIndex(unr => unr.RoleId).HasDatabaseName("ix_user_node_roles_role_id");

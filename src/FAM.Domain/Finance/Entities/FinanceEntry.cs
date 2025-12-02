@@ -1,4 +1,6 @@
+using FAM.Domain.Assets;
 using FAM.Domain.Common;
+using FAM.Domain.Users;
 
 namespace FAM.Domain.Finance;
 
@@ -14,8 +16,8 @@ public class FinanceEntry : Entity
     public decimal? BookValueAfter { get; private set; }
 
     // Navigation properties
-    public Assets.Asset Asset { get; set; } = null!;
-    public Users.User? Creator { get; set; }
+    public Asset Asset { get; set; } = null!;
+    public User? Creator { get; set; }
 
     private FinanceEntry()
     {

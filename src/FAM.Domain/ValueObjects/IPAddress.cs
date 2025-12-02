@@ -1,3 +1,4 @@
+using System.Net.Sockets;
 using FAM.Domain.Common;
 
 namespace FAM.Domain.ValueObjects;
@@ -38,7 +39,7 @@ public sealed class IPAddress : ValueObject
     private static IPAddressType DetermineType(string ip)
     {
         if (System.Net.IPAddress.TryParse(ip, out var parsed))
-            return parsed.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork
+            return parsed.AddressFamily == AddressFamily.InterNetwork
                 ? IPAddressType.IPv4
                 : IPAddressType.IPv6;
         return IPAddressType.Invalid;

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 using Serilog.Context;
 
 namespace FAM.WebApi.Middleware;
@@ -161,11 +162,11 @@ public class RequestLoggingMiddleware
         {
             // Match: "fieldName": "value" hoặc "fieldName":"value"
             var pattern = $@"(""{field}""\s*:\s*"")[^""]*("")";
-            json = System.Text.RegularExpressions.Regex.Replace(
+            json = Regex.Replace(
                 json,
                 pattern,
                 "$1***MASKED***$2",
-                System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                RegexOptions.IgnoreCase);
         }
 
         return json;

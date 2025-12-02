@@ -1,5 +1,6 @@
+using System.Security.Cryptography;
+using System.Text;
 using FAM.Domain.Common;
-using System.Text.RegularExpressions;
 
 namespace FAM.Domain.ValueObjects;
 
@@ -98,9 +99,9 @@ public sealed class Password : ValueObject
     private static string HashPassword(string password, string salt)
     {
         // Simple hashing - in production, use PBKDF2, Argon2, or similar
-        using var sha256 = System.Security.Cryptography.SHA256.Create();
+        using var sha256 = SHA256.Create();
         var combined = password + salt;
-        var bytes = System.Text.Encoding.UTF8.GetBytes(combined);
+        var bytes = Encoding.UTF8.GetBytes(combined);
         var hash = sha256.ComputeHash(bytes);
         return Convert.ToBase64String(hash);
     }

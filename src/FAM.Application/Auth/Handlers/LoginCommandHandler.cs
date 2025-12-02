@@ -2,7 +2,6 @@ using FAM.Application.Auth.Commands;
 using FAM.Application.Auth.DTOs;
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
-using FAM.Domain.ValueObjects;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -15,12 +14,18 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
+    private readonly ISigningKeyService _signingKeyService;
     private readonly ILogger<LoginCommandHandler> _logger;
 
-    public LoginCommandHandler(IUnitOfWork unitOfWork, IJwtService jwtService, ILogger<LoginCommandHandler> logger)
+    public LoginCommandHandler(
+        IUnitOfWork unitOfWork,
+        IJwtService jwtService,
+        ISigningKeyService signingKeyService,
+        ILogger<LoginCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _jwtService = jwtService;
+        _signingKeyService = signingKeyService;
         _logger = logger;
     }
 
@@ -69,7 +74,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         if (user.TwoFactorEnabled)
         {
             // Generate a temporary session token for 2FA verification
-            var twoFactorSessionToken = GenerateTwoFactorSessionToken(user.Id);
+            var twoFactorSessionToken = await GenerateTwoFactorSessionTokenAsync(user.Id, cancellationToken);
 
             return new LoginResponse
             {
@@ -87,7 +92,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             };
         }
 
-        // Generate tokens
+        // Generate tokens using RSA
+        // Get active signing key from database
+        var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
+
         // TODO: Load user roles from UserNodeRoles properly
         var roles = new List<string>();
         // Temporary: Hardcode Admin role for admin user (for integration tests)
@@ -97,7 +105,14 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             roles.Add("SuperAdmin");
         }
 
-        var accessToken = _jwtService.GenerateAccessToken(user.Id, user.Username.Value, user.Email.Value, roles);
+        var accessToken = _jwtService.GenerateAccessTokenWithRsa(
+            user.Id,
+            user.Username.Value,
+            user.Email.Value,
+            roles,
+            activeKey.KeyId,
+            activeKey.PrivateKey,
+            activeKey.Algorithm);
         var refreshToken = _jwtService.GenerateRefreshToken();
         var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(request.RememberMe ? 30 : 7);
 
@@ -159,11 +174,19 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         };
     }
 
-    private string GenerateTwoFactorSessionToken(long userId)
+    private async Task<string> GenerateTwoFactorSessionTokenAsync(long userId, CancellationToken cancellationToken)
     {
-        // Generate a temporary JWT token for 2FA session using access token method
-        // We'll use a special username to indicate this is a 2FA session token
+        // Generate a temporary JWT token for 2FA session using RSA
+        var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
+
         var roles = new List<string> { "2fa_session" };
-        return _jwtService.GenerateAccessToken(userId, $"2fa_session_{userId}", "", roles);
+        return _jwtService.GenerateAccessTokenWithRsa(
+            userId,
+            $"2fa_session_{userId}",
+            "",
+            roles,
+            activeKey.KeyId,
+            activeKey.PrivateKey,
+            activeKey.Algorithm);
     }
 }

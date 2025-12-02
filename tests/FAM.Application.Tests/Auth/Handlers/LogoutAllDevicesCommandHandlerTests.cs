@@ -5,7 +5,6 @@ using FAM.Domain.Users;
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.Auth.Handlers;
 

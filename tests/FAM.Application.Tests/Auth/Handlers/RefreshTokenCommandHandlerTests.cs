@@ -1,14 +1,11 @@
 using FAM.Application.Auth.Commands;
-using FAM.Application.Auth.DTOs;
 using FAM.Application.Auth.Handlers;
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
-using FAM.Domain.Users.ValueObjects;
 using FluentAssertions;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.Auth.Handlers;
 

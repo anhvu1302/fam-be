@@ -1,6 +1,5 @@
-using FAM.Domain.Models;
 using FAM.Domain.Common;
-using FAM.Domain.ValueObjects;
+using FAM.Domain.Models;
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Models;

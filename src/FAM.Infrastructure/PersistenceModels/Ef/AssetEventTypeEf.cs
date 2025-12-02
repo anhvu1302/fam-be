@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using FAM.Domain.Statuses;
-using FAM.Infrastructure.Common;
 
 namespace FAM.Infrastructure.PersistenceModels.Ef;
 

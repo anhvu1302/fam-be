@@ -2,24 +2,16 @@ namespace FAM.Infrastructure.PersistenceModels.Ef;
 
 /// <summary>
 /// Base entity with GUID primary key for high-volume tables
+/// Inherits from generic BaseEntityEf<Guid>
 /// </summary>
-public abstract class BaseEntityEfGuid
+public abstract class BaseEntityEfGuid : BaseEntityEf<Guid>
 {
-    public Guid Id { get; protected set; }
-
-    // Audit fields
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime? UpdatedAt { get; set; }
-    public bool IsDeleted { get; set; } = false;
-    public DateTime? DeletedAt { get; set; }
-
-    protected BaseEntityEfGuid()
+    protected BaseEntityEfGuid() : base()
     {
         Id = Guid.NewGuid();
     }
 
-    protected BaseEntityEfGuid(Guid id)
+    protected BaseEntityEfGuid(Guid id) : base(id)
     {
-        Id = id;
     }
 }

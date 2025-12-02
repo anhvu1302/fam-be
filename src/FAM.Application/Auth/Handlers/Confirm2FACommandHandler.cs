@@ -1,9 +1,10 @@
+using System.Security.Cryptography;
+using System.Text.Json;
 using FAM.Application.Auth.Commands;
 using FAM.Application.Auth.DTOs;
 using FAM.Domain.Abstractions;
 using MediatR;
 using OtpNet;
-using System.Security.Cryptography;
 
 namespace FAM.Application.Auth.Handlers;
 
@@ -40,7 +41,7 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
 
         // Hash backup codes before storing (for security)
         var hashedBackupCodes = backupCodes.Select(code => BCrypt.Net.BCrypt.HashPassword(code)).ToList();
-        var backupCodesJson = System.Text.Json.JsonSerializer.Serialize(hashedBackupCodes);
+        var backupCodesJson = JsonSerializer.Serialize(hashedBackupCodes);
 
         // Code is valid - enable 2FA and save the secret with backup codes
         user.EnableTwoFactor(request.Secret, backupCodesJson);

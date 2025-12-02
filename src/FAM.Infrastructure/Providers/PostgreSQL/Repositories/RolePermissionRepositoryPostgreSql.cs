@@ -3,7 +3,6 @@ using AutoMapper;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.PersistenceModels.Ef;
-using FAM.Infrastructure.Providers.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
@@ -20,12 +19,6 @@ public class RolePermissionRepositoryPostgreSql : IRolePermissionRepository
     {
         _context = context;
         _mapper = mapper;
-    }
-
-    public async Task<RolePermission?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
-    {
-        var entity = await _context.RolePermissions.FindAsync(new object[] { id }, cancellationToken);
-        return entity != null ? _mapper.Map<RolePermission>(entity) : null;
     }
 
     public async Task<IEnumerable<RolePermission>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -48,21 +41,10 @@ public class RolePermissionRepositoryPostgreSql : IRolePermissionRepository
         await _context.RolePermissions.AddAsync(efEntity, cancellationToken);
     }
 
-    public void Update(RolePermission entity)
-    {
-        var efEntity = _mapper.Map<RolePermissionEf>(entity);
-        _context.RolePermissions.Update(efEntity);
-    }
-
     public void Delete(RolePermission entity)
     {
         var efEntity = _mapper.Map<RolePermissionEf>(entity);
         _context.RolePermissions.Remove(efEntity);
-    }
-
-    public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
-    {
-        return await _context.RolePermissions.AnyAsync(rp => rp.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<RolePermission>> GetByRoleIdAsync(long roleId,

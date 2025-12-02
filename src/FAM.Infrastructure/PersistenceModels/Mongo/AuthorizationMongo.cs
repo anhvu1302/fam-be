@@ -1,4 +1,3 @@
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace FAM.Infrastructure.PersistenceModels.Mongo;
@@ -11,6 +10,8 @@ public class PermissionMongo : BaseEntityMongo
     [BsonElement("resource")] public string Resource { get; set; } = string.Empty;
 
     [BsonElement("action")] public string Action { get; set; } = string.Empty;
+
+    [BsonElement("description")] public string? Description { get; set; }
 
     public PermissionMongo() : base()
     {
@@ -66,17 +67,15 @@ public class ResourceMongo : BaseEntityMongo
 /// <summary>
 /// MongoDB document model for RolePermission
 /// </summary>
-public class RolePermissionMongo : BaseEntityMongo
+public class RolePermissionMongo : JunctionEntityMongo
 {
     [BsonElement("roleId")] public long RoleId { get; set; }
 
     [BsonElement("permissionId")] public long PermissionId { get; set; }
 
-    public RolePermissionMongo() : base()
-    {
-    }
+    [BsonElement("grantedById")] public long? GrantedById { get; set; }
 
-    public RolePermissionMongo(long domainId) : base(domainId)
+    public RolePermissionMongo() : base()
     {
     }
 }
@@ -84,7 +83,7 @@ public class RolePermissionMongo : BaseEntityMongo
 /// <summary>
 /// MongoDB document model for UserNodeRole
 /// </summary>
-public class UserNodeRoleMongo : BaseEntityMongo
+public class UserNodeRoleMongo : JunctionEntityMongo
 {
     [BsonElement("userId")] public long UserId { get; set; }
 
@@ -92,11 +91,13 @@ public class UserNodeRoleMongo : BaseEntityMongo
 
     [BsonElement("roleId")] public long RoleId { get; set; }
 
-    public UserNodeRoleMongo() : base()
-    {
-    }
+    [BsonElement("startAt")] public DateTime? StartAt { get; set; }
 
-    public UserNodeRoleMongo(long domainId) : base(domainId)
+    [BsonElement("endAt")] public DateTime? EndAt { get; set; }
+
+    [BsonElement("assignedById")] public long? AssignedById { get; set; }
+
+    public UserNodeRoleMongo() : base()
     {
     }
 }

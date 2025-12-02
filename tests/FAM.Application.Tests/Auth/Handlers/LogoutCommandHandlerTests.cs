@@ -6,7 +6,6 @@ using FAM.Domain.Users.Entities;
 using FluentAssertions;
 using MediatR;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.Auth.Handlers;
 

@@ -1,4 +1,5 @@
 using FAM.Domain.Common;
+using FAM.Domain.Users;
 
 namespace FAM.Domain.Assets;
 
@@ -17,7 +18,7 @@ public class Assignment : Entity
 
     // Navigation properties
     public Asset Asset { get; set; } = null!;
-    public Users.User? ByUser { get; set; }
+    public User? ByUser { get; set; }
 
     private Assignment()
     {

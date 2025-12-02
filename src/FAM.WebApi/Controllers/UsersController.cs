@@ -1,17 +1,15 @@
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
+using FAM.Application.Authorization.Roles.Commands.ReplaceUserRoles;
 using FAM.Application.Common;
 using FAM.Application.Querying;
 using FAM.Application.Querying.Extensions;
 using FAM.Application.Settings;
 using FAM.Application.Users.Commands;
-using FAM.Application.Users.Commands.CreateUser;
-using FAM.Application.Users.Commands.UpdateUser;
 using FAM.Application.Users.Commands.DeleteUser;
-using FAM.Application.Users.Queries.GetUsers;
-using FAM.Application.Users.Queries.GetUserById;
+using FAM.WebApi.Contracts.Authorization;
+using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.Users;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FAM.WebApi.Controllers;
 
@@ -19,7 +17,7 @@ namespace FAM.WebApi.Controllers;
 /// Users API Controller - Web API layer validates shape/format before delegating to Application
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/users")]
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -34,41 +32,19 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Get paginated list of users with advanced filtering and sorting
     /// </summary>
-    /// <param name="filter">Filter expression (e.g., "isDeleted == false", "username @contains('john') and email @endswith('@example.com')")</param>
-    /// <param name="sort">Sort expression (e.g., "createdAt", "-username,email" for descending username then ascending email)</param>
-    /// <param name="page">Page number (default from config)</param>
-    /// <param name="pageSize">Page size (default from config, max from config)</param>
-    /// <param name="fields">Fields to return (comma-separated, e.g., "id,username,email"). If not specified, returns all fields.</param>
-    /// <param name="include">Include related entities (comma-separated, e.g., "userDevices,userNodeRoles" or "userNodeRoles.role")</param>
+    /// <param name="parameters">Query parameters for pagination, filtering, sorting, field selection and includes</param>
     [HttpGet]
     [ProducesResponseType(typeof(UsersPagedResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(PageResult<Dictionary<string, object?>>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetUsers(
-        [FromQuery] string? filter = null,
-        [FromQuery] string? sort = null,
-        [FromQuery] int? page = null,
-        [FromQuery] int? pageSize = null,
-        [FromQuery] string? fields = null,
-        [FromQuery] string? include = null)
+    public async Task<IActionResult> GetUsers([FromQuery] PaginationQueryParameters parameters)
     {
-        var queryRequest = new QueryRequest
-        {
-            Filter = filter,
-            Sort = sort,
-            Page = _pagination.NormalizePage(page),
-            PageSize = _pagination.NormalizePageSize(pageSize),
-            Fields =
-                string.IsNullOrWhiteSpace(fields) ? null : fields.Split(',', StringSplitOptions.RemoveEmptyEntries),
-            Include = include
-        };
-
-        var query = queryRequest.ToGetUsersQuery();
+        var query = parameters.ToGetUsersQuery(_pagination);
         var result = await _mediator.Send(query);
 
         // Apply field selection if requested
-        if (queryRequest.Fields != null && queryRequest.Fields.Length > 0)
+        if (parameters.GetFieldsArray() != null && parameters.GetFieldsArray()!.Length > 0)
         {
-            var selectedResult = result.SelectFields(queryRequest.Fields);
+            var selectedResult = result.SelectFieldsToResponse(parameters.GetFieldsArray()!);
             return Ok(selectedResult);
         }
 
@@ -263,5 +239,41 @@ public class UsersController : ControllerBase
         {
             return StatusCode(500, new { Error = "An error occurred while uploading the avatar" });
         }
+    }
+
+    /// <summary>
+    /// Replace all roles for a user at a node (Batch Replace)
+    /// Used when editing a user and selecting roles
+    /// </summary>
+    [HttpPut("{id:long}/roles")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> ReplaceUserRoles(long id, [FromBody] ReplaceUserRolesRequest request)
+    {
+        var currentUserId = GetCurrentUserId();
+
+        var command = new ReplaceUserRolesCommand
+        {
+            UserId = id,
+            NodeId = request.NodeId,
+            RoleIds = request.RoleIds,
+            StartAt = request.StartAt,
+            EndAt = request.EndAt,
+            AssignedById = currentUserId
+        };
+
+        await _mediator.Send(command);
+
+        return Ok(new { message = $"Successfully updated roles for user {id}" });
+    }
+
+    private long GetCurrentUserId()
+    {
+        var userIdClaim = User.FindFirst("user_id")?.Value;
+        if (long.TryParse(userIdClaim, out var userId))
+            return userId;
+
+        throw new UnauthorizedAccessException("User ID not found in claims");
     }
 }

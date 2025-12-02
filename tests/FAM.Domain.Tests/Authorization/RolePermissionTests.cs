@@ -1,5 +1,5 @@
-using FluentAssertions;
 using FAM.Domain.Authorization;
+using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Authorization;
 
@@ -10,7 +10,7 @@ public class RolePermissionTests
     {
         // Arrange
         var role = Role.Create("admin", "Administrator", 1);
-        var permission = Permission.Create("asset", "read");
+        var permission = Permission.Create("assets", "view");
 
         // Act
         var rolePermission = RolePermission.Create(role, permission);

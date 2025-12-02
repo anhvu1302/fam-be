@@ -48,6 +48,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDataSeeder, SigningKeySeeder>();
         services.AddScoped<IDataSeeder, AdminUserSeeder>();
         services.AddScoped<IDataSeeder, RoleSeeder>();
+        services.AddScoped<IDataSeeder, PermissionSeeder>(); // New
+        services.AddScoped<IDataSeeder, RolePermissionSeeder>(); // New
         services.AddScoped<IDataSeeder, LifecycleStatusSeeder>();
         services.AddScoped<IDataSeeder, UsageStatusSeeder>();
         services.AddScoped<IDataSeeder, CountrySeeder>();

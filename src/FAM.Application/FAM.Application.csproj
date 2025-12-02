@@ -2,11 +2,11 @@
 
     <ItemGroup>
         <PackageReference Include="BCrypt.Net-Next" Version="4.0.3"/>
-        <PackageReference Include="FluentValidation" Version="12.1.0" />
-        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0" />
-        <PackageReference Include="MediatR" Version="14.0.0-beta-1" />
-        <PackageReference Include="AutoMapper" Version="16.0.0-beta-1" />
-        <PackageReference Include="MongoDB.Driver" Version="3.5.2" />
+        <PackageReference Include="FluentValidation" Version="12.1.0"/>
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.0"/>
+        <PackageReference Include="MediatR" Version="14.0.0-beta-1"/>
+        <PackageReference Include="AutoMapper" Version="16.0.0-beta-1"/>
+        <PackageReference Include="MongoDB.Driver" Version="3.5.2"/>
         <PackageReference Include="Otp.NET" Version="1.4.0"/>
     </ItemGroup>
 

@@ -1,10 +1,10 @@
+using System.Security.Cryptography;
 using FAM.Application.Auth.Commands;
 using FAM.Application.Auth.DTOs;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System.Security.Cryptography;
 
 namespace FAM.Application.Auth.Handlers;
 

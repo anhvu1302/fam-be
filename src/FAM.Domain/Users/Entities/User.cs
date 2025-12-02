@@ -1,13 +1,16 @@
+using FAM.Domain.Assets;
+using FAM.Domain.Authorization;
 using FAM.Domain.Common;
-using FAM.Domain.ValueObjects;
+using FAM.Domain.Finance;
 using FAM.Domain.Users.Entities;
+using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Users;
 
 /// <summary>
 /// Người dùng
 /// </summary>
-public class User : BaseEntity
+public class User : AggregateRoot
 {
     // Authentication
     public Username Username { get; private set; } = null!;
@@ -52,12 +55,12 @@ public class User : BaseEntity
     public bool ReceiveMarketingEmails { get; private set; }
 
     // Navigation properties
-    public ICollection<Assets.Asset> OwnedAssets { get; set; } = new List<Assets.Asset>();
-    public ICollection<Assets.Assignment> Assignments { get; set; } = new List<Assets.Assignment>();
-    public ICollection<Assets.AssetEvent> AssetEvents { get; set; } = new List<Assets.AssetEvent>();
-    public ICollection<Finance.FinanceEntry> FinanceEntries { get; set; } = new List<Finance.FinanceEntry>();
-    public ICollection<Assets.Attachment> Attachments { get; set; } = new List<Assets.Attachment>();
-    public ICollection<Authorization.UserNodeRole> UserNodeRoles { get; set; } = new List<Authorization.UserNodeRole>();
+    public ICollection<Asset> OwnedAssets { get; set; } = new List<Asset>();
+    public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+    public ICollection<AssetEvent> AssetEvents { get; set; } = new List<AssetEvent>();
+    public ICollection<FinanceEntry> FinanceEntries { get; set; } = new List<FinanceEntry>();
+    public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
+    public ICollection<UserNodeRole> UserNodeRoles { get; set; } = new List<UserNodeRole>();
     public ICollection<UserDevice> UserDevices { get; set; } = new List<UserDevice>();
 
     private User()

@@ -1,7 +1,6 @@
 using System.Security.Cryptography;
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.PersistenceModels.Mongo;
-using FAM.Infrastructure.Providers.MongoDB;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 

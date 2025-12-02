@@ -1,3 +1,4 @@
+using FAM.Domain.Assets;
 using FAM.Domain.Common;
 
 namespace FAM.Domain.Statuses;
@@ -14,7 +15,7 @@ public class LifecycleStatus : Entity
     public int? OrderNo { get; private set; }
 
     // Navigation properties
-    public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
+    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
 
     private LifecycleStatus()
     {

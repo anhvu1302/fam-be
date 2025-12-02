@@ -2,9 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users.Entities;
-using FAM.Domain.ValueObjects;
 using FAM.Infrastructure.PersistenceModels.Ef;
-using FAM.Infrastructure.Providers.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;

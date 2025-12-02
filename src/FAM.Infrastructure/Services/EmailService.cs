@@ -1,8 +1,8 @@
-using FAM.Application.Common.Services;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using FAM.Application.Common.Services;
+using Microsoft.Extensions.Logging;
 
 namespace FAM.Infrastructure.Services;
 

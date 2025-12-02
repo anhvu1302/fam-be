@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq.Expressions;
 using FAM.Application.Querying.Ast;
 using FAM.Application.Querying.Validation;
@@ -200,7 +201,7 @@ public static class EfFilterBinder<T>
 
             // Convert constant value
             var convertedValue = Convert.ChangeType(constant.Value, underlyingTargetType,
-                System.Globalization.CultureInfo.InvariantCulture);
+                CultureInfo.InvariantCulture);
             return Expression.Constant(convertedValue, targetType);
         }
 

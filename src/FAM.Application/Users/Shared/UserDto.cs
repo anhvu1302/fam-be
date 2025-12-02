@@ -55,9 +55,10 @@ public sealed record UserDeviceRef(
 
 /// <summary>
 /// User node role reference for user details
+/// Junction entity - identified by composite key (UserId, NodeId, RoleId)
 /// </summary>
 public sealed record UserNodeRoleRef(
-    long Id,
+    long UserId,
     long NodeId,
     string? NodeName,
     long RoleId,
@@ -98,7 +99,7 @@ public static class UserExtensions
         List<UserNodeRoleRef>? nodeRoles = null;
         if (includes.Contains("noderoles") || includes.Contains("usernoderoles"))
             nodeRoles = user.UserNodeRoles?.Select(unr => new UserNodeRoleRef(
-                unr.Id,
+                unr.UserId,
                 unr.NodeId,
                 unr.Node?.Name,
                 unr.RoleId,

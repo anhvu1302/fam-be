@@ -2,9 +2,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
-using FAM.Domain.ValueObjects;
 using FAM.Infrastructure.PersistenceModels.Mongo;
-using FAM.Infrastructure.Providers.MongoDB;
 using MongoDB.Driver;
 
 namespace FAM.Infrastructure.Providers.MongoDB.Repositories;

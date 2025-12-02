@@ -1,9 +1,9 @@
+using System.Security.Claims;
 using FAM.Application.Settings.DTOs;
 using FAM.Application.Settings.Services;
 using FAM.Domain.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace FAM.WebApi.Controllers;
 

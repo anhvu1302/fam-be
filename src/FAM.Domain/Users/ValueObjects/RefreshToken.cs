@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using FAM.Domain.Common;
 
 namespace FAM.Domain.Users.ValueObjects;
@@ -42,7 +43,7 @@ public sealed class RefreshToken : ValueObject
     {
         // Generate 256-bit random token
         var randomBytes = new byte[32];
-        using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+        using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
         return Convert.ToBase64String(randomBytes);
     }

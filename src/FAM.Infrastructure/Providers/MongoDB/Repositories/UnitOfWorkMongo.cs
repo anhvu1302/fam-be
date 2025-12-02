@@ -1,5 +1,4 @@
 using FAM.Domain.Abstractions;
-using FAM.Infrastructure.Providers.MongoDB;
 
 namespace FAM.Infrastructure.Providers.MongoDB.Repositories;
 
@@ -21,11 +20,29 @@ public class UnitOfWorkMongo : IUnitOfWork
         Users = userRepository;
         UserDevices = userDeviceRepository;
         SigningKeys = signingKeyRepository;
+
+        // MongoDB not used for authorization - these are null/not implemented
+        Roles = null!;
+        Permissions = null!;
+        RolePermissions = null!;
+        UserNodeRoles = null!;
+        Resources = null!;
+        OrgNodes = null!;
     }
 
     public IUserRepository Users { get; }
     public IUserDeviceRepository UserDevices { get; }
     public ISigningKeyRepository SigningKeys { get; }
+
+    // Authorization repositories - not implemented for MongoDB
+    public IRoleRepository Roles { get; }
+    public IPermissionRepository Permissions { get; }
+    public IRolePermissionRepository RolePermissions { get; }
+    public IUserNodeRoleRepository UserNodeRoles { get; }
+    public IResourceRepository Resources { get; }
+
+    // Organization repositories - not implemented for MongoDB
+    public IOrgNodeRepository OrgNodes { get; }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

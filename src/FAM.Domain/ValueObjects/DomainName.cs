@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using FAM.Domain.Common;
 
 namespace FAM.Domain.ValueObjects;
@@ -28,7 +29,7 @@ public sealed class DomainName : ValueObject
             throw new DomainException(ErrorCodes.VO_DOMAIN_TOO_LONG);
 
         // Basic domain validation
-        if (!System.Text.RegularExpressions.Regex.IsMatch(domain,
+        if (!Regex.IsMatch(domain,
                 @"^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$"))
             throw new DomainException(ErrorCodes.VO_DOMAIN_INVALID);
 

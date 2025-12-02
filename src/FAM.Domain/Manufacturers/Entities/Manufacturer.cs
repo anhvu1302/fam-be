@@ -1,4 +1,7 @@
+using FAM.Domain.Assets;
 using FAM.Domain.Common;
+using FAM.Domain.Geography;
+using FAM.Domain.Models;
 using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Manufacturers;
@@ -89,9 +92,9 @@ public class Manufacturer : Entity
     public string? MinimumOrderQuantity { get; private set; }
 
     // Navigation properties
-    public Geography.Country? Country { get; set; }
-    public ICollection<Models.Model> Models { get; set; } = new List<Models.Model>();
-    public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
+    public Country? Country { get; set; }
+    public ICollection<Model> Models { get; set; } = new List<Model>();
+    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
 
     private Manufacturer()
     {

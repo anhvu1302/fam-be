@@ -1,6 +1,5 @@
-using FluentAssertions;
 using FAM.Domain.Conditions;
-using Xunit;
+using FluentAssertions;
 
 namespace FAM.Domain.Tests.Conditions;
 

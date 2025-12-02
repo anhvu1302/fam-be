@@ -1,6 +1,5 @@
-using FluentAssertions;
 using FAM.Domain.Organizations;
-using FAM.Domain.Common;
+using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Organizations;
 

@@ -59,6 +59,11 @@ public sealed class FieldMap<T>
         return _map.Keys;
     }
 
+    public IEnumerable<(string FieldName, LambdaExpression Expression, Type Type)> GetAllFields()
+    {
+        return _map.Select(kvp => (kvp.Key, kvp.Value.Expression, kvp.Value.Type));
+    }
+
     private sealed record FieldMapping(
         LambdaExpression Expression,
         Type Type,

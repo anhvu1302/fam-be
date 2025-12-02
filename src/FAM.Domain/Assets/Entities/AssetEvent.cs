@@ -1,4 +1,6 @@
 using FAM.Domain.Common;
+using FAM.Domain.Statuses;
+using FAM.Domain.Users;
 
 namespace FAM.Domain.Assets;
 
@@ -18,8 +20,8 @@ public class AssetEvent : Entity
 
     // Navigation properties
     public Asset Asset { get; set; } = null!;
-    public Statuses.AssetEventType EventType { get; set; } = null!;
-    public Users.User? Actor { get; set; }
+    public AssetEventType EventType { get; set; } = null!;
+    public User? Actor { get; set; }
 
     private AssetEvent()
     {

@@ -3,7 +3,7 @@ using FAM.Application.Auth.Services;
 using FAM.Application.Common.Services;
 using FAM.Application.Menu.Services;
 using FAM.Application.Settings.Services;
-using FAM.Domain.Abstractions;
+using FAM.Application.Storage;
 using FAM.Infrastructure.Auth;
 using FAM.Infrastructure.Common.Mapping;
 using FAM.Infrastructure.Common.Options;
@@ -108,7 +108,7 @@ public static class InfrastructureModule
 
         // Register Storage Services
         services.AddScoped<IStorageService, MinioStorageService>();
-        services.AddScoped<IFileValidator, Application.Storage.FileValidator>();
+        services.AddScoped<IFileValidator, FileValidator>();
 
         // Register Signing Key Service
         services.AddScoped<ISigningKeyService, SigningKeyService>();

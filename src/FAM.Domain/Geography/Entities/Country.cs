@@ -1,4 +1,8 @@
+using FAM.Domain.Assets;
 using FAM.Domain.Common;
+using FAM.Domain.Locations;
+using FAM.Domain.Manufacturers;
+using FAM.Domain.Suppliers;
 using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Geography;
@@ -58,10 +62,10 @@ public class Country : Entity
     public decimal? Area { get; private set; } // Area in km²
 
     // Navigation properties
-    public ICollection<Locations.Location> Locations { get; set; } = new List<Locations.Location>();
-    public ICollection<Assets.Asset> Assets { get; set; } = new List<Assets.Asset>();
-    public ICollection<Suppliers.Supplier> Suppliers { get; set; } = new List<Suppliers.Supplier>();
-    public ICollection<Manufacturers.Manufacturer> Manufacturers { get; set; } = new List<Manufacturers.Manufacturer>();
+    public ICollection<Location> Locations { get; set; } = new List<Location>();
+    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
+    public ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
+    public ICollection<Manufacturer> Manufacturers { get; set; } = new List<Manufacturer>();
 
     private Country()
     {

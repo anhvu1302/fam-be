@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Common.Extensions;
@@ -51,7 +52,7 @@ public static class ModelBuilderExtensions
         if (string.IsNullOrEmpty(name))
             return name;
 
-        var sb = new System.Text.StringBuilder();
+        var sb = new StringBuilder();
         for (var i = 0; i < name.Length; i++)
         {
             var c = name[i];

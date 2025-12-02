@@ -1,5 +1,4 @@
 using FAM.Infrastructure.Common.Seeding;
-using FAM.Infrastructure.Providers.PostgreSQL;
 using FAM.Infrastructure.PersistenceModels.Ef;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

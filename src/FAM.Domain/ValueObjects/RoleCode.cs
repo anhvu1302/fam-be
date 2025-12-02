@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using FAM.Domain.Common;
 
 namespace FAM.Domain.ValueObjects;
@@ -27,7 +28,7 @@ public sealed class RoleCode : ValueObject
         if (roleCode.Length > 20)
             throw new DomainException(ErrorCodes.VO_ROLE_CODE_TOO_LONG);
 
-        if (!System.Text.RegularExpressions.Regex.IsMatch(roleCode, @"^[A-Z0-9_]+$"))
+        if (!Regex.IsMatch(roleCode, @"^[A-Z0-9_]+$"))
             throw new DomainException(ErrorCodes.VO_ROLE_CODE_INVALID);
 
         return new RoleCode(roleCode);

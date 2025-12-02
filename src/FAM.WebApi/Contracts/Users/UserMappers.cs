@@ -1,9 +1,11 @@
 using FAM.Application.Querying;
+using FAM.Application.Settings;
 using FAM.Application.Users.Commands.CreateUser;
 using FAM.Application.Users.Commands.UpdateUser;
 using FAM.Application.Users.Queries.GetUserById;
 using FAM.Application.Users.Queries.GetUsers;
 using FAM.Application.Users.Shared;
+using FAM.WebApi.Contracts.Common;
 
 namespace FAM.WebApi.Contracts.Users;
 
@@ -61,6 +63,26 @@ public static class UserMappers
     public static GetUsersQuery ToGetUsersQuery(this QueryRequest queryRequest)
     {
         return new GetUsersQuery(queryRequest);
+    }
+
+    /// <summary>
+    /// Convert PaginationQueryParameters to GetUsersQuery
+    /// </summary>
+    public static GetUsersQuery ToGetUsersQuery(
+        this PaginationQueryParameters parameters,
+        PaginationSettings paginationSettings)
+    {
+        var queryRequest = new QueryRequest
+        {
+            Filter = parameters.Filter,
+            Sort = parameters.Sort,
+            Page = parameters.Page > 0 ? parameters.Page : 1,
+            PageSize = parameters.PageSize > 0 ? parameters.PageSize : PaginationSettings.DefaultPageSize,
+            Fields = parameters.GetFieldsArray(),
+            Include = parameters.Include
+        };
+
+        return queryRequest.ToGetUsersQuery();
     }
 
     /// <summary>
@@ -136,7 +158,7 @@ public static class UserMappers
     public static UserNodeRoleResponse ToUserNodeRoleResponse(this UserNodeRoleRef nodeRole)
     {
         return new UserNodeRoleResponse(
-            nodeRole.Id,
+            nodeRole.UserId,
             nodeRole.NodeId,
             nodeRole.NodeName,
             nodeRole.RoleId,

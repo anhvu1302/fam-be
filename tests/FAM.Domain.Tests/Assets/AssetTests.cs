@@ -1,8 +1,6 @@
-using FluentAssertions;
-using FAM.Domain.Common;
 using FAM.Domain.Assets;
-using FAM.Domain.Assets.Events;
-using Xunit;
+using FAM.Domain.Common;
+using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Assets;
 

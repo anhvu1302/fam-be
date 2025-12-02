@@ -125,11 +125,21 @@ public static class ErrorMessages
         #region Role & Permission
 
         [ErrorCodes.ROLE_NOT_FOUND] = "Role not found",
-        [ErrorCodes.ROLE_NAME_EXISTS] = "A role with this name already exists",
-        [ErrorCodes.ROLE_SYSTEM_PROTECTED] = "System roles cannot be modified or deleted",
-        [ErrorCodes.ROLE_HAS_USERS] = "Cannot delete role that is assigned to users",
-        [ErrorCodes.PERM_NOT_FOUND] = "Permission not found",
-        [ErrorCodes.PERM_ALREADY_ASSIGNED] = "This permission is already assigned",
+        [ErrorCodes.ROLE_NAME_REQUIRED] = "Role name is required",
+        [ErrorCodes.ROLE_CODE_EXISTS] = "A role with this code already exists",
+        [ErrorCodes.ROLE_INVALID_RANK] = "Invalid role rank",
+        [ErrorCodes.ROLE_SYSTEM_ROLE_CANNOT_UPDATE] = "System roles cannot be modified",
+        [ErrorCodes.ROLE_SYSTEM_ROLE_CANNOT_DELETE] = "System roles cannot be deleted",
+        [ErrorCodes.ROLE_NO_PERMISSIONS_PROVIDED] = "No permissions provided",
+        [ErrorCodes.ROLE_IN_USE] = "Cannot delete role that is assigned to users",
+        [ErrorCodes.PERMISSION_NOT_FOUND] = "Permission not found",
+        [ErrorCodes.PERMISSION_INVALID] = "Invalid permission",
+        [ErrorCodes.PERMISSION_EXISTS] = "Permission already exists",
+        [ErrorCodes.PERMISSION_ALREADY_ASSIGNED] = "This permission is already assigned",
+        [ErrorCodes.PERMISSION_NOT_ASSIGNED] = "Permission not assigned to role",
+        [ErrorCodes.ROLE_ASSIGNMENT_INVALID_DATE_RANGE] = "End date must be after start date",
+        [ErrorCodes.ROLE_ALREADY_ASSIGNED_TO_USER] = "Role already assigned to user at this node",
+        [ErrorCodes.ROLE_ASSIGNMENT_NOT_FOUND] = "Role assignment not found",
 
         #endregion
 

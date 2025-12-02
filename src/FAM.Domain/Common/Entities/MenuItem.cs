@@ -1,5 +1,3 @@
-using FAM.Domain.Common;
-
 namespace FAM.Domain.Common.Entities;
 
 /// <summary>

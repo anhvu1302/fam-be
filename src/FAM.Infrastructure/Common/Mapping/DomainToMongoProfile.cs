@@ -1,10 +1,10 @@
 using AutoMapper;
-using FAM.Domain.Users;
-using FAM.Domain.ValueObjects;
-using FAM.Infrastructure.PersistenceModels.Mongo;
 using FAM.Domain.Authorization;
 using FAM.Domain.Organizations;
+using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
+using FAM.Domain.ValueObjects;
+using FAM.Infrastructure.PersistenceModels.Mongo;
 
 namespace FAM.Infrastructure.Common.Mapping;
 
@@ -108,43 +108,27 @@ public class DomainToMongoProfile : Profile
 
         CreateMap<RolePermission, RolePermissionMongo>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.DomainId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
             .ForMember(dest => dest.PermissionId, opt => opt.MapFrom(src => src.PermissionId))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
-            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
-            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
-            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+            .ForMember(dest => dest.GrantedById, opt => opt.MapFrom(src => src.GrantedById))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
 
         CreateMap<RolePermissionMongo, RolePermission>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.DomainId))
-            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
-            .ForMember(dest => dest.PermissionId, opt => opt.MapFrom(src => src.PermissionId))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
-            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
-            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
-            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+            .ConstructUsing(src => RolePermission.Create(src.RoleId, src.PermissionId, src.GrantedById));
 
         CreateMap<UserNodeRole, UserNodeRoleMongo>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
-            .ForMember(dest => dest.DomainId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
             .ForMember(dest => dest.NodeId, opt => opt.MapFrom(src => src.NodeId))
             .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
-            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
-            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
-            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+            .ForMember(dest => dest.StartAt, opt => opt.MapFrom(src => src.StartAt))
+            .ForMember(dest => dest.EndAt, opt => opt.MapFrom(src => src.EndAt))
+            .ForMember(dest => dest.AssignedById, opt => opt.MapFrom(src => src.AssignedById))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
 
         CreateMap<UserNodeRoleMongo, UserNodeRole>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.DomainId))
-            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-            .ForMember(dest => dest.NodeId, opt => opt.MapFrom(src => src.NodeId))
-            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
-            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
-            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
-            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+            .ConstructUsing(src => UserNodeRole.Create(src.UserId, src.NodeId, src.RoleId,
+                src.StartAt, src.EndAt, src.AssignedById));
 
         // Organizations mappings
         CreateMap<OrgNode, OrgNodeMongo>()

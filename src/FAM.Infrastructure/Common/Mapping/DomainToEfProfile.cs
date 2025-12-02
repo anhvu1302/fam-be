@@ -1,14 +1,11 @@
 using AutoMapper;
+using FAM.Domain.Authorization;
+using FAM.Domain.Common.Entities;
+using FAM.Domain.Organizations;
 using FAM.Domain.Users;
+using FAM.Domain.Users.Entities;
 using FAM.Domain.ValueObjects;
 using FAM.Infrastructure.PersistenceModels.Ef;
-using FAM.Infrastructure.PersistenceModels.Mongo;
-using FAM.Infrastructure.Providers.MongoDB;
-using FAM.Infrastructure.Providers.PostgreSQL;
-using FAM.Domain.Authorization;
-using FAM.Domain.Organizations;
-using FAM.Domain.Users.Entities;
-using FAM.Domain.Common.Entities;
 
 namespace FAM.Infrastructure.Common.Mapping;
 
@@ -161,42 +158,26 @@ public class DomainToEfProfile : Profile
             .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
 
         CreateMap<RolePermission, RolePermissionEf>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
             .ForMember(dest => dest.PermissionId, opt => opt.MapFrom(src => src.PermissionId))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
-            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
-            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
-            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+            .ForMember(dest => dest.GrantedById, opt => opt.MapFrom(src => src.GrantedById))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
 
         CreateMap<RolePermissionEf, RolePermission>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
-            .ForMember(dest => dest.PermissionId, opt => opt.MapFrom(src => src.PermissionId))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
-            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
-            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
-            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+            .ConstructUsing(src => RolePermission.Create(src.RoleId, src.PermissionId, src.GrantedById));
 
         CreateMap<UserNodeRole, UserNodeRoleEf>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
             .ForMember(dest => dest.NodeId, opt => opt.MapFrom(src => src.NodeId))
             .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
-            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
-            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
-            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+            .ForMember(dest => dest.StartAt, opt => opt.MapFrom(src => src.StartAt))
+            .ForMember(dest => dest.EndAt, opt => opt.MapFrom(src => src.EndAt))
+            .ForMember(dest => dest.AssignedById, opt => opt.MapFrom(src => src.AssignedById))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
 
         CreateMap<UserNodeRoleEf, UserNodeRole>()
-            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
-            .ForMember(dest => dest.NodeId, opt => opt.MapFrom(src => src.NodeId))
-            .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
-            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
-            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
-            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+            .ConstructUsing(src => UserNodeRole.Create(src.UserId, src.NodeId, src.RoleId,
+                src.StartAt, src.EndAt, src.AssignedById));
 
         // Organizations mappings
         CreateMap<OrgNode, OrgNodeEf>()

@@ -1,6 +1,5 @@
 using FAM.Application.Auth.Commands;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Users.Events;
 using MediatR;
 
 namespace FAM.Application.Auth.Handlers;

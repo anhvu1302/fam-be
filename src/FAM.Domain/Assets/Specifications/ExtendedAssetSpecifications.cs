@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using FAM.Domain.Abstractions;
 
 namespace FAM.Domain.Assets.Specifications;
@@ -7,7 +8,7 @@ namespace FAM.Domain.Assets.Specifications;
 /// </summary>
 public class MaintenanceDueSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         var today = DateTime.UtcNow.Date;
         return asset =>
@@ -22,7 +23,7 @@ public class MaintenanceDueSpecification : Specification<Asset>
 /// </summary>
 public class MaintenanceOverdueSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         var today = DateTime.UtcNow.Date;
         return asset =>
@@ -37,7 +38,7 @@ public class MaintenanceOverdueSpecification : Specification<Asset>
 /// </summary>
 public class WarrantyExpiredSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         var today = DateTime.UtcNow;
         return asset =>
@@ -59,7 +60,7 @@ public class LicenseExpiringSoonSpecification : Specification<Asset>
         _daysThreshold = daysThreshold;
     }
 
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         var checkDate = DateTime.UtcNow.AddDays(_daysThreshold);
         var today = DateTime.UtcNow;
@@ -77,7 +78,7 @@ public class LicenseExpiringSoonSpecification : Specification<Asset>
 /// </summary>
 public class HighRiskAssetSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset =>
             !asset.IsDeleted &&
@@ -90,7 +91,7 @@ public class HighRiskAssetSpecification : Specification<Asset>
 /// </summary>
 public class AuditDueSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         var today = DateTime.UtcNow.Date;
         return asset =>
@@ -112,7 +113,7 @@ public class ReplacementDueSpecification : Specification<Asset>
         _monthsThreshold = monthsThreshold;
     }
 
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset =>
             !asset.IsDeleted &&
@@ -126,7 +127,7 @@ public class ReplacementDueSpecification : Specification<Asset>
 /// </summary>
 public class InsuredAssetSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset =>
             !asset.IsDeleted &&
@@ -141,7 +142,7 @@ public class InsuredAssetSpecification : Specification<Asset>
 /// </summary>
 public class NetworkAssetSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset =>
             !asset.IsDeleted &&
@@ -161,7 +162,7 @@ public class ProjectAssetSpecification : Specification<Asset>
         _projectCode = projectCode;
     }
 
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset =>
             !asset.IsDeleted &&
@@ -174,7 +175,7 @@ public class ProjectAssetSpecification : Specification<Asset>
 /// </summary>
 public class HighSecurityAssetSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset =>
             !asset.IsDeleted &&
@@ -188,7 +189,7 @@ public class HighSecurityAssetSpecification : Specification<Asset>
 /// </summary>
 public class NonCompliantAssetSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset =>
             !asset.IsDeleted &&
@@ -201,7 +202,7 @@ public class NonCompliantAssetSpecification : Specification<Asset>
 /// </summary>
 public class FullyDepreciatedSpecification : Specification<Asset>
 {
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset =>
             !asset.IsDeleted &&
@@ -223,7 +224,7 @@ public class CostCenterSpecification : Specification<Asset>
         _costCenter = costCenter;
     }
 
-    public override System.Linq.Expressions.Expression<Func<Asset, bool>> ToExpression()
+    public override Expression<Func<Asset, bool>> ToExpression()
     {
         return asset =>
             !asset.IsDeleted &&

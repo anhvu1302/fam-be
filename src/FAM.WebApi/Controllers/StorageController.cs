@@ -1,10 +1,10 @@
 using FAM.Application.Abstractions;
 using FAM.Application.Storage.Commands;
 using FAM.Contracts.Storage;
-using FAM.Domain.Common.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using FileInfo = FAM.Application.Abstractions.FileInfo;
 using InitUploadSessionResponse = FAM.Application.Storage.Commands.InitUploadSessionResponse;
 
 namespace FAM.WebApi.Controllers;
@@ -345,7 +345,7 @@ public class StorageController : ControllerBase
     /// Get file information
     /// </summary>
     [HttpGet("info/{*filePath}")]
-    [ProducesResponseType(typeof(Application.Abstractions.FileInfo), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(FileInfo), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetFileInfo(string filePath)
     {

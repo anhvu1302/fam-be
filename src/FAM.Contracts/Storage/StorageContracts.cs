@@ -1,5 +1,3 @@
-using FAM.Domain.Common.Enums;
-
 namespace FAM.Contracts.Storage;
 
 /// <summary>

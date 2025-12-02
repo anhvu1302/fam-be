@@ -41,7 +41,7 @@ public interface IResourceRepository : IRepository<Resource>
 /// <summary>
 /// Repository interface for RolePermission entity
 /// </summary>
-public interface IRolePermissionRepository : IRepository<RolePermission>
+public interface IRolePermissionRepository : IJunctionRepository<RolePermission>
 {
     Task<IEnumerable<RolePermission>> GetByRoleIdAsync(long roleId, CancellationToken cancellationToken = default);
 
@@ -57,7 +57,7 @@ public interface IRolePermissionRepository : IRepository<RolePermission>
 /// <summary>
 /// Repository interface for UserNodeRole entity
 /// </summary>
-public interface IUserNodeRoleRepository : IRepository<UserNodeRole>
+public interface IUserNodeRoleRepository : IJunctionRepository<UserNodeRole>
 {
     Task<IEnumerable<UserNodeRole>> GetByUserIdAsync(long userId, CancellationToken cancellationToken = default);
     Task<IEnumerable<UserNodeRole>> GetByNodeIdAsync(long nodeId, CancellationToken cancellationToken = default);

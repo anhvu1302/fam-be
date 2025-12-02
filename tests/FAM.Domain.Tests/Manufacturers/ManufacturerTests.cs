@@ -1,6 +1,5 @@
-using FAM.Domain.Manufacturers;
 using FAM.Domain.Common;
-using FAM.Domain.ValueObjects;
+using FAM.Domain.Manufacturers;
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Manufacturers;

@@ -1,11 +1,12 @@
 namespace FAM.Domain.Common;
 
 /// <summary>
-/// Base entity
+/// Base entity with generic TId for flexible ID types
+/// Contains shared audit fields and soft delete logic
 /// </summary>
-public abstract class BaseEntity
+public abstract class BaseEntity<TId> where TId : IEquatable<TId>
 {
-    public long Id { get; protected set; }
+    public TId Id { get; protected set; } = default!;
 
     // Audit fields
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -20,7 +21,7 @@ public abstract class BaseEntity
     {
     }
 
-    protected BaseEntity(long id)
+    protected BaseEntity(TId id)
     {
         Id = id;
     }
@@ -30,18 +31,26 @@ public abstract class BaseEntity
         IsDeleted = true;
         DeletedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
+        DeletedById = deletedById;
+        UpdatedById = deletedById;
     }
 
     public virtual void Restore()
     {
         IsDeleted = false;
         DeletedAt = null;
+        DeletedById = null;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    protected virtual bool IsTransient()
+    {
+        return Id == null || Id.Equals(default);
     }
 
     public override bool Equals(object? obj)
     {
-        if (obj is not BaseEntity other)
+        if (obj is not BaseEntity<TId> other)
             return false;
 
         if (ReferenceEquals(this, other))
@@ -50,7 +59,7 @@ public abstract class BaseEntity
         if (GetType() != other.GetType())
             return false;
 
-        if (Id == 0 || other.Id == 0)
+        if (IsTransient() || other.IsTransient())
             return false;
 
         return Id.Equals(other.Id);
@@ -58,10 +67,10 @@ public abstract class BaseEntity
 
     public override int GetHashCode()
     {
-        return (GetType().ToString() + Id).GetHashCode();
+        return HashCode.Combine(GetType(), Id);
     }
 
-    public static bool operator ==(BaseEntity? a, BaseEntity? b)
+    public static bool operator ==(BaseEntity<TId>? a, BaseEntity<TId>? b)
     {
         if (a is null && b is null)
             return true;
@@ -72,8 +81,22 @@ public abstract class BaseEntity
         return a.Equals(b);
     }
 
-    public static bool operator !=(BaseEntity? a, BaseEntity? b)
+    public static bool operator !=(BaseEntity<TId>? a, BaseEntity<TId>? b)
     {
         return !(a == b);
+    }
+}
+
+/// <summary>
+/// Base entity with long ID (most common case)
+/// </summary>
+public abstract class BaseEntity : BaseEntity<long>
+{
+    protected BaseEntity() : base()
+    {
+    }
+
+    protected BaseEntity(long id) : base(id)
+    {
     }
 }

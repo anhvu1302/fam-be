@@ -1,7 +1,7 @@
-using FAM.Infrastructure.Common.Seeding;
-using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Data.Common;
+using FAM.Infrastructure.Common.Seeding;
+using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 

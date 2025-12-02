@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Reflection;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -73,8 +74,8 @@ public abstract class BasePagedRepository<TDomain, TEf>
 
             // Get property info from EF type
             var property = typeof(TEf).GetProperty(propertyName,
-                System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.Instance);
+                BindingFlags.IgnoreCase | BindingFlags.Public |
+                BindingFlags.Instance);
 
             if (property == null)
                 continue;

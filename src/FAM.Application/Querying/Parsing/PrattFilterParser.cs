@@ -1,3 +1,4 @@
+using System.Globalization;
 using FAM.Application.Querying.Ast;
 
 namespace FAM.Application.Querying.Parsing;
@@ -75,9 +76,9 @@ public sealed class PrattFilterParser : IFilterParser
         {
             Advance();
             if (token.Value.Contains('.'))
-                return LiteralNode.Number(double.Parse(token.Value, System.Globalization.CultureInfo.InvariantCulture));
+                return LiteralNode.Number(double.Parse(token.Value, CultureInfo.InvariantCulture));
             else
-                return LiteralNode.Integer(long.Parse(token.Value, System.Globalization.CultureInfo.InvariantCulture));
+                return LiteralNode.Integer(long.Parse(token.Value, CultureInfo.InvariantCulture));
         }
 
         if (token.Type == FilterTokenType.Boolean)

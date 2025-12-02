@@ -3,7 +3,6 @@ using AutoMapper;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.PersistenceModels.Ef;
-using FAM.Infrastructure.Providers.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
@@ -20,12 +19,6 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
     {
         _context = context;
         _mapper = mapper;
-    }
-
-    public async Task<UserNodeRole?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
-    {
-        var entity = await _context.UserNodeRoles.FindAsync(new object[] { id }, cancellationToken);
-        return entity != null ? _mapper.Map<UserNodeRole>(entity) : null;
     }
 
     public async Task<IEnumerable<UserNodeRole>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -48,21 +41,10 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
         await _context.UserNodeRoles.AddAsync(efEntity, cancellationToken);
     }
 
-    public void Update(UserNodeRole entity)
-    {
-        var efEntity = _mapper.Map<UserNodeRoleEf>(entity);
-        _context.UserNodeRoles.Update(efEntity);
-    }
-
     public void Delete(UserNodeRole entity)
     {
         var efEntity = _mapper.Map<UserNodeRoleEf>(entity);
         _context.UserNodeRoles.Remove(efEntity);
-    }
-
-    public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
-    {
-        return await _context.UserNodeRoles.AnyAsync(unr => unr.Id == id, cancellationToken);
     }
 
     public async Task<IEnumerable<UserNodeRole>> GetByUserIdAsync(long userId,

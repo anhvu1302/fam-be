@@ -1,7 +1,7 @@
-using FAM.Application.Common.Services;
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
+using FAM.Application.Common.Services;
+using Microsoft.Extensions.Logging;
 
 namespace FAM.Infrastructure.Services;
 

@@ -1,4 +1,4 @@
-using FAM.Domain.Organizations;
+using FAM.Domain.Authorization;
 using FAM.Domain.Common;
 
 namespace FAM.Domain.Organizations;
@@ -6,7 +6,7 @@ namespace FAM.Domain.Organizations;
 /// <summary>
 /// Organizational node in the hierarchy: Company -> Department -> Group
 /// </summary>
-public class OrgNode : Entity
+public class OrgNode : AggregateRoot
 {
     public OrgNodeType Type { get; private set; }
     public string Name { get; private set; } = string.Empty;
@@ -19,8 +19,8 @@ public class OrgNode : Entity
     public DepartmentDetails? DepartmentDetails { get; private set; }
 
     // Authorization
-    public ICollection<Authorization.UserNodeRole> UserNodeRoles { get; set; } = new List<Authorization.UserNodeRole>();
-    public ICollection<Authorization.Resource> Resources { get; set; } = new List<Authorization.Resource>();
+    public ICollection<UserNodeRole> UserNodeRoles { get; set; } = new List<UserNodeRole>();
+    public ICollection<Resource> Resources { get; set; } = new List<Resource>();
 
     private OrgNode()
     {

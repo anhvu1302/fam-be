@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace FAM.Application.Querying.Parsing;
 
 /// <summary>
@@ -89,7 +91,7 @@ public sealed class FilterTokenizer
         var start = _position;
         _position++; // Skip opening quote
 
-        var value = new System.Text.StringBuilder();
+        var value = new StringBuilder();
         while (_position < _input.Length && _input[_position] != quote)
         {
             if (_input[_position] == '\\' && _position + 1 < _input.Length)

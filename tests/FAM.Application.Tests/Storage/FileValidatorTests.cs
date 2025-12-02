@@ -2,7 +2,6 @@ using FAM.Application.Settings;
 using FAM.Application.Storage;
 using FAM.Domain.Common.Enums;
 using Microsoft.Extensions.Options;
-using Xunit;
 
 namespace FAM.Application.Tests.Storage;
 

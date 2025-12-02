@@ -4,16 +4,10 @@ namespace FAM.Infrastructure.PersistenceModels.Mongo;
 
 /// <summary>
 /// Entity with audit user tracking for MongoDB
+/// Audit fields (CreatedById, UpdatedById, DeletedById) inherited from BaseEntityMongo
 /// </summary>
 public abstract class EntityMongo : BaseEntityMongo
 {
-    // Audit user IDs (stored in database)
-    [BsonElement("createdById")] public long? CreatedById { get; set; }
-
-    [BsonElement("updatedById")] public long? UpdatedById { get; set; }
-
-    [BsonElement("deletedById")] public long? DeletedById { get; set; }
-
     // Navigation properties (not stored, populated manually if needed)
     [BsonIgnore] public UserMongo? CreatedBy { get; set; }
 
