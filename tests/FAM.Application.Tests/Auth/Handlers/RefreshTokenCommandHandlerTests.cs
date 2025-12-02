@@ -2,6 +2,7 @@ using FAM.Application.Auth.Commands;
 using FAM.Application.Auth.Handlers;
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Authorization;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
 using FluentAssertions;
@@ -15,6 +16,7 @@ public class RefreshTokenCommandHandlerTests
     private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly Mock<IUserDeviceRepository> _mockUserDeviceRepository;
     private readonly Mock<IJwtService> _mockJwtService;
+    private readonly Mock<ISigningKeyService> _mockSigningKeyService;
     private readonly RefreshTokenCommandHandler _handler;
 
     public RefreshTokenCommandHandlerTests()
@@ -23,11 +25,12 @@ public class RefreshTokenCommandHandlerTests
         _mockUserRepository = new Mock<IUserRepository>();
         _mockUserDeviceRepository = new Mock<IUserDeviceRepository>();
         _mockJwtService = new Mock<IJwtService>();
+        _mockSigningKeyService = new Mock<ISigningKeyService>();
 
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
         _mockUnitOfWork.Setup(x => x.UserDevices).Returns(_mockUserDeviceRepository.Object);
 
-        _handler = new RefreshTokenCommandHandler(_mockUnitOfWork.Object, _mockJwtService.Object);
+        _handler = new RefreshTokenCommandHandler(_mockUnitOfWork.Object, _mockJwtService.Object, _mockSigningKeyService.Object);
     }
 
     [Fact]
@@ -65,8 +68,14 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
+        var mockSigningKey = SigningKey.Create("test-kid", "test-public-key", "test-private-key", "RS256");
+
+        _mockSigningKeyService
+            .Setup(x => x.GetOrCreateActiveKeyAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(mockSigningKey);
+
         _mockJwtService
-            .Setup(x => x.GenerateAccessToken(user.Id, user.Username.Value, user.Email.Value, It.IsAny<List<string>>()))
+            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username.Value, user.Email.Value, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(newAccessToken);
 
         _mockJwtService

@@ -3,15 +3,10 @@ using System.Security.Claims;
 namespace FAM.Application.Auth.Services;
 
 /// <summary>
-/// Service for JWT token operations
+/// Service for JWT token operations using RSA asymmetric signing
 /// </summary>
 public interface IJwtService
 {
-    /// <summary>
-    /// Generate JWT access token using HMAC (symmetric key)
-    /// </summary>
-    string GenerateAccessToken(long userId, string username, string email, IEnumerable<string> roles);
-
     /// <summary>
     /// Generate JWT access token using RSA (asymmetric key) with specified key ID
     /// </summary>
@@ -30,19 +25,9 @@ public interface IJwtService
     string GenerateRefreshToken();
 
     /// <summary>
-    /// Validate JWT token
-    /// </summary>
-    bool ValidateToken(string token);
-
-    /// <summary>
     /// Validate JWT token with RSA public key
     /// </summary>
     bool ValidateTokenWithRsa(string token, string publicKeyPem);
-
-    /// <summary>
-    /// Validate JWT token and return ClaimsPrincipal
-    /// </summary>
-    ClaimsPrincipal? ValidateTokenAndGetPrincipal(string token);
 
     /// <summary>
     /// Get user ID from token

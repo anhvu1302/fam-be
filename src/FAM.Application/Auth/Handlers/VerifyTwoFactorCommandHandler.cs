@@ -16,6 +16,7 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
     private readonly IUserRepository _userRepository;
     private readonly IUserDeviceRepository _userDeviceRepository;
     private readonly IJwtService _jwtService;
+    private readonly ISigningKeyService _signingKeyService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<VerifyTwoFactorCommandHandler> _logger;
 
@@ -23,12 +24,14 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
         IUserRepository userRepository,
         IUserDeviceRepository userDeviceRepository,
         IJwtService jwtService,
+        ISigningKeyService signingKeyService,
         IUnitOfWork unitOfWork,
         ILogger<VerifyTwoFactorCommandHandler> _logger)
     {
         _userRepository = userRepository;
         _userDeviceRepository = userDeviceRepository;
         _jwtService = jwtService;
+        _signingKeyService = signingKeyService;
         _unitOfWork = unitOfWork;
         this._logger = _logger;
     }
@@ -36,12 +39,10 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
     public async Task<VerifyTwoFactorResponse> Handle(VerifyTwoFactorCommand request,
         CancellationToken cancellationToken)
     {
-        // Validate the 2FA session token
-        if (!ValidateTwoFactorSessionToken(request.TwoFactorSessionToken))
-            throw new UnauthorizedAccessException("Invalid or expired two-factor session token");
-
-        // Extract user ID from session token
+        // Extract user ID from session token (token already validated by JWT middleware)
         var userId = _jwtService.GetUserIdFromToken(request.TwoFactorSessionToken);
+        if (userId == 0)
+            throw new UnauthorizedAccessException("Invalid or expired two-factor session token");
 
         // Get user
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
@@ -68,9 +69,17 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
             request.Location // Location from IP geolocation
         );
 
-        // Generate tokens
+        // Generate tokens using RSA
+        var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
         var roles = new List<string>(); // TODO: Load user roles from UserNodeRoles
-        var accessToken = _jwtService.GenerateAccessToken(user.Id, user.Username.Value, user.Email.Value, roles);
+        var accessToken = _jwtService.GenerateAccessTokenWithRsa(
+            user.Id,
+            user.Username.Value,
+            user.Email.Value,
+            roles,
+            activeKey.KeyId,
+            activeKey.PrivateKey,
+            activeKey.Algorithm);
         var refreshToken = _jwtService.GenerateRefreshToken();
         var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(request.RememberMe ? 30 : 7);
 
@@ -117,27 +126,6 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
                 IsTwoFactorEnabled = user.TwoFactorEnabled
             }
         };
-    }
-
-    private bool ValidateTwoFactorSessionToken(string token)
-    {
-        try
-        {
-            // Validate token and check if it's a 2FA session token
-            var isValid = _jwtService.ValidateToken(token);
-            if (!isValid)
-                return false;
-
-            // Check if token contains 2fa_session role (our way to identify 2FA session tokens)
-            var userId = _jwtService.GetUserIdFromToken(token);
-            // Additional validation could be added here
-
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     private bool VerifyTwoFactorCode(string secret, string code)

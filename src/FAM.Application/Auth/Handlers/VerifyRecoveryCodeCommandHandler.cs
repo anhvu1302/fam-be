@@ -15,15 +15,18 @@ public class VerifyRecoveryCodeCommandHandler : IRequestHandler<VerifyRecoveryCo
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
+    private readonly ISigningKeyService _signingKeyService;
     private readonly ILogger<VerifyRecoveryCodeCommandHandler> _logger;
 
     public VerifyRecoveryCodeCommandHandler(
         IUnitOfWork unitOfWork,
         IJwtService jwtService,
+        ISigningKeyService signingKeyService,
         ILogger<VerifyRecoveryCodeCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _jwtService = jwtService;
+        _signingKeyService = signingKeyService;
         _logger = logger;
     }
 
@@ -81,9 +84,17 @@ public class VerifyRecoveryCodeCommandHandler : IRequestHandler<VerifyRecoveryCo
         user.UpdateRecoveryCodes(JsonSerializer.Serialize(recoveryCodes));
         _unitOfWork.Users.Update(user);
 
-        // Generate tokens
+        // Generate tokens using RSA
+        var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
         var roles = new List<string>(); // TODO: Load user roles from UserNodeRoles
-        var accessToken = _jwtService.GenerateAccessToken(user.Id, user.Username.Value, user.Email.Value, roles);
+        var accessToken = _jwtService.GenerateAccessTokenWithRsa(
+            user.Id,
+            user.Username.Value,
+            user.Email.Value,
+            roles,
+            activeKey.KeyId,
+            activeKey.PrivateKey,
+            activeKey.Algorithm);
         var refreshToken = _jwtService.GenerateRefreshToken();
         var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(request.RememberMe ? 30 : 7);
 
@@ -149,23 +160,11 @@ public class VerifyRecoveryCodeCommandHandler : IRequestHandler<VerifyRecoveryCo
     {
         try
         {
-            var principal = _jwtService.ValidateTokenAndGetPrincipal(token);
-            if (principal == null)
-                return 0;
-
-            var userIdClaim = principal.FindFirst("user_id");
-            if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
-                return 0;
-
-            var roleClaim = principal.FindFirst("role");
-            if (roleClaim == null || roleClaim.Value != "2fa_session")
-                return 0;
-
-            return userId;
+            // Token is already validated by JWT middleware via JWKS endpoint
+            return _jwtService.GetUserIdFromToken(token);
         }
-        catch (Exception ex)
+        catch
         {
-            _logger.LogWarning(ex, "Failed to validate 2FA session token");
             return 0;
         }
     }

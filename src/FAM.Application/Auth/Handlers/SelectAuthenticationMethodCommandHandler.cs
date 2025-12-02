@@ -109,24 +109,13 @@ public class
     {
         try
         {
-            var principal = _jwtService.ValidateTokenAndGetPrincipal(token);
-            if (principal == null)
-                return 0;
-
-            var userIdClaim = principal.FindFirst("user_id");
-            if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
-                return 0;
-
-            // Check if it's a 2FA session token (should have 2fa_session role)
-            var roleClaim = principal.FindFirst("role");
-            if (roleClaim == null || roleClaim.Value != "2fa_session")
-                return 0;
-
+            // JWT middleware already validates token signature, just extract user ID
+            var userId = _jwtService.GetUserIdFromToken(token);
             return userId;
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to validate 2FA session token");
+            _logger.LogWarning(ex, "Failed to extract user ID from 2FA session token");
             return 0;
         }
     }

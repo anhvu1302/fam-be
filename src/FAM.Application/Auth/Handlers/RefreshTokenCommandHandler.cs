@@ -13,11 +13,13 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
+    private readonly ISigningKeyService _signingKeyService;
 
-    public RefreshTokenCommandHandler(IUnitOfWork unitOfWork, IJwtService jwtService)
+    public RefreshTokenCommandHandler(IUnitOfWork unitOfWork, IJwtService jwtService, ISigningKeyService signingKeyService)
     {
         _unitOfWork = unitOfWork;
         _jwtService = jwtService;
+        _signingKeyService = signingKeyService;
     }
 
     public async Task<LoginResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
@@ -43,9 +45,17 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
 
         if (user.IsLockedOut()) throw new UnauthorizedAccessException("Account is locked");
 
-        // Generate new access token
+        // Generate new access token using RSA
+        var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
         var roles = new List<string>(); // TODO: Load user roles from UserNodeRoles
-        var accessToken = _jwtService.GenerateAccessToken(user.Id, user.Username.Value, user.Email.Value, roles);
+        var accessToken = _jwtService.GenerateAccessTokenWithRsa(
+            user.Id,
+            user.Username.Value,
+            user.Email.Value,
+            roles,
+            activeKey.KeyId,
+            activeKey.PrivateKey,
+            activeKey.Algorithm);
 
         // Optionally generate new refresh token (rotate refresh token for better security)
         var newRefreshToken = _jwtService.GenerateRefreshToken();

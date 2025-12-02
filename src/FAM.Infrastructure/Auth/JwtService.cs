@@ -8,11 +8,10 @@ using Microsoft.IdentityModel.Tokens;
 namespace FAM.Infrastructure.Auth;
 
 /// <summary>
-/// JWT service implementation supporting both HMAC (symmetric) and RSA (asymmetric) signing
+/// JWT service implementation using RSA (asymmetric) signing with keys from database
 /// </summary>
 public class JwtService : IJwtService
 {
-    private readonly string _secret;
     private readonly string _issuer;
     private readonly string _audience;
     private readonly int _accessTokenExpiryMinutes;
@@ -20,8 +19,6 @@ public class JwtService : IJwtService
     public JwtService()
     {
         // Load from environment variables
-        _secret = Environment.GetEnvironmentVariable("JWT_SECRET")
-                  ?? throw new InvalidOperationException("JWT_SECRET environment variable not configured");
         _issuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "FAM.API";
         _audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "FAM.Client";
 
@@ -30,30 +27,6 @@ public class JwtService : IJwtService
             !string.IsNullOrEmpty(expiryMinutesStr) && int.TryParse(expiryMinutesStr, out var minutes)
                 ? minutes
                 : 60;
-
-        if (_secret.Length < 32)
-            throw new InvalidOperationException("JWT_SECRET must be at least 32 characters");
-    }
-
-    /// <summary>
-    /// Generate access token using HMAC-SHA256 (symmetric key)
-    /// </summary>
-    public string GenerateAccessToken(long userId, string username, string email, IEnumerable<string> roles)
-    {
-        var claims = CreateClaims(userId, username, email, roles);
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            _issuer,
-            _audience,
-            claims,
-            expires: DateTime.UtcNow.AddMinutes(_accessTokenExpiryMinutes),
-            signingCredentials: credentials
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
     /// <summary>
@@ -111,68 +84,6 @@ public class JwtService : IJwtService
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
         return Convert.ToBase64String(randomBytes);
-    }
-
-    /// <summary>
-    /// Validate token using HMAC (symmetric key)
-    /// </summary>
-    public bool ValidateToken(string token)
-    {
-        try
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_secret);
-
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = true,
-                ValidIssuer = _issuer,
-                ValidateAudience = true,
-                ValidAudience = _audience,
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
-            };
-
-            tokenHandler.ValidateToken(token, validationParameters, out _);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// Validate token and return ClaimsPrincipal
-    /// </summary>
-    public ClaimsPrincipal? ValidateTokenAndGetPrincipal(string token)
-    {
-        try
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_secret);
-
-            var validationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = true,
-                ValidIssuer = _issuer,
-                ValidateAudience = true,
-                ValidAudience = _audience,
-                ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
-            };
-
-            var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
-            return principal;
-        }
-        catch
-        {
-            return null;
-        }
     }
 
     /// <summary>
