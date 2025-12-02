@@ -72,7 +72,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      
+
       # MinIO Configuration
       MINIO_HOST: minio
       MINIO_PORT: "9000"
@@ -80,29 +80,29 @@ services:
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       MINIO_USE_SSL: ${MINIO_USE_SSL:-false}
       MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-fam-assets}
-      
+
       # Seq Configuration
       Serilog__WriteTo__1__Args__serverUrl: "http://seq:5341"
       Serilog__WriteTo__1__Args__apiKey: ${SEQ_API_KEY:-}
-      
+
       # JWT Configuration
       # Keys are managed in database via SigningKey table
       JWT__Issuer: ${JWT_ISSUER:-FAM.WebApi}
       JWT__Audience: ${JWT_AUDIENCE:-FAM.Client}
       JWT__ExpiryInMinutes: ${JWT_EXPIRY:-60}
-      
+
       # Redis Configuration (if used)
       Redis__Host: ${REDIS_HOST:-localhost}
       Redis__Port: ${REDIS_PORT:-6379}
       Redis__Password: ${REDIS_PASSWORD:-}
       Redis__InstanceName: ${REDIS_INSTANCE_NAME:-fam:}
-      
-      # ASP.NET Core Configuration
+
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8000
-      
+
     ports:
       - "${API_PORT:-8000}:8000"
+
     depends_on:
       postgres:
         condition: service_healthy
@@ -110,33 +110,24 @@ services:
         condition: service_healthy
       seq:
         condition: service_started
+
     restart: always
+
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+
     networks:
       - fam-network
-    # Resource limits (tùy chỉnh theo server của bạn)
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
 
 networks:
   fam-network:
-    driver: bridge
+    external: true
 
 volumes:
   postgres_data:
-    driver: local
   minio_data:
-    driver: local
   seq_data:
-    driver: local
