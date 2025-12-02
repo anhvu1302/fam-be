@@ -16,7 +16,7 @@ ifneq (,$(wildcard $(ENV_FILE)))
 endif
 
 .PHONY: help add remove update list seed seed-force
-.PHONY: docker-build docker-build-sdk docker-clean
+.PHONY: docker-build-sdk docker-clean
 .PHONY: prod-deploy prod-start prod-stop prod-restart prod-logs prod-status prod-down
 .PHONY: prod-migrate prod-seed prod-health prod-db-shell
 
@@ -36,7 +36,6 @@ help:
 	@echo "  seed-force         Force re-run all seeds"
 	@echo ""
 	@echo "🐳 Docker:"
-	@echo "  docker-build       Build production image"
 	@echo "  docker-build-sdk   Build SDK image (for migrations)"
 	@echo "  docker-clean       Clean images and cache"
 	@echo ""
@@ -83,12 +82,6 @@ seed-force:
 # Docker Targets
 # ============================================
 
-docker-build:
-	@echo "🐳 Building Docker image..."
-	docker build -t $(DOCKER_IMAGE):$(DOCKER_TAG) .
-	@echo "✅ Build completed!"
-	@docker images $(DOCKER_IMAGE):$(DOCKER_TAG) --format "Size: {{.Size}}"
-
 docker-build-sdk:
 	@echo "🔧 Building SDK image..."
 	docker build --target build -t $(DOCKER_IMAGE):build .
@@ -105,7 +98,7 @@ docker-clean:
 # Production Targets
 # ============================================
 
-prod-deploy: docker-build
+prod-deploy: prod-build
 	@echo "🚀 Deploying..."
 	@if [ ! -f "$(ENV_FILE)" ]; then echo "❌ $(ENV_FILE) not found"; exit 1; fi
 	docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) up -d
