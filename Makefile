@@ -112,6 +112,9 @@ prod-deploy: docker-build
 	@sleep 5
 	@make prod-health
 
+prod-build:
+	docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) build
+
 prod-start:
 	docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) start
 
