@@ -26,7 +26,6 @@
     <ItemGroup>
         <ProjectReference Include="..\FAM.Application\FAM.Application.csproj"/>
         <ProjectReference Include="..\FAM.Infrastructure\FAM.Infrastructure.csproj"/>
-        <ProjectReference Include="..\FAM.Contracts\FAM.Contracts.csproj"/>
     </ItemGroup>
 
 </Project>

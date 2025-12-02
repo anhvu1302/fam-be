@@ -1,6 +1,6 @@
 using FAM.Application.Abstractions;
 using FAM.Application.Storage.Commands;
-using FAM.Contracts.Storage;
+using FAM.WebApi.Contracts.Storage;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

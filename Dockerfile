@@ -13,7 +13,6 @@ COPY ["FAM.sln", "./"]
 COPY ["src/FAM.WebApi/FAM.WebApi.csproj", "src/FAM.WebApi/"]
 COPY ["src/FAM.Application/FAM.Application.csproj", "src/FAM.Application/"]
 COPY ["src/FAM.Infrastructure/FAM.Infrastructure.csproj", "src/FAM.Infrastructure/"]
-COPY ["src/FAM.Contracts/FAM.Contracts.csproj", "src/FAM.Contracts/"]
 COPY ["src/FAM.Domain/FAM.Domain.csproj", "src/FAM.Domain/"]
 COPY ["src/FAM.Cli/FAM.Cli.csproj", "src/FAM.Cli/"]
 
