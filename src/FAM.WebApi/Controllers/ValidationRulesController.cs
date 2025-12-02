@@ -8,7 +8,7 @@ namespace FAM.WebApi.Controllers;
 /// This ensures Frontend can sync with Backend validation constants
 /// </summary>
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/validation-rules")]
 public class ValidationRulesController : ControllerBase
 {
     /// <summary>

@@ -14,7 +14,7 @@ namespace FAM.WebApi.Controllers;
 /// Manages system permissions
 /// </summary>
 [ApiController]
-[Route("api/v1/permissions")]
+[Route("api/permissions")]
 [Authorize]
 public class PermissionsController : ControllerBase
 {

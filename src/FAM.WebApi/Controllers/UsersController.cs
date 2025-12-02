@@ -17,7 +17,7 @@ namespace FAM.WebApi.Controllers;
 /// Users API Controller - Web API layer validates shape/format before delegating to Application
 /// </summary>
 [ApiController]
-[Route("api/v1/users")]
+[Route("api/users")]
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;

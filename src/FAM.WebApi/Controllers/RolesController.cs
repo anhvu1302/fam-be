@@ -24,7 +24,7 @@ namespace FAM.WebApi.Controllers;
 /// Manages roles and role assignments
 /// </summary>
 [ApiController]
-[Route("api/v1/roles")]
+[Route("api/roles")]
 [Authorize]
 public class RolesController : ControllerBase
 {
