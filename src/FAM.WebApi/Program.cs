@@ -66,27 +66,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardLimit = 2;
 });
 
-// Add CORS - configured from appsettings.json
-var corsSection = builder.Configuration.GetSection("Cors");
-var allowedOrigins = corsSection.GetSection("AllowedOrigins").Get<string[]>() ?? new[] { "http://localhost:8001" };
-var allowedMethods = corsSection.GetSection("AllowedMethods").Get<string[]>() ??
-                     new[] { "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" };
-var allowedHeaders = corsSection.GetSection("AllowedHeaders").Get<string[]>() ??
-                     new[] { "Content-Type", "Authorization" };
-var allowCredentials = corsSection.GetValue<bool>("AllowCredentials", true);
-
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.WithOrigins(allowedOrigins)
-            .WithMethods(allowedMethods)
-            .WithHeaders(allowedHeaders);
-
-        if (allowCredentials)
-            policy.AllowCredentials();
-    });
-});
+// Add CORS - configured from appsettings.json, User Secrets, or Environment Variables
+builder.Services.AddOptimizedCors(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddControllers();
