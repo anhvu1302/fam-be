@@ -1,5 +1,5 @@
-using FAM.Application.Auth.DTOs;
 using FAM.Application.Auth.Services;
+using FAM.Application.Auth.Shared;
 using FAM.Domain.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

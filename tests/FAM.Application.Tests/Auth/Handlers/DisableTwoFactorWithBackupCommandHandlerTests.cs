@@ -1,6 +1,5 @@
 using System.Text.Json;
-using FAM.Application.Auth.Commands;
-using FAM.Application.Auth.Handlers;
+using FAM.Application.Auth.DisableTwoFactorWithBackup;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
 using FluentAssertions;

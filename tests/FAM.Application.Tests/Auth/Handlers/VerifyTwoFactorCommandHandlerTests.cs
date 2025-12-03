@@ -1,6 +1,5 @@
-using FAM.Application.Auth.Commands;
-using FAM.Application.Auth.Handlers;
 using FAM.Application.Auth.Services;
+using FAM.Application.Auth.VerifyTwoFactor;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Users;
@@ -92,7 +91,8 @@ public class VerifyTwoFactorCommandHandlerTests
             .ReturnsAsync(mockSigningKey);
 
         _mockJwtService
-            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username.Value, user.Email.Value, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username.Value, user.Email.Value,
+                It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(accessToken);
 
         _mockJwtService
@@ -172,13 +172,14 @@ public class VerifyTwoFactorCommandHandlerTests
 
         _mockJwtService.Setup(x => x.GetUserIdFromToken(twoFactorSessionToken)).Returns(user.Id);
         _mockUserRepository.Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>())).ReturnsAsync(user);
-        
+
         _mockSigningKeyService
             .Setup(x => x.GetOrCreateActiveKeyAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockSigningKey);
-        
+
         _mockJwtService
-            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username.Value, user.Email.Value, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username.Value, user.Email.Value,
+                It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(accessToken);
         _mockJwtService.Setup(x => x.GenerateRefreshToken()).Returns(refreshToken);
         _mockUserDeviceRepository.Setup(x => x.GetByDeviceIdAsync(deviceId, It.IsAny<CancellationToken>()))
@@ -233,14 +234,15 @@ public class VerifyTwoFactorCommandHandlerTests
 
         _mockJwtService.Setup(x => x.GetUserIdFromToken(twoFactorSessionToken)).Returns(user.Id);
         _mockUserRepository.Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>())).ReturnsAsync(user);
-        
+
         _mockSigningKeyService
             .Setup(x => x.GetOrCreateActiveKeyAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockSigningKey);
-        
+
         _mockJwtService
             .Setup(x => x.GenerateAccessTokenWithRsa(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(),
-                It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns("access-token");
+                It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Returns("access-token");
         _mockJwtService.Setup(x => x.GenerateRefreshToken()).Returns("refresh-token");
         _mockUserDeviceRepository.Setup(x => x.GetByDeviceIdAsync(deviceId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserDevice?)null);

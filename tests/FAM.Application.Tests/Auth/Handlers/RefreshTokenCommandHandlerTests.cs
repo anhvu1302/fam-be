@@ -1,5 +1,4 @@
-using FAM.Application.Auth.Commands;
-using FAM.Application.Auth.Handlers;
+using FAM.Application.Auth.RefreshToken;
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
@@ -30,7 +29,8 @@ public class RefreshTokenCommandHandlerTests
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
         _mockUnitOfWork.Setup(x => x.UserDevices).Returns(_mockUserDeviceRepository.Object);
 
-        _handler = new RefreshTokenCommandHandler(_mockUnitOfWork.Object, _mockJwtService.Object, _mockSigningKeyService.Object);
+        _handler = new RefreshTokenCommandHandler(_mockUnitOfWork.Object, _mockJwtService.Object,
+            _mockSigningKeyService.Object);
     }
 
     [Fact]
@@ -75,7 +75,8 @@ public class RefreshTokenCommandHandlerTests
             .ReturnsAsync(mockSigningKey);
 
         _mockJwtService
-            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username.Value, user.Email.Value, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username.Value, user.Email.Value,
+                It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(newAccessToken);
 
         _mockJwtService

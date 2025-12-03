@@ -1,4 +1,4 @@
-using FAM.Application.Auth.DTOs;
+using FAM.Application.Auth.Shared;
 using FAM.Domain.Authorization;
 
 namespace FAM.Application.Auth.Services;

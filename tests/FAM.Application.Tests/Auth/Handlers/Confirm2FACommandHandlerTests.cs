@@ -1,5 +1,4 @@
-using FAM.Application.Auth.Commands;
-using FAM.Application.Auth.Handlers;
+using FAM.Application.Auth.Confirm2FA;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
 using FluentAssertions;

@@ -1,5 +1,3 @@
-using FAM.Application.Settings;
-
 namespace FAM.WebApi.Configuration;
 
 /// <summary>
@@ -11,7 +9,7 @@ public static class CorsConfigurationExtensions
     public static IServiceCollection AddOptimizedCors(this IServiceCollection services, IConfiguration configuration)
     {
         var corsSettings = LoadCorsSettings(configuration);
-        
+
         services.AddCors(options =>
         {
             options.AddDefaultPolicy(policy =>
@@ -53,42 +51,27 @@ public static class CorsConfigurationExtensions
         // Override từ Environment Variables (Production)
         var envOrigins = Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGINS");
         if (!string.IsNullOrEmpty(envOrigins))
-        {
             settings.AllowedOrigins = envOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries);
-        }
 
         var envMethods = Environment.GetEnvironmentVariable("CORS_ALLOWED_METHODS");
         if (!string.IsNullOrEmpty(envMethods))
-        {
             settings.AllowedMethods = envMethods.Split(';', StringSplitOptions.RemoveEmptyEntries);
-        }
 
         var envHeaders = Environment.GetEnvironmentVariable("CORS_ALLOWED_HEADERS");
         if (!string.IsNullOrEmpty(envHeaders))
-        {
             settings.AllowedHeaders = envHeaders.Split(';', StringSplitOptions.RemoveEmptyEntries);
-        }
 
         if (bool.TryParse(Environment.GetEnvironmentVariable("CORS_ALLOW_CREDENTIALS"), out var allowCreds))
-        {
             settings.AllowCredentials = allowCreds;
-        }
 
         // Validate
-        if (!settings.AllowedOrigins.Any())
-        {
-            settings.AllowedOrigins = new[] { "http://localhost:8001" };
-        }
+        if (!settings.AllowedOrigins.Any()) settings.AllowedOrigins = new[] { "http://localhost:8001" };
 
         if (!settings.AllowedMethods.Any())
-        {
             settings.AllowedMethods = new[] { "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" };
-        }
 
         if (!settings.AllowedHeaders.Any())
-        {
             settings.AllowedHeaders = new[] { "Content-Type", "Authorization", "X-Requested-With" };
-        }
 
         return settings;
     }

@@ -1,5 +1,4 @@
-using FAM.Application.Auth.Commands;
-using FAM.Application.Auth.Handlers;
+using FAM.Application.Auth.ChangePassword;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common;
 using FAM.Domain.Users;
