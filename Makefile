@@ -143,7 +143,7 @@ prod-db-shell:
 prod-migrate:
 	@echo "🔄 Running migrations..."
 	@if ! docker images $(DOCKER_IMAGE):build -q | grep -q .; then make docker-build-sdk; fi
-	docker run --rm --network fam-be_fam-network -w /src \
+	docker run --rm --network fam-network -w /src \
 		-e DB_HOST=postgres -e DB_PORT=5432 \
 		-e DB_NAME=$${DB_NAME} -e DB_USER=$${DB_USER} -e DB_PASSWORD=$${DB_PASSWORD} \
 		-e MINIO_ACCESS_KEY=dummy -e MINIO_SECRET_KEY=dummy \
@@ -154,7 +154,7 @@ prod-migrate:
 prod-seed:
 	@echo "🌱 Seeding..."
 	@if ! docker images $(DOCKER_IMAGE):build -q | grep -q .; then make docker-build-sdk; fi
-	docker run --rm --network fam-be_fam-network -w /src \
+	docker run --rm --network fam-network -w /src \
 		-e DB_HOST=postgres -e DB_PORT=5432 \
 		-e DB_NAME=$${DB_NAME} -e DB_USER=$${DB_USER} -e DB_PASSWORD=$${DB_PASSWORD} \
 		-e MINIO_HOST=minio -e MINIO_PORT=9000 \
