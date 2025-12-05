@@ -1,6 +1,7 @@
 using AutoMapper;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Entities;
+using FAM.Domain.EmailTemplates;
 using FAM.Domain.Organizations;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
@@ -440,6 +441,42 @@ public class DomainToEfProfile : Profile
             .ForMember(dest => dest.Options, opt => opt.MapFrom(src => src.Options))
             .ForMember(dest => dest.Metadata, opt => opt.MapFrom(src => src.Metadata))
             .ForMember(dest => dest.LastModifiedBy, opt => opt.MapFrom(src => src.LastModifiedBy))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
+            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+
+        // EmailTemplate mappings
+        CreateMap<EmailTemplate, EmailTemplateEf>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Code, opt => opt.MapFrom(src => src.Code))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.Subject, opt => opt.MapFrom(src => src.Subject))
+            .ForMember(dest => dest.HtmlBody, opt => opt.MapFrom(src => src.HtmlBody))
+            .ForMember(dest => dest.PlainTextBody, opt => opt.MapFrom(src => src.PlainTextBody))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+            .ForMember(dest => dest.AvailablePlaceholders, opt => opt.MapFrom(src => src.AvailablePlaceholders))
+            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
+            .ForMember(dest => dest.IsSystem, opt => opt.MapFrom(src => src.IsSystem))
+            .ForMember(dest => dest.Category, opt => opt.MapFrom(src => (int)src.Category))
+            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+            .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
+            .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))
+            .ForMember(dest => dest.DeletedAt, opt => opt.MapFrom(src => src.DeletedAt));
+
+        CreateMap<EmailTemplateEf, EmailTemplate>()
+            .ConstructUsing(src => EmailTemplate.Create(
+                src.Code,
+                src.Name,
+                src.Subject,
+                src.HtmlBody,
+                (EmailTemplateCategory)src.Category,
+                src.Description,
+                src.PlainTextBody,
+                src.AvailablePlaceholders,
+                src.IsSystem))
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
             .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
             .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => src.UpdatedAt))
             .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => src.IsDeleted))

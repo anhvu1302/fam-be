@@ -71,6 +71,9 @@ public class PostgreSqlDbContext : DbContext
     public DbSet<MenuItemEf> MenuItems { get; set; }
     public DbSet<SystemSettingEf> SystemSettings { get; set; }
 
+    // Email
+    public DbSet<EmailTemplateEf> EmailTemplates { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(_options.ConnectionString, npgsqlOptions =>
@@ -886,6 +889,32 @@ public class PostgreSqlDbContext : DbContext
                 .HasDatabaseName("ix_system_settings_key");
             entity.HasIndex(s => s.Group).HasDatabaseName("ix_system_settings_group");
             entity.HasIndex(s => s.IsVisible).HasDatabaseName("ix_system_settings_is_visible");
+        });
+
+        // EmailTemplate configuration
+        modelBuilder.Entity<EmailTemplateEf>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Code).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Subject).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.HtmlBody).IsRequired();
+            entity.Property(e => e.PlainTextBody);
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.AvailablePlaceholders);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.IsSystem).HasDefaultValue(false);
+            entity.Property(e => e.Category).IsRequired();
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+
+            entity.HasQueryFilter(e => !e.IsDeleted);
+
+            // Indexes
+            entity.HasIndex(e => e.Code).IsUnique().HasFilter("is_deleted = false")
+                .HasDatabaseName("ix_email_templates_code");
+            entity.HasIndex(e => e.Category).HasDatabaseName("ix_email_templates_category");
+            entity.HasIndex(e => e.IsActive).HasDatabaseName("ix_email_templates_is_active");
+            entity.HasIndex(e => e.IsSystem).HasDatabaseName("ix_email_templates_is_system");
         });
     }
 }

@@ -76,11 +76,14 @@ public sealed record SelectAuthenticationMethodRequest(
 
 /// <summary>
 /// Verify email OTP request - Validated by VerifyEmailOtpRequestValidator
+/// Used during login flow when email needs verification
 /// </summary>
 public sealed record VerifyEmailOtpRequest(
-    string TwoFactorSessionToken,
-    string EmailOtp,
-    bool RememberMe = false
+    [property: System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Email is required")]
+    string Email,
+    
+    [property: System.ComponentModel.DataAnnotations.Required(ErrorMessage = "OTP code is required")]
+    string EmailOtp
 );
 
 /// <summary>

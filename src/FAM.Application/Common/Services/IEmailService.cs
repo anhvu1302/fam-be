@@ -14,8 +14,9 @@ public interface IEmailService
     /// <summary>
     /// Gửi email reset password
     /// </summary>
+    /// <param name="expiryMinutes">Thời gian hết hạn của reset token (phút)</param>
     Task SendPasswordResetEmailAsync(string toEmail, string resetToken, string userName, string resetUrl,
-        CancellationToken cancellationToken = default);
+        int expiryMinutes, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Gửi email xác nhận đổi password thành công

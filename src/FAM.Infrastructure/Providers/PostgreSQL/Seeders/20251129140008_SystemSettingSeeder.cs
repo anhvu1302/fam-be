@@ -40,66 +40,49 @@ public class SystemSettingSeeder : BaseDataSeeder
             // General settings
             CreateSetting("app.general.siteName", "Site Name", "FAM - Fixed Asset Management", group: "general",
                 sortOrder: 0, isRequired: true),
-            CreateSetting("app.general.siteDescription", "Site Description", "Fixed Asset Management System",
+            CreateSetting("app.general.siteDescription", "Site Description", "Hệ thống quản lý tài sản cố định | Version 1.0.0",
                 group: "general", sortOrder: 1, dataType: 1),
-            CreateSetting("app.general.timezone", "Default Timezone", "Asia/Ho_Chi_Minh", group: "general",
-                sortOrder: 2),
-            CreateSetting("app.general.dateFormat", "Date Format", "dd/MM/yyyy", group: "general", sortOrder: 3),
-            CreateSetting("app.general.currency", "Default Currency", "VND", group: "general", sortOrder: 4),
-            CreateSetting("app.general.language", "Default Language", "vi", group: "general", sortOrder: 5),
 
             // Branding settings
-            CreateSetting("app.branding.logo", "Logo URL", "/images/logo.png", group: "branding", sortOrder: 0,
+            CreateSetting("app.branding.logo", "Logo URL", "/fam-public/images/logo.png", group: "branding", sortOrder: 0,
                 dataType: 12),
-            CreateSetting("app.branding.favicon", "Favicon URL", "/images/favicon.ico", group: "branding", sortOrder: 1,
+            CreateSetting("app.branding.favicon", "Favicon URL", "/fam-public/images/favicon.ico", group: "branding", sortOrder: 1,
                 dataType: 12),
-            CreateSetting("app.branding.primaryColor", "Primary Color", "#1976d2", group: "branding", sortOrder: 2,
-                dataType: 10),
-            CreateSetting("app.branding.secondaryColor", "Secondary Color", "#424242", group: "branding", sortOrder: 3,
-                dataType: 10),
 
             // Footer settings
-            CreateSetting("app.footer.copyright", "Copyright Text", "© 2024 FAM System. All rights reserved.",
+            CreateSetting("app.footer.copyright", "Copyright Text", "© 2025 Fixed Asset Management System. All rights reserved.",
                 group: "footer", sortOrder: 0),
             CreateSetting("app.footer.company", "Company Name", "FAM Company", group: "footer", sortOrder: 1),
             CreateSetting("app.footer.address", "Company Address", "", group: "footer", sortOrder: 2, dataType: 1),
             CreateSetting("app.footer.phone", "Contact Phone", "", group: "footer", sortOrder: 3),
             CreateSetting("app.footer.email", "Contact Email", "", group: "footer", sortOrder: 4, dataType: 9),
-            CreateSetting("app.footer.showSocialLinks", "Show Social Links", "false", group: "footer", sortOrder: 5,
-                dataType: 4),
 
-            // Email settings
-            CreateSetting("app.email.smtpHost", "SMTP Host", "", group: "email", sortOrder: 0, isSensitive: false),
-            CreateSetting("app.email.smtpPort", "SMTP Port", "587", group: "email", sortOrder: 1, dataType: 2),
-            CreateSetting("app.email.smtpUser", "SMTP Username", "", group: "email", sortOrder: 2),
-            CreateSetting("app.email.smtpPassword", "SMTP Password", "", group: "email", sortOrder: 3,
-                isSensitive: true, dataType: 16),
-            CreateSetting("app.email.fromAddress", "From Email Address", "noreply@fam.local", group: "email",
-                sortOrder: 4, dataType: 9),
-            CreateSetting("app.email.fromName", "From Name", "FAM System", group: "email", sortOrder: 5),
+            // Feature highlights - Feature 1
+            CreateSetting("app.features.feature1Title", "Feature 1 Title", "Quản lý tập trung", 
+                group: "features", sortOrder: 0),
+            CreateSetting("app.features.feature1Description", "Feature 1 Description", "Theo dõi tất cả tài sản cố định ở một nơi", 
+                group: "features", sortOrder: 1, dataType: 1),
+            CreateSetting("app.features.feature1Icon", "Feature 1 Icon (HTML)", 
+                value: "<div class=\"flex h-10 w-10 items-center justify-center rounded-lg bg-white/20\"><svg class=\"h-5 w-5 text-white\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg></div>",
+                group: "features", sortOrder: 2, dataType: 1),
 
-            // Security settings
-            CreateSetting("app.security.sessionTimeout", "Session Timeout (minutes)", "60", group: "security",
-                sortOrder: 0, dataType: 2, isEditable: true),
-            CreateSetting("app.security.maxLoginAttempts", "Max Login Attempts", "5", group: "security", sortOrder: 1,
-                dataType: 2),
-            CreateSetting("app.security.lockoutDuration", "Lockout Duration (minutes)", "15", group: "security",
-                sortOrder: 2, dataType: 2),
-            CreateSetting("app.security.passwordMinLength", "Password Min Length", "8", group: "security", sortOrder: 3,
-                dataType: 2),
-            CreateSetting("app.security.require2FA", "Require 2FA", "false", group: "security", sortOrder: 4,
-                dataType: 4),
+            // Feature highlights - Feature 2
+            CreateSetting("app.features.feature2Title", "Feature 2 Title", "Báo cáo thông minh", 
+                group: "features", sortOrder: 3),
+            CreateSetting("app.features.feature2Description", "Feature 2 Description", "Tính khấu hao và báo cáo tự động", 
+                group: "features", sortOrder: 4, dataType: 1),
+            CreateSetting("app.features.feature2Icon", "Feature 2 Icon (HTML)", 
+                value: "<div class=\"flex h-10 w-10 items-center justify-center rounded-lg bg-white/20\"><svg class=\"h-5 w-5 text-white\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z\"></path></svg></div>",
+                group: "features", sortOrder: 5, dataType: 1),
 
-            // Asset settings
-            CreateSetting("app.asset.codePrefix", "Asset Code Prefix", "AST", group: "asset", sortOrder: 0),
-            CreateSetting("app.asset.codeAutoGenerate", "Auto Generate Asset Code", "true", group: "asset",
-                sortOrder: 1, dataType: 4),
-            CreateSetting("app.asset.depreciationMethod", "Default Depreciation Method", "straight-line",
-                group: "asset", sortOrder: 2, dataType: 14,
-                options:
-                "[{\"value\":\"straight-line\",\"label\":\"Straight Line\"},{\"value\":\"declining-balance\",\"label\":\"Declining Balance\"},{\"value\":\"sum-of-years\",\"label\":\"Sum of Years Digits\"}]"),
-            CreateSetting("app.asset.defaultLifespan", "Default Asset Lifespan (years)", "5", group: "asset",
-                sortOrder: 3, dataType: 2)
+            // Feature highlights - Feature 3
+            CreateSetting("app.features.feature3Title", "Feature 3 Title", "Bảo mật cao", 
+                group: "features", sortOrder: 6),
+            CreateSetting("app.features.feature3Description", "Feature 3 Description", "Mã hóa dữ liệu và phân quyền chi tiết", 
+                group: "features", sortOrder: 7, dataType: 1),
+            CreateSetting("app.features.feature3Icon", "Feature 3 Icon (HTML)", 
+                value: "<div class=\"flex h-10 w-10 items-center justify-center rounded-lg bg-white/20\"><svg class=\"h-5 w-5 text-white\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z\"></path></svg></div>",
+                group: "features", sortOrder: 8, dataType: 1)
         };
 
         await _dbContext.SystemSettings.AddRangeAsync(settings, cancellationToken);

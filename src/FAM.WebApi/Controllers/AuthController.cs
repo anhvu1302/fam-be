@@ -15,7 +15,9 @@ using FAM.Application.Auth.RefreshToken;
 using FAM.Application.Auth.SelectAuthenticationMethod;
 using FAM.Application.Auth.Shared;
 using FAM.Application.Auth.VerifyTwoFactor;
+using FAM.Application.Auth.VerifyEmailOtp;
 using FAM.Application.Common.Services;
+using FAM.Domain.Common;
 using FAM.WebApi.Configuration;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -55,45 +57,24 @@ public class AuthController : ControllerBase
         // Web API validation: ModelState checks DataAnnotations
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
-        try
-        {
-            var ipAddress = GetClientIpAddress();
-            var location = await _locationService.GetLocationFromIpAsync(ipAddress);
+        var ipAddress = GetClientIpAddress();
+        var location = await _locationService.GetLocationFromIpAsync(ipAddress);
 
-            // Map Web API model → Application DTO
-            var appRequest = new LoginRequest
-            {
-                Identity = request.Identity,
-                Password = request.Password,
-                RememberMe = request.RememberMe
-            };
-
-            var command = new LoginCommand
-            {
-                Identity = appRequest.Identity,
-                Password = appRequest.Password,
-                DeviceId = GenerateDeviceId(),
-                DeviceName = GetDeviceName(),
-                DeviceType = GetDeviceType(),
-                IpAddress = ipAddress,
-                UserAgent = Request.Headers["User-Agent"].ToString(),
-                RememberMe = appRequest.RememberMe,
-                Location = location
-            };
-
-            var response = await _mediator.Send(command);
-            return Ok(response);
-        }
-        catch (UnauthorizedAccessException ex)
+        var command = new LoginCommand
         {
-            _logger.LogWarning(ex, "Login failed for: {Identity}", request.Identity);
-            return Unauthorized(new { message = ex.Message });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error during login for: {Identity}", request.Identity);
-            return StatusCode(500, new { message = "An error occurred during login" });
-        }
+            Identity = request.Identity,
+            Password = request.Password,
+            DeviceId = GenerateDeviceId(),
+            DeviceName = GetDeviceName(),
+            DeviceType = GetDeviceType(),
+            IpAddress = ipAddress,
+            UserAgent = Request.Headers["User-Agent"].ToString(),
+            RememberMe = request.RememberMe,
+            Location = location
+        };
+
+        var response = await _mediator.Send(command);
+        return Ok(response);
     }
 
     /// <summary>
@@ -334,8 +315,17 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Verify email OTP
+    /// Verify email OTP during login
+    /// Request must include the email address and OTP code sent to that email
     /// </summary>
+    /// <remarks>
+    /// After calling /api/auth/login with unverified email, you'll receive:
+    /// - requiresEmailVerification: true
+    /// - emailVerificationSessionToken
+    /// - maskedEmail
+    /// 
+    /// Then call this endpoint with the email and OTP received
+    /// </remarks>
     [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
     [HttpPost("verify-email-otp")]
     [AllowAnonymous]
@@ -345,34 +335,24 @@ public class AuthController : ControllerBase
 
         try
         {
-            var ipAddress = GetClientIpAddress();
-            var location = await _locationService.GetLocationFromIpAsync(ipAddress);
-
-            var command = new VerifyEmailOtpCommand
+            var command = new VerifyEmailOtpLoginCommand
             {
-                TwoFactorSessionToken = request.TwoFactorSessionToken,
                 EmailOtp = request.EmailOtp,
-                RememberMe = request.RememberMe,
-                DeviceId = GenerateDeviceId(),
-                DeviceName = GetDeviceName(),
-                DeviceType = GetDeviceType(),
-                IpAddress = ipAddress,
-                UserAgent = Request.Headers["User-Agent"].ToString(),
-                Location = location
+                Email = request.Email
             };
 
             var response = await _mediator.Send(command);
             return Ok(response);
         }
-        catch (UnauthorizedAccessException ex)
+        catch (UnauthorizedException ex)
         {
-            _logger.LogWarning(ex, "Email OTP verification failed");
-            return Unauthorized(new { message = ex.Message });
+            _logger.LogWarning(ex, "Email OTP verification failed for {Email}", request.Email);
+            return Unauthorized(new { errors = new[] { new { code = ex.ErrorCode, detail = ex.Message } } });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error verifying email OTP");
-            return StatusCode(500, new { message = "An error occurred" });
+            _logger.LogError(ex, "Error verifying email OTP for {Email}", request.Email);
+            throw;
         }
     }
 

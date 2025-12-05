@@ -1,9 +1,12 @@
 using System.Security.Cryptography;
 using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Services;
+using FAM.Application.Settings;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace FAM.Application.Auth.ForgotPassword;
 
@@ -15,15 +18,18 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailService _emailService;
     private readonly ILogger<ForgotPasswordCommandHandler> _logger;
+    private readonly FrontendOptions _frontendOptions;
 
     public ForgotPasswordCommandHandler(
         IUnitOfWork unitOfWork,
         IEmailService emailService,
-        ILogger<ForgotPasswordCommandHandler> logger)
+        ILogger<ForgotPasswordCommandHandler> logger,
+        IOptions<FrontendOptions> frontendOptions)
     {
         _unitOfWork = unitOfWork;
         _emailService = emailService;
         _logger = logger;
+        _frontendOptions = frontendOptions.Value;
     }
 
     public async Task<ForgotPasswordResponse> Handle(
@@ -38,6 +44,7 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         var response = new ForgotPasswordResponse
         {
             Success = true,
+            Code = ErrorCodes.AUTH_RESET_EMAIL_SENT,
             Message = "If this email exists in our system, you will receive a password reset link shortly.",
             MaskedEmail = maskedEmail
         };
@@ -57,22 +64,23 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         // Generate reset token
         var resetToken = GenerateSecureToken();
 
-        // Save reset token (expires in 1 hour)
-        user.SetPasswordResetToken(resetToken, 60);
+        // Save reset token (expires based on configuration, default 15 minutes)
+        user.SetPasswordResetToken(resetToken, _frontendOptions.PasswordResetTokenExpiryMinutes);
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         // Send email
         try
         {
-            // TODO: Get reset URL from configuration or pass from frontend
-            var resetUrl = "https://fam.yourdomain.com/reset-password";
+            // Get reset URL from configuration
+            var resetUrl = _frontendOptions.GetResetPasswordUrl();
 
             await _emailService.SendPasswordResetEmailAsync(
                 user.Email.Value,
                 resetToken,
                 user.Username.Value,
                 resetUrl,
+                _frontendOptions.PasswordResetTokenExpiryMinutes,
                 cancellationToken);
 
             _logger.LogInformation("Password reset email sent to user {UserId}", user.Id);

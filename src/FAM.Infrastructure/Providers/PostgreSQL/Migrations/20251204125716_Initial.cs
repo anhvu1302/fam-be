@@ -209,6 +209,35 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "email_templates",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    code = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    subject = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    html_body = table.Column<string>(type: "text", nullable: false),
+                    plain_text_body = table.Column<string>(type: "text", nullable: true),
+                    description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    available_placeholders = table.Column<string>(type: "text", nullable: true),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false, defaultValue: true),
+                    is_system = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    category = table.Column<int>(type: "integer", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_email_templates", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "lifecycle_statuses",
                 columns: table => new
                 {
@@ -1992,6 +2021,28 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 filter: "is_deleted = false");
 
             migrationBuilder.CreateIndex(
+                name: "ix_email_templates_category",
+                table: "email_templates",
+                column: "category");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_email_templates_code",
+                table: "email_templates",
+                column: "code",
+                unique: true,
+                filter: "is_deleted = false");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_email_templates_is_active",
+                table: "email_templates",
+                column: "is_active");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_email_templates_is_system",
+                table: "email_templates",
+                column: "is_system");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_finance_entries_asset_id",
                 table: "finance_entries",
                 column: "asset_id");
@@ -2393,6 +2444,9 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
             migrationBuilder.DropTable(
                 name: "department_details");
+
+            migrationBuilder.DropTable(
+                name: "email_templates");
 
             migrationBuilder.DropTable(
                 name: "finance_entries");

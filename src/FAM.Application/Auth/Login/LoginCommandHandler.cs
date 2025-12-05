@@ -1,6 +1,9 @@
+using FAM.Application.Auth.SendEmailVerificationOtp;
 using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
+using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -14,17 +17,23 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
     private readonly ISigningKeyService _signingKeyService;
+    private readonly IEmailService _emailService;
+    private readonly IOtpService _otpService;
     private readonly ILogger<LoginCommandHandler> _logger;
 
     public LoginCommandHandler(
         IUnitOfWork unitOfWork,
         IJwtService jwtService,
         ISigningKeyService signingKeyService,
+        IEmailService emailService,
+        IOtpService otpService,
         ILogger<LoginCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _jwtService = jwtService;
         _signingKeyService = signingKeyService;
+        _emailService = emailService;
+        _otpService = otpService;
         _logger = logger;
     }
 
@@ -35,18 +44,20 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
         if (user == null)
             // TODO: Raise UserLoginFailedEvent
-            throw new UnauthorizedAccessException("Invalid username/email or password");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS, "Invalid username/email or password");
 
         // Check if account is locked
         if (user.IsLockedOut())
         {
             var lockoutEnd = user.LockoutEnd!.Value;
             var minutesRemaining = (int)(lockoutEnd - DateTime.UtcNow).TotalMinutes + 1;
-            throw new UnauthorizedAccessException($"Account is locked. Try again in {minutesRemaining} minutes.");
+            throw new DomainException(ErrorCodes.AUTH_ACCOUNT_LOCKED, 
+                new { minutesRemaining, lockoutEnd = lockoutEnd.ToString("O") });
         }
 
         // Check if account is active
-        if (!user.IsActive) throw new UnauthorizedAccessException("Account is inactive");
+        if (!user.IsActive) 
+            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE, "Account is inactive");
 
         // Verify password
         var isPasswordValid = user.Password.Verify(request.Password);
@@ -60,14 +71,46 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
             // TODO: Raise UserLoginFailedEvent
 
-            throw new UnauthorizedAccessException("Invalid username/email or password");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS, "Invalid username/email or password");
         }
 
-        // TODO: Check if email is verified (Phase 2)
-        // if (!user.IsEmailVerified)
-        // {
-        //     throw new UnauthorizedAccessException("Email not verified. Please verify your email before logging in.");
-        // }
+        // Check if email is verified - if not, send OTP and return email verification response
+        if (!user.IsEmailVerified)
+        {
+            _logger.LogInformation("Email not verified for user {UserId}, sending verification OTP", user.Id);
+
+            // Generate OTP using OtpService (which handles storage and rate limiting)
+            try
+            {
+                // Generate and store OTP (uses email as session identifier for email verification flow)
+                var otp = await _otpService.GenerateOtpAsync(
+                    userId: user.Id,
+                    sessionToken: user.Email.Value, // Use email as session identifier
+                    expirationMinutes: 10,
+                    cancellationToken: cancellationToken);
+
+                // Send OTP via email
+                await _emailService.SendOtpEmailAsync(
+                    toEmail: user.Email.Value,
+                    otpCode: otp,
+                    userName: user.Username.Value,
+                    cancellationToken: cancellationToken);
+
+                _logger.LogInformation("Verification OTP sent to {Email}", user.Email.Value);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send verification OTP to {Email}", user.Email.Value);
+                throw;
+            }
+
+            return new LoginResponse
+            {
+                RequiresEmailVerification = true,
+                MaskedEmail = MaskEmail(user.Email.Value),
+                User = new UserInfoDto() // Return minimal user info for display
+            };
+        }
 
         // Check if Two-Factor Authentication is enabled
         if (user.TwoFactorEnabled)
@@ -79,15 +122,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             {
                 RequiresTwoFactor = true,
                 TwoFactorSessionToken = twoFactorSessionToken,
-                User = new UserInfoDto
-                {
-                    Id = user.Id,
-                    Username = user.Username.Value,
-                    Email = user.Email.Value,
-                    FullName = user.FullName,
-                    IsEmailVerified = user.IsEmailVerified,
-                    IsTwoFactorEnabled = user.TwoFactorEnabled
-                }
+                User = MapToUserInfoDto(user)
             };
         }
 
@@ -161,15 +196,29 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             RefreshToken = refreshToken,
             ExpiresIn = 3600, // 1 hour - should be configurable
             TokenType = "Bearer",
-            User = new UserInfoDto
-            {
-                Id = user.Id,
-                Username = user.Username.Value,
-                Email = user.Email.Value,
-                FullName = user.FullName,
-                IsEmailVerified = user.IsEmailVerified,
-                IsTwoFactorEnabled = user.TwoFactorEnabled
-            }
+            User = MapToUserInfoDto(user)
+        };
+    }
+
+    private static UserInfoDto MapToUserInfoDto(Domain.Users.User user)
+    {
+        return new UserInfoDto
+        {
+            Id = user.Id,
+            Username = user.Username.Value,
+            Email = user.Email.Value,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            FullName = user.FullName,
+            Avatar = user.Avatar,
+            PhoneNumber = user.PhoneNumber?.Value,
+            PhoneCountryCode = user.PhoneNumber?.CountryCode,
+            DateOfBirth = user.DateOfBirth,
+            Bio = user.Bio,
+            IsEmailVerified = user.IsEmailVerified,
+            IsTwoFactorEnabled = user.TwoFactorEnabled,
+            PreferredLanguage = user.PreferredLanguage,
+            TimeZone = user.TimeZone
         };
     }
 
@@ -187,5 +236,32 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             activeKey.KeyId,
             activeKey.PrivateKey,
             activeKey.Algorithm);
+    }
+
+    /// <summary>
+    /// Generate random 6-digit OTP
+    /// </summary>
+    private static string GenerateOtp()
+    {
+        var random = new Random();
+        return random.Next(100000, 999999).ToString();
+    }
+
+    /// <summary>
+    /// Mask email address for display: user@email.com -> u***@email.com
+    /// </summary>
+    private static string MaskEmail(string email)
+    {
+        var parts = email.Split('@');
+        if (parts.Length != 2) return email;
+
+        var localPart = parts[0];
+        var domain = parts[1];
+
+        if (localPart.Length <= 2)
+            return $"{localPart}***@{domain}";
+
+        var masked = localPart[0] + new string('*', localPart.Length - 2) + localPart[^1];
+        return $"{masked}@{domain}";
     }
 }

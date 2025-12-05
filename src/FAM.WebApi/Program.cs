@@ -9,6 +9,7 @@ using FAM.Application.Users.Commands.CreateUser;
 using FAM.Infrastructure;
 using FAM.Infrastructure.Auth;
 using FAM.Infrastructure.Services;
+using FAM.Infrastructure.Services.Email;
 using FAM.WebApi.Configuration;
 using FAM.WebApi.Middleware;
 using FluentValidation;
@@ -126,21 +127,9 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = appConfig.RedisInstanceName;
 });
 
-// Register Email and OTP Services (Email uses config from .env)
-builder.Services.AddScoped<IEmailService>(sp =>
-{
-    var logger = sp.GetRequiredService<ILogger<EmailService>>();
-    return new EmailService(
-        logger,
-        appConfig.SmtpHost,
-        appConfig.SmtpPort,
-        appConfig.SmtpUsername,
-        appConfig.SmtpPassword,
-        appConfig.SmtpEnableSsl,
-        appConfig.EmailFrom,
-        appConfig.EmailFromName
-    );
-});
+// Register Email Services with Queue and Provider (Brevo/SMTP)
+builder.Services.AddEmailServices(builder.Configuration);
+
 builder.Services.AddScoped<IOtpService, OtpService>();
 
 // Add JWT Authentication using RSA keys from database
@@ -262,6 +251,52 @@ builder.Services.Configure<FileUploadSettings>(
 builder.Services.Configure<RealIpDetectionSettings>(
     builder.Configuration.GetSection(RealIpDetectionSettings.SectionName));
 
+// Backend settings (API URL configuration)
+builder.Services.Configure<BackendOptions>(
+    builder.Configuration.GetSection(BackendOptions.SectionName));
+builder.Services.AddSingleton(sp =>
+    sp.GetRequiredService<IOptions<BackendOptions>>().Value);
+
+// Frontend settings (URL configuration) with environment variable overrides
+builder.Services.Configure<FrontendOptions>(options =>
+{
+    // Bind from appsettings first
+    builder.Configuration.GetSection(FrontendOptions.SectionName).Bind(options);
+
+    // Override with environment variables if present
+    var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL");
+    if (!string.IsNullOrEmpty(frontendUrl))
+    {
+        // If URL contains port, split it
+        if (Uri.TryCreate(frontendUrl, UriKind.Absolute, out var uri))
+        {
+            options.BaseUrl = $"{uri.Scheme}://{uri.Host}";
+            if (uri.Port != 80 && uri.Port != 443)
+            {
+                options.Port = uri.Port;
+            }
+            else
+            {
+                options.Port = null; // Default ports
+            }
+        }
+        else
+        {
+            options.BaseUrl = frontendUrl;
+            options.Port = null;
+        }
+    }
+
+    // Override port separately if specified
+    var frontendPort = Environment.GetEnvironmentVariable("FRONTEND_PORT");
+    if (!string.IsNullOrEmpty(frontendPort) && int.TryParse(frontendPort, out var port))
+    {
+        options.Port = port;
+    }
+});
+builder.Services.AddSingleton(sp =>
+    sp.GetRequiredService<IOptions<FrontendOptions>>().Value);
+
 // Legacy paging options (backward compatibility)
 var paginationSection = builder.Configuration.GetSection(PaginationSettings.SectionName);
 builder.Services.Configure<PagingOptions>(options =>
@@ -289,9 +324,6 @@ appConfig.LogConfiguration(app.Services.GetRequiredService<ILogger<Program>>());
 
 // Configure the HTTP request pipeline.
 
-// Add global exception handler (must be early in pipeline)
-app.UseExceptionHandler();
-
 // IMPORTANT: Use forwarded headers BEFORE any other middleware
 // This ensures that HttpContext.Connection.RemoteIpAddress is set correctly
 app.UseForwardedHeaders();
@@ -303,10 +335,21 @@ app.UseMiddleware<RealIpMiddleware>();
 app.UseCorrelationId();
 
 // Add Serilog request logging (structured logging for each request)
+// Must be BEFORE UseExceptionHandler so it doesn't log handled exceptions
 app.UseSerilogRequestLogging(options =>
 {
     // Customize the message template
     options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000}ms";
+    
+    // Don't log exceptions for client errors (4xx) - they are handled by GlobalExceptionHandler
+    options.GetLevel = (httpContext, elapsed, ex) =>
+    {
+        if (ex != null || httpContext.Response.StatusCode >= 500)
+            return Serilog.Events.LogEventLevel.Error;
+        if (httpContext.Response.StatusCode >= 400)
+            return Serilog.Events.LogEventLevel.Warning;
+        return Serilog.Events.LogEventLevel.Information;
+    };
 
     // Attach additional properties to the log event
     options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
@@ -322,6 +365,9 @@ app.UseSerilogRequestLogging(options =>
             diagnosticContext.Set("UserId", userId);
     };
 });
+
+// Add global exception handler (after Serilog logging)
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {

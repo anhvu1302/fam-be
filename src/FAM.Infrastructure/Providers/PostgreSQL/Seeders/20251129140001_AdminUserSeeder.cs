@@ -37,9 +37,16 @@ public class AdminUserSeeder : BaseDataSeeder
             {
                 Username = "admin",
                 Email = "admin@fam.local",
+                FirstName = "System",
+                LastName = "Administrator",
                 FullName = "System Administrator",
+                Avatar = "https://gravatar.com/userimage/244508532/70e488bb05c1956db10a6d7673009e76.jpeg?size=1024",
+                PhoneNumber = "0123456789",
+                PhoneCountryCode = "+84",
                 PasswordHash = "RlI1JkKTEVI6+RhcU/dLzeKshHhDwe3NpWd6Z3BIFtY=", // Hash for Admin@123
                 PasswordSalt = "6eb1ccfd64a94810bd3398067dff13f5", // Salt for Admin@123
+                IsEmailVerified = true,
+                IsPhoneVerified = false,
                 IsActive = true,
                 IsDeleted = false,
                 CreatedAt = DateTime.UtcNow,

@@ -22,7 +22,12 @@ public class ForgotPasswordResponse
     public bool Success { get; set; }
 
     /// <summary>
-    /// Message thông báo
+    /// Error/Success code cho i18n (FE dùng để dịch thuật)
+    /// </summary>
+    public string Code { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Message thông báo (tiếng Anh mặc định)
     /// </summary>
     public string Message { get; set; } = string.Empty;
 
@@ -69,7 +74,12 @@ public class ResetPasswordResponse
     public bool Success { get; set; }
 
     /// <summary>
-    /// Message thông báo
+    /// Error/Success code cho i18n (FE dùng để dịch thuật)
+    /// </summary>
+    public string Code { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Message thông báo (tiếng Anh mặc định)
     /// </summary>
     public string Message { get; set; } = string.Empty;
 }
@@ -101,7 +111,12 @@ public class VerifyResetTokenResponse
     public bool IsValid { get; set; }
 
     /// <summary>
-    /// Message thông báo
+    /// Error/Success code cho i18n (FE dùng để dịch thuật)
+    /// </summary>
+    public string Code { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Message thông báo (tiếng Anh mặc định)
     /// </summary>
     public string Message { get; set; } = string.Empty;
 

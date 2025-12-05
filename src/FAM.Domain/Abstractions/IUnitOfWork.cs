@@ -21,6 +21,7 @@ public interface IUnitOfWork : IDisposable
 
     // System repositories
     ISigningKeyRepository SigningKeys { get; }
+    IEmailTemplateRepository EmailTemplates { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync(CancellationToken cancellationToken = default);

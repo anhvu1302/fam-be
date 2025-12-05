@@ -199,9 +199,11 @@ public sealed class VerifyEmailOtpRequestValidator : AbstractValidator<VerifyEma
 {
     public VerifyEmailOtpRequestValidator()
     {
-        RuleFor(x => x.TwoFactorSessionToken)
-            .NotEmpty().WithErrorCode(ErrorCodes.VAL_2FA_SESSION_REQUIRED)
-            .WithMessage(ErrorMessages.GetMessage(ErrorCodes.VAL_2FA_SESSION_REQUIRED));
+        RuleFor(x => x.Email)
+            .NotEmpty().WithErrorCode(ErrorCodes.VAL_EMAIL_REQUIRED)
+            .WithMessage(ErrorMessages.GetMessage(ErrorCodes.VAL_EMAIL_REQUIRED))
+            .EmailAddress().WithErrorCode(ErrorCodes.VAL_EMAIL_INVALID)
+            .WithMessage(ErrorMessages.GetMessage(ErrorCodes.VAL_EMAIL_INVALID));
 
         RuleFor(x => x.EmailOtp)
             .NotEmpty().WithErrorCode(ErrorCodes.VAL_EMAIL_OTP_REQUIRED)

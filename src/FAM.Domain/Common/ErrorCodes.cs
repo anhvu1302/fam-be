@@ -47,6 +47,21 @@ public static class ErrorCodes
     /// <summary>Old password is incorrect</summary>
     public const string AUTH_INVALID_OLD_PASSWORD = "AUTH_INVALID_OLD_PASSWORD";
 
+    /// <summary>Reset token is invalid or expired</summary>
+    public const string AUTH_INVALID_RESET_TOKEN = "AUTH_INVALID_RESET_TOKEN";
+
+    /// <summary>Reset token has expired</summary>
+    public const string AUTH_RESET_TOKEN_EXPIRED = "AUTH_RESET_TOKEN_EXPIRED";
+
+    /// <summary>Password reset email sent successfully</summary>
+    public const string AUTH_RESET_EMAIL_SENT = "AUTH_RESET_EMAIL_SENT";
+
+    /// <summary>Password reset successful</summary>
+    public const string AUTH_PASSWORD_RESET_SUCCESS = "AUTH_PASSWORD_RESET_SUCCESS";
+
+    /// <summary>Reset token is valid</summary>
+    public const string AUTH_RESET_TOKEN_VALID = "AUTH_RESET_TOKEN_VALID";
+
     #endregion
 
     #region User (USER_xxx)
@@ -667,6 +682,34 @@ public static class ErrorCodes
 
     /// <summary>Role assignment not found</summary>
     public const string ROLE_ASSIGNMENT_NOT_FOUND = "ROLE_ASSIGNMENT_NOT_FOUND";
+
+    #endregion
+
+    #region Email Template (EMAIL_TEMPLATE_xxx)
+
+    /// <summary>Email template code is required</summary>
+    public const string EMAIL_TEMPLATE_CODE_REQUIRED = "EMAIL_TEMPLATE_CODE_REQUIRED";
+
+    /// <summary>Email template name is required</summary>
+    public const string EMAIL_TEMPLATE_NAME_REQUIRED = "EMAIL_TEMPLATE_NAME_REQUIRED";
+
+    /// <summary>Email template subject is required</summary>
+    public const string EMAIL_TEMPLATE_SUBJECT_REQUIRED = "EMAIL_TEMPLATE_SUBJECT_REQUIRED";
+
+    /// <summary>Email template body is required</summary>
+    public const string EMAIL_TEMPLATE_BODY_REQUIRED = "EMAIL_TEMPLATE_BODY_REQUIRED";
+
+    /// <summary>Email template not found</summary>
+    public const string EMAIL_TEMPLATE_NOT_FOUND = "EMAIL_TEMPLATE_NOT_FOUND";
+
+    /// <summary>Email template code already exists</summary>
+    public const string EMAIL_TEMPLATE_CODE_EXISTS = "EMAIL_TEMPLATE_CODE_EXISTS";
+
+    /// <summary>Cannot update system email template</summary>
+    public const string EMAIL_TEMPLATE_SYSTEM_CANNOT_UPDATE = "EMAIL_TEMPLATE_SYSTEM_CANNOT_UPDATE";
+
+    /// <summary>Cannot delete system email template</summary>
+    public const string EMAIL_TEMPLATE_SYSTEM_CANNOT_DELETE = "EMAIL_TEMPLATE_SYSTEM_CANNOT_DELETE";
 
     #endregion
 }

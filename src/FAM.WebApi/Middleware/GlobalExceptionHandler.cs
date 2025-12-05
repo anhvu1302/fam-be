@@ -85,19 +85,17 @@ public class GlobalExceptionHandler : IExceptionHandler
         // Set instance to current request path
         problemDetails.Instance = httpContext.Request.Path;
 
-        // Log with appropriate context
-        using (LogContext.PushProperty("ExceptionType", exception.GetType().Name))
-        using (LogContext.PushProperty("StatusCode", statusCode))
-        using (LogContext.PushProperty("ErrorType", problemDetails.Type))
+        // Only log server errors (5xx) - client errors (4xx) are expected and don't need logging
+        if (statusCode >= 500)
         {
-            if (statusCode >= 500)
+            using (LogContext.PushProperty("ExceptionType", exception.GetType().Name))
+            using (LogContext.PushProperty("StatusCode", statusCode))
+            using (LogContext.PushProperty("ErrorType", problemDetails.Type))
+            {
                 _logger.LogError(exception,
-                    "Unhandled exception occurred: {ErrorType} - {ExceptionMessage}",
+                    "Server error: {ErrorType} - {ExceptionMessage}",
                     problemDetails.Type, exception.Message);
-            else if (statusCode >= 400)
-                _logger.LogWarning(
-                    "Client error: {StatusCode} {ErrorType} - {ExceptionMessage}",
-                    statusCode, problemDetails.Type, exception.Message);
+            }
         }
 
         httpContext.Response.StatusCode = statusCode;

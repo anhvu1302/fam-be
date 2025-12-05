@@ -25,7 +25,18 @@ services:
   minio:
     image: minio/minio:latest
     container_name: fam-minio-prod
-    command: server /data --console-address ":9001"
+    entrypoint: >
+      sh -c "
+        /usr/bin/minio server /data --console-address ':9001' &
+        pid=$$!;
+        sleep 10;
+        /usr/bin/mc alias set minio http://localhost:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY};
+        /usr/bin/mc mb minio/fam-assets 2>/dev/null || true;
+        /usr/bin/mc anonymous set private minio/fam-assets;
+        /usr/bin/mc mb minio/fam-public 2>/dev/null || true;
+        /usr/bin/mc anonymous set public minio/fam-public;
+        wait $$pid;
+      "
     environment:
       MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}

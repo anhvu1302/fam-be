@@ -120,9 +120,18 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
                 Id = user.Id,
                 Username = user.Username.Value,
                 Email = user.Email.Value,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 FullName = user.FullName,
+                Avatar = user.Avatar,
+                PhoneNumber = user.PhoneNumber?.Value,
+                PhoneCountryCode = user.PhoneNumber?.CountryCode,
+                DateOfBirth = user.DateOfBirth,
+                Bio = user.Bio,
                 IsEmailVerified = user.IsEmailVerified,
-                IsTwoFactorEnabled = user.TwoFactorEnabled
+                IsTwoFactorEnabled = user.TwoFactorEnabled,
+                PreferredLanguage = user.PreferredLanguage,
+                TimeZone = user.TimeZone
             }
         };
     }

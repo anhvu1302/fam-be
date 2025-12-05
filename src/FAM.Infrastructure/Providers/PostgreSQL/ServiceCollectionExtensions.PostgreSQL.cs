@@ -25,6 +25,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISigningKeyRepository, SigningKeyRepository>();
         services.AddScoped<IMenuItemRepository, MenuItemRepository>();
         services.AddScoped<ISystemSettingRepository, SystemSettingRepository>();
+        services.AddScoped<IEmailTemplateRepository, EmailTemplateRepositoryPostgreSql>();
 
         // Authorization repositories
         services.AddScoped<IPermissionRepository, PermissionRepositoryPostgreSql>();
@@ -56,6 +57,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDataSeeder, OrganizationSeeder>();
         services.AddScoped<IDataSeeder, MenuSeeder>();
         services.AddScoped<IDataSeeder, SystemSettingSeeder>();
+        services.AddScoped<IDataSeeder, EmailTemplateSeeder>();
 
         // Register Seed History Repository
         services.AddScoped<ISeedHistoryRepository, SeedHistoryRepositoryPostgreSql>();

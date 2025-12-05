@@ -311,6 +311,19 @@ public static class ErrorMessages
         [ErrorCodes.VO_ROLE_CODE_INVALID] = "Role code can only contain uppercase letters, numbers, and underscores",
 
         #endregion
+
+        #region Email Template
+
+        [ErrorCodes.EMAIL_TEMPLATE_CODE_REQUIRED] = "Template code is required",
+        [ErrorCodes.EMAIL_TEMPLATE_NAME_REQUIRED] = "Template name is required",
+        [ErrorCodes.EMAIL_TEMPLATE_SUBJECT_REQUIRED] = "Email subject is required",
+        [ErrorCodes.EMAIL_TEMPLATE_BODY_REQUIRED] = "Email body is required",
+        [ErrorCodes.EMAIL_TEMPLATE_NOT_FOUND] = "Email template not found",
+        [ErrorCodes.EMAIL_TEMPLATE_CODE_EXISTS] = "An email template with this code already exists",
+        [ErrorCodes.EMAIL_TEMPLATE_SYSTEM_CANNOT_UPDATE] = "System email templates cannot be modified",
+        [ErrorCodes.EMAIL_TEMPLATE_SYSTEM_CANNOT_DELETE] = "System email templates cannot be deleted",
+
+        #endregion
     };
 
     /// <summary>

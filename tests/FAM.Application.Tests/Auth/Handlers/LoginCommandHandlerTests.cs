@@ -1,5 +1,6 @@
 using FAM.Application.Auth.Login;
 using FAM.Application.Auth.Services;
+using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Users;
@@ -18,6 +19,8 @@ public class LoginCommandHandlerTests
     private readonly Mock<IUserDeviceRepository> _mockUserDeviceRepository;
     private readonly Mock<IJwtService> _mockJwtService;
     private readonly Mock<ISigningKeyService> _mockSigningKeyService;
+    private readonly Mock<IEmailService> _mockEmailService;
+    private readonly Mock<IOtpService> _mockOtpService;
     private readonly Mock<ILogger<LoginCommandHandler>> _mockLogger;
     private readonly LoginCommandHandler _handler;
 
@@ -28,6 +31,8 @@ public class LoginCommandHandlerTests
         _mockUserDeviceRepository = new Mock<IUserDeviceRepository>();
         _mockJwtService = new Mock<IJwtService>();
         _mockSigningKeyService = new Mock<ISigningKeyService>();
+        _mockEmailService = new Mock<IEmailService>();
+        _mockOtpService = new Mock<IOtpService>();
         _mockLogger = new Mock<ILogger<LoginCommandHandler>>();
 
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
@@ -37,6 +42,8 @@ public class LoginCommandHandlerTests
             _mockUnitOfWork.Object,
             _mockJwtService.Object,
             _mockSigningKeyService.Object,
+            _mockEmailService.Object,
+            _mockOtpService.Object,
             _mockLogger.Object);
     }
 
