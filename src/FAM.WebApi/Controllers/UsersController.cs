@@ -18,7 +18,7 @@ namespace FAM.WebApi.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/users")]
-public class UsersController : ControllerBase
+public class UsersController : BaseApiController
 {
     private readonly IMediator _mediator;
     private readonly PaginationSettings _pagination;
@@ -266,14 +266,5 @@ public class UsersController : ControllerBase
         await _mediator.Send(command);
 
         return Ok(new { message = $"Successfully updated roles for user {id}" });
-    }
-
-    private long GetCurrentUserId()
-    {
-        var userIdClaim = User.FindFirst("user_id")?.Value;
-        if (long.TryParse(userIdClaim, out var userId))
-            return userId;
-
-        throw new UnauthorizedAccessException("User ID not found in claims");
     }
 }

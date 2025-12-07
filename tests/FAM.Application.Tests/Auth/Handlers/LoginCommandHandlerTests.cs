@@ -55,6 +55,7 @@ public class LoginCommandHandlerTests
         // User.Create with plain password will hash it internally
         var user = User.Create("testuser", "test@example.com", plainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
+        user.VerifyEmail(); // Ensure email is verified
 
         var command = new LoginCommand
         {
@@ -148,7 +149,7 @@ public class LoginCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+        await act.Should().ThrowAsync<FAM.Domain.Common.UnauthorizedException>()
             .WithMessage("Invalid username/email or password");
 
         _mockUserRepository.Verify(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()),
@@ -186,7 +187,7 @@ public class LoginCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+        await act.Should().ThrowAsync<FAM.Domain.Common.UnauthorizedException>()
             .WithMessage("Invalid username/email or password");
 
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once); // Failed login recorded
@@ -217,7 +218,7 @@ public class LoginCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+        await act.Should().ThrowAsync<FAM.Domain.Common.UnauthorizedException>()
             .WithMessage("Account is inactive");
     }
 
@@ -251,8 +252,8 @@ public class LoginCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<UnauthorizedAccessException>()
-            .WithMessage("Account is locked*");
+        await act.Should().ThrowAsync<FAM.Domain.Common.DomainException>()
+            .WithMessage("Your account has been locked*");
     }
 
     [Fact]
@@ -262,6 +263,7 @@ public class LoginCommandHandlerTests
         var plainPassword = "SecurePass123!";
         var user = User.Create("testuser", "test@example.com", plainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
+        user.VerifyEmail(); // Ensure email is verified
         user.EnableTwoFactor("secret", "{\"codes\":[\"code1\",\"code2\"]}");
 
         var command = new LoginCommand
@@ -318,6 +320,7 @@ public class LoginCommandHandlerTests
         var plainPassword = "SecurePass123!";
         var user = User.Create("testuser", "test@example.com", plainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
+        user.VerifyEmail(); // Ensure email is verified
 
         var command = new LoginCommand
         {

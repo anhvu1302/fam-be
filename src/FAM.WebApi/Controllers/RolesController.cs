@@ -26,7 +26,7 @@ namespace FAM.WebApi.Controllers;
 [ApiController]
 [Route("api/roles")]
 [Authorize]
-public class RolesController : ControllerBase
+public class RolesController : BaseApiController
 {
     private readonly IMediator _mediator;
     private readonly ILogger<RolesController> _logger;
@@ -52,10 +52,10 @@ public class RolesController : ControllerBase
         if (fields != null && fields.Length > 0)
         {
             var selectedResult = result.SelectFieldsToResponse(fields);
-            return Ok(selectedResult);
+            return OkResponse(selectedResult);
         }
 
-        return Ok(result.ToPagedResponse());
+        return OkResponse(result.ToPagedResponse());
     }
 
     /// <summary>
@@ -70,9 +70,9 @@ public class RolesController : ControllerBase
         var result = await _mediator.Send(query);
 
         if (result == null)
-            return NotFound();
+            return NotFoundResponse($"Role with ID {id} not found", "ROLE_NOT_FOUND");
 
-        return Ok(result);
+        return OkResponse(result);
     }
 
     /// <summary>
@@ -121,7 +121,7 @@ public class RolesController : ControllerBase
 
         _logger.LogInformation("Role updated: {RoleId}", id);
 
-        return Ok();
+        return OkResponse("Role updated successfully");
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public class RolesController : ControllerBase
 
         _logger.LogInformation("Role deleted: {RoleId}", id);
 
-        return NoContent();
+        return OkResponse("Role deleted successfully");
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public class RolesController : ControllerBase
         _logger.LogInformation("Permissions assigned to role: {RoleId}, Count: {Count}", id,
             request.PermissionIds.Length);
 
-        return Ok();
+        return OkResponse($"Successfully assigned {request.PermissionIds.Length} permission(s) to role");
     }
 
     /// <summary>
@@ -287,14 +287,5 @@ public class RolesController : ControllerBase
             userId, nodeId, roleId);
 
         return NoContent();
-    }
-
-    private long GetCurrentUserId()
-    {
-        var userIdClaim = User.FindFirst("user_id")?.Value;
-        if (long.TryParse(userIdClaim, out var userId))
-            return userId;
-
-        throw new UnauthorizedAccessException("User ID not found in claims");
     }
 }

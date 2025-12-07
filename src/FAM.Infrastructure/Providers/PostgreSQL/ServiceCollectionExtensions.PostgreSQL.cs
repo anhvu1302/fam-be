@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
         // Register repositories
         services.AddScoped<IUserRepository, UserRepositoryPostgreSql>();
         services.AddScoped<IUserDeviceRepository, UserDeviceRepositoryPostgreSql>();
+        services.AddScoped<IUserThemeRepository, UserThemeRepositoryPostgreSql>();
         services.AddScoped<ISigningKeyRepository, SigningKeyRepository>();
         services.AddScoped<IMenuItemRepository, MenuItemRepository>();
         services.AddScoped<ISystemSettingRepository, SystemSettingRepository>();

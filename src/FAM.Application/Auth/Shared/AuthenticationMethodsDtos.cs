@@ -2,6 +2,8 @@ namespace FAM.Application.Auth.Shared;
 
 /// <summary>
 /// Response DTO chứa thông tin các phương thức xác thực đang bật
+/// Used internally by Application handlers
+/// Mapped to WebApi.Contracts.Auth.AuthenticationMethodsResponse for API responses
 /// </summary>
 public class AuthenticationMethodsResponse
 {
@@ -73,23 +75,9 @@ public class AuthenticationMethodInfo
 }
 
 /// <summary>
-/// Request để chọn phương thức xác thực khi login
-/// </summary>
-public class SelectAuthenticationMethodRequest
-{
-    /// <summary>
-    /// Token session 2FA từ bước login ban đầu
-    /// </summary>
-    public string TwoFactorSessionToken { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Phương thức xác thực được chọn: "email_otp", "authenticator_app", "recovery_code"
-    /// </summary>
-    public string SelectedMethod { get; set; } = string.Empty;
-}
-
-/// <summary>
 /// Response sau khi chọn phương thức xác thực
+/// Used internally by Application handlers
+/// Mapped to WebApi.Contracts.Auth.SelectAuthenticationMethodResponse for API responses
 /// </summary>
 public class SelectAuthenticationMethodResponse
 {
@@ -117,46 +105,4 @@ public class SelectAuthenticationMethodResponse
     /// Thời gian hết hạn của code (cho email OTP)
     /// </summary>
     public DateTime? ExpiresAt { get; set; }
-}
-
-/// <summary>
-/// Request để verify OTP gửi qua email
-/// </summary>
-public class VerifyEmailOtpRequest
-{
-    /// <summary>
-    /// Token session 2FA
-    /// </summary>
-    public string TwoFactorSessionToken { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Mã OTP nhận được qua email
-    /// </summary>
-    public string EmailOtp { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Có nhớ device không
-    /// </summary>
-    public bool RememberMe { get; set; }
-}
-
-/// <summary>
-/// Request để verify recovery code
-/// </summary>
-public class VerifyRecoveryCodeRequest
-{
-    /// <summary>
-    /// Token session 2FA
-    /// </summary>
-    public string TwoFactorSessionToken { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Recovery code
-    /// </summary>
-    public string RecoveryCode { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Có nhớ device không
-    /// </summary>
-    public bool RememberMe { get; set; }
 }

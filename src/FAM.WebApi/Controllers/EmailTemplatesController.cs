@@ -21,7 +21,7 @@ namespace FAM.WebApi.Controllers;
 [ApiController]
 [Route("api/email-templates")]
 [Authorize]
-public class EmailTemplatesController : ControllerBase
+public class EmailTemplatesController : BaseApiController
 {
     private readonly IMediator _mediator;
     private readonly ILogger<EmailTemplatesController> _logger;

@@ -96,6 +96,9 @@ public static class ErrorCodes
     /// <summary>Cannot delete yourself</summary>
     public const string USER_CANNOT_DELETE_SELF = "USER_CANNOT_DELETE_SELF";
 
+    /// <summary>User session not found or access denied</summary>
+    public const string USER_SESSION_NOT_FOUND = "USER_SESSION_NOT_FOUND";
+
     #endregion
 
     #region Validation (VAL_xxx)

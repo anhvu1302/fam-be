@@ -9,7 +9,7 @@ namespace FAM.WebApi.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/validation-rules")]
-public class ValidationRulesController : ControllerBase
+public class ValidationRulesController : BaseApiController
 {
     /// <summary>
     /// Get all validation rules for frontend synchronization

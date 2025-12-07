@@ -20,6 +20,7 @@ public class PostgreSqlDbContext : DbContext
 
     public DbSet<UserEf> Users { get; set; }
     public DbSet<UserDeviceEf> UserDevices { get; set; }
+    public DbSet<UserThemeEf> UserThemes { get; set; }
 
     // Authorization entities
     public DbSet<PermissionEf> Permissions { get; set; }
@@ -153,6 +154,36 @@ public class PostgreSqlDbContext : DbContext
             entity.HasOne(ud => ud.User)
                 .WithMany(u => u.UserDevices)
                 .HasForeignKey(ud => ud.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // UserTheme configuration
+        modelBuilder.Entity<UserThemeEf>(entity =>
+        {
+            entity.HasKey(ut => ut.Id);
+
+            entity.Property(ut => ut.UserId).IsRequired();
+            entity.Property(ut => ut.Theme).IsRequired().HasMaxLength(50);
+            entity.Property(ut => ut.PrimaryColor).HasMaxLength(20);
+            entity.Property(ut => ut.Transparency).HasPrecision(3, 2); // 0.00 to 1.00
+            entity.Property(ut => ut.BorderRadius).IsRequired();
+            entity.Property(ut => ut.DarkTheme).HasDefaultValue(false);
+            entity.Property(ut => ut.PinNavbar).HasDefaultValue(false);
+            entity.Property(ut => ut.CompactMode).HasDefaultValue(false);
+            entity.Property(ut => ut.IsDeleted).HasDefaultValue(false);
+
+            entity.HasQueryFilter(ut => !ut.IsDeleted);
+
+            // Index - one theme per user
+            entity.HasIndex(ut => ut.UserId)
+                .IsUnique()
+                .HasFilter("is_deleted = false")
+                .HasDatabaseName("ix_user_themes_user_id");
+
+            // Relationships
+            entity.HasOne(ut => ut.User)
+                .WithMany()
+                .HasForeignKey(ut => ut.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 

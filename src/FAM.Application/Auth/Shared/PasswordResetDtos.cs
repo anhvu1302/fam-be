@@ -1,18 +1,8 @@
 namespace FAM.Application.Auth.Shared;
 
 /// <summary>
-/// Request để gửi email reset password
-/// </summary>
-public class ForgotPasswordRequest
-{
-    /// <summary>
-    /// Email của user cần reset password
-    /// </summary>
-    public string Email { get; set; } = string.Empty;
-}
-
-/// <summary>
-/// Response cho forgot password
+/// Response cho forgot password - used internally by Application handlers
+/// Mapped to WebApi.Contracts.Auth.ForgotPasswordResponse for API responses
 /// </summary>
 public class ForgotPasswordResponse
 {
@@ -38,33 +28,8 @@ public class ForgotPasswordResponse
 }
 
 /// <summary>
-/// Request để reset password với token
-/// </summary>
-public class ResetPasswordRequest
-{
-    /// <summary>
-    /// Email của user
-    /// </summary>
-    public string Email { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Reset token nhận được qua email
-    /// </summary>
-    public string ResetToken { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Password mới
-    /// </summary>
-    public string NewPassword { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Confirm password mới
-    /// </summary>
-    public string ConfirmPassword { get; set; } = string.Empty;
-}
-
-/// <summary>
-/// Response cho reset password
+/// Response cho reset password - used internally by Application handlers
+/// Mapped to WebApi.Contracts.Auth.ResetPasswordResponse for API responses
 /// </summary>
 public class ResetPasswordResponse
 {
@@ -85,23 +50,8 @@ public class ResetPasswordResponse
 }
 
 /// <summary>
-/// Request để verify reset token (check token còn valid không trước khi user nhập password)
-/// </summary>
-public class VerifyResetTokenRequest
-{
-    /// <summary>
-    /// Email của user
-    /// </summary>
-    public string Email { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Reset token cần verify
-    /// </summary>
-    public string ResetToken { get; set; } = string.Empty;
-}
-
-/// <summary>
-/// Response cho verify reset token
+/// Response cho verify reset token - used internally by Application handlers
+/// Mapped to WebApi.Contracts.Auth.VerifyResetTokenResponse for API responses
 /// </summary>
 public class VerifyResetTokenResponse
 {

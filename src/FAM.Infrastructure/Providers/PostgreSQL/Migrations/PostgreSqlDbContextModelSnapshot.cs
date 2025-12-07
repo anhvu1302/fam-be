@@ -4800,6 +4800,98 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.ToTable("user_node_roles");
                 });
 
+            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserThemeEf", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("BorderRadius")
+                        .HasColumnType("integer")
+                        .HasColumnName("border_radius");
+
+                    b.Property<bool>("CompactMode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("compact_mode");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<bool>("DarkTheme")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("dark_theme");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("PinNavbar")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("pin_navbar");
+
+                    b.Property<string>("PrimaryColor")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("primary_color");
+
+                    b.Property<string>("Theme")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("theme");
+
+                    b.Property<decimal>("Transparency")
+                        .HasPrecision(3, 2)
+                        .HasColumnType("numeric(3,2)")
+                        .HasColumnName("transparency");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_themes");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_user_themes_user_id")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("user_themes");
+                });
+
             modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetCategoryEf", b =>
                 {
                     b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetCategoryEf", "Parent")
@@ -5404,6 +5496,18 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Navigation("Node");
 
                     b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserThemeEf", b =>
+                {
+                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_themes_users_user_id");
 
                     b.Navigation("User");
                 });

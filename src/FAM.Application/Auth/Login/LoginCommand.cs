@@ -17,20 +17,4 @@ public sealed record LoginCommand : IRequest<LoginResponse>
     public string? UserAgent { get; init; }
     public string? Location { get; init; }
     public bool RememberMe { get; init; }
-
-    public static LoginCommand From(LoginRequest request, string deviceId, string deviceName, string deviceType,
-        string? ipAddress, string? userAgent)
-    {
-        return new LoginCommand
-        {
-            Identity = request.Identity,
-            Password = request.Password,
-            DeviceId = deviceId,
-            DeviceName = deviceName,
-            DeviceType = deviceType,
-            IpAddress = ipAddress,
-            UserAgent = userAgent,
-            RememberMe = request.RememberMe
-        };
-    }
 }

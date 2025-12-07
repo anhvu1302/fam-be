@@ -52,8 +52,7 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
         {
             Success = true,
             BackupCodes = backupCodes,
-            Message =
-                "Two-factor authentication has been enabled successfully. Please save your backup codes in a secure location. Each code can only be used once for account recovery."
+            Message = "Two-factor authentication has been enabled successfully. Please save your backup codes in a secure location. Each code can only be used once for account recovery."
         };
     }
 

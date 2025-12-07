@@ -1,5 +1,7 @@
 namespace FAM.WebApi.Contracts.Auth;
 
+#region Request Records
+
 /// <summary>
 /// Login request - Validated by LoginRequestValidator using DomainRules
 /// Supports login with either username or email
@@ -28,6 +30,13 @@ public sealed record RefreshTokenRequest(
 );
 
 /// <summary>
+/// Logout all devices request - Validated by LogoutAllRequestValidator
+/// </summary>
+public sealed record LogoutAllRequest(
+    bool ExceptCurrentDevice = false
+);
+
+/// <summary>
 /// Change password request - Validated by ChangePasswordRequestValidator using DomainRules
 /// </summary>
 public sealed record ChangePasswordRequest(
@@ -47,6 +56,7 @@ public sealed record Enable2FARequest(
 /// Confirm 2FA request - Validated by Confirm2FARequestValidator
 /// </summary>
 public sealed record Confirm2FARequest(
+    string Secret,
     string Code
 );
 
@@ -119,3 +129,232 @@ public sealed record VerifyResetTokenRequest(
     string Email,
     string ResetToken
 );
+
+#endregion
+
+#region Response Records
+
+/// <summary>
+/// User info response for auth responses
+/// </summary>
+public sealed record UserInfoResponse(
+    long Id,
+    string Username,
+    string Email,
+    string? FirstName,
+    string? LastName,
+    string? FullName,
+    string? Avatar,
+    string? PhoneNumber,
+    string? PhoneCountryCode,
+    DateTime? DateOfBirth,
+    string? Bio,
+    bool IsEmailVerified,
+    string? PreferredLanguage,
+    string? TimeZone,
+    bool TwoFactorEnabled
+);
+
+/// <summary>
+/// Login response
+/// </summary>
+public sealed record LoginResponse(
+    string AccessToken,
+    string RefreshToken,
+    int ExpiresIn,
+    string TokenType,
+    UserInfoResponse User,
+    bool RequiresTwoFactor,
+    string? TwoFactorSessionToken,
+    bool RequiresEmailVerification,
+    string? MaskedEmail
+);
+
+/// <summary>
+/// Verify 2FA response
+/// </summary>
+public sealed record VerifyTwoFactorResponse(
+    string AccessToken,
+    string RefreshToken,
+    int ExpiresIn,
+    string TokenType,
+    UserInfoResponse User
+);
+
+/// <summary>
+/// Refresh token response
+/// </summary>
+public sealed record RefreshTokenResponse(
+    string AccessToken,
+    string RefreshToken,
+    int ExpiresIn,
+    string TokenType
+);
+
+/// <summary>
+/// Logout response
+/// </summary>
+public sealed record LogoutResponse(
+    bool Success,
+    string Message
+);
+
+/// <summary>
+/// Logout all devices response
+/// </summary>
+public sealed record LogoutAllResponse(
+    bool Success,
+    string Message,
+    int LoggedOutDevices
+);
+
+/// <summary>
+/// Change password response
+/// </summary>
+public sealed record ChangePasswordResponse(
+    bool Success,
+    string Message,
+    string Code
+);
+
+/// <summary>
+/// Enable 2FA response with secret and recovery codes
+/// </summary>
+public sealed record Enable2FAResponse(
+    string Secret,
+    string QrCodeUrl,
+    List<string> RecoveryCodes,
+    string Message
+);
+
+/// <summary>
+/// Confirm 2FA response
+/// </summary>
+public sealed record Confirm2FAResponse(
+    bool Success,
+    string Message,
+    List<string> RecoveryCodes
+);
+
+/// <summary>
+/// Disable 2FA response
+/// </summary>
+public sealed record Disable2FAResponse(
+    bool Success,
+    string Message
+);
+
+/// <summary>
+/// Disable 2FA with backup code response
+/// </summary>
+public sealed record DisableTwoFactorWithBackupResponse(
+    bool Success,
+    string Message
+);
+
+/// <summary>
+/// Select authentication method response
+/// </summary>
+public sealed record SelectAuthenticationMethodResponse(
+    bool Success,
+    string Message,
+    string SelectedMethod,
+    string? AdditionalInfo,
+    DateTime? ExpiresAt
+);
+
+/// <summary>
+/// Verify email OTP response
+/// </summary>
+public sealed record VerifyEmailOtpResponse(
+    string AccessToken,
+    string RefreshToken,
+    int ExpiresIn,
+    string TokenType,
+    UserInfoResponse User
+);
+
+/// <summary>
+/// Verify recovery code response
+/// </summary>
+public sealed record VerifyRecoveryCodeResponse(
+    string AccessToken,
+    string RefreshToken,
+    int ExpiresIn,
+    string TokenType,
+    UserInfoResponse User
+);
+
+/// <summary>
+/// Forgot password response
+/// </summary>
+public sealed record ForgotPasswordResponse(
+    bool Success,
+    string Code,
+    string Message,
+    string? MaskedEmail
+);
+
+/// <summary>
+/// Reset password response
+/// </summary>
+public sealed record ResetPasswordResponse(
+    bool Success,
+    string Code,
+    string Message
+);
+
+/// <summary>
+/// Verify reset token response
+/// </summary>
+public sealed record VerifyResetTokenResponse(
+    bool IsValid,
+    string Code,
+    string Message,
+    string? MaskedEmail
+);
+
+/// <summary>
+/// Authentication methods response
+/// </summary>
+public sealed record AuthenticationMethodsResponse(
+    bool EmailAuthenticationEnabled,
+    string? MaskedEmail,
+    bool TwoFactorAuthenticatorEnabled,
+    DateTime? TwoFactorSetupDate,
+    bool RecoveryCodesConfigured,
+    int RemainingRecoveryCodes,
+    List<AuthenticationMethodInfo>? AvailableMethods = null
+);
+
+/// <summary>
+/// Authentication method info
+/// </summary>
+public sealed record AuthenticationMethodInfo(
+    string MethodType,
+    string DisplayName,
+    bool IsEnabled,
+    bool IsPrimary,
+    string? AdditionalInfo
+);
+
+/// <summary>
+/// JWKS (JSON Web Key Set) response
+/// </summary>
+public sealed record JwksResponse(
+    List<JsonWebKey> Keys
+);
+
+/// <summary>
+/// JSON Web Key
+/// </summary>
+public sealed record JsonWebKey(
+    string Kty,
+    string Use,
+    string Alg,
+    string Kid,
+    string N,
+    string E
+);
+
+#endregion

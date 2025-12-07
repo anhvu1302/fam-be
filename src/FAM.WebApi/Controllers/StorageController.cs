@@ -15,7 +15,7 @@ namespace FAM.WebApi.Controllers;
 [ApiController]
 [Route("api/storage")]
 [Authorize]
-public class StorageController : ControllerBase
+public class StorageController : BaseApiController
 {
     private readonly IStorageService _storageService;
     private readonly IFileValidator _fileValidator;
@@ -47,7 +47,7 @@ public class StorageController : ControllerBase
             // Get userId from claims
             var userIdClaim = User.FindFirst("sub") ?? User.FindFirst("userId");
             if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
-                return Unauthorized(new { Error = "User not authenticated" });
+                return UnauthorizedResponse("User not authenticated", "USER_NOT_AUTHENTICATED");
 
             var command = new InitUploadSessionCommand
             {
@@ -60,20 +60,20 @@ public class StorageController : ControllerBase
 
             var response = await _mediator.Send(command);
 
-            return Ok(response);
+            return OkResponse(response);
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { Error = ex.Message });
+            return BadRequestResponse(ex.Message, "INVALID_UPLOAD_SESSION");
         }
         catch (UnauthorizedAccessException ex)
         {
-            return Unauthorized(new { Error = ex.Message });
+            return UnauthorizedResponse(ex.Message, "UNAUTHORIZED");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error initializing upload session for {FileName}", request.FileName);
-            return StatusCode(500, new { Error = "An error occurred while initializing upload session" });
+            return InternalErrorResponse("An error occurred while initializing upload session", "UPLOAD_SESSION_ERROR");
         }
     }
 
@@ -87,14 +87,14 @@ public class StorageController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UploadFile(IFormFile file)
     {
-        if (file == null || file.Length == 0) return BadRequest(new { Error = "File is required" });
+        if (file == null || file.Length == 0) return BadRequestResponse("File is required", "FILE_REQUIRED");
 
         // Validate file and auto-detect type
         var (isValid, errorMessage, fileType) = _fileValidator.ValidateFile(
             file.FileName,
             file.Length);
 
-        if (!isValid || !fileType.HasValue) return BadRequest(new { Error = errorMessage });
+        if (!isValid || !fileType.HasValue) return BadRequestResponse(errorMessage, "FILE_VALIDATION_FAILED");
 
         try
         {
@@ -110,18 +110,18 @@ public class StorageController : ControllerBase
             var url = await _storageService.GetPresignedUrlAsync(filePath, 3600);
             var expiresAt = DateTime.UtcNow.AddSeconds(3600);
 
-            return Ok(new UploadFileResponse
+            return OkResponse(new UploadFileResponse
             {
                 FilePath = filePath,
                 Url = url,
                 ExpiresAt = expiresAt,
                 FileSize = file.Length
-            });
+            }, "File uploaded successfully");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error uploading file {FileName}", file.FileName);
-            return StatusCode(500, new { Error = "An error occurred while uploading the file" });
+            return InternalErrorResponse("An error occurred while uploading the file", "FILE_UPLOAD_ERROR");
         }
     }
 
@@ -139,7 +139,7 @@ public class StorageController : ControllerBase
             request.FileName,
             request.TotalSize);
 
-        if (!isValid || !fileType.HasValue) return BadRequest(new { Error = errorMessage });
+        if (!isValid || !fileType.HasValue) return BadRequestResponse(errorMessage, "FILE_VALIDATION_FAILED");
 
         try
         {
@@ -148,17 +148,17 @@ public class StorageController : ControllerBase
                 fileType.Value,
                 request.ContentType);
 
-            return Ok(new InitiateMultipartUploadResponse
+            return OkResponse(new InitiateMultipartUploadResponse
             {
                 UploadId = uploadId,
                 FilePath = uploadId.Split('_')[0], // Extract object name
                 ChunkSize = 5 * 1024 * 1024 // 5 MB recommended chunk size
-            });
+            }, "Multipart upload initiated");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error initiating multipart upload for {FileName}", request.FileName);
-            return StatusCode(500, new { Error = "An error occurred while initiating multipart upload" });
+            return InternalErrorResponse("An error occurred while initiating multipart upload", "MULTIPART_INIT_ERROR");
         }
     }
 
@@ -176,13 +176,13 @@ public class StorageController : ControllerBase
         [FromForm] int partNumber,
         [FromForm] string fileName)
     {
-        if (file == null || file.Length == 0) return BadRequest(new { Error = "File is required" });
+        if (file == null || file.Length == 0) return BadRequestResponse("File is required", "FILE_REQUIRED");
 
-        if (partNumber < 1) return BadRequest(new { Error = "Part number must be greater than 0" });
+        if (partNumber < 1) return BadRequestResponse("Part number must be greater than 0", "INVALID_PART_NUMBER");
 
         // Detect file type from fileName
         var fileType = _fileValidator.DetectFileType(fileName);
-        if (!fileType.HasValue) return BadRequest(new { Error = "Unable to determine file type from file name" });
+        if (!fileType.HasValue) return BadRequestResponse("Unable to determine file type from file name", "FILE_TYPE_DETECTION_FAILED");
 
         try
         {
@@ -195,17 +195,17 @@ public class StorageController : ControllerBase
                 partNumber,
                 stream);
 
-            return Ok(new UploadPartResponse
+            return OkResponse(new UploadPartResponse
             {
                 PartNumber = partNumber,
                 ETag = eTag
-            });
+            }, "Part uploaded successfully");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error uploading part {PartNumber} for uploadId {UploadId}",
                 partNumber, uploadId);
-            return StatusCode(500, new { Error = "An error occurred while uploading the part" });
+            return InternalErrorResponse("An error occurred while uploading the part", "PART_UPLOAD_ERROR");
         }
     }
 
@@ -218,11 +218,11 @@ public class StorageController : ControllerBase
     public async Task<IActionResult> CompleteMultipartUpload(
         [FromBody] CompleteMultipartUploadRequest request)
     {
-        if (request.Parts == null || request.Parts.Count == 0) return BadRequest(new { Error = "Parts are required" });
+        if (request.Parts == null || request.Parts.Count == 0) return BadRequestResponse("Parts are required", "PARTS_REQUIRED");
 
         // Detect file type from fileName
         var fileType = _fileValidator.DetectFileType(request.FileName);
-        if (!fileType.HasValue) return BadRequest(new { Error = "Unable to determine file type from file name" });
+        if (!fileType.HasValue) return BadRequestResponse("Unable to determine file type from file name", "FILE_TYPE_DETECTION_FAILED");
 
         try
         {
@@ -238,19 +238,19 @@ public class StorageController : ControllerBase
 
             var fileInfo = await _storageService.GetFileInfoAsync(filePath);
 
-            return Ok(new UploadFileResponse
+            return OkResponse(new UploadFileResponse
             {
                 FilePath = filePath,
                 Url = url,
                 ExpiresAt = expiresAt,
                 FileSize = fileInfo.Size
-            });
+            }, "Upload completed successfully");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error completing multipart upload for uploadId {UploadId}",
                 request.UploadId);
-            return StatusCode(500, new { Error = "An error occurred while completing the upload" });
+            return InternalErrorResponse("An error occurred while completing the upload", "MULTIPART_COMPLETE_ERROR");
         }
     }
 
@@ -265,7 +265,7 @@ public class StorageController : ControllerBase
     {
         // Detect file type from fileName
         var fileType = _fileValidator.DetectFileType(request.FileName);
-        if (!fileType.HasValue) return BadRequest(new { Error = "Unable to determine file type from file name" });
+        if (!fileType.HasValue) return BadRequestResponse("Unable to determine file type from file name", "FILE_TYPE_DETECTION_FAILED");
 
         try
         {
@@ -274,13 +274,13 @@ public class StorageController : ControllerBase
                 request.FileName,
                 fileType.Value);
 
-            return NoContent();
+            return OkResponse("Upload aborted successfully");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error aborting multipart upload for uploadId {UploadId}",
                 request.UploadId);
-            return StatusCode(500, new { Error = "An error occurred while aborting the upload" });
+            return InternalErrorResponse("An error occurred while aborting the upload", "MULTIPART_ABORT_ERROR");
         }
     }
 
@@ -296,7 +296,7 @@ public class StorageController : ControllerBase
         try
         {
             var exists = await _storageService.FileExistsAsync(request.FilePath);
-            if (!exists) return NotFound(new { Error = "File not found" });
+            if (!exists) return NotFoundResponse("File not found", "FILE_NOT_FOUND");
 
             var url = await _storageService.GetPresignedUrlAsync(
                 request.FilePath,
@@ -304,16 +304,16 @@ public class StorageController : ControllerBase
 
             var expiresAt = DateTime.UtcNow.AddSeconds(request.ExpiryInSeconds);
 
-            return Ok(new GetPresignedUrlResponse
+            return OkResponse(new GetPresignedUrlResponse
             {
                 Url = url,
                 ExpiresAt = expiresAt
-            });
+            }, "Presigned URL generated successfully");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error generating presigned URL for {FilePath}", request.FilePath);
-            return StatusCode(500, new { Error = "An error occurred while generating the URL" });
+            return InternalErrorResponse("An error occurred while generating the URL", "PRESIGNED_URL_ERROR");
         }
     }
 
@@ -328,16 +328,16 @@ public class StorageController : ControllerBase
         try
         {
             var exists = await _storageService.FileExistsAsync(filePath);
-            if (!exists) return NotFound(new { Error = "File not found" });
+            if (!exists) return NotFoundResponse("File not found", "FILE_NOT_FOUND");
 
             await _storageService.DeleteFileAsync(filePath);
 
-            return NoContent();
+            return OkResponse("File deleted successfully");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error deleting file {FilePath}", filePath);
-            return StatusCode(500, new { Error = "An error occurred while deleting the file" });
+            return InternalErrorResponse("An error occurred while deleting the file", "FILE_DELETE_ERROR");
         }
     }
 
@@ -352,16 +352,16 @@ public class StorageController : ControllerBase
         try
         {
             var exists = await _storageService.FileExistsAsync(filePath);
-            if (!exists) return NotFound(new { Error = "File not found" });
+            if (!exists) return NotFoundResponse("File not found", "FILE_NOT_FOUND");
 
             var fileInfo = await _storageService.GetFileInfoAsync(filePath);
 
-            return Ok(fileInfo);
+            return OkResponse(fileInfo);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting file info for {FilePath}", filePath);
-            return StatusCode(500, new { Error = "An error occurred while getting file information" });
+            return InternalErrorResponse("An error occurred while getting file information", "FILE_INFO_ERROR");
         }
     }
 }

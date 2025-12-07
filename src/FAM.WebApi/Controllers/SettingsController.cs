@@ -12,7 +12,7 @@ namespace FAM.WebApi.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/settings")]
-public class SettingsController : ControllerBase
+public class SettingsController : BaseApiController
 {
     private readonly ISystemSettingService _settingService;
     private readonly ILogger<SettingsController> _logger;
@@ -244,16 +244,6 @@ public class SettingsController : ControllerBase
     {
         await _settingService.DeleteAsync(id, cancellationToken);
         return NoContent();
-    }
-
-    #endregion
-
-    #region Private Helpers
-
-    private long? GetCurrentUserId()
-    {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return long.TryParse(userIdClaim, out var userId) ? userId : null;
     }
 
     #endregion

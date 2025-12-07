@@ -39,6 +39,7 @@ public static class ErrorMessages
         [ErrorCodes.USER_ALREADY_ACTIVE] = "User is already active",
         [ErrorCodes.USER_ALREADY_INACTIVE] = "User is already inactive",
         [ErrorCodes.USER_CANNOT_DELETE_SELF] = "You cannot delete your own account",
+        [ErrorCodes.USER_SESSION_NOT_FOUND] = "Session not found or access denied",
 
         #endregion
 

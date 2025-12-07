@@ -16,7 +16,7 @@ namespace FAM.WebApi.Controllers;
 [ApiController]
 [Route("api/permissions")]
 [Authorize]
-public class PermissionsController : ControllerBase
+public class PermissionsController : BaseApiController
 {
     private readonly IMediator _mediator;
     private readonly ILogger<PermissionsController> _logger;
