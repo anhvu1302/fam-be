@@ -8,6 +8,7 @@ using FAM.Application.EmailTemplates.Queries.GetAllEmailTemplates;
 using FAM.Application.EmailTemplates.Queries.GetEmailTemplateByCode;
 using FAM.Application.EmailTemplates.Queries.GetEmailTemplateById;
 using FAM.Application.EmailTemplates.Shared;
+using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.EmailTemplates;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -36,10 +37,24 @@ public class EmailTemplatesController : BaseApiController
     /// <summary>
     /// Get all email templates
     /// </summary>
-    /// <param name="isActive">Filter by active status</param>
-    /// <param name="category">Filter by category (1=Authentication, 2=Notification, 3=Marketing, 4=System)</param>
+    /// <remarks>
+    /// Returns a list of all email templates with optional filtering by active status and category.
+    /// 
+    /// Query Parameters:
+    /// - isActive: Filter by active status (true/false)
+    /// - category: Filter by category (1=Authentication, 2=Notification, 3=Marketing, 4=System)
+    /// 
+    /// Example: GET /api/email-templates?isActive=true&amp;category=1
+    /// </remarks>
+    /// <param name="isActive">Filter by active status (optional)</param>
+    /// <param name="category">Filter by category - 1:Authentication, 2:Notification, 3:Marketing, 4:System (optional)</param>
+    /// <response code="200">Success - Returns {success: true, result: [EmailTemplateResponse, ...]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<EmailTemplateResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<IReadOnlyList<EmailTemplateResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IReadOnlyList<EmailTemplateResponse>>> GetAllTemplates(
         [FromQuery] bool? isActive = null,
         [FromQuery] int? category = null)
@@ -75,9 +90,21 @@ public class EmailTemplatesController : BaseApiController
     /// <summary>
     /// Get email template by ID
     /// </summary>
+    /// <remarks>
+    /// Returns a specific email template by ID with all details including available placeholders.
+    /// 
+    /// Example: GET /api/email-templates/1
+    /// </remarks>
+    /// <param name="id">Email template ID</param>
+    /// <response code="200">Success - Returns {success: true, result: EmailTemplateResponse}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Email template with ID {id} not found", code: "TEMPLATE_NOT_FOUND"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpGet("{id:long}")]
-    [ProducesResponseType(typeof(EmailTemplateResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<EmailTemplateResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<EmailTemplateResponse>> GetTemplateById(long id)
     {
         var query = new GetEmailTemplateByIdQuery(id);
@@ -109,9 +136,21 @@ public class EmailTemplatesController : BaseApiController
     /// <summary>
     /// Get email template by code
     /// </summary>
+    /// <remarks>
+    /// Returns a specific email template by unique code identifier.
+    /// 
+    /// Example: GET /api/email-templates/by-code/VERIFY_EMAIL
+    /// </remarks>
+    /// <param name="code">Email template code (unique identifier)</param>
+    /// <response code="200">Success - Returns {success: true, result: EmailTemplateResponse}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Email template with code {code} not found", code: "TEMPLATE_NOT_FOUND"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpGet("by-code/{code}")]
-    [ProducesResponseType(typeof(EmailTemplateResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<EmailTemplateResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<EmailTemplateResponse>> GetTemplateByCode(string code)
     {
         var query = new GetEmailTemplateByCodeQuery(code);
@@ -143,10 +182,37 @@ public class EmailTemplatesController : BaseApiController
     /// <summary>
     /// Create a new email template
     /// </summary>
+    /// <remarks>
+    /// Creates a new email template with the specified properties.
+    /// 
+    /// Request body:
+    /// {
+    ///   "code": "VERIFY_EMAIL",
+    ///   "name": "Email Verification",
+    ///   "subject": "Please verify your email address",
+    ///   "htmlBody": "&lt;html&gt;...&lt;/html&gt;",
+    ///   "plainTextBody": "Verify your email...",
+    ///   "description": "Sent to users to verify their email address",
+    ///   "availablePlaceholders": ["{{VerificationLink}}", "{{UserName}}"],
+    ///   "category": 1
+    /// }
+    /// 
+    /// Only system administrators can create templates. System templates cannot be created via API.
+    /// 
+    /// Example: POST /api/email-templates
+    /// </remarks>
+    /// <param name="request">CreateEmailTemplateRequest with template details</param>
+    /// <response code="201">Created - Returns {success: true, result: long (templateId)}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Invalid template data", code: "INVALID_TEMPLATE_DATA"}]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="409">Conflict - Returns {success: false, errors: [{message: "Template with code {code} already exists", code: "TEMPLATE_ALREADY_EXISTS"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpPost]
-    [ProducesResponseType(typeof(long), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<long>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<long>> CreateTemplate([FromBody] CreateEmailTemplateRequest request)
     {
         if (!ModelState.IsValid)
@@ -175,10 +241,38 @@ public class EmailTemplatesController : BaseApiController
     /// <summary>
     /// Update an existing email template
     /// </summary>
+    /// <remarks>
+    /// Updates an existing email template with new values.
+    /// 
+    /// Request body:
+    /// {
+    ///   "name": "Updated Template Name",
+    ///   "subject": "Updated subject",
+    ///   "htmlBody": "&lt;html&gt;...&lt;/html&gt;",
+    ///   "plainTextBody": "Updated text...",
+    ///   "description": "Updated description",
+    ///   "availablePlaceholders": ["{{Placeholder1}}", "{{Placeholder2}}"],
+    ///   "category": 1
+    /// }
+    /// 
+    /// Only editable fields in the template can be updated. Code cannot be changed.
+    /// System templates can only be updated by system administrators.
+    /// 
+    /// Example: PUT /api/email-templates/1
+    /// </remarks>
+    /// <param name="id">Email template ID to update</param>
+    /// <param name="request">UpdateEmailTemplateRequest with template details to update</param>
+    /// <response code="200">Success - Returns {success: true, message: "Email template updated successfully"}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Invalid template data", code: "INVALID_TEMPLATE_DATA"}]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Email template with ID {id} not found", code: "TEMPLATE_NOT_FOUND"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpPut("{id:long}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> UpdateTemplate(long id, [FromBody] UpdateEmailTemplateRequest request)
     {
         if (!ModelState.IsValid)
@@ -206,10 +300,25 @@ public class EmailTemplatesController : BaseApiController
     /// <summary>
     /// Delete an email template (soft delete)
     /// </summary>
+    /// <remarks>
+    /// Soft-deletes an email template by marking it as deleted.
+    /// Deleted templates cannot be used but historical records are preserved.
+    /// System templates cannot be deleted via API.
+    /// 
+    /// Example: DELETE /api/email-templates/1
+    /// </remarks>
+    /// <param name="id">Email template ID to delete</param>
+    /// <response code="204">Success - No content returned</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Email template with ID {id} not found", code: "TEMPLATE_NOT_FOUND"}]}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Cannot delete system template", code: "SYSTEM_TEMPLATE_DELETE_FAILED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpDelete("{id:long}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DeleteTemplate(long id)
     {
         var command = new DeleteEmailTemplateCommand(id);
@@ -223,9 +332,22 @@ public class EmailTemplatesController : BaseApiController
     /// <summary>
     /// Activate an email template
     /// </summary>
+    /// <remarks>
+    /// Activates a deactivated email template, making it available for sending.
+    /// Only deactivated templates can be activated.
+    /// 
+    /// Example: POST /api/email-templates/1/activate
+    /// </remarks>
+    /// <param name="id">Email template ID to activate</param>
+    /// <response code="200">Success - Returns {success: true, message: "Email template activated successfully"}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Email template with ID {id} not found", code: "TEMPLATE_NOT_FOUND"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpPost("{id:long}/activate")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> ActivateTemplate(long id)
     {
         var command = new ActivateEmailTemplateCommand(id);
@@ -239,9 +361,22 @@ public class EmailTemplatesController : BaseApiController
     /// <summary>
     /// Deactivate an email template
     /// </summary>
+    /// <remarks>
+    /// Deactivates an email template, preventing it from being used for sending.
+    /// Deactivated templates can be reactivated later.
+    /// 
+    /// Example: POST /api/email-templates/1/deactivate
+    /// </remarks>
+    /// <param name="id">Email template ID to deactivate</param>
+    /// <response code="200">Success - Returns {success: true, message: "Email template deactivated successfully"}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Email template with ID {id} not found", code: "TEMPLATE_NOT_FOUND"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpPost("{id:long}/deactivate")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DeactivateTemplate(long id)
     {
         var command = new DeactivateEmailTemplateCommand(id);

@@ -35,9 +35,29 @@ public class PermissionsController : BaseApiController
     /// <summary>
     /// Get paginated list of permissions with advanced filtering and sorting
     /// </summary>
+    /// <remarks>
+    /// Returns a paginated list of permissions. Supports filtering, sorting, field selection, and includes.
+    /// 
+    /// Query Parameters:
+    /// - page: Page number (default: 1)
+    /// - pageSize: Items per page (default: 10)
+    /// - sortBy: Field to sort by (e.g., "id", "resource", "action")
+    /// - sortOrder: Sort order - "asc" or "desc" (default: asc)
+    /// - fields: Comma-separated fields to include in response
+    /// - search: Search keyword for filtering permissions
+    /// 
+    /// Example: GET /api/permissions?page=1&amp;pageSize=10&amp;sortBy=resource&amp;sortOrder=asc
+    /// </remarks>
     /// <param name="parameters">Query parameters for pagination, filtering, sorting, field selection and includes</param>
+    /// <response code="200">Success - Returns {success: true, result: {items: [Permission], totalCount, pageNumber, pageSize, totalPages}}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Invalid query parameters", code: "INVALID_PARAMETERS"}]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<PageResult<Dictionary<string, object?>>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetPermissions([FromQuery] PaginationQueryParameters parameters)
     {
         var query = new GetPermissionsQuery(parameters.ToQueryRequest());
@@ -56,10 +76,23 @@ public class PermissionsController : BaseApiController
 
     /// <summary>
     /// Get all available permission definitions
-    /// Returns predefined permissions from the system
     /// </summary>
+    /// <remarks>
+    /// Returns a list of all predefined permissions in the system.
+    /// Each permission includes: Resource, Action, Description, and PermissionKey
+    /// 
+    /// Example: GET /api/permissions/definitions
+    /// 
+    /// Permissions are used to control access to specific resources and actions.
+    /// Format: {Resource}:{Action}
+    /// </remarks>
+    /// <response code="200">Success - Returns {success: true, result: [{Resource, Action, Description, PermissionKey}, ...]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpGet("definitions")]
-    [ProducesResponseType(typeof(IReadOnlyList<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<IReadOnlyList<object>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public ActionResult GetPermissionDefinitions()
     {
         var permissions = Permissions.All
@@ -78,8 +111,19 @@ public class PermissionsController : BaseApiController
     /// <summary>
     /// Get available resources
     /// </summary>
+    /// <remarks>
+    /// Returns a list of all available resources in the system.
+    /// Resources are entities that have access control (e.g., Users, Roles, Assets, etc.)
+    /// 
+    /// Example: GET /api/permissions/resources
+    /// </remarks>
+    /// <response code="200">Success - Returns {success: true, result: ["Users", "Roles", "Assets", ...]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpGet("resources")]
-    [ProducesResponseType(typeof(IReadOnlyList<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<IReadOnlyList<string>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public ActionResult GetResources()
     {
         var resources = Resources.All;
@@ -89,8 +133,19 @@ public class PermissionsController : BaseApiController
     /// <summary>
     /// Get available actions
     /// </summary>
+    /// <remarks>
+    /// Returns a list of all available actions in the system.
+    /// Actions are operations that can be performed on resources (e.g., Create, Read, Update, Delete)
+    /// 
+    /// Example: GET /api/permissions/actions
+    /// </remarks>
+    /// <response code="200">Success - Returns {success: true, result: ["Create", "Read", "Update", "Delete", ...]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpGet("actions")]
-    [ProducesResponseType(typeof(IReadOnlyList<string>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<IReadOnlyList<string>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public ActionResult GetActions()
     {
         var actions = Actions.All;

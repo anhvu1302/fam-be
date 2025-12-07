@@ -20,6 +20,7 @@ using FAM.Application.Common.Services;
 using FAM.Application.Users.Shared;
 using FAM.Domain.Common;
 using FAM.WebApi.Configuration;
+using FAM.WebApi.Contracts.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -50,9 +51,20 @@ public class AuthController : BaseApiController
     /// <summary>
     /// Login with username/email and password
     /// </summary>
+    /// <remarks>
+    /// Returns access token, refresh token, and user information upon successful authentication.
+    /// </remarks>
+    /// <response code="200">Login successful - Returns {success: true, message: string, result: LoginResponse}</response>
+    /// <response code="400">Bad request - Returns {success: false, errors: [{message: string, code: string}]}</response>
+    /// <response code="401">Unauthorized - Invalid credentials - Returns {success: false, errors: [{message: string, code: string}]}</response>
+    /// <response code="500">Internal server error - Returns {success: false, errors: [{message: string, code: string}]}</response>
     [HttpPost("login")]
     [AllowAnonymous]
     [EnableRateLimiting(RateLimitConfiguration.AuthenticationPolicy)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<LoginResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<LoginResponse>> Login([FromBody] WebApiContracts.LoginRequest request)
     {
         // Web API validation: ModelState checks DataAnnotations
@@ -138,8 +150,19 @@ public class AuthController : BaseApiController
     /// <summary>
     /// Refresh access token using refresh token
     /// </summary>
+    /// <remarks>
+    /// Generates new access token and refresh token pair using valid refresh token.
+    /// </remarks>
+    /// <response code="200">Token refresh successful - Returns {success: true, message: string, result: LoginResponse}</response>
+    /// <response code="400">Bad request - Returns {success: false, errors: [{message: string, code: string}]}</response>
+    /// <response code="401">Unauthorized - Invalid refresh token - Returns {success: false, errors: [{message: string, code: string}]}</response>
+    /// <response code="500">Internal server error - Returns {success: false, errors: [{message: string, code: string}]}</response>
     [HttpPost("refresh")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiSuccessResponse<LoginResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] WebApiContracts.RefreshTokenRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);

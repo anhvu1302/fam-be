@@ -1,6 +1,7 @@
 using FAM.Application.Abstractions;
 using FAM.Application.Storage.Commands;
 using FAM.Application.Storage.Shared;
+using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.Storage;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -38,9 +39,30 @@ public class StorageController : BaseApiController
     /// <summary>
     /// Initialize upload session (Step 1: Get presigned URL for temporary upload)
     /// </summary>
+    /// <remarks>
+    /// Initializes an upload session and returns details for uploading a file to cloud storage.
+    /// This step is required before uploading any file.
+    /// 
+    /// Request body:
+    /// {
+    ///   "fileName": "document.pdf",
+    ///   "contentType": "application/pdf",
+    ///   "fileSize": 1048576,
+    ///   "idempotencyKey": "unique-key-12345"
+    /// }
+    /// 
+    /// Example: POST /api/storage/sessions/init
+    /// </remarks>
+    /// <param name="request">InitUploadSessionRequest with file details</param>
+    /// <response code="200">Success - Returns {success: true, result: InitUploadSessionResponse}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Invalid file data", code: "INVALID_UPLOAD_SESSION"}]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "USER_NOT_AUTHENTICATED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "An error occurred while initializing upload session", code: "UPLOAD_SESSION_ERROR"}]}</response>
     [HttpPost("sessions/init")]
-    [ProducesResponseType(typeof(InitUploadSessionResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<InitUploadSessionResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> InitUploadSession([FromBody] InitUploadSessionRequest request)
     {
         try
@@ -81,11 +103,29 @@ public class StorageController : BaseApiController
     /// <summary>
     /// Upload a single file
     /// </summary>
+    /// <remarks>
+    /// Uploads a single file to cloud storage. Maximum file size is 100 MB.
+    /// Automatic file type detection is performed.
+    /// 
+    /// Supported file types: PDF, Images (JPG, PNG, GIF), Documents (DOC, DOCX, XLS, XLSX)
+    /// 
+    /// Request: Multipart form data with "file" parameter
+    /// Example: POST /api/storage/upload
+    /// 
+    /// Returns presigned URL with 1 hour expiry.
+    /// </remarks>
+    /// <param name="file">File to upload (max 100 MB)</param>
+    /// <response code="200">Success - Returns {success: true, message: "File uploaded successfully", result: UploadFileResponse}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "File is required", code: "FILE_REQUIRED"}]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "An error occurred while uploading the file", code: "FILE_UPLOAD_ERROR"}]}</response>
     [HttpPost("upload")]
     [RequestSizeLimit(100 * 1024 * 1024)] // 100 MB max
     [RequestFormLimits(MultipartBodyLengthLimit = 100 * 1024 * 1024)]
-    [ProducesResponseType(typeof(UploadFileResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<UploadFileResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UploadFile(IFormFile file)
     {
         if (file == null || file.Length == 0) return BadRequestResponse("File is required", "FILE_REQUIRED");
@@ -95,7 +135,7 @@ public class StorageController : BaseApiController
             file.FileName,
             file.Length);
 
-        if (!isValid || !fileType.HasValue) return BadRequestResponse(errorMessage, "FILE_VALIDATION_FAILED");
+        if (!isValid || !fileType.HasValue) return BadRequestResponse(errorMessage ?? "File validation failed", "FILE_VALIDATION_FAILED");
 
         try
         {
@@ -123,9 +163,34 @@ public class StorageController : BaseApiController
     /// <summary>
     /// Initiate multipart upload for large files
     /// </summary>
+    /// <remarks>
+    /// Initiates a multipart upload session for large files (typically > 100 MB).
+    /// Returns upload ID and recommended chunk size (5 MB).
+    /// 
+    /// Request body:
+    /// {
+    ///   "fileName": "largefile.zip",
+    ///   "contentType": "application/zip",
+    ///   "totalSize": 524288000
+    /// }
+    /// 
+    /// Process:
+    /// 1. Initiate multipart upload (this endpoint)
+    /// 2. Upload each part with uploadId and part number
+    /// 3. Complete upload with all ETags
+    /// 
+    /// Example: POST /api/storage/multipart/initiate
+    /// </remarks>
+    /// <param name="request">InitiateMultipartUploadRequest with file details</param>
+    /// <response code="200">Success - Returns {success: true, message: "Multipart upload initiated", result: InitiateMultipartUploadResponse}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "File validation failed", code: "FILE_VALIDATION_FAILED"}]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "An error occurred while initiating multipart upload", code: "MULTIPART_INIT_ERROR"}]}</response>
     [HttpPost("multipart/initiate")]
-    [ProducesResponseType(typeof(InitiateMultipartUploadResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<InitiateMultipartUploadResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> InitiateMultipartUpload(
         [FromBody] InitiateMultipartUploadRequest request)
     {
@@ -134,7 +199,7 @@ public class StorageController : BaseApiController
             request.FileName,
             request.TotalSize);
 
-        if (!isValid || !fileType.HasValue) return BadRequestResponse(errorMessage, "FILE_VALIDATION_FAILED");
+        if (!isValid || !fileType.HasValue) return BadRequestResponse(errorMessage ?? "File validation failed", "FILE_VALIDATION_FAILED");
 
         try
         {
@@ -159,11 +224,34 @@ public class StorageController : BaseApiController
     /// <summary>
     /// Upload a part in multipart upload
     /// </summary>
+    /// <remarks>
+    /// Uploads a single part of a multipart upload. Maximum 50 MB per part.
+    /// 
+    /// Request: Multipart form data with parameters:
+    /// - file: The file part (max 50 MB)
+    /// - uploadId: Upload session ID from initiate endpoint
+    /// - partNumber: Part sequence number (1-based)
+    /// - fileName: Original file name
+    /// 
+    /// Response includes ETag for part tracking.
+    /// 
+    /// Example: POST /api/storage/multipart/upload-part
+    /// </remarks>
+    /// <param name="file">File part to upload (max 50 MB)</param>
+    /// <param name="uploadId">Upload session ID</param>
+    /// <param name="partNumber">Part number (must be > 0)</param>
+    /// <param name="fileName">Original file name</param>
+    /// <response code="200">Success - Returns {success: true, message: "Part uploaded successfully", result: UploadPartResponse}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "File is required", code: "FILE_REQUIRED"}]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "An error occurred while uploading the part", code: "PART_UPLOAD_ERROR"}]}</response>
     [HttpPost("multipart/upload-part")]
     [RequestSizeLimit(50 * 1024 * 1024)] // 50 MB per part
     [RequestFormLimits(MultipartBodyLengthLimit = 50 * 1024 * 1024)]
-    [ProducesResponseType(typeof(UploadPartResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<UploadPartResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UploadPart(
         IFormFile file,
         [FromForm] string uploadId,
@@ -202,9 +290,33 @@ public class StorageController : BaseApiController
     /// <summary>
     /// Complete multipart upload
     /// </summary>
+    /// <remarks>
+    /// Completes a multipart upload session. All parts must be uploaded before calling this.
+    /// 
+    /// Request body:
+    /// {
+    ///   "uploadId": "upload-session-id",
+    ///   "fileName": "largefile.zip",
+    ///   "parts": [
+    ///     {"partNumber": 1, "eTag": "etag-1"},
+    ///     {"partNumber": 2, "eTag": "etag-2"}
+    ///   ]
+    /// }
+    /// 
+    /// Returns presigned URL with 1 hour expiry.
+    /// 
+    /// Example: POST /api/storage/multipart/complete
+    /// </remarks>
+    /// <param name="request">CompleteMultipartUploadRequest with upload details</param>
+    /// <response code="200">Success - Returns {success: true, message: "Upload completed successfully", result: UploadFileResponse}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Parts are required", code: "PARTS_REQUIRED"}]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "An error occurred while completing the upload", code: "MULTIPART_COMPLETE_ERROR"}]}</response>
     [HttpPost("multipart/complete")]
-    [ProducesResponseType(typeof(UploadFileResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<UploadFileResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CompleteMultipartUpload(
         [FromBody] CompleteMultipartUploadRequest request)
     {
@@ -241,9 +353,22 @@ public class StorageController : BaseApiController
     /// <summary>
     /// Abort multipart upload
     /// </summary>
+    /// <remarks>
+    /// Cancels an ongoing multipart upload session. All uploaded parts are deleted.
+    /// Can be used to clean up failed upload attempts.
+    /// 
+    /// Example: POST /api/storage/multipart/abort
+    /// </remarks>
+    /// <param name="request">CompleteMultipartUploadRequest with uploadId and fileName</param>
+    /// <response code="200">Success - Returns {success: true, message: "Upload aborted successfully"}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Unable to determine file type from file name", code: "FILE_TYPE_DETECTION_FAILED"}]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "An error occurred while aborting the upload", code: "MULTIPART_ABORT_ERROR"}]}</response>
     [HttpPost("multipart/abort")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> AbortMultipartUpload(
         [FromBody] CompleteMultipartUploadRequest request)
     {
@@ -269,11 +394,32 @@ public class StorageController : BaseApiController
     }
 
     /// <summary>
-    /// Get presigned URL for a file (time-limited access like Facebook)
+    /// Get presigned URL for a file (time-limited access)
     /// </summary>
+    /// <remarks>
+    /// Generates a temporary presigned URL for accessing a file without authentication.
+    /// Similar to Facebook's time-limited file sharing.
+    /// 
+    /// Request body:
+    /// {
+    ///   "filePath": "assets/document.pdf",
+    ///   "expiryInSeconds": 3600
+    /// }
+    /// 
+    /// URL expires after specified seconds. Default: 1 hour (3600 seconds)
+    /// 
+    /// Example: POST /api/storage/presigned-url
+    /// </remarks>
+    /// <param name="request">GetPresignedUrlRequest with filePath and expiryInSeconds</param>
+    /// <response code="200">Success - Returns {success: true, message: "Presigned URL generated successfully", result: GetPresignedUrlResponse}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="404">Not Found - Returns {success: false, errors: [{message: "File not found", code: "FILE_NOT_FOUND"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "An error occurred while generating the URL", code: "PRESIGNED_URL_ERROR"}]}</response>
     [HttpPost("presigned-url")]
-    [ProducesResponseType(typeof(GetPresignedUrlResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<GetPresignedUrlResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetPresignedUrl(
         [FromBody] GetPresignedUrlRequest request)
     {
@@ -300,9 +446,21 @@ public class StorageController : BaseApiController
     /// <summary>
     /// Delete a file
     /// </summary>
+    /// <remarks>
+    /// Permanently deletes a file from cloud storage. Cannot be undone.
+    /// 
+    /// Example: DELETE /api/storage/assets/document.pdf
+    /// </remarks>
+    /// <param name="filePath">File path to delete</param>
+    /// <response code="204">Success - No content returned</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="404">Not Found - Returns {success: false, errors: [{message: "File not found", code: "FILE_NOT_FOUND"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "An error occurred while deleting the file", code: "FILE_DELETE_ERROR"}]}</response>
     [HttpDelete("{*filePath}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteFile(string filePath)
     {
         try
@@ -324,9 +482,21 @@ public class StorageController : BaseApiController
     /// <summary>
     /// Get file information
     /// </summary>
+    /// <remarks>
+    /// Retrieves metadata information about a file including size, creation date, and type.
+    /// 
+    /// Example: GET /api/storage/info/assets/document.pdf
+    /// </remarks>
+    /// <param name="filePath">File path to get information for</param>
+    /// <response code="200">Success - Returns {success: true, result: FileInfo}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="404">Not Found - Returns {success: false, errors: [{message: "File not found", code: "FILE_NOT_FOUND"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "An error occurred while getting file information", code: "FILE_INFO_ERROR"}]}</response>
     [HttpGet("info/{*filePath}")]
-    [ProducesResponseType(typeof(FileInfo), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<FileInfo>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetFileInfo(string filePath)
     {
         try

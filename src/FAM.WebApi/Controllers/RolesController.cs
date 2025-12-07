@@ -41,8 +41,29 @@ public class RolesController : BaseApiController
     /// <summary>
     /// Get all roles with pagination, filtering and sorting
     /// </summary>
+    /// <remarks>
+    /// Returns a paginated list of roles. Supports filtering, sorting, field selection, and includes.
+    /// 
+    /// Query Parameters:
+    /// - page: Page number (default: 1)
+    /// - pageSize: Items per page (default: 10)
+    /// - sortBy: Field to sort by (e.g., "id", "code", "name", "rank")
+    /// - sortOrder: Sort order - "asc" or "desc" (default: asc)
+    /// - fields: Comma-separated fields to include in response
+    /// - search: Search keyword for filtering roles
+    /// 
+    /// Example: GET /api/roles?page=1&amp;pageSize=10&amp;sortBy=name&amp;sortOrder=asc
+    /// </remarks>
+    /// <param name="parameters">Query parameters for pagination, filtering, sorting, field selection and includes</param>
+    /// <response code="200">Success - Returns {success: true, result: {items: [Role], totalCount, pageNumber, pageSize, totalPages}}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Invalid query parameters", code: "INVALID_PARAMETERS"}]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<PageResult<Dictionary<string, object?>>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetRoles([FromQuery] PaginationQueryParameters parameters)
     {
         var query = new GetRolesQuery(parameters.ToQueryRequest());
@@ -62,9 +83,23 @@ public class RolesController : BaseApiController
     /// <summary>
     /// Get role by ID with permissions
     /// </summary>
+    /// <remarks>
+    /// Returns a specific role by ID including all assigned permissions.
+    /// 
+    /// Example: GET /api/roles/1
+    /// 
+    /// Returns role details with full permission list.
+    /// </remarks>
+    /// <param name="id">Role ID</param>
+    /// <response code="200">Success - Returns {success: true, result: RoleWithPermissionsDto}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Role with ID {id} not found", code: "ROLE_NOT_FOUND"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpGet("{id:long}")]
-    [ProducesResponseType(typeof(RoleWithPermissionsDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<RoleWithPermissionsDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<RoleWithPermissionsDto>> GetRoleById(long id)
     {
         var query = new GetRoleByIdQuery(id);
@@ -79,10 +114,34 @@ public class RolesController : BaseApiController
     /// <summary>
     /// Create a new role
     /// </summary>
+    /// <remarks>
+    /// Creates a new role with the specified properties.
+    /// 
+    /// Request body:
+    /// {
+    ///   "code": "admin",
+    ///   "name": "Administrator",
+    ///   "description": "Administrator role with full permissions",
+    ///   "rank": 1
+    /// }
+    /// 
+    /// System roles (IsSystemRole=true) can only be created by the system.
+    /// Roles with lower rank have higher priority.
+    /// 
+    /// Example: POST /api/roles
+    /// </remarks>
+    /// <param name="request">CreateRoleRequest with role details</param>
+    /// <response code="201">Created - Returns {success: true, result: long (roleId)}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Invalid role data", code: "INVALID_ROLE_DATA"}]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="409">Conflict - Returns {success: false, errors: [{message: "Role with code {code} already exists", code: "ROLE_ALREADY_EXISTS"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpPost]
-    [ProducesResponseType(typeof(long), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<long>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<long>> CreateRole([FromBody] CreateRoleRequest request)
     {
         var command = new CreateRoleCommand
@@ -104,10 +163,34 @@ public class RolesController : BaseApiController
     /// <summary>
     /// Update an existing role
     /// </summary>
+    /// <remarks>
+    /// Updates an existing role with new values.
+    /// 
+    /// Request body:
+    /// {
+    ///   "name": "Updated Role Name",
+    ///   "description": "Updated description",
+    ///   "rank": 2
+    /// }
+    /// 
+    /// Only the fields provided in the request will be updated.
+    /// System roles cannot be modified.
+    /// 
+    /// Example: PATCH /api/roles/1
+    /// </remarks>
+    /// <param name="id">Role ID to update</param>
+    /// <param name="request">UpdateRoleRequest with role details to update</param>
+    /// <response code="200">Success - Returns {success: true, message: "Role updated successfully"}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Invalid role data", code: "INVALID_ROLE_DATA"}]}</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Role with ID {id} not found", code: "ROLE_NOT_FOUND"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpPatch("{id:long}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> UpdateRole(long id, [FromBody] UpdateRoleRequest request)
     {
         var command = new UpdateRoleCommand
@@ -128,10 +211,25 @@ public class RolesController : BaseApiController
     /// <summary>
     /// Delete a role
     /// </summary>
+    /// <remarks>
+    /// Deletes an existing role. Cannot delete roles that are assigned to users or system roles.
+    /// 
+    /// Example: DELETE /api/roles/1
+    /// 
+    /// Before deleting a role, all user-role assignments must be removed.
+    /// </remarks>
+    /// <param name="id">Role ID to delete</param>
+    /// <response code="204">Success - No content returned</response>
+    /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
+    /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Role with ID {id} not found", code: "ROLE_NOT_FOUND"}]}</response>
+    /// <response code="409">Conflict - Returns {success: false, errors: [{message: "Cannot delete role with assigned users", code: "ROLE_IN_USE"}]}</response>
+    /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpDelete("{id:long}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DeleteRole(long id)
     {
         var command = new DeleteRoleCommand(id);

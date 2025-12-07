@@ -34,10 +34,18 @@ public class UsersController : BaseApiController
     /// <summary>
     /// Get paginated list of users with advanced filtering and sorting
     /// </summary>
+    /// <remarks>
+    /// Returns paginated users with support for filtering, sorting, field selection, and eager loading of related entities.
+    /// 
+    /// Example request: GET /api/users?page=1&amp;pageSize=10&amp;sort=-createdAt&amp;filter=isActive:true&amp;fields=id,username,email&amp;include=devices,nodeRoles
+    /// </remarks>
     /// <param name="parameters">Query parameters for pagination, filtering, sorting, field selection and includes</param>
+    /// <response code="200">Success - Returns {success: true, result: UsersPagedResponse}</response>
+    /// <response code="400">Bad request - Returns {success: false, errors: [{message: string, code: string}]}</response>
     [HttpGet]
-    [ProducesResponseType(typeof(UsersPagedResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(PageResult<Dictionary<string, object?>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<UsersPagedResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<PageResult<Dictionary<string, object?>>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUsers([FromQuery] PaginationQueryParameters parameters)
     {
         var query = parameters.ToGetUsersQuery(_pagination);
@@ -56,11 +64,18 @@ public class UsersController : BaseApiController
     /// <summary>
     /// Get user by ID
     /// </summary>
+    /// <remarks>
+    /// Retrieves detailed user information by user ID with optional eager loading of related entities.
+    /// 
+    /// Example: GET /api/users/123?include=devices,nodeRoles
+    /// </remarks>
     /// <param name="id">User ID</param>
     /// <param name="include">Include related entities (comma-separated, e.g., "userDevices,userNodeRoles" or "userNodeRoles.role")</param>
+    /// <response code="200">Success - Returns {success: true, result: UserResponse}</response>
+    /// <response code="404">User not found - Returns {success: false, errors: [{message: string, code: string}]}</response>
     [HttpGet("{id:long}")]
-    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUserById(long id, [FromQuery] string? include = null)
     {
         var query = id.ToGetUserByIdQuery(include);
@@ -74,10 +89,16 @@ public class UsersController : BaseApiController
     /// <summary>
     /// Create a new user
     /// </summary>
+    /// <remarks>
+    /// Creates a new user account with username, email, password and optional profile information.
+    /// </remarks>
+    /// <response code="201">User created successfully - Returns {success: true, result: UserResponse}</response>
+    /// <response code="400">Bad request - Validation failed - Returns {success: false, errors: [{message: string, code: string}]}</response>
+    /// <response code="409">Conflict - Username or email already exists - Returns {success: false, errors: [{message: string, code: string}]}</response>
     [HttpPost]
-    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<UserResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
     {
@@ -98,11 +119,19 @@ public class UsersController : BaseApiController
     /// <summary>
     /// Update an existing user
     /// </summary>
+    /// <remarks>
+    /// Updates user profile information. Omitted fields will not be modified.
+    /// </remarks>
+    /// <param name="id">User ID</param>
+    /// <response code="200">User updated successfully - Returns {success: true, result: UserResponse}</response>
+    /// <response code="400">Bad request - Validation failed - Returns {success: false, errors: [{message: string, code: string}]}</response>
+    /// <response code="404">User not found - Returns {success: false, errors: [{message: string, code: string}]}</response>
+    /// <response code="409">Conflict - Username or email already exists - Returns {success: false, errors: [{message: string, code: string}]}</response>
     [HttpPut("{id:long}")]
-    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> UpdateUser(long id, [FromBody] UpdateUserRequest request)
     {
