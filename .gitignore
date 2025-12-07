@@ -44,3 +44,6 @@ postgres-data-17/
 # Log files
 logs/
 *.log
+
+# Backup files
+backups/
