@@ -110,18 +110,15 @@ docker-clean:
 # ============================================
 
 prod-deploy:
-	@echo "🚀 [1/4] Backing up existing data..."
-	@make prod-backup || echo "⚠️  Backup failed or skipped"
-	
-	@echo "🚀 [2/4] Building Docker image..."
+	@echo "🚀 [1/3] Building Docker image..."
 	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) build --build-arg CACHEBUST=$(NOW)
 	
-	@echo "🚀 [3/4] Stopping API and starting services (migrations run automatically)..."
+	@echo "🚀 [2/3] Stopping API and starting services (migrations run automatically)..."
 	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) stop fam-api 2>/dev/null || true
 	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) rm -f fam-api 2>/dev/null || true
 	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) up -d
 	
-	@echo "🚀 [4/4] Cleaning unused images..."
+	@echo "🚀 [3/3] Cleaning unused images..."
 	@docker image prune -f
 	@echo "✅ Deploy complete!"
 	@sleep 2
