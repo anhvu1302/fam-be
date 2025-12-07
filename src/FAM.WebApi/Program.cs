@@ -8,6 +8,7 @@ using FAM.Application.Settings;
 using FAM.Application.Users.Commands.CreateUser;
 using FAM.Infrastructure;
 using FAM.Infrastructure.Auth;
+using FAM.Infrastructure.Providers.PostgreSQL;
 using FAM.Infrastructure.Services;
 using FAM.Infrastructure.Services.Email;
 using FAM.WebApi.Configuration;
@@ -16,6 +17,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
@@ -384,6 +386,23 @@ app.UseRateLimiter();
 app.UseAuthentication(); // Add authentication middleware
 app.UseAuthorization();
 app.MapControllers();
+
+// Apply migrations before running the app
+try
+{
+    Log.Information("Applying database migrations...");
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<PostgreSqlDbContext>();
+        await dbContext.Database.MigrateAsync();
+        Log.Information("✅ Database migrations applied successfully");
+    }
+}
+catch (Exception ex)
+{
+    Log.Error(ex, "❌ Error applying migrations");
+    throw;
+}
 
 app.Run();
 
