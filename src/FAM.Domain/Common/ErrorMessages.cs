@@ -23,6 +23,11 @@ public static class ErrorMessages
         [ErrorCodes.AUTH_FORBIDDEN] = "You do not have permission to perform this action",
         [ErrorCodes.AUTH_WEAK_PASSWORD] = "Password is too weak. Please use a stronger password",
         [ErrorCodes.AUTH_INVALID_OLD_PASSWORD] = "The current password is incorrect",
+        [ErrorCodes.AUTH_INVALID_RESET_TOKEN] = "The reset token is invalid or expired",
+        [ErrorCodes.AUTH_RESET_EMAIL_SENT] = "Password reset email has been sent to your email address",
+        [ErrorCodes.AUTH_RESET_TOKEN_EXPIRED] = "The reset token has expired",
+        [ErrorCodes.AUTH_PASSWORD_RESET_SUCCESS] = "Your password has been reset successfully",
+        [ErrorCodes.AUTH_RESET_TOKEN_VALID] = "The reset token is valid",
 
         #endregion
 
@@ -169,6 +174,7 @@ public static class ErrorMessages
         #region General
 
         [ErrorCodes.GEN_NOT_FOUND] = "The requested resource was not found",
+        [ErrorCodes.NODE_NOT_FOUND] = "The requested node/location was not found in the hierarchy",
         [ErrorCodes.GEN_INVALID_OPERATION] = "This operation is not valid",
         [ErrorCodes.GEN_CONFLICT] = "A conflict occurred. The resource may already exist",
         [ErrorCodes.GEN_INTERNAL_ERROR] = "An internal server error occurred. Please try again later",
