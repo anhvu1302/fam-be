@@ -5,9 +5,11 @@ using FAM.Application.Querying.Extensions;
 using FAM.Application.Settings;
 using FAM.Application.Users.Commands;
 using FAM.Application.Users.Commands.DeleteUser;
+using FAM.Application.Users.Shared;
 using FAM.WebApi.Contracts.Authorization;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.Users;
+using FAM.WebApi.Mappers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

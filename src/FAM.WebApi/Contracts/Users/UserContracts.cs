@@ -1,7 +1,5 @@
 namespace FAM.WebApi.Contracts.Users;
 
-#region Request Contracts
-
 /// <summary>
 /// Request to create a new user - Validated by CreateUserRequestValidator
 /// </summary>
@@ -37,82 +35,3 @@ public sealed record UpdateUserRequest(
 public sealed record UpdateAvatarRequest(
     string UploadId
 );
-
-#endregion
-
-#region Response Contracts
-
-/// <summary>
-/// Response for user data
-/// </summary>
-public sealed record UserResponse(
-    long Id,
-    string Username,
-    string Email,
-    string? FullName,
-    string? FirstName,
-    string? LastName,
-    string? Avatar,
-    string? PhoneNumber,
-    DateTime? DateOfBirth,
-    string? Bio,
-    bool TwoFactorEnabled,
-    bool IsActive,
-    bool IsEmailVerified,
-    bool IsPhoneVerified,
-    DateTime? EmailVerifiedAt,
-    DateTime? PhoneVerifiedAt,
-    DateTime? LastLoginAt,
-    string? LastLoginIp,
-    string? PreferredLanguage,
-    string? TimeZone,
-    bool ReceiveNotifications,
-    bool ReceiveMarketingEmails,
-    DateTime CreatedAt,
-    DateTime? UpdatedAt,
-    List<UserDeviceResponse>? Devices = null,
-    List<UserNodeRoleResponse>? NodeRoles = null
-);
-
-/// <summary>
-/// Response for user device reference
-/// </summary>
-public sealed record UserDeviceResponse(
-    Guid Id,
-    string DeviceId,
-    string DeviceName,
-    string DeviceType,
-    string? Browser,
-    string? OperatingSystem,
-    string? Location,
-    DateTime LastLoginAt,
-    DateTime? LastActivityAt,
-    bool IsActive,
-    bool IsTrusted
-);
-
-/// <summary>
-/// Response for user node role reference
-/// </summary>
-public sealed record UserNodeRoleResponse(
-    long UserId,
-    long NodeId,
-    string? NodeName,
-    long RoleId,
-    string? RoleName,
-    DateTime? StartAt,
-    DateTime? EndAt
-);
-
-/// <summary>
-/// Paginated response for users
-/// </summary>
-public sealed record UsersPagedResponse(
-    List<UserResponse> Items,
-    int TotalCount,
-    int Page,
-    int PageSize,
-    int TotalPages
-);
-
-#endregion

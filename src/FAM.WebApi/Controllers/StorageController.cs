@@ -1,5 +1,6 @@
 using FAM.Application.Abstractions;
 using FAM.Application.Storage.Commands;
+using FAM.Application.Storage.Shared;
 using FAM.WebApi.Contracts.Storage;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -110,13 +111,7 @@ public class StorageController : BaseApiController
             var url = await _storageService.GetPresignedUrlAsync(filePath, 3600);
             var expiresAt = DateTime.UtcNow.AddSeconds(3600);
 
-            return OkResponse(new UploadFileResponse
-            {
-                FilePath = filePath,
-                Url = url,
-                ExpiresAt = expiresAt,
-                FileSize = file.Length
-            }, "File uploaded successfully");
+            return OkResponse(new UploadFileResponse(filePath, url, expiresAt, file.Length), "File uploaded successfully");
         }
         catch (Exception ex)
         {
@@ -148,12 +143,11 @@ public class StorageController : BaseApiController
                 fileType.Value,
                 request.ContentType);
 
-            return OkResponse(new InitiateMultipartUploadResponse
-            {
-                UploadId = uploadId,
-                FilePath = uploadId.Split('_')[0], // Extract object name
-                ChunkSize = 5 * 1024 * 1024 // 5 MB recommended chunk size
-            }, "Multipart upload initiated");
+            return OkResponse(new InitiateMultipartUploadResponse(
+                uploadId,
+                uploadId.Split('_')[0], // Extract object name
+                5 * 1024 * 1024 // 5 MB recommended chunk size
+            ), "Multipart upload initiated");
         }
         catch (Exception ex)
         {
@@ -195,11 +189,7 @@ public class StorageController : BaseApiController
                 partNumber,
                 stream);
 
-            return OkResponse(new UploadPartResponse
-            {
-                PartNumber = partNumber,
-                ETag = eTag
-            }, "Part uploaded successfully");
+            return OkResponse(new UploadPartResponse(partNumber, eTag), "Part uploaded successfully");
         }
         catch (Exception ex)
         {
@@ -238,13 +228,7 @@ public class StorageController : BaseApiController
 
             var fileInfo = await _storageService.GetFileInfoAsync(filePath);
 
-            return OkResponse(new UploadFileResponse
-            {
-                FilePath = filePath,
-                Url = url,
-                ExpiresAt = expiresAt,
-                FileSize = fileInfo.Size
-            }, "Upload completed successfully");
+            return OkResponse(new UploadFileResponse(filePath, url, expiresAt, fileInfo.Size), "Upload completed successfully");
         }
         catch (Exception ex)
         {
@@ -304,11 +288,7 @@ public class StorageController : BaseApiController
 
             var expiresAt = DateTime.UtcNow.AddSeconds(request.ExpiryInSeconds);
 
-            return OkResponse(new GetPresignedUrlResponse
-            {
-                Url = url,
-                ExpiresAt = expiresAt
-            }, "Presigned URL generated successfully");
+            return OkResponse(new GetPresignedUrlResponse(url, expiresAt), "Presigned URL generated successfully");
         }
         catch (Exception ex)
         {

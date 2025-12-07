@@ -113,24 +113,3 @@ public sealed record UpdateEmailTemplateRequest
     [Range(1, 4, ErrorMessage = "Category must be between 1 and 4")]
     public int Category { get; init; }
 }
-
-/// <summary>
-/// Response for email template operations
-/// </summary>
-public sealed record EmailTemplateResponse
-{
-    public long Id { get; init; }
-    public string Code { get; init; } = string.Empty;
-    public string Name { get; init; } = string.Empty;
-    public string Subject { get; init; } = string.Empty;
-    public string HtmlBody { get; init; } = string.Empty;
-    public string? PlainTextBody { get; init; }
-    public string? Description { get; init; }
-    public string? AvailablePlaceholders { get; init; }
-    public bool IsActive { get; init; }
-    public bool IsSystem { get; init; }
-    public int Category { get; init; }
-    public string CategoryName { get; init; } = string.Empty;
-    public DateTime CreatedAt { get; init; }
-    public DateTime? UpdatedAt { get; init; }
-}

@@ -1,8 +1,10 @@
+using FAM.Application.Authorization.Permissions.Queries.GetPermissions;
+using FAM.Application.Authorization.Permissions.Shared;
+using FAM.Application.Querying;
 using FAM.Application.Querying.Extensions;
 using FAM.Application.Settings;
 using FAM.Domain.Authorization;
 using FAM.WebApi.Contracts.Common;
-using FAM.WebApi.Mappers;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +40,7 @@ public class PermissionsController : BaseApiController
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPermissions([FromQuery] PaginationQueryParameters parameters)
     {
-        var query = PermissionMappers.ToQuery(parameters.ToQueryRequest());
+        var query = new GetPermissionsQuery(parameters.ToQueryRequest());
         var result = await _mediator.Send(query);
 
         // Apply field selection if requested

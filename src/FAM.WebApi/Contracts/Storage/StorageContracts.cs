@@ -1,32 +1,6 @@
 namespace FAM.WebApi.Contracts.Storage;
 
 /// <summary>
-/// Response after uploading a file
-/// </summary>
-public record UploadFileResponse
-{
-    /// <summary>
-    /// File path in storage
-    /// </summary>
-    public string FilePath { get; init; } = string.Empty;
-
-    /// <summary>
-    /// Presigned URL to access the file (time-limited)
-    /// </summary>
-    public string Url { get; init; } = string.Empty;
-
-    /// <summary>
-    /// URL expiration time
-    /// </summary>
-    public DateTime ExpiresAt { get; init; }
-
-    /// <summary>
-    /// File size in bytes
-    /// </summary>
-    public long FileSize { get; init; }
-}
-
-/// <summary>
 /// Request to initiate multipart upload
 /// </summary>
 public record InitiateMultipartUploadRequest
@@ -48,27 +22,6 @@ public record InitiateMultipartUploadRequest
 }
 
 /// <summary>
-/// Response after initiating multipart upload
-/// </summary>
-public record InitiateMultipartUploadResponse
-{
-    /// <summary>
-    /// Upload ID to use for uploading parts
-    /// </summary>
-    public string UploadId { get; init; } = string.Empty;
-
-    /// <summary>
-    /// File path where the file will be stored
-    /// </summary>
-    public string FilePath { get; init; } = string.Empty;
-
-    /// <summary>
-    /// Recommended chunk size in bytes
-    /// </summary>
-    public long ChunkSize { get; init; }
-}
-
-/// <summary>
 /// Request to upload a part in multipart upload
 /// </summary>
 public record UploadPartRequest
@@ -87,22 +40,6 @@ public record UploadPartRequest
     /// File name (to detect file type)
     /// </summary>
     public string FileName { get; init; } = string.Empty;
-}
-
-/// <summary>
-/// Response after uploading a part
-/// </summary>
-public record UploadPartResponse
-{
-    /// <summary>
-    /// Part number
-    /// </summary>
-    public int PartNumber { get; init; }
-
-    /// <summary>
-    /// ETag of the uploaded part
-    /// </summary>
-    public string ETag { get; init; } = string.Empty;
 }
 
 /// <summary>
@@ -143,22 +80,6 @@ public record GetPresignedUrlRequest
 }
 
 /// <summary>
-/// Response with presigned URL
-/// </summary>
-public record GetPresignedUrlResponse
-{
-    /// <summary>
-    /// Presigned URL (time-limited)
-    /// </summary>
-    public string Url { get; init; } = string.Empty;
-
-    /// <summary>
-    /// URL expiration time
-    /// </summary>
-    public DateTime ExpiresAt { get; init; }
-}
-
-/// <summary>
 /// Request to initialize upload session
 /// </summary>
 public class InitUploadSessionRequest
@@ -177,14 +98,4 @@ public class FinalizeUploadRequest
     public required string UploadId { get; set; }
     public required string EntityType { get; set; } // "User", "Asset", etc.
     public string? Checksum { get; set; }
-}
-
-/// <summary>
-/// Response after finalization
-/// </summary>
-public class FinalizeUploadResponse
-{
-    public required string FinalKey { get; set; }
-    public required string Url { get; set; }
-    public required DateTime ExpiresAt { get; set; }
 }

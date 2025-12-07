@@ -1,23 +1,15 @@
-using FAM.Application.Authorization.Permissions.Queries.GetPermissions;
-using FAM.Application.Authorization.Permissions.Shared;
 using FAM.Application.Querying;
-using FAM.WebApi.Contracts.Authorization;
 
-namespace FAM.WebApi.Mappers;
+namespace FAM.Application.Authorization.Permissions.Shared;
 
-public static class PermissionMappers
+/// <summary>
+/// Extension methods for mapping Permission DTOs to responses
+/// </summary>
+public static class PermissionResponseMappers
 {
-    public static GetPermissionsQuery ToQuery(this QueryRequest request)
-    {
-        return new GetPermissionsQuery(request);
-    }
-
-    // public static GetPermissionByIdQuery ToQuery(long id, string? include = null)
-    // {
-    //     return new GetPermissionByIdQuery(id, include);
-    // }
-
-    // DTO -> Response (single mapper for all scenarios)
+    /// <summary>
+    /// Convert PermissionDto to PermissionResponse
+    /// </summary>
     public static PermissionResponse ToPermissionResponse(this PermissionDto dto)
     {
         return new PermissionResponse(
@@ -32,7 +24,9 @@ public static class PermissionMappers
         );
     }
 
-    // PageResult -> Response with pagination
+    /// <summary>
+    /// Convert PageResult of PermissionDto to standard paged response
+    /// </summary>
     public static object ToPagedResponse(this PageResult<PermissionDto> result)
     {
         return new
@@ -48,11 +42,5 @@ public static class PermissionMappers
                 hasNextPage = result.HasNextPage
             }
         };
-    }
-
-    // Helper method to generate code from name
-    private static string GenerateCodeFromName(string name)
-    {
-        return name.ToUpperInvariant().Replace(" ", "_");
     }
 }

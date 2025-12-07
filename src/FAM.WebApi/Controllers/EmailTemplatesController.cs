@@ -7,6 +7,7 @@ using FAM.Application.EmailTemplates.Queries;
 using FAM.Application.EmailTemplates.Queries.GetAllEmailTemplates;
 using FAM.Application.EmailTemplates.Queries.GetEmailTemplateByCode;
 using FAM.Application.EmailTemplates.Queries.GetEmailTemplateById;
+using FAM.Application.EmailTemplates.Shared;
 using FAM.WebApi.Contracts.EmailTemplates;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -51,23 +52,22 @@ public class EmailTemplatesController : BaseApiController
 
         var result = await _mediator.Send(query);
         
-        var response = result.Select(dto => new EmailTemplateResponse
-        {
-            Id = dto.Id,
-            Code = dto.Code,
-            Name = dto.Name,
-            Subject = dto.Subject,
-            HtmlBody = dto.HtmlBody,
-            PlainTextBody = dto.PlainTextBody,
-            Description = dto.Description,
-            AvailablePlaceholders = dto.AvailablePlaceholders,
-            IsActive = dto.IsActive,
-            IsSystem = dto.IsSystem,
-            Category = dto.Category,
-            CategoryName = dto.CategoryName,
-            CreatedAt = dto.CreatedAt,
-            UpdatedAt = dto.UpdatedAt
-        }).ToList();
+        var response = result.Select(dto => new EmailTemplateResponse(
+            dto.Id,
+            dto.Code,
+            dto.Name,
+            dto.Subject,
+            dto.HtmlBody,
+            dto.PlainTextBody,
+            dto.Description,
+            dto.AvailablePlaceholders,
+            dto.IsActive,
+            dto.IsSystem,
+            dto.Category,
+            dto.CategoryName,
+            dto.CreatedAt,
+            dto.UpdatedAt
+        )).ToList();
         
         return Ok(response);
     }
@@ -86,23 +86,22 @@ public class EmailTemplatesController : BaseApiController
         if (dto == null)
             return NotFound();
 
-        var response = new EmailTemplateResponse
-        {
-            Id = dto.Id,
-            Code = dto.Code,
-            Name = dto.Name,
-            Subject = dto.Subject,
-            HtmlBody = dto.HtmlBody,
-            PlainTextBody = dto.PlainTextBody,
-            Description = dto.Description,
-            AvailablePlaceholders = dto.AvailablePlaceholders,
-            IsActive = dto.IsActive,
-            IsSystem = dto.IsSystem,
-            Category = dto.Category,
-            CategoryName = dto.CategoryName,
-            CreatedAt = dto.CreatedAt,
-            UpdatedAt = dto.UpdatedAt
-        };
+        var response = new EmailTemplateResponse(
+            dto.Id,
+            dto.Code,
+            dto.Name,
+            dto.Subject,
+            dto.HtmlBody,
+            dto.PlainTextBody,
+            dto.Description,
+            dto.AvailablePlaceholders,
+            dto.IsActive,
+            dto.IsSystem,
+            dto.Category,
+            dto.CategoryName,
+            dto.CreatedAt,
+            dto.UpdatedAt
+        );
 
         return Ok(response);
     }
@@ -121,23 +120,22 @@ public class EmailTemplatesController : BaseApiController
         if (dto == null)
             return NotFound();
 
-        var response = new EmailTemplateResponse
-        {
-            Id = dto.Id,
-            Code = dto.Code,
-            Name = dto.Name,
-            Subject = dto.Subject,
-            HtmlBody = dto.HtmlBody,
-            PlainTextBody = dto.PlainTextBody,
-            Description = dto.Description,
-            AvailablePlaceholders = dto.AvailablePlaceholders,
-            IsActive = dto.IsActive,
-            IsSystem = dto.IsSystem,
-            Category = dto.Category,
-            CategoryName = dto.CategoryName,
-            CreatedAt = dto.CreatedAt,
-            UpdatedAt = dto.UpdatedAt
-        };
+        var response = new EmailTemplateResponse(
+            dto.Id,
+            dto.Code,
+            dto.Name,
+            dto.Subject,
+            dto.HtmlBody,
+            dto.PlainTextBody,
+            dto.Description,
+            dto.AvailablePlaceholders,
+            dto.IsActive,
+            dto.IsSystem,
+            dto.Category,
+            dto.CategoryName,
+            dto.CreatedAt,
+            dto.UpdatedAt
+        );
 
         return Ok(response);
     }

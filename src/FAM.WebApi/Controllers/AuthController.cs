@@ -17,9 +17,9 @@ using FAM.Application.Auth.Shared;
 using FAM.Application.Auth.VerifyTwoFactor;
 using FAM.Application.Auth.VerifyEmailOtp;
 using FAM.Application.Common.Services;
+using FAM.Application.Users.Shared;
 using FAM.Domain.Common;
 using FAM.WebApi.Configuration;
-using FAM.WebApi.Mappers;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -774,15 +774,15 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpGet("me/sessions")]
     [Authorize]
-    [ProducesResponseType(typeof(FAM.WebApi.Contracts.Users.UserSessionsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserSessionsResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMySessions()
     {
         var userId = GetCurrentUserId();
         var query = new FAM.Application.Users.Queries.GetUserSessions.GetUserSessionsQuery(userId);
         var result = await _mediator.Send(query);
 
-        var response = new FAM.WebApi.Contracts.Users.UserSessionsResponse(
-            result.Sessions.Select(s => new FAM.WebApi.Contracts.Users.UserSessionResponse(
+        var response = new UserSessionsResponse(
+            result.Sessions.Select(s => new UserSessionResponse(
                 s.Id,
                 s.DeviceId,
                 s.DeviceName,
@@ -838,7 +838,7 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpGet("me/theme")]
     [Authorize]
-    [ProducesResponseType(typeof(FAM.WebApi.Contracts.Users.UserThemeResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserThemeResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMyTheme()
     {
@@ -849,7 +849,7 @@ public class AuthController : BaseApiController
         if (result == null)
             return NotFound(new { message = "Theme not found. Using default theme." });
 
-        var response = new FAM.WebApi.Contracts.Users.UserThemeResponse(
+        var response = new UserThemeResponse(
             result.Id,
             result.UserId,
             result.Theme,
@@ -869,7 +869,7 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpPut("me/theme")]
     [Authorize]
-    [ProducesResponseType(typeof(FAM.WebApi.Contracts.Users.UserThemeResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserThemeResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateMyTheme([FromBody] FAM.WebApi.Contracts.Users.UpdateUserThemeRequest request)
     {
@@ -887,7 +887,7 @@ public class AuthController : BaseApiController
 
         var result = await _mediator.Send(command);
 
-        var response = new FAM.WebApi.Contracts.Users.UserThemeResponse(
+        var response = new UserThemeResponse(
             result.Id,
             result.UserId,
             result.Theme,

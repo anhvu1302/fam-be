@@ -1,26 +1,15 @@
-using FAM.Application.Authorization.Roles.Queries.GetRoles;
-using FAM.Application.Authorization.Roles.Shared;
 using FAM.Application.Querying;
-using FAM.WebApi.Contracts.Authorization;
 
-namespace FAM.WebApi.Mappers;
+namespace FAM.Application.Authorization.Roles.Shared;
 
 /// <summary>
-/// Extension methods for mapping Role DTOs to API responses
+/// Extension methods for mapping Role DTOs to responses
 /// </summary>
-public static class RoleMappers
+public static class RoleResponseMappers
 {
-    public static GetRolesQuery ToQuery(this QueryRequest request)
-    {
-        return new GetRolesQuery(request);
-    }
-
-    // public static GetPermissionByIdQuery ToQuery(long id, string? include = null)
-    // {
-    //     return new GetPermissionByIdQuery(id, include);
-    // }
-
-    // DTO -> Response (single mapper for all scenarios)
+    /// <summary>
+    /// Convert RoleDto to RoleResponse
+    /// </summary>
     public static RoleResponse ToRoleResponse(this RoleDto dto)
     {
         return new RoleResponse(

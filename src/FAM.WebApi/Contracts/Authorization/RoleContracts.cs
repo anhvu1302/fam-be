@@ -1,19 +1,6 @@
 namespace FAM.WebApi.Contracts.Authorization;
 
-/// <summary>
-/// Role response DTO
-/// </summary>
-public sealed record RoleResponse(
-    long Id,
-    string Code,
-    string Name,
-    string? Description,
-    int Rank,
-    bool IsSystemRole,
-    DateTime CreatedAt,
-    DateTime? UpdatedAt,
-    DateTime? DeletedAt
-);
+#region Request Contracts
 
 /// <summary>
 /// Request to create a new role
@@ -86,3 +73,5 @@ public sealed record ReplaceUserRolesRequest
     public DateTime? StartAt { get; init; }
     public DateTime? EndAt { get; init; }
 }
+
+#endregion

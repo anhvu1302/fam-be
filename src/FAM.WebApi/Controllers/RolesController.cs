@@ -7,12 +7,13 @@ using FAM.Application.Authorization.Roles.Commands.RemoveUsersFromRole;
 using FAM.Application.Authorization.Roles.Commands.RevokePermissionsFromRole;
 using FAM.Application.Authorization.Roles.Commands.RevokeRoleFromUser;
 using FAM.Application.Authorization.Roles.Commands.UpdateRole;
+using FAM.Application.Authorization.Roles.Queries.GetRoles;
 using FAM.Application.Authorization.Roles.Queries.GetRoleById;
 using FAM.Application.Authorization.Roles.Shared;
+using FAM.Application.Querying;
 using FAM.Application.Querying.Extensions;
 using FAM.WebApi.Contracts.Authorization;
 using FAM.WebApi.Contracts.Common;
-using FAM.WebApi.Mappers;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,7 +45,7 @@ public class RolesController : BaseApiController
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetRoles([FromQuery] PaginationQueryParameters parameters)
     {
-        var query = RoleMappers.ToQuery(parameters.ToQueryRequest());
+        var query = new GetRolesQuery(parameters.ToQueryRequest());
         var result = await _mediator.Send(query);
 
         // Apply field selection if requested
