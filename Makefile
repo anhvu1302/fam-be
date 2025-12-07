@@ -20,7 +20,7 @@ ifneq (,$(wildcard $(ENV_FILE)))
 endif
 
 .PHONY: help add remove update list seed seed-force docker-clean
-.PHONY: prod-deploy prod-start prod-stop prod-restart prod-logs prod-status prod-health prod-db-shell
+.PHONY: prod-deploy prod-start prod-stop prod-restart prod-logs prod-status prod-health prod-seed prod-db-shell
 
 help:
 	@echo "======================================"
@@ -48,6 +48,7 @@ help:
 	@echo "  make prod-logs         View live logs"
 	@echo "  make prod-status       Check container status"
 	@echo "  make prod-health       Health check"
+	@echo "  make prod-seed         Seed production database"
 	@echo "  make prod-db-shell     Connect to PostgreSQL"
 
 # ============================================
@@ -106,9 +107,10 @@ prod-deploy:
 	@echo "🚀 [1/3] Building Docker image..."
 	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) build --build-arg CACHEBUST=$(NOW)
 	
-	@echo "🔄 [2/3] Starting services (migrations run automatically)..."
-	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) down --remove-orphans
-	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) up -d --force-recreate
+	@echo "🔄 [2/3] Stopping API and starting services (migrations run automatically)..."
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) stop fam-api-prod 2>/dev/null || true
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) rm -f fam-api-prod 2>/dev/null || true
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) up -d
 	
 	@echo "🧹 [3/3] Cleaning unused images..."
 	@docker image prune -f
@@ -144,6 +146,11 @@ prod-health:
 	else \
 		echo "  ⏳ API still starting..."; \
 	fi
+
+prod-seed:
+	@echo "🌱 Seeding production database..."
+	docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec -T fam-api-prod dotnet FAM.Cli.dll seed
+	@echo "✅ Seed complete!"
 
 prod-db-shell:
 	docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec postgres psql -U postgres fam_db
