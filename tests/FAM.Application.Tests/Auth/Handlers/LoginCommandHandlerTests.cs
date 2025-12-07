@@ -149,7 +149,7 @@ public class LoginCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<FAM.Domain.Common.UnauthorizedException>()
+        await act.Should().ThrowAsync<UnauthorizedAccessException>()
             .WithMessage("Invalid username/email or password");
 
         _mockUserRepository.Verify(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()),
@@ -187,7 +187,7 @@ public class LoginCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<FAM.Domain.Common.UnauthorizedException>()
+        await act.Should().ThrowAsync<UnauthorizedAccessException>()
             .WithMessage("Invalid username/email or password");
 
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once); // Failed login recorded
@@ -218,7 +218,7 @@ public class LoginCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<FAM.Domain.Common.UnauthorizedException>()
+        await act.Should().ThrowAsync<UnauthorizedAccessException>()
             .WithMessage("Account is inactive");
     }
 
@@ -252,8 +252,8 @@ public class LoginCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<FAM.Domain.Common.DomainException>()
-            .WithMessage("Your account has been locked*");
+        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+            .WithMessage("*locked*");
     }
 
     [Fact]

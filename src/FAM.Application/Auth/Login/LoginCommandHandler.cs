@@ -43,21 +43,19 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         var user = await _unitOfWork.Users.FindByIdentityAsync(request.Identity, cancellationToken);
 
         if (user == null)
-            // TODO: Raise UserLoginFailedEvent
-            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS, "Invalid username/email or password");
+            throw new UnauthorizedAccessException("Invalid username/email or password");
 
         // Check if account is locked
         if (user.IsLockedOut())
         {
             var lockoutEnd = user.LockoutEnd!.Value;
             var minutesRemaining = (int)(lockoutEnd - DateTime.UtcNow).TotalMinutes + 1;
-            throw new DomainException(ErrorCodes.AUTH_ACCOUNT_LOCKED, 
-                new { minutesRemaining, lockoutEnd = lockoutEnd.ToString("O") });
+            throw new UnauthorizedAccessException($"Account is locked. Try again in {minutesRemaining} minutes");
         }
 
         // Check if account is active
         if (!user.IsActive) 
-            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE, "Account is inactive");
+            throw new UnauthorizedAccessException("Account is inactive");
 
         // Verify password
         var isPasswordValid = user.Password.Verify(request.Password);
@@ -69,9 +67,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             _unitOfWork.Users.Update(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            // TODO: Raise UserLoginFailedEvent
-
-            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS, "Invalid username/email or password");
+            throw new UnauthorizedAccessException("Invalid username/email or password");
         }
 
         // Check if email is verified - if not, send OTP and return email verification response
