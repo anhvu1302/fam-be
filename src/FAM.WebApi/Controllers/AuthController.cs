@@ -53,7 +53,7 @@ public class AuthController : BaseApiController
     [HttpPost("login")]
     [AllowAnonymous]
     [EnableRateLimiting(RateLimitConfiguration.AuthenticationPolicy)]
-    public async Task<ActionResult<WebApiContracts.LoginResponse>> Login([FromBody] WebApiContracts.LoginRequest request)
+    public async Task<ActionResult<LoginResponse>> Login([FromBody] WebApiContracts.LoginRequest request)
     {
         // Web API validation: ModelState checks DataAnnotations
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -77,7 +77,7 @@ public class AuthController : BaseApiController
             };
 
             var response = await _mediator.Send(command);
-            return OkResponse(response.ToLoginResponse(), "Login successful");
+            return OkResponse(response, "Login successful");
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -97,7 +97,7 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
     [HttpPost("verify-2fa")]
     [AllowAnonymous]
-    public async Task<ActionResult<WebApiContracts.VerifyTwoFactorResponse>> VerifyTwoFactor(
+    public async Task<ActionResult<VerifyTwoFactorResponse>> VerifyTwoFactor(
         [FromBody] WebApiContracts.VerifyTwoFactorRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -121,7 +121,7 @@ public class AuthController : BaseApiController
             };
 
             var response = await _mediator.Send(command);
-            return OkResponse(response.ToVerifyTwoFactorResponse(), "2FA verification successful");
+            return OkResponse(response, "2FA verification successful");
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -140,7 +140,7 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpPost("refresh")]
     [AllowAnonymous]
-    public async Task<ActionResult<WebApiContracts.LoginResponse>> RefreshToken([FromBody] WebApiContracts.RefreshTokenRequest request)
+    public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] WebApiContracts.RefreshTokenRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -154,7 +154,7 @@ public class AuthController : BaseApiController
             };
 
             var response = await _mediator.Send(command);
-            return OkResponse(response.ToLoginResponse(), "Token refreshed successfully");
+            return OkResponse(response, "Token refreshed successfully");
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -265,14 +265,14 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpGet("authentication-methods")]
     [Authorize]
-    public async Task<ActionResult<WebApiContracts.AuthenticationMethodsResponse>> GetAuthenticationMethods()
+    public async Task<ActionResult<AuthenticationMethodsResponse>> GetAuthenticationMethods()
     {
         try
         {
             var userId = GetCurrentUserId();
             var query = new GetAuthenticationMethodsQuery { UserId = userId };
             var response = await _mediator.Send(query);
-            return OkResponse(response.ToAuthenticationMethodsResponse());
+            return OkResponse(response);
         }
         catch (Exception ex)
         {
@@ -287,7 +287,7 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.AuthenticationPolicy)]
     [HttpPost("select-authentication-method")]
     [AllowAnonymous]
-    public async Task<ActionResult<WebApiContracts.SelectAuthenticationMethodResponse>> SelectAuthenticationMethod(
+    public async Task<ActionResult<SelectAuthenticationMethodResponse>> SelectAuthenticationMethod(
         [FromBody] WebApiContracts.SelectAuthenticationMethodRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -301,11 +301,7 @@ public class AuthController : BaseApiController
             };
 
             var response = await _mediator.Send(command);
-            return OkResponse(new WebApiContracts.SelectAuthenticationMethodResponse(
-                SelectedMethod: response.SelectedMethod,
-                AdditionalInfo: response.AdditionalInfo,
-                ExpiresAt: response.ExpiresAt
-            ), "Authentication method selected successfully");
+            return OkResponse(response, "Authentication method selected successfully");
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -410,7 +406,7 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.AuthenticationPolicy)]
     [HttpPost("forgot-password")]
     [AllowAnonymous]
-    public async Task<ActionResult<WebApiContracts.ForgotPasswordResponse>> ForgotPassword([FromBody] WebApiContracts.ForgotPasswordRequest request)
+    public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword([FromBody] WebApiContracts.ForgotPasswordRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -418,7 +414,7 @@ public class AuthController : BaseApiController
         {
             var command = new ForgotPasswordCommand { Email = request.Email };
             var response = await _mediator.Send(command);
-            return OkResponse(response.ToForgotPasswordResponse(), "Password reset email sent");
+            return OkResponse(response, "Password reset email sent");
         }
         catch (Exception ex)
         {
@@ -433,7 +429,7 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
     [HttpPost("verify-reset-token")]
     [AllowAnonymous]
-    public async Task<ActionResult<WebApiContracts.VerifyResetTokenResponse>> VerifyResetToken([FromBody] WebApiContracts.VerifyResetTokenRequest request)
+    public async Task<ActionResult<VerifyResetTokenResponse>> VerifyResetToken([FromBody] WebApiContracts.VerifyResetTokenRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -445,7 +441,7 @@ public class AuthController : BaseApiController
                 ResetToken = request.ResetToken
             };
             var response = await _mediator.Send(command);
-            return OkResponse(response.ToVerifyResetTokenResponse(), "Token verified successfully");
+            return OkResponse(response, "Token verified successfully");
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -465,7 +461,7 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
     [HttpPost("reset-password")]
     [AllowAnonymous]
-    public async Task<ActionResult<WebApiContracts.ResetPasswordResponse>> ResetPassword([FromBody] WebApiContracts.ResetPasswordRequest request)
+    public async Task<ActionResult<ResetPasswordResponse>> ResetPassword([FromBody] WebApiContracts.ResetPasswordRequest request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -478,7 +474,7 @@ public class AuthController : BaseApiController
                 NewPassword = request.NewPassword
             };
             var response = await _mediator.Send(command);
-            return OkResponse(response.ToResetPasswordResponse(), "Password reset successfully");
+            return OkResponse(response, "Password reset successfully");
         }
         catch (UnauthorizedAccessException ex)
         {
