@@ -149,7 +149,7 @@ prod-health:
 
 prod-seed:
 	@echo "🌱 Seeding production database..."
-	docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec -T fam-api-prod dotnet FAM.Cli.dll seed
+	docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec -T fam-api dotnet FAM.Cli.dll seed
 	@echo "✅ Seed complete!"
 
 prod-db-shell:
