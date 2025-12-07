@@ -21,6 +21,7 @@ endif
 
 .PHONY: help add remove update list seed seed-force docker-clean
 .PHONY: prod-deploy prod-start prod-stop prod-restart prod-logs prod-status prod-health prod-seed prod-db-shell
+.PHONY: prod-backup prod-restore
 
 help:
 	@echo "======================================"
@@ -50,6 +51,11 @@ help:
 	@echo "  make prod-health       Health check"
 	@echo "  make prod-seed         Seed production database"
 	@echo "  make prod-db-shell     Connect to PostgreSQL"
+	@echo ""
+	@echo "💾 Data Management:"
+	@echo "  make prod-backup       Backup all production data (PostgreSQL, MinIO, Seq)"
+	@echo "  make prod-restore      List available backups"
+	@echo ""
 
 # ============================================
 # Migration Targets (Development)
@@ -104,15 +110,18 @@ docker-clean:
 # ============================================
 
 prod-deploy:
-	@echo "🚀 [1/3] Building Docker image..."
+	@echo "🚀 [1/4] Backing up existing data..."
+	@make prod-backup || echo "⚠️  Backup failed or skipped"
+	
+	@echo "🚀 [2/4] Building Docker image..."
 	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) build --build-arg CACHEBUST=$(NOW)
 	
-	@echo "🔄 [2/3] Stopping API and starting services (migrations run automatically)..."
-	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) stop fam-api-prod 2>/dev/null || true
-	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) rm -f fam-api-prod 2>/dev/null || true
+	@echo "🚀 [3/4] Stopping API and starting services (migrations run automatically)..."
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) stop fam-api 2>/dev/null || true
+	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) rm -f fam-api 2>/dev/null || true
 	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) up -d
 	
-	@echo "🧹 [3/3] Cleaning unused images..."
+	@echo "🚀 [4/4] Cleaning unused images..."
 	@docker image prune -f
 	@echo "✅ Deploy complete!"
 	@sleep 2
@@ -154,3 +163,18 @@ prod-seed:
 
 prod-db-shell:
 	docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) exec postgres psql -U postgres fam_db
+
+# ============================================
+# Data Backup & Restore
+# ============================================
+
+prod-backup:
+	@echo "📦 Backing up production data..."
+	@bash scripts/backup-prod-data.sh
+	@echo "✅ Backup saved to ./backups/"
+
+prod-restore:
+	@echo "📋 Available backups:"
+	@ls -lh backups/fam-backup-*.tar.gz 2>/dev/null || echo "  No backups found"
+	@echo ""
+	@echo "To restore: tar -xzf backups/fam-backup-YYYYMMDD_HHMMSS.tar.gz"
