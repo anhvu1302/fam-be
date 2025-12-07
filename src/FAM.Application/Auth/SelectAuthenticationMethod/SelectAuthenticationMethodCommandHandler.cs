@@ -63,8 +63,6 @@ public class
                 await _emailService.SendOtpEmailAsync(user.Email.Value, otpCode, user.Username.Value,
                     cancellationToken);
 
-                response.Success = true;
-                response.Message = "OTP code has been sent to your email";
                 response.SelectedMethod = "email_otp";
                 response.AdditionalInfo = $"Code sent to {MaskEmail(user.Email.Value)}";
                 response.ExpiresAt = DateTime.UtcNow.AddMinutes(10);
@@ -77,8 +75,6 @@ public class
                     throw new InvalidOperationException(
                         "Authenticator app is not configured. Please set up 2FA first.");
 
-                response.Success = true;
-                response.Message = "Please enter the code from your authenticator app";
                 response.SelectedMethod = "authenticator_app";
                 response.AdditionalInfo = "Enter 6-digit code from your authenticator app";
 
@@ -89,8 +85,6 @@ public class
                 if (string.IsNullOrWhiteSpace(user.TwoFactorBackupCodes))
                     throw new InvalidOperationException("Recovery codes are not available. Please contact support.");
 
-                response.Success = true;
-                response.Message = "Please enter one of your recovery codes";
                 response.SelectedMethod = "recovery_code";
                 response.AdditionalInfo = "Enter your backup recovery code";
 

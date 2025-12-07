@@ -78,19 +78,10 @@ public class AuthenticationMethodInfo
 /// Response sau khi chọn phương thức xác thực
 /// Used internally by Application handlers
 /// Mapped to WebApi.Contracts.Auth.SelectAuthenticationMethodResponse for API responses
+/// Success/Message are handled by ApiSuccessResponse wrapper in WebApi layer
 /// </summary>
 public class SelectAuthenticationMethodResponse
 {
-    /// <summary>
-    /// Có thành công không
-    /// </summary>
-    public bool Success { get; set; }
-
-    /// <summary>
-    /// Message hướng dẫn user
-    /// </summary>
-    public string Message { get; set; } = string.Empty;
-
     /// <summary>
     /// Phương thức đã chọn
     /// </summary>

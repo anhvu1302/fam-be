@@ -32,33 +32,20 @@ public class VerifyResetTokenCommandHandler : IRequestHandler<VerifyResetTokenCo
         if (user == null)
         {
             _logger.LogWarning("Reset token verification attempted for non-existent email: {Email}", request.Email);
-            return new VerifyResetTokenResponse
-            {
-                IsValid = false,
-                Code = ErrorCodes.AUTH_INVALID_RESET_TOKEN,
-                Message = "Invalid or expired reset token."
-            };
+            throw new UnauthorizedAccessException("Invalid or expired reset token.");
         }
 
         // Verify the reset token
         if (!user.IsPasswordResetTokenValid(request.ResetToken))
         {
             _logger.LogWarning("Invalid or expired reset token for user: {UserId}", user.Id);
-            return new VerifyResetTokenResponse
-            {
-                IsValid = false,
-                Code = ErrorCodes.AUTH_INVALID_RESET_TOKEN,
-                Message = "Invalid or expired reset token."
-            };
+            throw new UnauthorizedAccessException("Invalid or expired reset token.");
         }
 
         _logger.LogInformation("Reset token verified successfully for user: {UserId}", user.Id);
 
         return new VerifyResetTokenResponse
         {
-            IsValid = true,
-            Code = ErrorCodes.AUTH_RESET_TOKEN_VALID,
-            Message = "Reset token is valid.",
             MaskedEmail = MaskEmail(user.Email.Value)
         };
     }

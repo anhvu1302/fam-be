@@ -56,12 +56,10 @@ public class Confirm2FACommandHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Success.Should().BeTrue();
         result.BackupCodes.Should().NotBeNull();
         result.BackupCodes.Should().HaveCount(16); // Should have 16 backup codes
         result.BackupCodes.Should().OnlyContain(code => code.Length == 11); // Format: xxxxx-xxxxx
         result.BackupCodes.Should().OnlyContain(code => code.Contains("-")); // Should contain dash
-        result.Message.Should().NotBeNullOrEmpty();
 
         // Verify user has 2FA enabled
         user.TwoFactorEnabled.Should().BeTrue();

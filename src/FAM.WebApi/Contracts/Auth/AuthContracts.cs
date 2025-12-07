@@ -254,10 +254,9 @@ public sealed record DisableTwoFactorWithBackupResponse(
 
 /// <summary>
 /// Select authentication method response
+/// Success/Message are handled by ApiSuccessResponse wrapper
 /// </summary>
 public sealed record SelectAuthenticationMethodResponse(
-    bool Success,
-    string Message,
     string SelectedMethod,
     string? AdditionalInfo,
     DateTime? ExpiresAt
@@ -287,30 +286,23 @@ public sealed record VerifyRecoveryCodeResponse(
 
 /// <summary>
 /// Forgot password response
+/// Success/Message/Code are handled by ApiSuccessResponse/ApiErrorResponse wrapper
 /// </summary>
 public sealed record ForgotPasswordResponse(
-    bool Success,
-    string Code,
-    string Message,
     string? MaskedEmail
 );
 
 /// <summary>
 /// Reset password response
+/// Success/Message/Code are handled by ApiSuccessResponse/ApiErrorResponse wrapper
 /// </summary>
-public sealed record ResetPasswordResponse(
-    bool Success,
-    string Code,
-    string Message
-);
+public sealed record ResetPasswordResponse;
 
 /// <summary>
 /// Verify reset token response
+/// Success/Message/Code are handled by ApiSuccessResponse/ApiErrorResponse wrapper
 /// </summary>
 public sealed record VerifyResetTokenResponse(
-    bool IsValid,
-    string Code,
-    string Message,
     string? MaskedEmail
 );
 

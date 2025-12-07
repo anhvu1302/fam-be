@@ -33,24 +33,14 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         if (user == null)
         {
             _logger.LogWarning("Password reset attempted for non-existent email: {Email}", request.Email);
-            return new ResetPasswordResponse
-            {
-                Success = false,
-                Code = ErrorCodes.AUTH_INVALID_RESET_TOKEN,
-                Message = "Invalid or expired reset token."
-            };
+            throw new UnauthorizedAccessException("Invalid or expired reset token.");
         }
 
         // Verify the reset token
         if (!user.IsPasswordResetTokenValid(request.ResetToken))
         {
             _logger.LogWarning("Invalid or expired reset token for password reset: {UserId}", user.Id);
-            return new ResetPasswordResponse
-            {
-                Success = false,
-                Code = ErrorCodes.AUTH_INVALID_RESET_TOKEN,
-                Message = "Invalid or expired reset token."
-            };
+            throw new UnauthorizedAccessException("Invalid or expired reset token.");
         }
 
         // Create new password (Password.Create will throw if invalid)
@@ -65,11 +55,6 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
 
         _logger.LogInformation("Password reset successfully for user: {UserId}. Reset token has been invalidated.", user.Id);
 
-        return new ResetPasswordResponse
-        {
-            Success = true,
-            Code = ErrorCodes.AUTH_PASSWORD_RESET_SUCCESS,
-            Message = "Password has been reset successfully. You can now login with your new password."
-        };
+        return new ResetPasswordResponse();
     }
 }

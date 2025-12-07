@@ -3,24 +3,10 @@ namespace FAM.Application.Auth.Shared;
 /// <summary>
 /// Response cho forgot password - used internally by Application handlers
 /// Mapped to WebApi.Contracts.Auth.ForgotPasswordResponse for API responses
+/// Success/Message/Code are handled by ApiSuccessResponse/ApiErrorResponse wrapper in WebApi layer
 /// </summary>
 public class ForgotPasswordResponse
 {
-    /// <summary>
-    /// Có thành công không
-    /// </summary>
-    public bool Success { get; set; }
-
-    /// <summary>
-    /// Error/Success code cho i18n (FE dùng để dịch thuật)
-    /// </summary>
-    public string Code { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Message thông báo (tiếng Anh mặc định)
-    /// </summary>
-    public string Message { get; set; } = string.Empty;
-
     /// <summary>
     /// Email đã mask để confirm (vd: ab***@gmail.com)
     /// </summary>
@@ -30,46 +16,20 @@ public class ForgotPasswordResponse
 /// <summary>
 /// Response cho reset password - used internally by Application handlers
 /// Mapped to WebApi.Contracts.Auth.ResetPasswordResponse for API responses
+/// Success/Message/Code are handled by ApiSuccessResponse/ApiErrorResponse wrapper in WebApi layer
 /// </summary>
 public class ResetPasswordResponse
 {
-    /// <summary>
-    /// Có thành công không
-    /// </summary>
-    public bool Success { get; set; }
-
-    /// <summary>
-    /// Error/Success code cho i18n (FE dùng để dịch thuật)
-    /// </summary>
-    public string Code { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Message thông báo (tiếng Anh mặc định)
-    /// </summary>
-    public string Message { get; set; } = string.Empty;
+    // No properties - operation completes successfully or throws error via Result pattern
 }
 
 /// <summary>
 /// Response cho verify reset token - used internally by Application handlers
 /// Mapped to WebApi.Contracts.Auth.VerifyResetTokenResponse for API responses
+/// Success/Message/Code are handled by ApiSuccessResponse/ApiErrorResponse wrapper in WebApi layer
 /// </summary>
 public class VerifyResetTokenResponse
 {
-    /// <summary>
-    /// Token có valid không
-    /// </summary>
-    public bool IsValid { get; set; }
-
-    /// <summary>
-    /// Error/Success code cho i18n (FE dùng để dịch thuật)
-    /// </summary>
-    public string Code { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Message thông báo (tiếng Anh mặc định)
-    /// </summary>
-    public string Message { get; set; } = string.Empty;
-
     /// <summary>
     /// Email (masked)
     /// </summary>

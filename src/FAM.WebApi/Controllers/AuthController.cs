@@ -302,12 +302,10 @@ public class AuthController : BaseApiController
 
             var response = await _mediator.Send(command);
             return OkResponse(new WebApiContracts.SelectAuthenticationMethodResponse(
-                Success: response.Success,
-                Message: response.Message,
                 SelectedMethod: response.SelectedMethod,
                 AdditionalInfo: response.AdditionalInfo,
                 ExpiresAt: response.ExpiresAt
-            ));
+            ), "Authentication method selected successfully");
         }
         catch (UnauthorizedAccessException ex)
         {

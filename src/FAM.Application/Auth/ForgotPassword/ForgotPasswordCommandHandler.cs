@@ -43,9 +43,6 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         var maskedEmail = MaskEmail(request.Email);
         var response = new ForgotPasswordResponse
         {
-            Success = true,
-            Code = ErrorCodes.AUTH_RESET_EMAIL_SENT,
-            Message = "If this email exists in our system, you will receive a password reset link shortly.",
             MaskedEmail = maskedEmail
         };
 

@@ -85,9 +85,6 @@ public static class AuthMappers
     public static WebApiContracts.ForgotPasswordResponse ToForgotPasswordResponse(this ForgotPasswordResponse dto)
     {
         return new WebApiContracts.ForgotPasswordResponse(
-            Success: dto.Success,
-            Code: dto.Code,
-            Message: dto.Message,
             MaskedEmail: dto.MaskedEmail
         );
     }
@@ -97,11 +94,7 @@ public static class AuthMappers
     /// </summary>
     public static WebApiContracts.ResetPasswordResponse ToResetPasswordResponse(this ResetPasswordResponse dto)
     {
-        return new WebApiContracts.ResetPasswordResponse(
-            Success: dto.Success,
-            Code: dto.Code,
-            Message: dto.Message
-        );
+        return new WebApiContracts.ResetPasswordResponse();
     }
 
     /// <summary>
@@ -110,9 +103,6 @@ public static class AuthMappers
     public static WebApiContracts.VerifyResetTokenResponse ToVerifyResetTokenResponse(this VerifyResetTokenResponse dto)
     {
         return new WebApiContracts.VerifyResetTokenResponse(
-            IsValid: dto.IsValid,
-            Code: dto.Code,
-            Message: dto.Message,
             MaskedEmail: dto.MaskedEmail
         );
     }
