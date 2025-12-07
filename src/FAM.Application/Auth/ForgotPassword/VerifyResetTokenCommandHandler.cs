@@ -1,4 +1,5 @@
 using FAM.Application.Auth.Shared;
+using FAM.Application.Common.Exceptions;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common;
 using MediatR;
@@ -32,14 +33,18 @@ public class VerifyResetTokenCommandHandler : IRequestHandler<VerifyResetTokenCo
         if (user == null)
         {
             _logger.LogWarning("Reset token verification attempted for non-existent email: {Email}", request.Email);
-            throw new UnauthorizedAccessException("Invalid or expired reset token.");
+            throw new UnauthorizedException(
+                ErrorCodes.AUTH_INVALID_RESET_TOKEN,
+                ErrorMessages.GetMessage(ErrorCodes.AUTH_INVALID_RESET_TOKEN));
         }
 
         // Verify the reset token
         if (!user.IsPasswordResetTokenValid(request.ResetToken))
         {
             _logger.LogWarning("Invalid or expired reset token for user: {UserId}", user.Id);
-            throw new UnauthorizedAccessException("Invalid or expired reset token.");
+            throw new UnauthorizedException(
+                ErrorCodes.AUTH_RESET_TOKEN_EXPIRED,
+                ErrorMessages.GetMessage(ErrorCodes.AUTH_RESET_TOKEN_EXPIRED));
         }
 
         _logger.LogInformation("Reset token verified successfully for user: {UserId}", user.Id);

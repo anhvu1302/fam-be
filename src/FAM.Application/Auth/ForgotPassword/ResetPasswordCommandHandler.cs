@@ -1,4 +1,5 @@
 using FAM.Application.Auth.Shared;
+using FAM.Application.Common.Exceptions;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common;
 using FAM.Domain.ValueObjects;
@@ -33,14 +34,18 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         if (user == null)
         {
             _logger.LogWarning("Password reset attempted for non-existent email: {Email}", request.Email);
-            throw new UnauthorizedAccessException("Invalid or expired reset token.");
+            throw new UnauthorizedException(
+                ErrorCodes.AUTH_INVALID_RESET_TOKEN,
+                ErrorMessages.GetMessage(ErrorCodes.AUTH_INVALID_RESET_TOKEN));
         }
 
         // Verify the reset token
         if (!user.IsPasswordResetTokenValid(request.ResetToken))
         {
             _logger.LogWarning("Invalid or expired reset token for password reset: {UserId}", user.Id);
-            throw new UnauthorizedAccessException("Invalid or expired reset token.");
+            throw new UnauthorizedException(
+                ErrorCodes.AUTH_RESET_TOKEN_EXPIRED,
+                ErrorMessages.GetMessage(ErrorCodes.AUTH_RESET_TOKEN_EXPIRED));
         }
 
         // Create new password (Password.Create will throw if invalid)

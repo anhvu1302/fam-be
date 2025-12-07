@@ -437,7 +437,7 @@ public class AuthController : BaseApiController
         {
             var command = new ForgotPasswordCommand { Email = request.Email };
             var response = await _mediator.Send(command);
-            return OkResponse(response, "Password reset email sent");
+            return OkResponse(response, ErrorMessages.GetMessage(ErrorCodes.AUTH_RESET_EMAIL_SENT));
         }
         catch (Exception ex)
         {
@@ -464,12 +464,12 @@ public class AuthController : BaseApiController
                 ResetToken = request.ResetToken
             };
             var response = await _mediator.Send(command);
-            return OkResponse(response, "Token verified successfully");
+            return OkResponse(response, ErrorMessages.GetMessage(ErrorCodes.AUTH_RESET_TOKEN_VALID));
         }
-        catch (UnauthorizedAccessException ex)
+        catch (UnauthorizedException ex)
         {
             _logger.LogWarning(ex, "Token verification failed");
-            return UnauthorizedResponse(ex.Message, "INVALID_OR_EXPIRED_TOKEN");
+            return UnauthorizedResponse(ex.Message, ex.ErrorCode);
         }
         catch (Exception ex)
         {
@@ -497,12 +497,12 @@ public class AuthController : BaseApiController
                 NewPassword = request.NewPassword
             };
             var response = await _mediator.Send(command);
-            return OkResponse(response, "Password reset successfully");
+            return OkResponse(response, ErrorMessages.GetMessage(ErrorCodes.AUTH_PASSWORD_RESET_SUCCESS));
         }
-        catch (UnauthorizedAccessException ex)
+        catch (UnauthorizedException ex)
         {
             _logger.LogWarning(ex, "Password reset failed");
-            return UnauthorizedResponse(ex.Message, "INVALID_OR_EXPIRED_TOKEN");
+            return UnauthorizedResponse(ex.Message, ex.ErrorCode);
         }
         catch (Exception ex)
         {
