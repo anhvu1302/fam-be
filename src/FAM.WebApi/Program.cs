@@ -73,15 +73,31 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 builder.Services.AddOptimizedCors(builder.Configuration);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    // Add validation filter to handle FluentValidation errors in our standard format
+    options.Filters.Add<ValidationFilter>();
+})
+.ConfigureApiBehaviorOptions(options =>
+{
+    // Disable automatic 400 responses for model validation errors
+    // Our ValidationFilter will handle it instead
+    options.SuppressModelStateInvalidFilter = true;
+});
 
-// Add FluentValidation - auto-validate all requests
-builder.Services.AddFluentValidationAutoValidation();
+// Add FluentValidation - manual validation (no auto-validation to control error format)
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // Add global exception handler
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddProblemDetails();
+builder.Services.AddProblemDetails(options =>
+{
+    // Don't map status codes to ProblemDetails - we handle it ourselves
+    options.CustomizeProblemDetails = context => 
+    {
+        context.ProblemDetails.Extensions.Clear();
+    };
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -99,17 +115,17 @@ builder.Services.AddSwaggerGen(c =>
     // Add JWT authentication to Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description =
-            "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token in the text input below.",
+        Description = "Enter only your JWT token (the Bearer prefix will be added automatically)",
         Name = "Authorization",
         In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
     });
 
     c.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
     {
-        [new OpenApiSecuritySchemeReference("Bearer")] = new List<string>()
+        [new OpenApiSecuritySchemeReference("Bearer", doc)] = new List<string>()
     });
 });
 

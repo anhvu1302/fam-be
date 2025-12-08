@@ -67,9 +67,6 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<LoginResponse>> Login([FromBody] WebApiContracts.LoginRequest request)
     {
-        // Web API validation: ModelState checks DataAnnotations
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
         try
         {
             var ipAddress = GetClientIpAddress();
@@ -93,12 +90,10 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "Login failed for identity: {Identity}", request.Identity);
             return UnauthorizedResponse(ex.Message, "INVALID_CREDENTIALS");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error during login for identity: {Identity}", request.Identity);
             return InternalErrorResponse("An error occurred during login", "LOGIN_ERROR");
         }
     }
@@ -112,7 +107,6 @@ public class AuthController : BaseApiController
     public async Task<ActionResult<VerifyTwoFactorResponse>> VerifyTwoFactor(
         [FromBody] WebApiContracts.VerifyTwoFactorRequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -137,12 +131,10 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "2FA verification failed");
             return UnauthorizedResponse(ex.Message, "INVALID_2FA_CODE");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error during 2FA verification");
             return InternalErrorResponse("An error occurred during 2FA verification", "2FA_VERIFICATION_ERROR");
         }
     }
@@ -165,7 +157,6 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] WebApiContracts.RefreshTokenRequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -181,12 +172,10 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "Token refresh failed");
             return UnauthorizedResponse(ex.Message, "INVALID_REFRESH_TOKEN");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error during token refresh");
             return InternalErrorResponse("An error occurred during token refresh", "TOKEN_REFRESH_ERROR");
         }
     }
@@ -211,9 +200,8 @@ public class AuthController : BaseApiController
             await _mediator.Send(command);
             return OkResponse("Logged out successfully");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error during logout");
             return InternalErrorResponse("An error occurred during logout", "LOGOUT_ERROR");
         }
     }
@@ -239,9 +227,8 @@ public class AuthController : BaseApiController
             await _mediator.Send(command);
             return OkResponse("Logged out from all devices successfully");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error during logout all");
             return InternalErrorResponse("An error occurred during logout", "LOGOUT_ALL_ERROR");
         }
     }
@@ -253,7 +240,6 @@ public class AuthController : BaseApiController
     [Authorize]
     public async Task<ActionResult> ChangePassword([FromBody] WebApiContracts.ChangePasswordRequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -273,12 +259,10 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "Password change failed");
             return UnauthorizedResponse(ex.Message, "INVALID_PASSWORD");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error during password change");
             return InternalErrorResponse("An error occurred while changing password", "PASSWORD_CHANGE_ERROR");
         }
     }
@@ -297,9 +281,8 @@ public class AuthController : BaseApiController
             var response = await _mediator.Send(query);
             return OkResponse(response);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error getting authentication methods");
             return InternalErrorResponse("An error occurred while fetching authentication methods", "GET_AUTH_METHODS_ERROR");
         }
     }
@@ -313,7 +296,6 @@ public class AuthController : BaseApiController
     public async Task<ActionResult<SelectAuthenticationMethodResponse>> SelectAuthenticationMethod(
         [FromBody] WebApiContracts.SelectAuthenticationMethodRequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -328,12 +310,10 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "Authentication method selection failed");
             return UnauthorizedResponse(ex.Message, "INVALID_SESSION_TOKEN");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error selecting authentication method");
             return InternalErrorResponse("An error occurred while selecting authentication method", "SELECT_AUTH_METHOD_ERROR");
         }
     }
@@ -355,7 +335,6 @@ public class AuthController : BaseApiController
     [AllowAnonymous]
     public async Task<ActionResult> VerifyEmailOtp([FromBody] WebApiContracts.VerifyEmailOtpRequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -370,12 +349,10 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedException ex)
         {
-            _logger.LogWarning(ex, "Email OTP verification failed for {Email}", request.Email);
             return UnauthorizedResponse(ex.Message, ex.ErrorCode);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error verifying email OTP for {Email}", request.Email);
             return InternalErrorResponse("An error occurred while verifying OTP", "EMAIL_OTP_ERROR");
         }
     }
@@ -388,7 +365,6 @@ public class AuthController : BaseApiController
     [AllowAnonymous]
     public async Task<ActionResult> VerifyRecoveryCode([FromBody] WebApiContracts.VerifyRecoveryCodeRequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -413,12 +389,10 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "Recovery code verification failed");
             return UnauthorizedResponse(ex.Message, "INVALID_RECOVERY_CODE");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error verifying recovery code");
             return InternalErrorResponse("An error occurred while verifying recovery code", "RECOVERY_CODE_ERROR");
         }
     }
@@ -431,7 +405,6 @@ public class AuthController : BaseApiController
     [AllowAnonymous]
     public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword([FromBody] WebApiContracts.ForgotPasswordRequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -439,9 +412,8 @@ public class AuthController : BaseApiController
             var response = await _mediator.Send(command);
             return OkResponse(response, ErrorMessages.GetMessage(ErrorCodes.AUTH_RESET_EMAIL_SENT));
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error processing forgot password request");
             return InternalErrorResponse("An error occurred while processing password reset", "FORGOT_PASSWORD_ERROR");
         }
     }
@@ -454,7 +426,6 @@ public class AuthController : BaseApiController
     [AllowAnonymous]
     public async Task<ActionResult<VerifyResetTokenResponse>> VerifyResetToken([FromBody] WebApiContracts.VerifyResetTokenRequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -468,12 +439,10 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedException ex)
         {
-            _logger.LogWarning(ex, "Token verification failed");
             return UnauthorizedResponse(ex.Message, ex.ErrorCode);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error verifying reset token");
             return InternalErrorResponse("An error occurred while verifying token", "TOKEN_VERIFICATION_ERROR");
         }
     }
@@ -486,7 +455,6 @@ public class AuthController : BaseApiController
     [AllowAnonymous]
     public async Task<ActionResult<ResetPasswordResponse>> ResetPassword([FromBody] WebApiContracts.ResetPasswordRequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -501,12 +469,10 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedException ex)
         {
-            _logger.LogWarning(ex, "Password reset failed");
             return UnauthorizedResponse(ex.Message, ex.ErrorCode);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error resetting password");
             return InternalErrorResponse("An error occurred while resetting password", "PASSWORD_RESET_ERROR");
         }
     }
@@ -518,7 +484,6 @@ public class AuthController : BaseApiController
     [Authorize]
     public async Task<ActionResult<Enable2FAResponse>> Enable2FA([FromBody] WebApiContracts.Enable2FARequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -535,12 +500,10 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "Enable 2FA failed for user: {UserId}", GetCurrentUserId());
             return UnauthorizedResponse(ex.Message, "INVALID_PASSWORD");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error during enable 2FA for user: {UserId}", GetCurrentUserId());
             return InternalErrorResponse("An error occurred while enabling 2FA", "ENABLE_2FA_ERROR");
         }
     }
@@ -557,7 +520,6 @@ public class AuthController : BaseApiController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<Confirm2FAResponse>> Confirm2FA([FromBody] WebApiContracts.Confirm2FARequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -575,17 +537,14 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "Confirm 2FA failed for user: {UserId}", GetCurrentUserId());
             return UnauthorizedResponse(ex.Message, "UNAUTHORIZED");
         }
         catch (InvalidOperationException ex)
         {
-            _logger.LogWarning(ex, "Invalid 2FA code for user: {UserId}", GetCurrentUserId());
             return BadRequestResponse(ex.Message, "INVALID_2FA_CODE");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error during confirm 2FA for user: {UserId}", GetCurrentUserId());
             return InternalErrorResponse("An error occurred while confirming 2FA", "CONFIRM_2FA_ERROR");
         }
     }
@@ -597,7 +556,6 @@ public class AuthController : BaseApiController
     [Authorize]
     public async Task<ActionResult> Disable2FA([FromBody] WebApiContracts.Disable2FARequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
         try
         {
             var userId = GetCurrentUserId();
@@ -613,12 +571,10 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "Disable 2FA failed for user: {UserId}", GetCurrentUserId());
             return UnauthorizedResponse(ex.Message, "INVALID_PASSWORD");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error during disable 2FA for user: {UserId}", GetCurrentUserId());
             return InternalErrorResponse("An error occurred while disabling 2FA", "DISABLE_2FA_ERROR");
         }
     }
@@ -632,7 +588,6 @@ public class AuthController : BaseApiController
     public async Task<ActionResult> DisableTwoFactorWithBackup(
         [FromBody] WebApiContracts.DisableTwoFactorWithBackupRequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
@@ -648,18 +603,14 @@ public class AuthController : BaseApiController
         }
         catch (UnauthorizedAccessException ex)
         {
-            _logger.LogWarning(ex, "Disable 2FA with backup code failed for username: {Username}", request.Username);
             return UnauthorizedResponse(ex.Message, "INVALID_CREDENTIALS_OR_CODE");
         }
         catch (InvalidOperationException ex)
         {
-            _logger.LogWarning(ex, "Invalid operation during disable 2FA with backup for username: {Username}",
-                request.Username);
             return BadRequestResponse(ex.Message, "INVALID_BACKUP_CODE");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            _logger.LogError(ex, "Error during disable 2FA with backup for username: {Username}", request.Username);
             return InternalErrorResponse("An error occurred while disabling 2FA", "DISABLE_2FA_BACKUP_ERROR");
         }
     }
@@ -676,7 +627,7 @@ public class AuthController : BaseApiController
         var email = User.FindFirst(ClaimTypes.Email)?.Value;
         var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
 
-        return Ok(new
+        return OkResponse(new
         {
             userId,
             username,
@@ -822,7 +773,7 @@ public class AuthController : BaseApiController
             )).ToList()
         );
 
-        return Ok(response);
+        return OkResponse(response);
     }
 
     /// <summary>
@@ -870,7 +821,7 @@ public class AuthController : BaseApiController
         var result = await _mediator.Send(query);
 
         if (result == null)
-            return NotFound(new { message = "Theme not found. Using default theme." });
+            return NotFoundResponse("Theme not found. Using default theme.");
 
         var response = new UserThemeResponse(
             result.Id,
@@ -884,7 +835,7 @@ public class AuthController : BaseApiController
             result.CompactMode
         );
 
-        return Ok(response);
+        return OkResponse(response);
     }
 
     /// <summary>
@@ -922,7 +873,7 @@ public class AuthController : BaseApiController
             result.CompactMode
         );
 
-        return Ok(response);
+        return OkResponse(response);
     }
 
     #endregion
