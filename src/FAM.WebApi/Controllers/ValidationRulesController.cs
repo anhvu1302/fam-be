@@ -20,7 +20,7 @@ public class ValidationRulesController : BaseApiController
     [HttpGet]
     public IActionResult GetValidationRules()
     {
-        return Ok(new
+        return OkResponse(new
         {
             Username = new
             {

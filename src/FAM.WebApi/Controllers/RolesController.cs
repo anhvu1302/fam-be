@@ -285,7 +285,7 @@ public class RolesController : BaseApiController
         _logger.LogInformation("Permissions revoked from role: {RoleId}, Count: {Count}", id,
             request.PermissionIds.Length);
 
-        return Ok();
+        return OkResponse();
     }
 
     /// <summary>
@@ -315,7 +315,7 @@ public class RolesController : BaseApiController
         _logger.LogInformation("Added {Count} users to role: {RoleId} at node {NodeId}",
             addedCount, id, request.NodeId);
 
-        return Ok(new { addedCount, message = $"Successfully added {addedCount} user(s) to role" });
+        return OkResponse(new { addedCount, message = $"Successfully added {addedCount} user(s) to role" });
     }
 
     /// <summary>
@@ -339,7 +339,7 @@ public class RolesController : BaseApiController
         _logger.LogInformation("Removed {Count} users from role: {RoleId} at node {NodeId}",
             removedCount, id, request.NodeId);
 
-        return Ok(new { removedCount, message = $"Successfully removed {removedCount} user(s) from role" });
+        return OkResponse(new { removedCount, message = $"Successfully removed {removedCount} user(s) from role" });
     }
 
     /// <summary>

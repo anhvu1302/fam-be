@@ -59,7 +59,7 @@ public class MenusController : BaseApiController
     {
         var query = new GetMenuTreeQuery(maxDepth);
         var menus = await _mediator.Send(query, cancellationToken);
-        return Ok(menus);
+        return OkResponse(menus);
     }
 
     /// <summary>
@@ -98,7 +98,7 @@ public class MenusController : BaseApiController
 
         var query = new GetVisibleMenuTreeQuery(permissions, roles, maxDepth);
         var menus = await _mediator.Send(query, cancellationToken);
-        return Ok(menus);
+        return OkResponse(menus);
     }
 
     #endregion
@@ -130,7 +130,7 @@ public class MenusController : BaseApiController
     {
         var query = new GetAllMenusQuery();
         var menus = await _mediator.Send(query, cancellationToken);
-        return Ok(menus);
+        return OkResponse(menus);
     }
 
     /// <summary>
@@ -162,7 +162,7 @@ public class MenusController : BaseApiController
         var menu = await _mediator.Send(query, cancellationToken);
         if (menu == null)
             throw new NotFoundException(ErrorCodes.MENU_NOT_FOUND, "MenuItem", id);
-        return Ok(menu);
+        return OkResponse(menu);
     }
 
     /// <summary>
@@ -194,7 +194,7 @@ public class MenusController : BaseApiController
         var menu = await _mediator.Send(query, cancellationToken);
         if (menu == null)
             throw new NotFoundException(ErrorCodes.MENU_NOT_FOUND, "MenuItem", code);
-        return Ok(menu);
+        return OkResponse(menu);
     }
 
     /// <summary>
@@ -305,7 +305,7 @@ public class MenusController : BaseApiController
             request.Badge,
             request.BadgeVariant);
         var menu = await _mediator.Send(command, cancellationToken);
-        return Ok(menu);
+        return OkResponse(menu);
     }
 
     /// <summary>
@@ -418,7 +418,7 @@ public class MenusController : BaseApiController
     {
         var command = new MoveMenuCommand(id, parentId, sortOrder);
         var menu = await _mediator.Send(command, cancellationToken);
-        return Ok(menu);
+        return OkResponse(menu);
     }
 
     #endregion

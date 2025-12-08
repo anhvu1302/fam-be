@@ -8,6 +8,7 @@ using FAM.Application.EmailTemplates.Queries.GetAllEmailTemplates;
 using FAM.Application.EmailTemplates.Queries.GetEmailTemplateByCode;
 using FAM.Application.EmailTemplates.Queries.GetEmailTemplateById;
 using FAM.Application.EmailTemplates.Shared;
+using FAM.Domain.Common;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.EmailTemplates;
 using MediatR;
@@ -84,7 +85,7 @@ public class EmailTemplatesController : BaseApiController
             dto.UpdatedAt
         )).ToList();
         
-        return Ok(response);
+        return OkResponse(response);
     }
 
     /// <summary>
@@ -111,7 +112,7 @@ public class EmailTemplatesController : BaseApiController
         var dto = await _mediator.Send(query);
 
         if (dto == null)
-            return NotFound();
+            throw new NotFoundException(ErrorCodes.GEN_NOT_FOUND, "EmailTemplate", id);
 
         var response = new EmailTemplateResponse(
             dto.Id,
@@ -130,7 +131,7 @@ public class EmailTemplatesController : BaseApiController
             dto.UpdatedAt
         );
 
-        return Ok(response);
+        return OkResponse(response);
     }
 
     /// <summary>
@@ -157,7 +158,7 @@ public class EmailTemplatesController : BaseApiController
         var dto = await _mediator.Send(query);
 
         if (dto == null)
-            return NotFound();
+            throw new NotFoundException(ErrorCodes.GEN_NOT_FOUND, "EmailTemplate", code);
 
         var response = new EmailTemplateResponse(
             dto.Id,
@@ -176,7 +177,7 @@ public class EmailTemplatesController : BaseApiController
             dto.UpdatedAt
         );
 
-        return Ok(response);
+        return OkResponse(response);
     }
 
     /// <summary>
@@ -294,7 +295,7 @@ public class EmailTemplatesController : BaseApiController
 
         _logger.LogInformation("Email template updated: {TemplateId}", id);
 
-        return Ok();
+        return OkResponse();
     }
 
     /// <summary>
@@ -355,7 +356,7 @@ public class EmailTemplatesController : BaseApiController
 
         _logger.LogInformation("Email template activated: {TemplateId}", id);
 
-        return Ok();
+        return OkResponse();
     }
 
     /// <summary>
@@ -384,6 +385,6 @@ public class EmailTemplatesController : BaseApiController
 
         _logger.LogInformation("Email template deactivated: {TemplateId}", id);
 
-        return Ok();
+        return OkResponse();
     }
 }

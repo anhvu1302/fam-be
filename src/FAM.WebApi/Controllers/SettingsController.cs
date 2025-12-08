@@ -36,7 +36,7 @@ public class SettingsController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         var settings = await _settingService.GetAllPublicAsync(cancellationToken);
-        return Ok(settings);
+        return OkResponse(settings);
     }
 
     /// <summary>
@@ -49,7 +49,7 @@ public class SettingsController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         var settings = await _settingService.GetPublicGroupedAsync(cancellationToken);
-        return Ok(settings);
+        return OkResponse(settings);
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public class SettingsController : BaseApiController
         }
 
         var result = await _settingService.GetByKeyAsync(key, cancellationToken);
-        return Ok(new PublicSettingResponse(
+        return OkResponse(new PublicSettingResponse(
             result!.Key,
             result.IsSensitive ? null : result.EffectiveValue,
             result.DataType,
@@ -93,7 +93,7 @@ public class SettingsController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         var settings = await _settingService.GetAllAsync(cancellationToken);
-        return Ok(settings);
+        return OkResponse(settings);
     }
 
     /// <summary>
@@ -106,7 +106,7 @@ public class SettingsController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         var settings = await _settingService.GetGroupedAsync(cancellationToken);
-        return Ok(settings);
+        return OkResponse(settings);
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public class SettingsController : BaseApiController
     public async Task<ActionResult<IEnumerable<string>>> GetGroups(CancellationToken cancellationToken = default)
     {
         var groups = await _settingService.GetGroupsAsync(cancellationToken);
-        return Ok(groups);
+        return OkResponse(groups);
     }
 
     /// <summary>
@@ -132,7 +132,7 @@ public class SettingsController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         var settings = await _settingService.GetByGroupAsync(group, cancellationToken);
-        return Ok(settings);
+        return OkResponse(settings);
     }
 
     /// <summary>
@@ -148,7 +148,7 @@ public class SettingsController : BaseApiController
         var setting = await _settingService.GetByIdAsync(id, cancellationToken);
         if (setting == null)
             throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", id);
-        return Ok(setting);
+        return OkResponse(setting);
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public class SettingsController : BaseApiController
         var setting = await _settingService.GetByKeyAsync(key, cancellationToken);
         if (setting == null)
             throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", key);
-        return Ok(setting);
+        return OkResponse(setting);
     }
 
     /// <summary>
@@ -196,7 +196,7 @@ public class SettingsController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         var setting = await _settingService.UpdateAsync(id, request, cancellationToken);
-        return Ok(setting);
+        return OkResponse(setting);
     }
 
     /// <summary>
@@ -214,7 +214,7 @@ public class SettingsController : BaseApiController
     {
         var userId = GetCurrentUserId();
         var setting = await _settingService.UpdateValueAsync(key, request, userId, cancellationToken);
-        return Ok(setting);
+        return OkResponse(setting);
     }
 
     /// <summary>

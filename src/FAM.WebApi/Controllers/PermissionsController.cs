@@ -68,10 +68,10 @@ public class PermissionsController : BaseApiController
         if (fields != null && fields.Length > 0)
         {
             var selectedResult = result.SelectFieldsToResponse(fields);
-            return Ok(selectedResult);
+            return OkResponse(selectedResult);
         }
 
-        return Ok(result.ToPagedResponse());
+        return OkResponse(result.ToPagedResponse());
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ public class PermissionsController : BaseApiController
             })
             .ToList();
 
-        return Ok(permissions);
+        return OkResponse(permissions);
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public class PermissionsController : BaseApiController
     public ActionResult GetResources()
     {
         var resources = Resources.All;
-        return Ok(resources);
+        return OkResponse(resources);
     }
 
     /// <summary>
@@ -149,6 +149,6 @@ public class PermissionsController : BaseApiController
     public ActionResult GetActions()
     {
         var actions = Actions.All;
-        return Ok(actions);
+        return OkResponse(actions);
     }
 }

@@ -6,6 +6,7 @@ using FAM.Application.Settings;
 using FAM.Application.Users.Commands;
 using FAM.Application.Users.Commands.DeleteUser;
 using FAM.Application.Users.Shared;
+using FAM.Domain.Common;
 using FAM.WebApi.Contracts.Authorization;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.Users;
@@ -55,10 +56,10 @@ public class UsersController : BaseApiController
         if (parameters.GetFieldsArray() != null && parameters.GetFieldsArray()!.Length > 0)
         {
             var selectedResult = result.SelectFieldsToResponse(parameters.GetFieldsArray()!);
-            return Ok(selectedResult);
+            return OkResponse(selectedResult);
         }
 
-        return Ok(result.ToUsersPagedResponse());
+        return OkResponse(result.ToUsersPagedResponse());
     }
 
     /// <summary>
@@ -81,9 +82,10 @@ public class UsersController : BaseApiController
         var query = id.ToGetUserByIdQuery(include);
         var result = await _mediator.Send(query);
 
-        if (result == null) return NotFound();
+        if (result == null)
+            throw new NotFoundException(ErrorCodes.GEN_NOT_FOUND, "User", id);
 
-        return Ok(result.ToUserResponse());
+        return OkResponse(result.ToUserResponse());
     }
 
     /// <summary>
@@ -103,7 +105,6 @@ public class UsersController : BaseApiController
     public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest request)
     {
         // Web API validation: ModelState checks DataAnnotations
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         // Map Web API request → Application Command using extension method
         var command = request.ToCommand();
@@ -136,7 +137,6 @@ public class UsersController : BaseApiController
     public async Task<IActionResult> UpdateUser(long id, [FromBody] UpdateUserRequest request)
     {
         // Web API validation: ModelState checks DataAnnotations
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         // Map Web API request → Application Command using extension method
         var command = request.ToCommand(id);
@@ -206,27 +206,14 @@ public class UsersController : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAvatar(long id, [FromBody] UpdateAvatarRequest request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        var command = new UpdateAvatarCommand
+        {
+            UserId = id,
+            UploadId = request.UploadId
+        };
 
-        try
-        {
-            var command = new UpdateAvatarCommand
-            {
-                UserId = id,
-                UploadId = request.UploadId
-            };
-
-            var result = await _mediator.Send(command);
-            return Ok(result);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { Error = ex.Message });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(new { Error = ex.Message });
-        }
+        var result = await _mediator.Send(command);
+        return OkResponse(result);
     }
 
     /// <summary>
@@ -242,34 +229,20 @@ public class UsersController : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UploadAvatarDirect(long id, IFormFile file)
     {
-        if (file == null || file.Length == 0) return BadRequest(new { Error = "File is required" });
+        if (file == null || file.Length == 0)
+            throw new ValidationException("File is required", ErrorCodes.GEN_INVALID_OPERATION);
 
-        try
+        var command = new UploadAvatarDirectCommand
         {
-            var command = new UploadAvatarDirectCommand
-            {
-                UserId = id,
-                FileStream = file.OpenReadStream(),
-                FileName = file.FileName,
-                ContentType = file.ContentType,
-                FileSize = file.Length
-            };
+            UserId = id,
+            FileStream = file.OpenReadStream(),
+            FileName = file.FileName,
+            ContentType = file.ContentType,
+            FileSize = file.Length
+        };
 
-            var result = await _mediator.Send(command);
-            return Ok(result);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { Error = ex.Message });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(new { Error = ex.Message });
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, new { Error = "An error occurred while uploading the avatar" });
-        }
+        var result = await _mediator.Send(command);
+        return OkResponse(result);
     }
 
     /// <summary>
@@ -296,6 +269,6 @@ public class UsersController : BaseApiController
 
         await _mediator.Send(command);
 
-        return Ok(new { message = $"Successfully updated roles for user {id}" });
+        return OkResponse(new { message = $"Successfully updated roles for user {id}" });
     }
 }

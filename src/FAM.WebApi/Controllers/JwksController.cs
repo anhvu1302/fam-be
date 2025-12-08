@@ -11,7 +11,7 @@ namespace FAM.WebApi.Controllers;
 /// Provides public keys for JWT verification and admin key management
 /// </summary>
 [ApiController]
-public class JwksController : ControllerBase
+public class JwksController : BaseApiController
 {
     private readonly ISigningKeyService _signingKeyService;
     private readonly ILogger<JwksController> _logger;
@@ -34,7 +34,7 @@ public class JwksController : ControllerBase
     public async Task<ActionResult<JwksDto>> GetJwks(CancellationToken cancellationToken)
     {
         var jwks = await _signingKeyService.GetJwksAsync(cancellationToken);
-        return Ok(jwks);
+        return OkResponse(jwks);
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class JwksController : ControllerBase
     public async Task<ActionResult<IEnumerable<SigningKeyResponse>>> GetAllKeys(CancellationToken cancellationToken)
     {
         var keys = await _signingKeyService.GetAllKeysAsync(cancellationToken);
-        return Ok(keys);
+        return OkResponse(keys);
     }
 
     /// <summary>
@@ -80,7 +80,7 @@ public class JwksController : ControllerBase
         var key = await _signingKeyService.GetKeyByIdAsync(id, cancellationToken);
         if (key == null)
             throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", id);
-        return Ok(key);
+        return OkResponse(key);
     }
 
     /// <summary>
@@ -135,7 +135,7 @@ public class JwksController : ControllerBase
         var response = await _signingKeyService.GetKeyByIdAsync(key.Id, cancellationToken);
         _logger.LogInformation("Rotated signing keys. New key: {KeyId}", key.KeyId);
 
-        return Ok(response);
+        return OkResponse(response);
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public class JwksController : ControllerBase
     {
         await _signingKeyService.ActivateKeyAsync(id, cancellationToken);
         _logger.LogInformation("Activated signing key {KeyId}", id);
-        return Ok(new { message = "Key activated successfully" });
+        return OkResponse(new { message = "Key activated successfully" });
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public class JwksController : ControllerBase
     {
         await _signingKeyService.DeactivateKeyAsync(id, cancellationToken);
         _logger.LogInformation("Deactivated signing key {KeyId}", id);
-        return Ok(new { message = "Key deactivated successfully" });
+        return OkResponse(new { message = "Key deactivated successfully" });
     }
 
     /// <summary>
@@ -189,7 +189,7 @@ public class JwksController : ControllerBase
     {
         await _signingKeyService.RevokeKeyAsync(id, request.Reason, cancellationToken);
         _logger.LogWarning("Revoked signing key {KeyId}. Reason: {Reason}", id, request.Reason ?? "Not specified");
-        return Ok(new { message = "Key revoked successfully" });
+        return OkResponse(new { message = "Key revoked successfully" });
     }
 
     /// <summary>
@@ -206,7 +206,7 @@ public class JwksController : ControllerBase
     {
         await _signingKeyService.DeleteKeyAsync(id, cancellationToken);
         _logger.LogInformation("Deleted signing key {KeyId}", id);
-        return Ok(new { message = "Key deleted successfully" });
+        return OkResponse(new { message = "Key deleted successfully" });
     }
 
     /// <summary>
@@ -222,7 +222,7 @@ public class JwksController : ControllerBase
         CancellationToken cancellationToken = default)
     {
         var keys = await _signingKeyService.GetExpiringKeysAsync(TimeSpan.FromDays(days), cancellationToken);
-        return Ok(keys);
+        return OkResponse(keys);
     }
 
     #endregion
