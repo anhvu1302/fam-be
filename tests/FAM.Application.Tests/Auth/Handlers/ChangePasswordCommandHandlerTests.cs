@@ -1,6 +1,6 @@
 using FAM.Application.Auth.ChangePassword;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
 using FluentAssertions;

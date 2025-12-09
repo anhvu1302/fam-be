@@ -1,7 +1,6 @@
 using FAM.Application.Auth.Shared;
-using FAM.Application.Common.Exceptions;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.ValueObjects;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -58,7 +57,8 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Password reset successfully for user: {UserId}. Reset token has been invalidated.", user.Id);
+        _logger.LogInformation("Password reset successfully for user: {UserId}. Reset token has been invalidated.",
+            user.Id);
 
         return new ResetPasswordResponse();
     }

@@ -1,4 +1,4 @@
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Manufacturers;
 using FluentAssertions;
 

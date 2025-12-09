@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using FAM.Infrastructure.PersistenceModels.Ef.Base;
 
 namespace FAM.Infrastructure.PersistenceModels.Ef;
 
 /// <summary>
-/// EF persistence model for SystemSetting
+/// EF-specific persistence model for SystemSetting
 /// </summary>
 [Table("system_settings")]
 public class SystemSettingEf : BaseEntityEf
@@ -87,4 +88,18 @@ public class SystemSettingEf : BaseEntityEf
     /// Last modified by user ID
     /// </summary>
     public long? LastModifiedBy { get; set; }
+
+    // Audit fields
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
+    // Navigation properties
+    public virtual UserEf? CreatedBy { get; set; }
+    public virtual UserEf? UpdatedBy { get; set; }
+    public virtual UserEf? DeletedBy { get; set; }
 }

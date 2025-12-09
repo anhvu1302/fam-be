@@ -1,4 +1,4 @@
-namespace FAM.Domain.Common;
+namespace FAM.Domain.Common.Base;
 
 /// <summary>
 /// Represents an error in the domain with error code for i18n support.

@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace FAM.WebApi.Contracts.Auth;
 
 #region Request Records
@@ -89,10 +91,9 @@ public sealed record SelectAuthenticationMethodRequest(
 /// Used during login flow when email needs verification
 /// </summary>
 public sealed record VerifyEmailOtpRequest(
-    [property: System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Email is required")]
+    [property: Required(ErrorMessage = "Email is required")]
     string Email,
-    
-    [property: System.ComponentModel.DataAnnotations.Required(ErrorMessage = "OTP code is required")]
+    [property: Required(ErrorMessage = "OTP code is required")]
     string EmailOtp
 );
 

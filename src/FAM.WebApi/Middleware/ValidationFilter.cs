@@ -1,4 +1,3 @@
-using System.Text.Json;
 using FAM.WebApi.Contracts.Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -18,9 +17,7 @@ public class ValidationFilter : IAsyncActionFilter
             var errors = new List<ApiError>();
 
             foreach (var (key, value) in context.ModelState)
-            {
                 if (value.Errors.Count > 0)
-                {
                     foreach (var error in value.Errors)
                     {
                         // Extract error code from error message if it starts with [CODE]
@@ -40,17 +37,15 @@ public class ValidationFilter : IAsyncActionFilter
                         }
 
                         // Add field information to error message for better context
-                        var fullMessage = string.IsNullOrEmpty(key) 
-                            ? errorMessage 
+                        var fullMessage = string.IsNullOrEmpty(key)
+                            ? errorMessage
                             : $"{key}: {errorMessage}";
 
                         errors.Add(new ApiError(fullMessage, errorCode));
                     }
-                }
-            }
 
             var response = new ApiErrorResponse(false, errors);
-            
+
             context.Result = new BadRequestObjectResult(response);
             return;
         }

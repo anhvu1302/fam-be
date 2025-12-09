@@ -7,7 +7,7 @@ namespace FAM.Infrastructure.PersistenceModels.Ef;
 /// Composite key: (UserId, NodeId, RoleId)
 /// </summary>
 [Table("user_node_roles")]
-public class UserNodeRoleEf : JunctionEntityEf
+public class UserNodeRoleEf
 {
     public long UserId { get; set; }
     public long NodeId { get; set; }

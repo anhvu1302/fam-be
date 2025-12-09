@@ -1,3 +1,4 @@
+using FAM.Infrastructure.PersistenceModels.Mongo.Base;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace FAM.Infrastructure.PersistenceModels.Mongo;
@@ -5,7 +6,7 @@ namespace FAM.Infrastructure.PersistenceModels.Mongo;
 /// <summary>
 /// MongoDB document model for Permission
 /// </summary>
-public class PermissionMongo : BaseEntityMongo
+public class PermissionMongo : FullAuditedEntityMongo
 {
     [BsonElement("resource")] public string Resource { get; set; } = string.Empty;
 
@@ -25,7 +26,7 @@ public class PermissionMongo : BaseEntityMongo
 /// <summary>
 /// MongoDB document model for Role
 /// </summary>
-public class RoleMongo : BaseEntityMongo
+public class RoleMongo : FullAuditedEntityMongo
 {
     [BsonElement("code")] public string Code { get; set; } = string.Empty;
 
@@ -47,7 +48,7 @@ public class RoleMongo : BaseEntityMongo
 /// <summary>
 /// MongoDB document model for Resource
 /// </summary>
-public class ResourceMongo : BaseEntityMongo
+public class ResourceMongo : BasicAuditedEntityMongo
 {
     [BsonElement("type")] public string Type { get; set; } = string.Empty;
 

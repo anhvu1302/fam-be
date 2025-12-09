@@ -1,3 +1,4 @@
+using System.Text;
 using FAM.Application.Common.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -37,10 +38,10 @@ public class SendEmailVerificationOtpCommandHandler
         {
             // Use SendOtpEmailAsync which is already implemented
             await _emailService.SendOtpEmailAsync(
-                toEmail: request.Email,
-                otpCode: otp,
-                userName: request.Email,
-                cancellationToken: cancellationToken);
+                request.Email,
+                otp,
+                request.Email,
+                cancellationToken);
 
             _logger.LogInformation("Verification OTP email sent successfully to {Email}", request.Email);
         }
@@ -53,7 +54,7 @@ public class SendEmailVerificationOtpCommandHandler
         // Create OTP session token 
         // Format: base64(email:expiry)
         var expiryTime = DateTime.UtcNow.AddMinutes(10);
-        var otpSessionToken = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(
+        var otpSessionToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(
             $"{request.Email}:{expiryTime:O}"));
 
         return new SendEmailVerificationOtpResponse

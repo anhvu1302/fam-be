@@ -3,7 +3,7 @@ using FAM.Application.Auth.VerifyEmailOtp;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -69,8 +69,8 @@ public class VerifyEmailOtpLoginCommandHandlerTests
             .ReturnsAsync(signingKey);
 
         _mockJwtService.Setup(x => x.GenerateAccessTokenWithRsa(
-            userId, user.Username.Value, email, It.IsAny<List<string>>(), 
-            signingKey.KeyId, signingKey.PrivateKey, signingKey.Algorithm))
+                userId, user.Username.Value, email, It.IsAny<List<string>>(),
+                signingKey.KeyId, signingKey.PrivateKey, signingKey.Algorithm))
             .Returns("access_token");
 
         _mockJwtService.Setup(x => x.GenerateRefreshToken())
@@ -107,7 +107,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         const string otp = "123456";
         const long userId = 1;
 
-        var user = CreateTestUser(userId, email, isEmailVerified: false);
+        var user = CreateTestUser(userId, email, false);
 
         _mockUserRepository.Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
@@ -124,8 +124,8 @@ public class VerifyEmailOtpLoginCommandHandlerTests
             .ReturnsAsync(signingKey);
 
         _mockJwtService.Setup(x => x.GenerateAccessTokenWithRsa(
-            userId, user.Username.Value, email, It.IsAny<List<string>>(),
-            signingKey.KeyId, signingKey.PrivateKey, signingKey.Algorithm))
+                userId, user.Username.Value, email, It.IsAny<List<string>>(),
+                signingKey.KeyId, signingKey.PrivateKey, signingKey.Algorithm))
             .Returns("access_token");
 
         _mockJwtService.Setup(x => x.GenerateRefreshToken())
@@ -170,8 +170,8 @@ public class VerifyEmailOtpLoginCommandHandlerTests
             .ReturnsAsync(signingKey);
 
         _mockJwtService.Setup(x => x.GenerateAccessTokenWithRsa(
-            userId, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<List<string>>(),
-            signingKey.KeyId, signingKey.PrivateKey, signingKey.Algorithm))
+                userId, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<List<string>>(),
+                signingKey.KeyId, signingKey.PrivateKey, signingKey.Algorithm))
             .Returns("session_token");
 
         var command = new VerifyEmailOtpLoginCommand { Email = email, EmailOtp = otp };
@@ -229,7 +229,8 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         await Assert.ThrowsAsync<UnauthorizedException>(() => _handler.Handle(command, CancellationToken.None));
 
         _mockOtpService.Verify(
-            x => x.VerifyOtpAsync(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            x => x.VerifyOtpAsync(It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
@@ -240,23 +241,17 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         bool twoFactorEnabled = false)
     {
         var user = User.Create(
-            username: $"testuser{id}",
-            email: email,
-            plainPassword: "Password123!",
+            $"testuser{id}",
+            email,
+            "Password123!",
             firstName: "Test",
             lastName: "User");
 
         // Use reflection to set IsEmailVerified if needed
-        if (!isEmailVerified)
-        {
-            typeof(User).GetProperty("IsEmailVerified")?.SetValue(user, false);
-        }
+        if (!isEmailVerified) typeof(User).GetProperty("IsEmailVerified")?.SetValue(user, false);
 
         // Use reflection to set TwoFactorEnabled if needed
-        if (twoFactorEnabled)
-        {
-            typeof(User).GetProperty("TwoFactorEnabled")?.SetValue(user, true);
-        }
+        if (twoFactorEnabled) typeof(User).GetProperty("TwoFactorEnabled")?.SetValue(user, true);
 
         // Use reflection to set ID
         typeof(User).GetProperty("Id")?.SetValue(user, id);

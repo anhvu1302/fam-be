@@ -14,13 +14,14 @@ public class GetVisibleMenuTreeQueryHandler : IRequestHandler<GetVisibleMenuTree
         _repository = repository;
     }
 
-    public async Task<IEnumerable<MenuItemResponse>> Handle(GetVisibleMenuTreeQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<MenuItemResponse>> Handle(GetVisibleMenuTreeQuery request,
+        CancellationToken cancellationToken)
     {
         var maxDepth = Math.Min(request.MaxDepth, MaxMenuDepth);
         var menus = await _repository.GetVisibleMenuTreeAsync(
-            request.UserPermissions, 
-            request.UserRoles, 
-            maxDepth, 
+            request.UserPermissions,
+            request.UserRoles,
+            maxDepth,
             cancellationToken);
         return menus.Select(m => MenuItemResponse.FromDomain(m, true, maxDepth));
     }

@@ -110,8 +110,7 @@ public class DomainToMongoProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
             .ForMember(dest => dest.PermissionId, opt => opt.MapFrom(src => src.PermissionId))
-            .ForMember(dest => dest.GrantedById, opt => opt.MapFrom(src => src.GrantedById))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
+            .ForMember(dest => dest.GrantedById, opt => opt.MapFrom(src => src.GrantedById));
 
         CreateMap<RolePermissionMongo, RolePermission>()
             .ConstructUsing(src => RolePermission.Create(src.RoleId, src.PermissionId, src.GrantedById));
@@ -123,8 +122,7 @@ public class DomainToMongoProfile : Profile
             .ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => src.RoleId))
             .ForMember(dest => dest.StartAt, opt => opt.MapFrom(src => src.StartAt))
             .ForMember(dest => dest.EndAt, opt => opt.MapFrom(src => src.EndAt))
-            .ForMember(dest => dest.AssignedById, opt => opt.MapFrom(src => src.AssignedById))
-            .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
+            .ForMember(dest => dest.AssignedById, opt => opt.MapFrom(src => src.AssignedById));
 
         CreateMap<UserNodeRoleMongo, UserNodeRole>()
             .ConstructUsing(src => UserNodeRole.Create(src.UserId, src.NodeId, src.RoleId,

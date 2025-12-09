@@ -1,9 +1,7 @@
-using FAM.Application.EmailTemplates.Queries;
 using FAM.Application.EmailTemplates.Queries.GetEmailTemplateByCode;
 using FAM.Domain.Abstractions;
 using FAM.Domain.EmailTemplates;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.EmailTemplates;
 

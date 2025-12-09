@@ -1,4 +1,4 @@
-namespace FAM.Domain.Common;
+namespace FAM.Domain.Common.Base;
 
 /// <summary>
 /// Represents the result of an operation without a value.

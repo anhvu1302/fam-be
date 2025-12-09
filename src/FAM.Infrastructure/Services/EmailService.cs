@@ -1,7 +1,6 @@
 using System.Net;
 using System.Net.Mail;
 using System.Text;
-using System.Text.RegularExpressions;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -119,7 +118,8 @@ public class EmailService : IEmailService
         if (template == null)
         {
             _logger.LogError("Email template PASSWORD_CHANGED not found");
-            throw new InvalidOperationException("Email template PASSWORD_CHANGED not found. Please run database seeder.");
+            throw new InvalidOperationException(
+                "Email template PASSWORD_CHANGED not found. Please run database seeder.");
         }
 
         // Replace placeholders
@@ -188,7 +188,7 @@ public class EmailService : IEmailService
     private static string ReplacePlaceholders(string template, Dictionary<string, string> placeholders)
     {
         var result = template;
-        
+
         foreach (var (key, value) in placeholders)
         {
             // Replace {{key}} format
@@ -196,7 +196,7 @@ public class EmailService : IEmailService
             // Replace {key} format
             result = result.Replace($"{{{key}}}", value);
         }
-        
+
         return result;
     }
 }

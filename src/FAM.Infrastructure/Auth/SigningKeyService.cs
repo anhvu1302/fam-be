@@ -3,7 +3,7 @@ using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 

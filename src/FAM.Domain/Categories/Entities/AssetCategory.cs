@@ -1,6 +1,8 @@
 using FAM.Domain.Assets;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Models;
+using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Categories;
@@ -8,7 +10,8 @@ namespace FAM.Domain.Categories;
 /// <summary>
 /// Danh mục tài sản - Phân loại theo ngành, mục đích sử dụng
 /// </summary>
-public class AssetCategory : Entity
+public class AssetCategory : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasModifier,
+    IHasDeletionTime, IHasDeleter
 {
     // Basic Information
     public string Name { get; private set; } = string.Empty;
@@ -74,7 +77,19 @@ public class AssetCategory : Entity
     // Internal Notes
     public string? InternalNotes { get; private set; }
 
+    // Audit fields
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
     // Navigation properties
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+    public User? DeletedBy { get; set; }
     public AssetCategory? Parent { get; set; }
     public ICollection<AssetCategory> Children { get; set; } = new List<AssetCategory>();
     public ICollection<Model> Models { get; set; } = new List<Model>();
@@ -266,5 +281,22 @@ public class AssetCategory : Entity
     public bool IsLeaf()
     {
         return !Children.Any();
+    }
+
+    public void SoftDelete(long? deletedById = null)
+    {
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        DeletedById = deletedById;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedById = deletedById;
+    }
+
+    public virtual void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        DeletedById = null;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

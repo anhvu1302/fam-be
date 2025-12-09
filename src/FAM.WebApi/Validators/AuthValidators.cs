@@ -1,4 +1,4 @@
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.WebApi.Contracts.Auth;
 using FluentValidation;
 

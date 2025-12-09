@@ -1,6 +1,6 @@
 using FAM.Application.Users.Commands.UpdateUserTheme;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users.Entities;
 using FluentAssertions;
 using Moq;
@@ -54,7 +54,7 @@ public class UpdateUserThemeCommandHandlerTests
         result.DarkTheme.Should().BeTrue();
 
         _mockUserThemeRepository.Verify(
-            x => x.AddAsync(It.IsAny<UserTheme>(), It.IsAny<CancellationToken>()), 
+            x => x.AddAsync(It.IsAny<UserTheme>(), It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -65,7 +65,7 @@ public class UpdateUserThemeCommandHandlerTests
         // Arrange
         var userId = 1L;
         var existingTheme = UserTheme.CreateDefault(userId);
-        
+
         _mockUserRepository
             .Setup(x => x.ExistsAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
@@ -107,9 +107,10 @@ public class UpdateUserThemeCommandHandlerTests
             userId, "Dark", null, 0.5m, 8, false, false, false);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<DomainException>(
-            async () => await _handler.Handle(command, CancellationToken.None));
-        
+        var exception =
+            await Assert.ThrowsAsync<DomainException>(async () =>
+                await _handler.Handle(command, CancellationToken.None));
+
         exception.ErrorCode.Should().Be(ErrorCodes.USER_NOT_FOUND);
     }
 }

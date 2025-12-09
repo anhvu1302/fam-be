@@ -1,3 +1,4 @@
+using FAM.Infrastructure.PersistenceModels.Mongo.Base;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace FAM.Infrastructure.PersistenceModels.Mongo;
@@ -5,7 +6,7 @@ namespace FAM.Infrastructure.PersistenceModels.Mongo;
 /// <summary>
 /// MongoDB document model for OrgNode
 /// </summary>
-public class OrgNodeMongo : BaseEntityMongo
+public class OrgNodeMongo : FullAuditedEntityMongo
 {
     [BsonElement("type")] public int Type { get; set; } // OrgNodeType as int
 
@@ -27,7 +28,7 @@ public class OrgNodeMongo : BaseEntityMongo
 /// <summary>
 /// MongoDB document model for CompanyDetails
 /// </summary>
-public class CompanyDetailsMongo : BaseEntityMongo
+public class CompanyDetailsMongo : BasicAuditedEntityMongo
 {
     [BsonElement("nodeId")] public long NodeId { get; set; }
 
@@ -51,7 +52,7 @@ public class CompanyDetailsMongo : BaseEntityMongo
 /// <summary>
 /// MongoDB document model for DepartmentDetails
 /// </summary>
-public class DepartmentDetailsMongo : BaseEntityMongo
+public class DepartmentDetailsMongo : BasicAuditedEntityMongo
 {
     [BsonElement("nodeId")] public long NodeId { get; set; }
 

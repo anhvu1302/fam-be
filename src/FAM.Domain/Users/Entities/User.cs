@@ -1,6 +1,7 @@
 using FAM.Domain.Assets;
 using FAM.Domain.Authorization;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Finance;
 using FAM.Domain.Users.Entities;
 using FAM.Domain.ValueObjects;
@@ -8,10 +9,19 @@ using FAM.Domain.ValueObjects;
 namespace FAM.Domain.Users;
 
 /// <summary>
-/// Người dùng
+/// Người dùng - Uses BasicAuditedAggregateRoot
+/// Tracks WHEN things happened (not WHO) since users manage themselves
 /// </summary>
-public class User : AggregateRoot
+public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasDeletionTime, IHasDomainEvents
 {
+    private readonly List<IDomainEvent> _domainEvents = new();
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+
     // Authentication
     public Username Username { get; private set; } = null!;
     public Email Email { get; private set; } = null!;
@@ -353,5 +363,31 @@ public class User : AggregateRoot
     {
         FullName = $"{FirstName} {LastName}".Trim();
         if (string.IsNullOrWhiteSpace(FullName)) FullName = Username.Value;
+    }
+
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    protected void RaiseDomainEvent(IDomainEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
+    public virtual void SoftDelete(long? deletedById = null)
+    {
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public virtual void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

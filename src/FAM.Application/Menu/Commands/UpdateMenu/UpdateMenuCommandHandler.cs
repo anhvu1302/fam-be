@@ -1,6 +1,6 @@
 using FAM.Application.Menu.DTOs;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

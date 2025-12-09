@@ -1,15 +1,34 @@
 using FAM.Domain.Assets;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Geography;
 using FAM.Domain.Organizations;
+using FAM.Domain.Users;
 
 namespace FAM.Domain.Locations;
 
 /// <summary>
 /// Địa điểm/vị trí (hỗ trợ phân cấp hierarchical tree) - Aggregate Root
+/// Uses FullAuditedAggregateRoot for complete audit trail
 /// </summary>
-public class Location : AggregateRoot
+public class Location : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasModifier, IHasDeletionTime,
+    IHasDeleter, IHasDomainEvents
 {
+    private readonly List<IDomainEvent> _domainEvents = new();
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
+    // Navigation properties
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+    public User? DeletedBy { get; set; }
+
     public string Name { get; private set; } = string.Empty;
     public int? CompanyId { get; private set; }
     public string? Code { get; private set; }
@@ -61,5 +80,34 @@ public class Location : AggregateRoot
     {
         FullPath = fullPath;
         PathIds = pathIds;
+    }
+
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    protected void RaiseDomainEvent(IDomainEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
+    public virtual void SoftDelete(long? deletedById = null)
+    {
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        DeletedById = deletedById;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedById = deletedById;
+    }
+
+    public virtual void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        DeletedById = null;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

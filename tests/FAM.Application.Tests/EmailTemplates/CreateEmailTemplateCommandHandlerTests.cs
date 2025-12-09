@@ -1,9 +1,8 @@
 using FAM.Application.EmailTemplates.Commands.CreateEmailTemplate;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.EmailTemplates;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.EmailTemplates;
 
@@ -39,7 +38,7 @@ public class CreateEmailTemplateCommandHandlerTests
             .ReturnsAsync(false);
 
         _repositoryMock.Setup(x => x.AddAsync(It.IsAny<EmailTemplate>(), default))
-            .Callback<EmailTemplate, CancellationToken>((t, ct) => 
+            .Callback<EmailTemplate, CancellationToken>((t, ct) =>
             {
                 // Simulate database assigning ID
                 var idField = typeof(EmailTemplate).BaseType!.GetProperty("Id");
@@ -73,9 +72,8 @@ public class CreateEmailTemplateCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<ConflictException>(
-            () => _handler.Handle(command, default));
-        
+        var exception = await Assert.ThrowsAsync<ConflictException>(() => _handler.Handle(command, default));
+
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_CODE_EXISTS, exception.ErrorCode);
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<EmailTemplate>(), default), Times.Never);
     }
@@ -101,7 +99,7 @@ public class CreateEmailTemplateCommandHandlerTests
             .ReturnsAsync(false);
 
         _repositoryMock.Setup(x => x.AddAsync(It.IsAny<EmailTemplate>(), default))
-            .Callback<EmailTemplate, CancellationToken>((t, ct) => 
+            .Callback<EmailTemplate, CancellationToken>((t, ct) =>
             {
                 var idField = typeof(EmailTemplate).BaseType!.GetProperty("Id");
                 idField!.SetValue(t, 1L);
@@ -138,7 +136,7 @@ public class CreateEmailTemplateCommandHandlerTests
             .ReturnsAsync(false);
 
         _repositoryMock.Setup(x => x.AddAsync(It.IsAny<EmailTemplate>(), default))
-            .Callback<EmailTemplate, CancellationToken>((t, ct) => 
+            .Callback<EmailTemplate, CancellationToken>((t, ct) =>
             {
                 var idField = typeof(EmailTemplate).BaseType!.GetProperty("Id");
                 idField!.SetValue(t, 1L);

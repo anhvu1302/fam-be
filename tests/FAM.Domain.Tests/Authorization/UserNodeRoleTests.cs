@@ -1,5 +1,5 @@
 using FAM.Domain.Authorization;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Organizations;
 using FAM.Domain.Users;
 using FluentAssertions;

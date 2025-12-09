@@ -10,10 +10,14 @@ public sealed record ApiSuccessResponse<TResult>(
 )
 {
     public static ApiSuccessResponse<TResult> Ok(TResult? result, string? message = null)
-        => new(true, message, result);
+    {
+        return new ApiSuccessResponse<TResult>(true, message, result);
+    }
 
     public static ApiSuccessResponse<TResult> Ok(TResult? result, string? message, params object?[] args)
-        => new(true, message != null ? string.Format(message, args) : null, result);
+    {
+        return new ApiSuccessResponse<TResult>(true, message != null ? string.Format(message, args) : null, result);
+    }
 }
 
 /// <summary>
@@ -25,28 +29,45 @@ public sealed record ApiErrorResponse(
 )
 {
     public static ApiErrorResponse BadRequest(string message, string code = "BAD_REQUEST")
-        => new(false, new List<ApiError> { new(message, code) });
+    {
+        return new ApiErrorResponse(false, new List<ApiError> { new(message, code) });
+    }
 
     public static ApiErrorResponse BadRequest(params ApiError[] errors)
-        => new(false, errors.ToList());
+    {
+        return new ApiErrorResponse(false, errors.ToList());
+    }
 
     public static ApiErrorResponse Unauthorized(string message, string code = "UNAUTHORIZED")
-        => new(false, new List<ApiError> { new(message, code) });
+    {
+        return new ApiErrorResponse(false, new List<ApiError> { new(message, code) });
+    }
 
     public static ApiErrorResponse Forbidden(string message, string code = "FORBIDDEN")
-        => new(false, new List<ApiError> { new(message, code) });
+    {
+        return new ApiErrorResponse(false, new List<ApiError> { new(message, code) });
+    }
 
     public static ApiErrorResponse NotFound(string message, string code = "NOT_FOUND")
-        => new(false, new List<ApiError> { new(message, code) });
+    {
+        return new ApiErrorResponse(false, new List<ApiError> { new(message, code) });
+    }
 
-    public static ApiErrorResponse InternalServerError(string message = "An internal server error occurred", string code = "INTERNAL_SERVER_ERROR")
-        => new(false, new List<ApiError> { new(message, code) });
+    public static ApiErrorResponse InternalServerError(string message = "An internal server error occurred",
+        string code = "INTERNAL_SERVER_ERROR")
+    {
+        return new ApiErrorResponse(false, new List<ApiError> { new(message, code) });
+    }
 
     public static ApiErrorResponse ValidationError(params ApiError[] errors)
-        => new(false, errors.ToList());
+    {
+        return new ApiErrorResponse(false, errors.ToList());
+    }
 
     public static ApiErrorResponse From(Exception ex, string code = "INTERNAL_SERVER_ERROR")
-        => new(false, new List<ApiError> { new(ex.Message, code) });
+    {
+        return new ApiErrorResponse(false, new List<ApiError> { new(ex.Message, code) });
+    }
 }
 
 /// <summary>
@@ -67,8 +88,13 @@ public sealed record ApiPagedResponse<TItem>(
     PaginationMeta Pagination
 )
 {
-    public static ApiPagedResponse<TItem> Ok(List<TItem> data, int page, int pageSize, long total, string? message = null)
-        => new(true, message, data, new PaginationMeta(page, pageSize, total, (long)Math.Ceiling((double)total / pageSize), total > (page * pageSize)));
+    public static ApiPagedResponse<TItem> Ok(List<TItem> data, int page, int pageSize, long total,
+        string? message = null)
+    {
+        return new ApiPagedResponse<TItem>(true, message, data,
+            new PaginationMeta(page, pageSize, total, (long)Math.Ceiling((double)total / pageSize),
+                total > (page * pageSize)));
+    }
 }
 
 /// <summary>

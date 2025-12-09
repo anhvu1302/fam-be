@@ -14,7 +14,8 @@ public interface IEmailTemplateService
     /// Generate password reset email
     /// </summary>
     /// <param name="expiryMinutes">Thời gian hết hạn của reset token (phút)</param>
-    EmailMessage CreatePasswordResetEmail(string toEmail, string userName, string resetToken, string resetUrl, int expiryMinutes);
+    EmailMessage CreatePasswordResetEmail(string toEmail, string userName, string resetToken, string resetUrl,
+        int expiryMinutes);
 
     /// <summary>
     /// Generate password changed confirmation email

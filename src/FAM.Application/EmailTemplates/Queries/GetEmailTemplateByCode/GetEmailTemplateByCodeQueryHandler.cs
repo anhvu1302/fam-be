@@ -1,5 +1,5 @@
+using FAM.Application.EmailTemplates.Shared;
 using FAM.Domain.Abstractions;
-using FAM.Domain.EmailTemplates;
 using MediatR;
 
 namespace FAM.Application.EmailTemplates.Queries.GetEmailTemplateByCode;
@@ -13,33 +13,13 @@ public sealed class GetEmailTemplateByCodeQueryHandler : IRequestHandler<GetEmai
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<EmailTemplateDto?> Handle(GetEmailTemplateByCodeQuery request, CancellationToken cancellationToken)
+    public async Task<EmailTemplateDto?> Handle(GetEmailTemplateByCodeQuery request,
+        CancellationToken cancellationToken)
     {
         var template = await _unitOfWork.EmailTemplates.GetByCodeAsync(request.Code, cancellationToken);
         if (template == null)
             return null;
 
-        return MapToDto(template);
-    }
-
-    private static EmailTemplateDto MapToDto(EmailTemplate template)
-    {
-        return new EmailTemplateDto
-        {
-            Id = template.Id,
-            Code = template.Code,
-            Name = template.Name,
-            Subject = template.Subject,
-            HtmlBody = template.HtmlBody,
-            PlainTextBody = template.PlainTextBody,
-            Description = template.Description,
-            AvailablePlaceholders = template.AvailablePlaceholders,
-            IsActive = template.IsActive,
-            IsSystem = template.IsSystem,
-            Category = (int)template.Category,
-            CategoryName = template.Category.ToString(),
-            CreatedAt = template.CreatedAt,
-            UpdatedAt = template.UpdatedAt
-        };
+        return template.ToDto();
     }
 }

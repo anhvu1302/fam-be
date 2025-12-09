@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using FAM.Infrastructure.PersistenceModels.Ef.Base;
 
 namespace FAM.Infrastructure.PersistenceModels.Ef;
 
@@ -6,7 +7,7 @@ namespace FAM.Infrastructure.PersistenceModels.Ef;
 /// EF-specific persistence model for Manufacturer
 /// </summary>
 [Table("manufacturers")]
-public class ManufacturerEf : EntityEf
+public class ManufacturerEf : BaseEntityEf
 {
     // Basic Information
     public string Name { get; set; } = string.Empty;
@@ -93,7 +94,23 @@ public class ManufacturerEf : EntityEf
 
     // Stock & Availability
     public string? LeadTime { get; set; }
+
     public string? MinimumOrderQuantity { get; set; }
+
+    // Audit fields
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
+    // Navigation properties
+    public virtual UserEf? CreatedBy { get; set; }
+    public virtual UserEf? UpdatedBy { get; set; }
+    public virtual UserEf? DeletedBy { get; set; }
+
 
     // Navigation properties
     public CountryEf? Country { get; set; }

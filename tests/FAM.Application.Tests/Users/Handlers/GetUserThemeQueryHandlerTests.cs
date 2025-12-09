@@ -23,7 +23,7 @@ public class GetUserThemeQueryHandlerTests
         // Arrange
         var userId = 1L;
         var theme = UserTheme.Create(userId, "Dark", "#FF5733", 0.8m, 12, true, true, false);
-        
+
         _mockUserThemeRepository
             .Setup(x => x.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(theme);

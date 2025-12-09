@@ -52,10 +52,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
                     b.Property<int?>("EntityId")
                         .HasColumnType("integer")
                         .HasColumnName("entity_id");
@@ -105,10 +101,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
 
                     b.Property<string>("UploadId")
                         .IsRequired()
@@ -487,10 +479,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at");
 
-                    b.Property<long?>("CreatedBy")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by");
-
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
                         .HasColumnName("created_by_id");
@@ -766,10 +754,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<long?>("UpdatedBy")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by");
-
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
                         .HasColumnName("updated_by_id");
@@ -828,7 +812,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("CountryId")
                         .HasDatabaseName("ix_assets_country_id");
 
-                    b.HasIndex("CreatedBy");
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("LifecycleStatusId")
                         .HasDatabaseName("ix_assets_lifecycle_status_id");
@@ -863,7 +847,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("SupplierId")
                         .HasDatabaseName("ix_assets_supplier_id");
 
-                    b.HasIndex("UpdatedBy");
+                    b.HasIndex("UpdatedById");
 
                     b.HasIndex("UsageStatusId")
                         .HasDatabaseName("ix_assets_usage_status_id");
@@ -963,17 +947,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("At")
                         .HasDatabaseName("ix_asset_events_at");
 
-                    b.HasIndex("CreatedById")
-                        .HasDatabaseName("ix_asset_events_created_by_id");
-
-                    b.HasIndex("DeletedById")
-                        .HasDatabaseName("ix_asset_events_deleted_by_id");
-
                     b.HasIndex("EventTypeId")
                         .HasDatabaseName("ix_asset_events_event_type_id");
-
-                    b.HasIndex("UpdatedById")
-                        .HasDatabaseName("ix_asset_events_updated_by_id");
 
                     b.ToTable("asset_events");
                 });
@@ -1477,17 +1452,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("ByUserId")
                         .HasDatabaseName("ix_assignments_by_user_id");
 
-                    b.HasIndex("CreatedById")
-                        .HasDatabaseName("ix_asset_assignments_created_by_id");
-
-                    b.HasIndex("DeletedById")
-                        .HasDatabaseName("ix_asset_assignments_deleted_by_id");
-
                     b.HasIndex("ReleasedAt")
                         .HasDatabaseName("ix_assignments_released_at");
-
-                    b.HasIndex("UpdatedById")
-                        .HasDatabaseName("ix_asset_assignments_updated_by_id");
 
                     b.ToTable("asset_assignments");
                 });
@@ -1559,15 +1525,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     b.HasIndex("AssetId")
                         .HasDatabaseName("ix_attachments_asset_id");
-
-                    b.HasIndex("CreatedById")
-                        .HasDatabaseName("ix_asset_attachments_created_by_id");
-
-                    b.HasIndex("DeletedById")
-                        .HasDatabaseName("ix_asset_attachments_deleted_by_id");
-
-                    b.HasIndex("UpdatedById")
-                        .HasDatabaseName("ix_asset_attachments_updated_by_id");
 
                     b.HasIndex("UploadedAt")
                         .HasDatabaseName("ix_attachments_uploaded_at");
@@ -1842,17 +1799,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDatabaseName("ix_countries_code")
                         .HasFilter("is_deleted = false");
 
-                    b.HasIndex("CreatedById")
-                        .HasDatabaseName("ix_countries_created_by_id");
-
-                    b.HasIndex("DeletedById")
-                        .HasDatabaseName("ix_countries_deleted_by_id");
-
                     b.HasIndex("Name")
                         .HasDatabaseName("ix_countries_name");
-
-                    b.HasIndex("UpdatedById")
-                        .HasDatabaseName("ix_countries_updated_by_id");
 
                     b.ToTable("countries");
                 });
@@ -2107,20 +2055,13 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("AssetId")
                         .HasDatabaseName("ix_finance_entries_asset_id");
 
-                    b.HasIndex("CreatedById")
-                        .HasDatabaseName("ix_finance_entries_created_by_id");
-
-                    b.HasIndex("DeletedById")
-                        .HasDatabaseName("ix_finance_entries_deleted_by_id");
+                    b.HasIndex("CreatedById");
 
                     b.HasIndex("EntryType")
                         .HasDatabaseName("ix_finance_entries_entry_type");
 
                     b.HasIndex("Period")
                         .HasDatabaseName("ix_finance_entries_period");
-
-                    b.HasIndex("UpdatedById")
-                        .HasDatabaseName("ix_finance_entries_updated_by_id");
 
                     b.ToTable("finance_entries");
                 });
@@ -2623,20 +2564,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("CountryId")
                         .HasDatabaseName("ix_manufacturers_country_id");
 
-                    b.HasIndex("CreatedById")
-                        .HasDatabaseName("ix_manufacturers_created_by_id");
-
-                    b.HasIndex("DeletedById")
-                        .HasDatabaseName("ix_manufacturers_deleted_by_id");
-
                     b.HasIndex("IsActive")
                         .HasDatabaseName("ix_manufacturers_is_active");
 
                     b.HasIndex("Name")
                         .HasDatabaseName("ix_manufacturers_name");
-
-                    b.HasIndex("UpdatedById")
-                        .HasDatabaseName("ix_manufacturers_updated_by_id");
 
                     b.ToTable("manufacturers");
                 });
@@ -3178,12 +3110,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("CategoryId")
                         .HasDatabaseName("ix_models_category_id");
 
-                    b.HasIndex("CreatedById")
-                        .HasDatabaseName("ix_models_created_by_id");
-
-                    b.HasIndex("DeletedById")
-                        .HasDatabaseName("ix_models_deleted_by_id");
-
                     b.HasIndex("IsActive")
                         .HasDatabaseName("ix_models_is_active");
 
@@ -3205,9 +3131,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     b.HasIndex("TypeId")
                         .HasDatabaseName("ix_models_type_id");
-
-                    b.HasIndex("UpdatedById")
-                        .HasDatabaseName("ix_models_updated_by_id");
 
                     b.ToTable("models");
                 });
@@ -3496,12 +3419,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("PermissionId")
                         .HasColumnType("bigint")
                         .HasColumnName("permission_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<long?>("GrantedById")
                         .HasColumnType("bigint")
@@ -4214,20 +4131,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("CountryId")
                         .HasDatabaseName("ix_suppliers_country_id");
 
-                    b.HasIndex("CreatedById")
-                        .HasDatabaseName("ix_suppliers_created_by_id");
-
-                    b.HasIndex("DeletedById")
-                        .HasDatabaseName("ix_suppliers_deleted_by_id");
-
                     b.HasIndex("IsActive")
                         .HasDatabaseName("ix_suppliers_is_active");
 
                     b.HasIndex("Name")
                         .HasDatabaseName("ix_suppliers_name");
-
-                    b.HasIndex("UpdatedById")
-                        .HasDatabaseName("ix_suppliers_updated_by_id");
 
                     b.ToTable("suppliers");
                 });
@@ -4772,12 +4680,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("assigned_by_id");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
-
                     b.Property<DateTime?>("EndAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("end_at");
@@ -4939,11 +4841,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_countries_country_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedByUser")
+                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
                         .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_assets_users_created_by_user_id");
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.LifecycleStatusEf", "LifecycleStatus")
                         .WithMany("Assets")
@@ -4981,11 +4882,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_suppliers_supplier_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "UpdatedByUser")
+                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "UpdatedBy")
                         .WithMany()
-                        .HasForeignKey("UpdatedBy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_assets_users_updated_by_user_id");
+                        .HasForeignKey("UpdatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UsageStatusEf", "UsageStatus")
                         .WithMany("Assets")
@@ -5003,7 +4903,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     b.Navigation("Country");
 
-                    b.Navigation("CreatedByUser");
+                    b.Navigation("CreatedBy");
 
                     b.Navigation("LifecycleStatus");
 
@@ -5017,7 +4917,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     b.Navigation("Supplier");
 
-                    b.Navigation("UpdatedByUser");
+                    b.Navigation("UpdatedBy");
 
                     b.Navigation("UsageStatus");
                 });
@@ -5037,38 +4937,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_asset_events_assets_asset_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .HasConstraintName("fk_asset_events_users_created_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "DeletedBy")
-                        .WithMany()
-                        .HasForeignKey("DeletedById")
-                        .HasConstraintName("fk_asset_events_users_deleted_by_id");
-
                     b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetEventTypeEf", "EventType")
                         .WithMany("AssetEvents")
                         .HasForeignKey("EventTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_asset_events_asset_event_types_event_type_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById")
-                        .HasConstraintName("fk_asset_events_users_updated_by_id");
-
                     b.Navigation("Actor");
 
                     b.Navigation("Asset");
 
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("DeletedBy");
-
                     b.Navigation("EventType");
-
-                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetTypeEf", b =>
@@ -5097,30 +4976,9 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_asset_assignments_users_by_user_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .HasConstraintName("fk_asset_assignments_users_created_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "DeletedBy")
-                        .WithMany()
-                        .HasForeignKey("DeletedById")
-                        .HasConstraintName("fk_asset_assignments_users_deleted_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById")
-                        .HasConstraintName("fk_asset_assignments_users_updated_by_id");
-
                     b.Navigation("Asset");
 
                     b.Navigation("ByUser");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("DeletedBy");
-
-                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AttachmentEf", b =>
@@ -5131,21 +4989,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("fk_asset_attachments_assets_asset_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .HasConstraintName("fk_asset_attachments_users_created_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "DeletedBy")
-                        .WithMany()
-                        .HasForeignKey("DeletedById")
-                        .HasConstraintName("fk_asset_attachments_users_deleted_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById")
-                        .HasConstraintName("fk_asset_attachments_users_updated_by_id");
-
                     b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "Uploader")
                         .WithMany()
                         .HasForeignKey("UploadedBy")
@@ -5153,12 +4996,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasConstraintName("fk_asset_attachments_users_uploader_id");
 
                     b.Navigation("Asset");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("DeletedBy");
-
-                    b.Navigation("UpdatedBy");
 
                     b.Navigation("Uploader");
                 });
@@ -5173,30 +5010,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasConstraintName("fk_company_details_org_nodes_node_id");
 
                     b.Navigation("Node");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.CountryEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .HasConstraintName("fk_countries_users_created_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "DeletedBy")
-                        .WithMany()
-                        .HasForeignKey("DeletedById")
-                        .HasConstraintName("fk_countries_users_deleted_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById")
-                        .HasConstraintName("fk_countries_users_updated_by_id");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("DeletedBy");
-
-                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.DepartmentDetailsEf", b =>
@@ -5223,26 +5036,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_finance_entries_users_created_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "DeletedBy")
-                        .WithMany()
-                        .HasForeignKey("DeletedById")
-                        .HasConstraintName("fk_finance_entries_users_deleted_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById")
-                        .HasConstraintName("fk_finance_entries_users_updated_by_id");
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Asset");
 
                     b.Navigation("CreatedBy");
-
-                    b.Navigation("DeletedBy");
-
-                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.LocationEf", b =>
@@ -5288,28 +5086,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_manufacturers_countries_country_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .HasConstraintName("fk_manufacturers_users_created_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "DeletedBy")
-                        .WithMany()
-                        .HasForeignKey("DeletedById")
-                        .HasConstraintName("fk_manufacturers_users_deleted_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById")
-                        .HasConstraintName("fk_manufacturers_users_updated_by_id");
-
                     b.Navigation("Country");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("DeletedBy");
-
-                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.MenuItemEf", b =>
@@ -5331,16 +5108,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_models_asset_categories_category_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .HasConstraintName("fk_models_users_created_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "DeletedBy")
-                        .WithMany()
-                        .HasForeignKey("DeletedById")
-                        .HasConstraintName("fk_models_users_deleted_by_id");
-
                     b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.ManufacturerEf", "Manufacturer")
                         .WithMany("Models")
                         .HasForeignKey("ManufacturerId")
@@ -5353,22 +5120,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_models_asset_types_type_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById")
-                        .HasConstraintName("fk_models_users_updated_by_id");
-
                     b.Navigation("Category");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("DeletedBy");
 
                     b.Navigation("Manufacturer");
 
                     b.Navigation("Type");
-
-                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.OrgNodeEf", b =>
@@ -5432,30 +5188,9 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_suppliers_countries_country_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .HasConstraintName("fk_suppliers_users_created_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "DeletedBy")
-                        .WithMany()
-                        .HasForeignKey("DeletedById")
-                        .HasConstraintName("fk_suppliers_users_deleted_by_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById")
-                        .HasConstraintName("fk_suppliers_users_updated_by_id");
-
                     b.Navigation("Company");
 
                     b.Navigation("Country");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("DeletedBy");
-
-                    b.Navigation("UpdatedBy");
                 });
 
             modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserDeviceEf", b =>

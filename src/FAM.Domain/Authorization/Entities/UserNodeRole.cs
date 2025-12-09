@@ -1,4 +1,4 @@
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Organizations;
 using FAM.Domain.Users;
 
@@ -9,7 +9,7 @@ namespace FAM.Domain.Authorization;
 /// Represents user's role within a specific organizational context
 /// Composite key: (UserId, NodeId, RoleId)
 /// </summary>
-public class UserNodeRole : JunctionEntity
+public class UserNodeRole
 {
     public long UserId { get; private set; }
     public User User { get; private set; } = null!;

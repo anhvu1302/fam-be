@@ -36,7 +36,6 @@ public sealed class EmailQueueProcessor : BackgroundService
             _emailProvider.ProviderName);
 
         while (!stoppingToken.IsCancellationRequested)
-        {
             try
             {
                 var message = await _emailQueue.DequeueAsync(stoppingToken);
@@ -63,7 +62,6 @@ public sealed class EmailQueueProcessor : BackgroundService
                 _logger.LogError(ex, "Error in email queue processor");
                 await Task.Delay(_retryDelay, stoppingToken);
             }
-        }
 
         _logger.LogInformation("Email Queue Processor stopped");
     }

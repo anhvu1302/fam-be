@@ -1,7 +1,9 @@
 using FAM.Domain.Assets;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Geography;
 using FAM.Domain.Models;
+using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Manufacturers;
@@ -9,7 +11,8 @@ namespace FAM.Domain.Manufacturers;
 /// <summary>
 /// Nhà sản xuất - Đầy đủ thông tin theo chuẩn doanh nghiệp
 /// </summary>
-public class Manufacturer : Entity
+public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasModifier,
+    IHasDeletionTime, IHasDeleter
 {
     // Basic Information
     public string Name { get; private set; } = string.Empty;
@@ -91,7 +94,19 @@ public class Manufacturer : Entity
     public string? LeadTime { get; private set; } // Standard lead time
     public string? MinimumOrderQuantity { get; private set; }
 
+    // Audit fields
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
     // Navigation properties
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+    public User? DeletedBy { get; set; }
     public Country? Country { get; set; }
     public ICollection<Model> Models { get; set; } = new List<Model>();
     public ICollection<Asset> Assets { get; set; } = new List<Asset>();
@@ -336,5 +351,22 @@ public class Manufacturer : Entity
             .ToList();
 
         return ratings.Any() ? ratings.Average() : 0;
+    }
+
+    public void SoftDelete(long? deletedById = null)
+    {
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        DeletedById = deletedById;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedById = deletedById;
+    }
+
+    public virtual void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        DeletedById = null;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

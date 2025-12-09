@@ -1,11 +1,30 @@
+using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Interfaces;
+using FAM.Domain.Users;
+
 namespace FAM.Domain.Common.Entities;
 
 /// <summary>
 /// Menu item for UI navigation
 /// Supports hierarchical structure (parent-child) and sorting
+/// Uses FullAuditedEntity for complete audit trail
 /// </summary>
-public class MenuItem : BaseEntity
+public class MenuItem : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasModifier, IHasDeletionTime,
+    IHasDeleter
 {
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
+    // Navigation properties
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+    public User? DeletedBy { get; set; }
+
     /// <summary>
     /// Unique code for the menu item (e.g., "dashboard", "assets", "settings")
     /// Used for frontend routing and permission mapping
@@ -327,5 +346,22 @@ public class MenuItem : BaseEntity
         }
 
         return true;
+    }
+
+    public virtual void SoftDelete(long? deletedById = null)
+    {
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        DeletedById = deletedById;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedById = deletedById;
+    }
+
+    public virtual void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        DeletedById = null;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

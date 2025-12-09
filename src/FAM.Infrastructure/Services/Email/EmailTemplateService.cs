@@ -50,7 +50,9 @@ public sealed class EmailTemplateService : IEmailTemplateService
             To = toEmail,
             Subject = ReplacePlaceholders(template.Subject, placeholders),
             HtmlBody = ReplacePlaceholders(template.HtmlBody, placeholders),
-            PlainTextBody = template.PlainTextBody != null ? ReplacePlaceholders(template.PlainTextBody, placeholders) : null,
+            PlainTextBody = template.PlainTextBody != null
+                ? ReplacePlaceholders(template.PlainTextBody, placeholders)
+                : null,
             FromEmail = _fromEmail,
             FromName = _fromName,
             Priority = EmailPriority.High,
@@ -63,7 +65,8 @@ public sealed class EmailTemplateService : IEmailTemplateService
         };
     }
 
-    public EmailMessage CreatePasswordResetEmail(string toEmail, string userName, string resetToken, string resetUrl, int expiryMinutes)
+    public EmailMessage CreatePasswordResetEmail(string toEmail, string userName, string resetToken, string resetUrl,
+        int expiryMinutes)
     {
         var template = _unitOfWork.EmailTemplates.GetByCodeAsync("PASSWORD_RESET").GetAwaiter().GetResult();
         if (template == null)
@@ -73,7 +76,7 @@ public sealed class EmailTemplateService : IEmailTemplateService
         }
 
         var resetLink = $"{resetUrl}?token={Uri.EscapeDataString(resetToken)}&email={Uri.EscapeDataString(toEmail)}";
-        
+
         var placeholders = new Dictionary<string, string>
         {
             { "userName", userName },
@@ -89,7 +92,9 @@ public sealed class EmailTemplateService : IEmailTemplateService
             To = toEmail,
             Subject = ReplacePlaceholders(template.Subject, placeholders),
             HtmlBody = ReplacePlaceholders(template.HtmlBody, placeholders),
-            PlainTextBody = template.PlainTextBody != null ? ReplacePlaceholders(template.PlainTextBody, placeholders) : null,
+            PlainTextBody = template.PlainTextBody != null
+                ? ReplacePlaceholders(template.PlainTextBody, placeholders)
+                : null,
             FromEmail = _fromEmail,
             FromName = _fromName,
             Priority = EmailPriority.High,
@@ -124,7 +129,9 @@ public sealed class EmailTemplateService : IEmailTemplateService
             To = toEmail,
             Subject = ReplacePlaceholders(template.Subject, placeholders),
             HtmlBody = ReplacePlaceholders(template.HtmlBody, placeholders),
-            PlainTextBody = template.PlainTextBody != null ? ReplacePlaceholders(template.PlainTextBody, placeholders) : null,
+            PlainTextBody = template.PlainTextBody != null
+                ? ReplacePlaceholders(template.PlainTextBody, placeholders)
+                : null,
             FromEmail = _fromEmail,
             FromName = _fromName,
             Priority = EmailPriority.Normal,
@@ -158,7 +165,9 @@ public sealed class EmailTemplateService : IEmailTemplateService
             To = toEmail,
             Subject = ReplacePlaceholders(template.Subject, placeholders),
             HtmlBody = ReplacePlaceholders(template.HtmlBody, placeholders),
-            PlainTextBody = template.PlainTextBody != null ? ReplacePlaceholders(template.PlainTextBody, placeholders) : null,
+            PlainTextBody = template.PlainTextBody != null
+                ? ReplacePlaceholders(template.PlainTextBody, placeholders)
+                : null,
             FromEmail = _fromEmail,
             FromName = _fromName,
             Priority = EmailPriority.Normal,
@@ -194,7 +203,9 @@ public sealed class EmailTemplateService : IEmailTemplateService
             To = toEmail,
             Subject = ReplacePlaceholders(template.Subject, placeholders),
             HtmlBody = ReplacePlaceholders(template.HtmlBody, placeholders),
-            PlainTextBody = template.PlainTextBody != null ? ReplacePlaceholders(template.PlainTextBody, placeholders) : null,
+            PlainTextBody = template.PlainTextBody != null
+                ? ReplacePlaceholders(template.PlainTextBody, placeholders)
+                : null,
             FromEmail = _fromEmail,
             FromName = _fromName,
             Priority = EmailPriority.Critical,
@@ -217,7 +228,7 @@ public sealed class EmailTemplateService : IEmailTemplateService
     private static string ReplacePlaceholders(string template, Dictionary<string, string> placeholders)
     {
         var result = template;
-        
+
         foreach (var (key, value) in placeholders)
         {
             // Replace {{key}} format (from database templates)
@@ -225,7 +236,7 @@ public sealed class EmailTemplateService : IEmailTemplateService
             // Replace {key} format (legacy support)
             result = result.Replace($"{{{key}}}", value);
         }
-        
+
         return result;
     }
 
@@ -252,10 +263,11 @@ public sealed class EmailTemplateService : IEmailTemplateService
         };
     }
 
-    private EmailMessage CreateFallbackPasswordResetEmail(string toEmail, string userName, string resetToken, string resetUrl, int expiryMinutes)
+    private EmailMessage CreateFallbackPasswordResetEmail(string toEmail, string userName, string resetToken,
+        string resetUrl, int expiryMinutes)
     {
         var resetLink = $"{resetUrl}?token={Uri.EscapeDataString(resetToken)}&email={Uri.EscapeDataString(toEmail)}";
-        
+
         return new EmailMessage
         {
             To = toEmail,

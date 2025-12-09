@@ -91,8 +91,6 @@ public sealed record UserThemeResponse(
 /// <summary>
 /// Response containing list of user's login sessions
 /// </summary>
-public sealed record UserSessionsResponse(List<UserSessionResponse> Sessions);
-
 /// <summary>
 /// Individual session information
 /// </summary>

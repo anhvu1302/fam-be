@@ -12,7 +12,8 @@ public sealed record CreateEmailTemplateRequest
     /// </summary>
     [Required(ErrorMessage = "Template code is required")]
     [StringLength(100, MinimumLength = 3, ErrorMessage = "Code must be between 3 and 100 characters")]
-    [RegularExpression(@"^[A-Z][A-Z0-9_]*$", ErrorMessage = "Code must be uppercase letters, numbers, and underscores only, starting with a letter")]
+    [RegularExpression(@"^[A-Z][A-Z0-9_]*$",
+        ErrorMessage = "Code must be uppercase letters, numbers, and underscores only, starting with a letter")]
     public string Code { get; init; } = string.Empty;
 
     /// <summary>

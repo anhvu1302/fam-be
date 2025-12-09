@@ -93,7 +93,7 @@ public sealed class BrevoEmailProvider : IEmailProvider, IDisposable
             if (response.IsSuccessStatusCode)
             {
                 var result = JsonSerializer.Deserialize<BrevoSendEmailResponse>(responseContent);
-                
+
                 _logger.LogInformation(
                     "Email sent successfully via Brevo. MessageId: {MessageId}, To: {To}",
                     result?.MessageId, message.To);
@@ -124,41 +124,31 @@ public sealed class BrevoEmailProvider : IEmailProvider, IDisposable
 
 internal sealed class BrevoSendEmailRequest
 {
-    [JsonPropertyName("sender")]
-    public BrevoEmailAddress Sender { get; set; } = null!;
+    [JsonPropertyName("sender")] public BrevoEmailAddress Sender { get; set; } = null!;
 
-    [JsonPropertyName("to")]
-    public BrevoEmailAddress[] To { get; set; } = Array.Empty<BrevoEmailAddress>();
+    [JsonPropertyName("to")] public BrevoEmailAddress[] To { get; set; } = Array.Empty<BrevoEmailAddress>();
 
-    [JsonPropertyName("subject")]
-    public string Subject { get; set; } = string.Empty;
+    [JsonPropertyName("subject")] public string Subject { get; set; } = string.Empty;
 
-    [JsonPropertyName("htmlContent")]
-    public string? HtmlContent { get; set; }
+    [JsonPropertyName("htmlContent")] public string? HtmlContent { get; set; }
 
-    [JsonPropertyName("textContent")]
-    public string? TextContent { get; set; }
+    [JsonPropertyName("textContent")] public string? TextContent { get; set; }
 
-    [JsonPropertyName("replyTo")]
-    public BrevoEmailAddress? ReplyTo { get; set; }
+    [JsonPropertyName("replyTo")] public BrevoEmailAddress? ReplyTo { get; set; }
 
-    [JsonPropertyName("tags")]
-    public string[]? Tags { get; set; }
+    [JsonPropertyName("tags")] public string[]? Tags { get; set; }
 }
 
 internal sealed class BrevoEmailAddress
 {
-    [JsonPropertyName("email")]
-    public string Email { get; set; } = string.Empty;
+    [JsonPropertyName("email")] public string Email { get; set; } = string.Empty;
 
-    [JsonPropertyName("name")]
-    public string? Name { get; set; }
+    [JsonPropertyName("name")] public string? Name { get; set; }
 }
 
 internal sealed class BrevoSendEmailResponse
 {
-    [JsonPropertyName("messageId")]
-    public string? MessageId { get; set; }
+    [JsonPropertyName("messageId")] public string? MessageId { get; set; }
 }
 
 #endregion

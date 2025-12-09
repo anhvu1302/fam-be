@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using FAM.Infrastructure.PersistenceModels.Ef.Base;
 
 namespace FAM.Infrastructure.PersistenceModels.Ef;
 
@@ -59,10 +60,6 @@ public class AssetEf : BaseEntityEf
 
     // Custom Fields
     public string? CustomFields { get; set; }
-
-    // Audit
-    public long? CreatedBy { get; set; }
-    public long? UpdatedBy { get; set; }
 
     // Depreciation & Finance
     public string? DepreciationMethod { get; set; }
@@ -127,9 +124,23 @@ public class AssetEf : BaseEntityEf
     public decimal? ReplacementCost { get; set; }
     public int? EstimatedRemainingLifeMonths { get; set; }
     public string? Notes { get; set; }
+
     public string? InternalNotes { get; set; }
 
+    // Audit fields
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
     // Navigation properties
+    public virtual UserEf? CreatedBy { get; set; }
+    public virtual UserEf? UpdatedBy { get; set; }
+    public virtual UserEf? DeletedBy { get; set; }
+
     public CompanyDetailsEf? Company { get; set; }
     public AssetTypeEf? AssetType { get; set; }
     public AssetCategoryEf? Category { get; set; }
@@ -142,9 +153,6 @@ public class AssetEf : BaseEntityEf
     public UserEf? Owner { get; set; }
     public LifecycleStatusEf? LifecycleStatus { get; set; }
     public UsageStatusEf? UsageStatus { get; set; }
-
-    public UserEf? CreatedByUser { get; set; }
-    public UserEf? UpdatedByUser { get; set; }
 
     public ICollection<AssignmentEf> Assignments { get; set; } = new List<AssignmentEf>();
     public ICollection<AssetEventEf> AssetEvents { get; set; } = new List<AssetEventEf>();

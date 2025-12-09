@@ -1,4 +1,4 @@
-namespace FAM.Domain.Common;
+namespace FAM.Domain.Common.Base;
 
 /// <summary>
 /// Default English error messages for each error code.

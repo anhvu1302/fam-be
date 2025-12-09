@@ -1,6 +1,8 @@
 using FAM.Domain.Assets;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Geography;
+using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Suppliers;
@@ -8,7 +10,8 @@ namespace FAM.Domain.Suppliers;
 /// <summary>
 /// Nhà cung cấp - Đầy đủ thông tin quản lý và đánh giá
 /// </summary>
-public class Supplier : Entity
+public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasModifier, IHasDeletionTime,
+    IHasDeleter
 {
     // Basic Information
     public int? CompanyId { get; private set; }
@@ -170,7 +173,21 @@ public class Supplier : Entity
     public Url? BusinessLicenseUrl { get; private set; }
     public string? References { get; private set; } // JSON array of references
 
+    // Audit fields
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
     // Navigation properties
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+
+    public User? DeletedBy { get; set; }
+
     // public Companies.Company? Company { get; set; }
     public Country? Country { get; set; }
     public ICollection<Asset> Assets { get; set; } = new List<Asset>();
@@ -434,5 +451,22 @@ public class Supplier : Entity
     public bool IsContractExpired()
     {
         return ContractEndDate.HasValue && ContractEndDate.Value < DateTime.UtcNow;
+    }
+
+    public void SoftDelete(long? deletedById = null)
+    {
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        DeletedById = deletedById;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedById = deletedById;
+    }
+
+    public virtual void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        DeletedById = null;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

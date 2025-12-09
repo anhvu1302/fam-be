@@ -1,3 +1,4 @@
+using FAM.Application.EmailTemplates.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.EmailTemplates;
 using MediatR;

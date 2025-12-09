@@ -1,21 +1,13 @@
-namespace FAM.Domain.Common;
+namespace FAM.Domain.Common.Base;
 
 /// <summary>
 /// Base entity with generic TId for flexible ID types
-/// Contains shared audit fields and soft delete logic
+/// Contains only Id and basic comparison logic (SOLID - Single Responsibility)
+/// Use Entity, FullAuditedEntity, or BasicAuditedEntity for audit fields
 /// </summary>
 public abstract class BaseEntity<TId> where TId : IEquatable<TId>
 {
     public TId Id { get; protected set; } = default!;
-
-    // Audit fields
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public long? CreatedById { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public long? UpdatedById { get; set; }
-    public bool IsDeleted { get; set; } = false;
-    public DateTime? DeletedAt { get; set; }
-    public long? DeletedById { get; set; }
 
     protected BaseEntity()
     {
@@ -24,23 +16,6 @@ public abstract class BaseEntity<TId> where TId : IEquatable<TId>
     protected BaseEntity(TId id)
     {
         Id = id;
-    }
-
-    public virtual void SoftDelete(long? deletedById = null)
-    {
-        IsDeleted = true;
-        DeletedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
-        DeletedById = deletedById;
-        UpdatedById = deletedById;
-    }
-
-    public virtual void Restore()
-    {
-        IsDeleted = false;
-        DeletedAt = null;
-        DeletedById = null;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     protected virtual bool IsTransient()

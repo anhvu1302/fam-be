@@ -114,7 +114,8 @@ public abstract class BaseApiController : ControllerBase
     /// <summary>
     /// Return an unauthorized error response
     /// </summary>
-    protected UnauthorizedObjectResult UnauthorizedResponse(string message = "Unauthorized", string code = "UNAUTHORIZED")
+    protected UnauthorizedObjectResult UnauthorizedResponse(string message = "Unauthorized",
+        string code = "UNAUTHORIZED")
     {
         var response = ApiErrorResponse.Unauthorized(message, code);
         return Unauthorized(response);
@@ -150,7 +151,8 @@ public abstract class BaseApiController : ControllerBase
     /// <summary>
     /// Return an internal server error response
     /// </summary>
-    protected ObjectResult InternalErrorResponse(string message = "An internal server error occurred", string code = "INTERNAL_SERVER_ERROR")
+    protected ObjectResult InternalErrorResponse(string message = "An internal server error occurred",
+        string code = "INTERNAL_SERVER_ERROR")
     {
         var response = ApiErrorResponse.InternalServerError(message, code);
         return StatusCode(500, response);

@@ -1,9 +1,10 @@
+using FAM.Application.Users.Shared;
 using FAM.Domain.Abstractions;
 using MediatR;
 
 namespace FAM.Application.Users.Queries.GetUserSessions;
 
-public class GetUserSessionsQueryHandler : IRequestHandler<GetUserSessionsQuery, GetUserSessionsResponse>
+public class GetUserSessionsQueryHandler : IRequestHandler<GetUserSessionsQuery, IReadOnlyList<UserSessionDto>>
 {
     private readonly IUserDeviceRepository _userDeviceRepository;
 
@@ -12,7 +13,8 @@ public class GetUserSessionsQueryHandler : IRequestHandler<GetUserSessionsQuery,
         _userDeviceRepository = userDeviceRepository;
     }
 
-    public async Task<GetUserSessionsResponse> Handle(GetUserSessionsQuery request, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<UserSessionDto>> Handle(GetUserSessionsQuery request,
+        CancellationToken cancellationToken)
     {
         var devices = await _userDeviceRepository.GetByUserIdAsync(request.UserId, cancellationToken);
 
@@ -35,6 +37,6 @@ public class GetUserSessionsQueryHandler : IRequestHandler<GetUserSessionsQuery,
             ))
             .ToList();
 
-        return new GetUserSessionsResponse(sessions);
+        return sessions;
     }
 }

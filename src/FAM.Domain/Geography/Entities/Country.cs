@@ -1,8 +1,10 @@
 using FAM.Domain.Assets;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Locations;
 using FAM.Domain.Manufacturers;
 using FAM.Domain.Suppliers;
+using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Geography;
@@ -10,7 +12,8 @@ namespace FAM.Domain.Geography;
 /// <summary>
 /// Quốc gia - Theo chuẩn ISO 3166
 /// </summary>
-public class Country : Entity
+public class Country : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasModifier, IHasDeletionTime,
+    IHasDeleter
 {
     // ISO Codes
     public CountryCode Code { get; private set; } = null!; // ISO 3166-1 alpha-2 (VN, US, JP)
@@ -61,7 +64,19 @@ public class Country : Entity
     public long? Population { get; private set; }
     public decimal? Area { get; private set; } // Area in km²
 
+    // Audit fields
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
     // Navigation properties
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+    public User? DeletedBy { get; set; }
     public ICollection<Location> Locations { get; set; } = new List<Location>();
     public ICollection<Asset> Assets { get; set; } = new List<Asset>();
     public ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
@@ -178,5 +193,22 @@ public class Country : Entity
     public void Deactivate()
     {
         IsActive = false;
+    }
+
+    public void SoftDelete(long? deletedById = null)
+    {
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        DeletedById = deletedById;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedById = deletedById;
+    }
+
+    public virtual void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        DeletedById = null;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

@@ -1,9 +1,8 @@
-using FAM.Application.Auth.SendEmailVerificationOtp;
 using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Users;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -54,7 +53,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         }
 
         // Check if account is active
-        if (!user.IsActive) 
+        if (!user.IsActive)
             throw new UnauthorizedAccessException("Account is inactive");
 
         // Verify password
@@ -80,17 +79,17 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             {
                 // Generate and store OTP (uses email as session identifier for email verification flow)
                 var otp = await _otpService.GenerateOtpAsync(
-                    userId: user.Id,
-                    sessionToken: user.Email.Value, // Use email as session identifier
-                    expirationMinutes: 10,
-                    cancellationToken: cancellationToken);
+                    user.Id,
+                    user.Email.Value, // Use email as session identifier
+                    10,
+                    cancellationToken);
 
                 // Send OTP via email
                 await _emailService.SendOtpEmailAsync(
-                    toEmail: user.Email.Value,
-                    otpCode: otp,
-                    userName: user.Username.Value,
-                    cancellationToken: cancellationToken);
+                    user.Email.Value,
+                    otp,
+                    user.Username.Value,
+                    cancellationToken);
 
                 _logger.LogInformation("Verification OTP sent to {Email}", user.Email.Value);
             }
@@ -196,7 +195,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         };
     }
 
-    private static UserInfoDto MapToUserInfoDto(Domain.Users.User user)
+    private static UserInfoDto MapToUserInfoDto(User user)
     {
         return new UserInfoDto
         {

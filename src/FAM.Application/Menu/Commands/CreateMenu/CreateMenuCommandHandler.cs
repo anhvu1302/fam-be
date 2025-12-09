@@ -1,6 +1,6 @@
 using FAM.Application.Menu.DTOs;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Entities;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -54,7 +54,7 @@ public class CreateMenuCommandHandler : IRequestHandler<CreateMenuCommand, MenuI
 
         if (parent != null) menu.SetParent(parent);
 
-        if (!string.IsNullOrEmpty(request.ExternalUrl)) 
+        if (!string.IsNullOrEmpty(request.ExternalUrl))
             menu.SetExternalUrl(request.ExternalUrl, request.OpenInNewTab);
 
         await _repository.AddAsync(menu, cancellationToken);

@@ -94,6 +94,20 @@ public class PostgreSqlDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Ignore audit navigation properties globally (they are for tracking only, not FK constraints)
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            // Ignore CreatedBy, UpdatedBy, DeletedBy navigation properties
+            var auditNavProperties = entityType.ClrType.GetProperties()
+                .Where(p => p.PropertyType == typeof(UserEf) && 
+                           (p.Name == "CreatedBy" || p.Name == "UpdatedBy" || p.Name == "DeletedBy"));
+            
+            foreach (var navProperty in auditNavProperties)
+            {
+                modelBuilder.Entity(entityType.ClrType).Ignore(navProperty.Name);
+            }
+        }
+
         // Apply centralized snake_case naming convention (tables, columns, constraints, indexes)
         ModelBuilderExtensions.ApplySnakeCaseNamingConvention(modelBuilder);
 
@@ -239,7 +253,6 @@ public class PostgreSqlDbContext : DbContext
 
             entity.Property(rp => rp.RoleId).IsRequired();
             entity.Property(rp => rp.PermissionId).IsRequired();
-            entity.Property(rp => rp.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             // Relationships
             entity.HasOne(rp => rp.Role)
@@ -261,7 +274,6 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(unr => unr.UserId).IsRequired();
             entity.Property(unr => unr.NodeId).IsRequired();
             entity.Property(unr => unr.RoleId).IsRequired();
-            entity.Property(unr => unr.CreatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             // Indexes for query performance
             entity.HasIndex(unr => unr.UserId).HasDatabaseName("ix_user_node_roles_user_id");
@@ -412,9 +424,9 @@ public class PostgreSqlDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
             entity.HasOne(a => a.Supplier).WithMany(s => s.Assets).HasForeignKey(a => a.SupplierId)
                 .OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(a => a.CreatedByUser).WithMany().HasForeignKey(a => a.CreatedBy)
+            entity.HasOne(a => a.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById)
                 .OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(a => a.UpdatedByUser).WithMany().HasForeignKey(a => a.UpdatedBy)
+            entity.HasOne(a => a.UpdatedBy).WithMany().HasForeignKey(a => a.UpdatedById)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 

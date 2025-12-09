@@ -88,13 +88,10 @@ public static class EmailServiceExtensions
                 ConnectTimeout = 5000
             };
 
-            if (!string.IsNullOrEmpty(redisPassword))
-            {
-                configOptions.Password = redisPassword;
-            }
+            if (!string.IsNullOrEmpty(redisPassword)) configOptions.Password = redisPassword;
 
             var logger = sp.GetRequiredService<ILogger<RedisEmailQueue>>();
-            
+
             try
             {
                 var connection = ConnectionMultiplexer.Connect(configOptions);

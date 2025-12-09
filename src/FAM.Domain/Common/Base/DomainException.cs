@@ -1,4 +1,4 @@
-namespace FAM.Domain.Common;
+namespace FAM.Domain.Common.Base;
 
 /// <summary>
 /// Domain Exception - represents business rule violations.

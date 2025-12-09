@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using FAM.Infrastructure.PersistenceModels.Ef.Base;
 
 namespace FAM.Infrastructure.PersistenceModels.Ef;
 
@@ -16,7 +17,23 @@ public class LocationEf : BaseEntityEf
     public string? FullPath { get; set; }
     public string? PathIds { get; set; }
     public long? CountryId { get; set; }
+
     public string? Description { get; set; }
+
+    // Audit fields
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
+    // Navigation properties
+    public virtual UserEf? CreatedBy { get; set; }
+    public virtual UserEf? UpdatedBy { get; set; }
+    public virtual UserEf? DeletedBy { get; set; }
+
 
     // Navigation properties
     public CompanyDetailsEf? Company { get; set; }

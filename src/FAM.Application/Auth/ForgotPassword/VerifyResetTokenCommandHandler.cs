@@ -1,7 +1,6 @@
 using FAM.Application.Auth.Shared;
-using FAM.Application.Common.Exceptions;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using MediatR;
 using Microsoft.Extensions.Logging;
 

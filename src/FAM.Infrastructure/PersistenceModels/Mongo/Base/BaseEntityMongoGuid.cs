@@ -1,7 +1,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace FAM.Infrastructure.PersistenceModels.Mongo;
+namespace FAM.Infrastructure.PersistenceModels.Mongo.Base;
 
 /// <summary>
 /// Base entity for MongoDB documents using GUID as domain ID

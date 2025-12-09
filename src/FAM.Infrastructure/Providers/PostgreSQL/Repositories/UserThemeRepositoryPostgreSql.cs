@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AutoMapper;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users.Entities;
@@ -45,7 +46,7 @@ public class UserThemeRepositoryPostgreSql : IUserThemeRepository
         return _mapper.Map<IEnumerable<UserTheme>>(entities);
     }
 
-    public async Task<IEnumerable<UserTheme>> FindAsync(System.Linq.Expressions.Expression<Func<UserTheme, bool>> predicate,
+    public async Task<IEnumerable<UserTheme>> FindAsync(Expression<Func<UserTheme, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
         var allEntities = await _context.UserThemes.ToListAsync(cancellationToken);

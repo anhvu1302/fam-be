@@ -36,10 +36,7 @@ public sealed class SmtpEmailProvider : IEmailProvider
                            && !string.IsNullOrEmpty(_options.Username)
                            && !string.IsNullOrEmpty(_options.Password);
 
-        if (!isConfigured)
-        {
-            _logger.LogWarning("SMTP is not properly configured");
-        }
+        if (!isConfigured) _logger.LogWarning("SMTP is not properly configured");
 
         return Task.FromResult(isConfigured);
     }
@@ -54,7 +51,7 @@ public sealed class SmtpEmailProvider : IEmailProvider
                 _logger.LogWarning(
                     "SMTP not configured. Email would be sent to {Email} with subject: {Subject}",
                     message.To, message.Subject);
-                
+
                 // Return success in development mode to not block the flow
                 return EmailSendResult.Succeeded("dev-mode-skipped");
             }

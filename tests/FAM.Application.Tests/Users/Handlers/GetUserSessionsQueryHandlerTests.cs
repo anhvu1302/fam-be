@@ -1,7 +1,6 @@
 using FAM.Application.Users.Queries.GetUserSessions;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users.Entities;
-using FAM.Domain.ValueObjects;
 using FluentAssertions;
 using Moq;
 
@@ -25,9 +24,9 @@ public class GetUserSessionsQueryHandlerTests
         var userId = 1L;
         var devices = new List<UserDevice>
         {
-            UserDevice.Create(userId, "device1", "Chrome on Windows", "desktop", 
+            UserDevice.Create(userId, "device1", "Chrome on Windows", "desktop",
                 "Mozilla/5.0...", "192.168.1.1", "New York, US", "Chrome", "Windows 11"),
-            UserDevice.Create(userId, "device2", "Safari on iPhone", "mobile", 
+            UserDevice.Create(userId, "device2", "Safari on iPhone", "mobile",
                 "Mozilla/5.0...", "192.168.1.2", "New York, US", "Safari", "iOS 17")
         };
 
@@ -42,8 +41,8 @@ public class GetUserSessionsQueryHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Sessions.Should().HaveCount(2);
-        result.Sessions.Should().BeInDescendingOrder(s => s.LastLoginAt);
+        result.Should().HaveCount(2);
+        result.Should().BeInDescendingOrder(s => s.LastLoginAt);
     }
 
     [Fact]
@@ -62,6 +61,6 @@ public class GetUserSessionsQueryHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Sessions.Should().BeEmpty();
+        result.Should().BeEmpty();
     }
 }

@@ -1,5 +1,3 @@
-using FAM.Domain.Common;
-
 namespace FAM.Domain.Authorization;
 
 /// <summary>
@@ -7,7 +5,7 @@ namespace FAM.Domain.Authorization;
 /// Represents which permissions are assigned to which roles
 /// Composite key: (RoleId, PermissionId)
 /// </summary>
-public class RolePermission : JunctionEntity
+public class RolePermission
 {
     public long RoleId { get; private set; }
     public Role Role { get; private set; } = null!;

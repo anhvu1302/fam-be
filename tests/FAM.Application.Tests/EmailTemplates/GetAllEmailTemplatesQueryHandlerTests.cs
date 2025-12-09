@@ -1,9 +1,7 @@
-using FAM.Application.EmailTemplates.Queries;
 using FAM.Application.EmailTemplates.Queries.GetAllEmailTemplates;
 using FAM.Domain.Abstractions;
 using FAM.Domain.EmailTemplates;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.EmailTemplates;
 
@@ -27,7 +25,8 @@ public class GetAllEmailTemplatesQueryHandlerTests
         // Arrange
         var templates = new List<EmailTemplate>
         {
-            EmailTemplate.Create("EMAIL1", "Name 1", "Subject 1", "<html>1</html>", EmailTemplateCategory.Authentication),
+            EmailTemplate.Create("EMAIL1", "Name 1", "Subject 1", "<html>1</html>",
+                EmailTemplateCategory.Authentication),
             EmailTemplate.Create("EMAIL2", "Name 2", "Subject 2", "<html>2</html>", EmailTemplateCategory.Notification)
         };
 
@@ -103,13 +102,14 @@ public class GetAllEmailTemplatesQueryHandlerTests
         // Arrange
         var templates = new List<EmailTemplate>
         {
-            EmailTemplate.Create("EMAIL1", "Auth Active", "Subject", "<html>1</html>", EmailTemplateCategory.Authentication)
+            EmailTemplate.Create("EMAIL1", "Auth Active", "Subject", "<html>1</html>",
+                EmailTemplateCategory.Authentication)
         };
 
-        var query = new GetAllEmailTemplatesQuery 
-        { 
-            IsActive = true, 
-            Category = 1 
+        var query = new GetAllEmailTemplatesQuery
+        {
+            IsActive = true,
+            Category = 1
         };
 
         _repositoryMock.Setup(x => x.GetByCategoryAsync(EmailTemplateCategory.Authentication, default))

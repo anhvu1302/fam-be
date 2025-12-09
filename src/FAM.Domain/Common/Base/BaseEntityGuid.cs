@@ -1,4 +1,4 @@
-namespace FAM.Domain.Common;
+namespace FAM.Domain.Common.Base;
 
 /// <summary>
 /// Base entity with GUID primary key for high-volume tables

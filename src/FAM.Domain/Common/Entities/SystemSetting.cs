@@ -1,10 +1,16 @@
+using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Interfaces;
+using FAM.Domain.Users;
+
 namespace FAM.Domain.Common.Entities;
 
 /// <summary>
 /// System setting for storing configuration values
 /// Supports different data types and grouping
+/// Uses full audit trail
 /// </summary>
-public class SystemSetting : BaseEntity
+public class SystemSetting : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasModifier,
+    IHasDeletionTime, IHasDeleter
 {
     /// <summary>
     /// Setting key (unique identifier)
@@ -87,6 +93,20 @@ public class SystemSetting : BaseEntity
     /// Last modified by user ID
     /// </summary>
     public long? LastModifiedBy { get; private set; }
+
+    // Audit fields
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
+    // Navigation properties
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+    public User? DeletedBy { get; set; }
 
     // Required for EF
     private SystemSetting()
@@ -308,4 +328,25 @@ public enum SettingDataType
 
     /// <summary>Password/Secret (will be encrypted)</summary>
     Secret = 16
+}
+
+// Extension methods for SystemSetting
+public static class SystemSettingExtensions
+{
+    public static void SoftDelete(this SystemSetting setting, long? deletedById = null)
+    {
+        setting.IsDeleted = true;
+        setting.DeletedAt = DateTime.UtcNow;
+        setting.DeletedById = deletedById;
+        setting.UpdatedAt = DateTime.UtcNow;
+        setting.UpdatedById = deletedById;
+    }
+
+    public static void Restore(this SystemSetting setting)
+    {
+        setting.IsDeleted = false;
+        setting.DeletedAt = null;
+        setting.DeletedById = null;
+        setting.UpdatedAt = DateTime.UtcNow;
+    }
 }

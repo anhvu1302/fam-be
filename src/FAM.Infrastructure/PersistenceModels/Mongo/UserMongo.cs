@@ -1,3 +1,4 @@
+using FAM.Infrastructure.PersistenceModels.Mongo.Base;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace FAM.Infrastructure.PersistenceModels.Mongo;
@@ -6,7 +7,7 @@ namespace FAM.Infrastructure.PersistenceModels.Mongo;
 /// MongoDB document model for User
 /// </summary>
 [BsonCollection("users")]
-public class UserMongo : BaseEntityMongo
+public class UserMongo : BasicAuditedEntityMongo
 {
     [BsonElement("username")] public string Username { get; set; } = string.Empty;
 

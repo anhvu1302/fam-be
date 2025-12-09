@@ -1,7 +1,7 @@
 using System.Net.Mail;
 using System.Text.RegularExpressions;
 
-namespace FAM.Domain.Common;
+namespace FAM.Domain.Common.Base;
 
 /// <summary>
 /// Centralized domain validation rules.

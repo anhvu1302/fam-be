@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Infrastructure.Auth;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;

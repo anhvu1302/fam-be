@@ -1,7 +1,7 @@
 using FAM.Application.Settings.DTOs;
 using FAM.Application.Settings.Services;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Entities;
 using Microsoft.Extensions.Logging;
 

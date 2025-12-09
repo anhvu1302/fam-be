@@ -1,9 +1,9 @@
-using System.Reflection;
 using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
+using FAM.Domain.Users;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -65,7 +65,7 @@ public class VerifyEmailOtpLoginCommandHandler
         if (!user.IsEmailVerified)
         {
             // Set IsEmailVerified property through reflection since the property might not have a setter
-            typeof(Domain.Users.User).GetProperty("IsEmailVerified")?.SetValue(user, true);
+            typeof(User).GetProperty("IsEmailVerified")?.SetValue(user, true);
             _unitOfWork.Users.Update(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             _logger.LogInformation("Email marked as verified for user {UserId}", user.Id);
@@ -86,7 +86,7 @@ public class VerifyEmailOtpLoginCommandHandler
 
         // Generate tokens
         var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
-        var roles = new List<string>();  // User roles can be loaded separately if needed
+        var roles = new List<string>(); // User roles can be loaded separately if needed
 
         var accessToken = _jwtService.GenerateAccessTokenWithRsa(
             user.Id,
@@ -125,7 +125,7 @@ public class VerifyEmailOtpLoginCommandHandler
             activeKey.Algorithm);
     }
 
-    private static UserInfoDto MapToUserInfoDto(Domain.Users.User user)
+    private static UserInfoDto MapToUserInfoDto(User user)
     {
         return new UserInfoDto
         {

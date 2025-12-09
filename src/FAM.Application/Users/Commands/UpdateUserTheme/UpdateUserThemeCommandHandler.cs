@@ -1,5 +1,5 @@
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users.Entities;
 using MediatR;
 
@@ -21,14 +21,12 @@ public class UpdateUserThemeCommandHandler : IRequestHandler<UpdateUserThemeComm
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<UpdateUserThemeResponse> Handle(UpdateUserThemeCommand request, CancellationToken cancellationToken)
+    public async Task<UpdateUserThemeResponse> Handle(UpdateUserThemeCommand request,
+        CancellationToken cancellationToken)
     {
         // Verify user exists
         var userExists = await _userRepository.ExistsAsync(request.UserId, cancellationToken);
-        if (!userExists)
-        {
-            throw new DomainException(ErrorCodes.USER_NOT_FOUND, "User not found.");
-        }
+        if (!userExists) throw new DomainException(ErrorCodes.USER_NOT_FOUND, "User not found.");
 
         // Get or create theme
         var theme = await _userThemeRepository.GetByUserIdAsync(request.UserId, cancellationToken);

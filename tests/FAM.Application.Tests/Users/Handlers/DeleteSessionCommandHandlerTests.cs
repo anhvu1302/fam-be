@@ -1,6 +1,6 @@
 using FAM.Application.Users.Commands.DeleteSession;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users.Entities;
 using FluentAssertions;
 using Moq;
@@ -27,7 +27,7 @@ public class DeleteSessionCommandHandlerTests
         var userId = 1L;
         var sessionId = Guid.NewGuid();
         var device = UserDevice.Create(userId, "device1", "Chrome", "desktop");
-        
+
         _mockUserDeviceRepository
             .Setup(x => x.GetByIdAsync(sessionId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(device);
@@ -49,7 +49,7 @@ public class DeleteSessionCommandHandlerTests
         // Arrange
         var userId = 1L;
         var sessionId = Guid.NewGuid();
-        
+
         _mockUserDeviceRepository
             .Setup(x => x.GetByIdAsync(sessionId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserDevice?)null);
@@ -57,8 +57,7 @@ public class DeleteSessionCommandHandlerTests
         var command = new DeleteSessionCommand(userId, sessionId);
 
         // Act & Assert
-        await Assert.ThrowsAsync<DomainException>(
-            async () => await _handler.Handle(command, CancellationToken.None));
+        await Assert.ThrowsAsync<DomainException>(async () => await _handler.Handle(command, CancellationToken.None));
     }
 
     [Fact]
@@ -69,7 +68,7 @@ public class DeleteSessionCommandHandlerTests
         var otherUserId = 2L;
         var sessionId = Guid.NewGuid();
         var device = UserDevice.Create(otherUserId, "device1", "Chrome", "desktop");
-        
+
         _mockUserDeviceRepository
             .Setup(x => x.GetByIdAsync(sessionId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(device);
@@ -77,9 +76,10 @@ public class DeleteSessionCommandHandlerTests
         var command = new DeleteSessionCommand(userId, sessionId);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<DomainException>(
-            async () => await _handler.Handle(command, CancellationToken.None));
-        
+        var exception =
+            await Assert.ThrowsAsync<DomainException>(async () =>
+                await _handler.Handle(command, CancellationToken.None));
+
         exception.ErrorCode.Should().Be(ErrorCodes.USER_SESSION_NOT_FOUND);
     }
 }

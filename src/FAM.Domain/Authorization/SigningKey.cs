@@ -1,13 +1,30 @@
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Interfaces;
+using FAM.Domain.Users;
 
 namespace FAM.Domain.Authorization;
 
 /// <summary>
 /// RSA Signing Key for JWT tokens
 /// Supports key rotation and revocation
+/// Uses FullAuditedEntity for complete audit trail
 /// </summary>
-public class SigningKey : BaseEntity
+public class SigningKey : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasModifier,
+    IHasDeletionTime, IHasDeleter
 {
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
+    // Navigation properties
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+    public User? DeletedBy { get; set; }
+
     /// <summary>
     /// Unique Key ID (kid) used in JWT header
     /// </summary>
@@ -193,5 +210,22 @@ public class SigningKey : BaseEntity
     public bool IsExpired()
     {
         return ExpiresAt.HasValue && ExpiresAt.Value < DateTime.UtcNow;
+    }
+
+    public virtual void SoftDelete(long? deletedById = null)
+    {
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        DeletedById = deletedById;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedById = deletedById;
+    }
+
+    public virtual void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        DeletedById = null;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

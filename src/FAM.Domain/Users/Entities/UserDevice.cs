@@ -1,4 +1,5 @@
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Interfaces;
 using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Users.Entities;
@@ -6,9 +7,16 @@ namespace FAM.Domain.Users.Entities;
 /// <summary>
 /// Thiết bị đăng nhập của người dùng
 /// Uses GUID as primary key for better scalability with high volume of records
+/// Uses basic audit trail
 /// </summary>
-public class UserDevice : BaseEntityGuid
+public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasModificationTime, IHasDeletionTime
 {
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+
     public long UserId { get; private set; }
     public string DeviceId { get; private set; } = string.Empty;
     public string DeviceName { get; private set; } = string.Empty;
@@ -134,5 +142,19 @@ public class UserDevice : BaseEntityGuid
         return !string.IsNullOrEmpty(RefreshToken) &&
                RefreshTokenExpiresAt.HasValue &&
                RefreshTokenExpiresAt.Value > DateTime.UtcNow;
+    }
+
+    public virtual void SoftDelete(long? deletedById = null)
+    {
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public virtual void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

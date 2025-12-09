@@ -1,6 +1,4 @@
-namespace FAM.Application.Users.Queries.GetUserSessions;
-
-public record GetUserSessionsResponse(List<UserSessionDto> Sessions);
+namespace FAM.Application.Users.Shared;
 
 public record UserSessionDto(
     Guid Id,

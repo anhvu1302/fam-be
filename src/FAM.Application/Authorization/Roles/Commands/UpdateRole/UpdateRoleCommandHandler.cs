@@ -1,5 +1,5 @@
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using MediatR;
 
 namespace FAM.Application.Authorization.Roles.Commands.UpdateRole;

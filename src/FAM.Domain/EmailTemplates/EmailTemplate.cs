@@ -1,12 +1,18 @@
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Interfaces;
+using FAM.Domain.Users;
 
 namespace FAM.Domain.EmailTemplates;
 
 /// <summary>
 /// Email template for transactional emails
+/// Uses FullAuditedAggregateRoot for complete audit trail
 /// </summary>
-public class EmailTemplate : AggregateRoot
+public class EmailTemplate : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasModifier,
+    IHasDeletionTime, IHasDeleter, IHasDomainEvents
 {
+    private readonly List<IDomainEvent> _domainEvents = new();
+
     /// <summary>
     /// Template code (unique identifier for template)
     /// Examples: OTP_EMAIL, PASSWORD_RESET, PASSWORD_CHANGED, WELCOME_EMAIL, ACCOUNT_LOCKED
@@ -60,6 +66,23 @@ public class EmailTemplate : AggregateRoot
     /// Category of template
     /// </summary>
     public EmailTemplateCategory Category { get; private set; }
+
+    // Audit fields
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
+    // Domain events
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    // Navigation properties
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+    public User? DeletedBy { get; set; }
 
     private EmailTemplate()
     {
@@ -148,12 +171,36 @@ public class EmailTemplate : AggregateRoot
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public override void SoftDelete(long? deletedById = null)
+    // Domain event methods
+    protected void RaiseDomainEvent(IDomainEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
+    // Audit methods
+    public void SoftDelete(long? deletedById = null)
     {
         if (IsSystem)
             throw new DomainException(ErrorCodes.EMAIL_TEMPLATE_SYSTEM_CANNOT_DELETE);
 
-        base.SoftDelete(deletedById);
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        DeletedById = deletedById;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedById = deletedById;
+    }
+
+    public virtual void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        DeletedById = null;
+        UpdatedAt = DateTime.UtcNow;
     }
 }
 

@@ -14,13 +14,19 @@ using FAM.Application.Auth.Logout;
 using FAM.Application.Auth.RefreshToken;
 using FAM.Application.Auth.SelectAuthenticationMethod;
 using FAM.Application.Auth.Shared;
-using FAM.Application.Auth.VerifyTwoFactor;
 using FAM.Application.Auth.VerifyEmailOtp;
+using FAM.Application.Auth.VerifyTwoFactor;
 using FAM.Application.Common.Services;
+using FAM.Application.Users.Commands.DeleteAllSessions;
+using FAM.Application.Users.Commands.DeleteSession;
+using FAM.Application.Users.Commands.UpdateUserTheme;
+using FAM.Application.Users.Queries.GetUserSessions;
+using FAM.Application.Users.Queries.GetUserTheme;
 using FAM.Application.Users.Shared;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.WebApi.Configuration;
 using FAM.WebApi.Contracts.Common;
+using FAM.WebApi.Contracts.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -107,7 +113,6 @@ public class AuthController : BaseApiController
     public async Task<ActionResult<VerifyTwoFactorResponse>> VerifyTwoFactor(
         [FromBody] WebApiContracts.VerifyTwoFactorRequest request)
     {
-
         try
         {
             var ipAddress = GetClientIpAddress();
@@ -157,7 +162,6 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] WebApiContracts.RefreshTokenRequest request)
     {
-
         try
         {
             var command = new RefreshTokenCommand
@@ -240,7 +244,6 @@ public class AuthController : BaseApiController
     [Authorize]
     public async Task<ActionResult> ChangePassword([FromBody] WebApiContracts.ChangePasswordRequest request)
     {
-
         try
         {
             var userId = GetCurrentUserId();
@@ -283,7 +286,8 @@ public class AuthController : BaseApiController
         }
         catch (Exception)
         {
-            return InternalErrorResponse("An error occurred while fetching authentication methods", "GET_AUTH_METHODS_ERROR");
+            return InternalErrorResponse("An error occurred while fetching authentication methods",
+                "GET_AUTH_METHODS_ERROR");
         }
     }
 
@@ -296,7 +300,6 @@ public class AuthController : BaseApiController
     public async Task<ActionResult<SelectAuthenticationMethodResponse>> SelectAuthenticationMethod(
         [FromBody] WebApiContracts.SelectAuthenticationMethodRequest request)
     {
-
         try
         {
             var command = new SelectAuthenticationMethodCommand
@@ -314,7 +317,8 @@ public class AuthController : BaseApiController
         }
         catch (Exception)
         {
-            return InternalErrorResponse("An error occurred while selecting authentication method", "SELECT_AUTH_METHOD_ERROR");
+            return InternalErrorResponse("An error occurred while selecting authentication method",
+                "SELECT_AUTH_METHOD_ERROR");
         }
     }
 
@@ -335,7 +339,6 @@ public class AuthController : BaseApiController
     [AllowAnonymous]
     public async Task<ActionResult> VerifyEmailOtp([FromBody] WebApiContracts.VerifyEmailOtpRequest request)
     {
-
         try
         {
             var command = new VerifyEmailOtpLoginCommand
@@ -365,7 +368,6 @@ public class AuthController : BaseApiController
     [AllowAnonymous]
     public async Task<ActionResult> VerifyRecoveryCode([FromBody] WebApiContracts.VerifyRecoveryCodeRequest request)
     {
-
         try
         {
             var ipAddress = GetClientIpAddress();
@@ -403,9 +405,9 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.AuthenticationPolicy)]
     [HttpPost("forgot-password")]
     [AllowAnonymous]
-    public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword([FromBody] WebApiContracts.ForgotPasswordRequest request)
+    public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword(
+        [FromBody] WebApiContracts.ForgotPasswordRequest request)
     {
-
         try
         {
             var command = new ForgotPasswordCommand { Email = request.Email };
@@ -424,9 +426,9 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
     [HttpPost("verify-reset-token")]
     [AllowAnonymous]
-    public async Task<ActionResult<VerifyResetTokenResponse>> VerifyResetToken([FromBody] WebApiContracts.VerifyResetTokenRequest request)
+    public async Task<ActionResult<VerifyResetTokenResponse>> VerifyResetToken(
+        [FromBody] WebApiContracts.VerifyResetTokenRequest request)
     {
-
         try
         {
             var command = new VerifyResetTokenCommand
@@ -453,9 +455,9 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
     [HttpPost("reset-password")]
     [AllowAnonymous]
-    public async Task<ActionResult<ResetPasswordResponse>> ResetPassword([FromBody] WebApiContracts.ResetPasswordRequest request)
+    public async Task<ActionResult<ResetPasswordResponse>> ResetPassword(
+        [FromBody] WebApiContracts.ResetPasswordRequest request)
     {
-
         try
         {
             var command = new ResetPasswordCommand
@@ -484,7 +486,6 @@ public class AuthController : BaseApiController
     [Authorize]
     public async Task<ActionResult<Enable2FAResponse>> Enable2FA([FromBody] WebApiContracts.Enable2FARequest request)
     {
-
         try
         {
             var userId = GetCurrentUserId();
@@ -520,7 +521,6 @@ public class AuthController : BaseApiController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<Confirm2FAResponse>> Confirm2FA([FromBody] WebApiContracts.Confirm2FARequest request)
     {
-
         try
         {
             var userId = GetCurrentUserId();
@@ -588,7 +588,6 @@ public class AuthController : BaseApiController
     public async Task<ActionResult> DisableTwoFactorWithBackup(
         [FromBody] WebApiContracts.DisableTwoFactorWithBackupRequest request)
     {
-
         try
         {
             var command = new DisableTwoFactorWithBackupCommand
@@ -599,7 +598,8 @@ public class AuthController : BaseApiController
             };
 
             await _mediator.Send(command);
-            return OkResponse("Two-factor authentication has been disabled successfully. You can now login without 2FA.");
+            return OkResponse(
+                "Two-factor authentication has been disabled successfully. You can now login without 2FA.");
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -748,32 +748,14 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpGet("me/sessions")]
     [Authorize]
-    [ProducesResponseType(typeof(UserSessionsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<IReadOnlyList<UserSessionDto>>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetMySessions()
     {
         var userId = GetCurrentUserId();
-        var query = new FAM.Application.Users.Queries.GetUserSessions.GetUserSessionsQuery(userId);
+        var query = new GetUserSessionsQuery(userId);
         var result = await _mediator.Send(query);
 
-        var response = new UserSessionsResponse(
-            result.Sessions.Select(s => new UserSessionResponse(
-                s.Id,
-                s.DeviceId,
-                s.DeviceName,
-                s.DeviceType,
-                s.IpAddress,
-                s.Location,
-                s.Browser,
-                s.OperatingSystem,
-                s.LastLoginAt,
-                s.LastActivityAt,
-                s.IsActive,
-                s.IsTrusted,
-                s.IsCurrentDevice
-            )).ToList()
-        );
-
-        return OkResponse(response);
+        return OkResponse(result);
     }
 
     /// <summary>
@@ -786,7 +768,7 @@ public class AuthController : BaseApiController
     public async Task<IActionResult> DeleteSession(Guid sessionId)
     {
         var userId = GetCurrentUserId();
-        var command = new FAM.Application.Users.Commands.DeleteSession.DeleteSessionCommand(userId, sessionId);
+        var command = new DeleteSessionCommand(userId, sessionId);
         await _mediator.Send(command);
 
         return NoContent();
@@ -801,7 +783,7 @@ public class AuthController : BaseApiController
     public async Task<IActionResult> DeleteAllSessions([FromQuery] string? currentDeviceId = null)
     {
         var userId = GetCurrentUserId();
-        var command = new FAM.Application.Users.Commands.DeleteAllSessions.DeleteAllSessionsCommand(userId, currentDeviceId);
+        var command = new DeleteAllSessionsCommand(userId, currentDeviceId);
         await _mediator.Send(command);
 
         return NoContent();
@@ -817,7 +799,7 @@ public class AuthController : BaseApiController
     public async Task<IActionResult> GetMyTheme()
     {
         var userId = GetCurrentUserId();
-        var query = new FAM.Application.Users.Queries.GetUserTheme.GetUserThemeQuery(userId);
+        var query = new GetUserThemeQuery(userId);
         var result = await _mediator.Send(query);
 
         if (result == null)
@@ -845,10 +827,10 @@ public class AuthController : BaseApiController
     [Authorize]
     [ProducesResponseType(typeof(UserThemeResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateMyTheme([FromBody] FAM.WebApi.Contracts.Users.UpdateUserThemeRequest request)
+    public async Task<IActionResult> UpdateMyTheme([FromBody] UpdateUserThemeRequest request)
     {
         var userId = GetCurrentUserId();
-        var command = new FAM.Application.Users.Commands.UpdateUserTheme.UpdateUserThemeCommand(
+        var command = new UpdateUserThemeCommand(
             userId,
             request.Theme,
             request.PrimaryColor,

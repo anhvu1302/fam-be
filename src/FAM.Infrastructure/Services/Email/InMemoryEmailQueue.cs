@@ -17,7 +17,7 @@ public sealed class InMemoryEmailQueue : IEmailQueue
     public InMemoryEmailQueue(ILogger<InMemoryEmailQueue> logger, int capacity = 1000)
     {
         _logger = logger;
-        
+
         // Bounded channel with configurable capacity
         // When full, oldest messages will be dropped (for resilience)
         var options = new BoundedChannelOptions(capacity)

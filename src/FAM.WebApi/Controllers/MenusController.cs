@@ -10,7 +10,7 @@ using FAM.Application.Menu.Queries.GetMenuByCode;
 using FAM.Application.Menu.Queries.GetMenuById;
 using FAM.Application.Menu.Queries.GetMenuTree;
 using FAM.Application.Menu.Queries.GetVisibleMenuTree;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.WebApi.Contracts.Common;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

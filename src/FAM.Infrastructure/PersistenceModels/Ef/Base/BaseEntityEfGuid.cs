@@ -1,4 +1,4 @@
-namespace FAM.Infrastructure.PersistenceModels.Ef;
+namespace FAM.Infrastructure.PersistenceModels.Ef.Base;
 
 /// <summary>
 /// Base entity with GUID primary key for high-volume tables

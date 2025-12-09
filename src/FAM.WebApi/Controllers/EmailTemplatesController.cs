@@ -3,12 +3,11 @@ using FAM.Application.EmailTemplates.Commands.CreateEmailTemplate;
 using FAM.Application.EmailTemplates.Commands.DeactivateEmailTemplate;
 using FAM.Application.EmailTemplates.Commands.DeleteEmailTemplate;
 using FAM.Application.EmailTemplates.Commands.UpdateEmailTemplate;
-using FAM.Application.EmailTemplates.Queries;
 using FAM.Application.EmailTemplates.Queries.GetAllEmailTemplates;
 using FAM.Application.EmailTemplates.Queries.GetEmailTemplateByCode;
 using FAM.Application.EmailTemplates.Queries.GetEmailTemplateById;
 using FAM.Application.EmailTemplates.Shared;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.EmailTemplates;
 using MediatR;
@@ -67,7 +66,7 @@ public class EmailTemplatesController : BaseApiController
         };
 
         var result = await _mediator.Send(query);
-        
+
         var response = result.Select(dto => new EmailTemplateResponse(
             dto.Id,
             dto.Code,
@@ -84,7 +83,7 @@ public class EmailTemplatesController : BaseApiController
             dto.CreatedAt,
             dto.UpdatedAt
         )).ToList();
-        
+
         return OkResponse(response);
     }
 

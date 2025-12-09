@@ -41,8 +41,13 @@ public sealed record EmailSendResult
     public string? ProviderResponse { get; init; }
 
     public static EmailSendResult Succeeded(string? messageId = null, string? providerResponse = null)
-        => new() { Success = true, MessageId = messageId, ProviderResponse = providerResponse };
+    {
+        return new EmailSendResult { Success = true, MessageId = messageId, ProviderResponse = providerResponse };
+    }
 
     public static EmailSendResult Failed(string errorMessage, string? providerResponse = null)
-        => new() { Success = false, ErrorMessage = errorMessage, ProviderResponse = providerResponse };
+    {
+        return new EmailSendResult
+            { Success = false, ErrorMessage = errorMessage, ProviderResponse = providerResponse };
+    }
 }

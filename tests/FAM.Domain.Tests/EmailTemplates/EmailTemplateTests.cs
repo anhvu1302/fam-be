@@ -1,6 +1,5 @@
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.EmailTemplates;
-using Xunit;
 
 namespace FAM.Domain.Tests.EmailTemplates;
 
@@ -49,7 +48,7 @@ public class EmailTemplateTests
         // Act
         var template = EmailTemplate.Create(
             code, name, subject, htmlBody, category,
-            description, plainTextBody, placeholders, isSystem: true);
+            description, plainTextBody, placeholders, true);
 
         // Assert
         Assert.Equal(description, template.Description);

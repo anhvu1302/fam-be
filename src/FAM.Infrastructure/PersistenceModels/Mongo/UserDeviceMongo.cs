@@ -1,3 +1,4 @@
+using FAM.Infrastructure.PersistenceModels.Mongo.Base;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace FAM.Infrastructure.PersistenceModels.Mongo;
@@ -6,7 +7,7 @@ namespace FAM.Infrastructure.PersistenceModels.Mongo;
 /// MongoDB document model for UserDevice (uses GUID as domain ID for scalability)
 /// </summary>
 [BsonCollection("userDevices")]
-public class UserDeviceMongo : BaseEntityMongoGuid
+public class UserDeviceMongo : BasicAuditedEntityMongoGuid
 {
     [BsonElement("userId")] public long UserId { get; set; }
 

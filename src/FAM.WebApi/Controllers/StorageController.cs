@@ -135,7 +135,8 @@ public class StorageController : BaseApiController
             file.FileName,
             file.Length);
 
-        if (!isValid || !fileType.HasValue) return BadRequestResponse(errorMessage ?? "File validation failed", "FILE_VALIDATION_FAILED");
+        if (!isValid || !fileType.HasValue)
+            return BadRequestResponse(errorMessage ?? "File validation failed", "FILE_VALIDATION_FAILED");
 
         try
         {
@@ -151,7 +152,8 @@ public class StorageController : BaseApiController
             var url = await _storageService.GetPresignedUrlAsync(filePath, 3600);
             var expiresAt = DateTime.UtcNow.AddSeconds(3600);
 
-            return OkResponse(new UploadFileResponse(filePath, url, expiresAt, file.Length), "File uploaded successfully");
+            return OkResponse(new UploadFileResponse(filePath, url, expiresAt, file.Length),
+                "File uploaded successfully");
         }
         catch (Exception ex)
         {
@@ -199,7 +201,8 @@ public class StorageController : BaseApiController
             request.FileName,
             request.TotalSize);
 
-        if (!isValid || !fileType.HasValue) return BadRequestResponse(errorMessage ?? "File validation failed", "FILE_VALIDATION_FAILED");
+        if (!isValid || !fileType.HasValue)
+            return BadRequestResponse(errorMessage ?? "File validation failed", "FILE_VALIDATION_FAILED");
 
         try
         {
@@ -264,7 +267,8 @@ public class StorageController : BaseApiController
 
         // Detect file type from fileName
         var fileType = _fileValidator.DetectFileType(fileName);
-        if (!fileType.HasValue) return BadRequestResponse("Unable to determine file type from file name", "FILE_TYPE_DETECTION_FAILED");
+        if (!fileType.HasValue)
+            return BadRequestResponse("Unable to determine file type from file name", "FILE_TYPE_DETECTION_FAILED");
 
         try
         {
@@ -320,11 +324,13 @@ public class StorageController : BaseApiController
     public async Task<IActionResult> CompleteMultipartUpload(
         [FromBody] CompleteMultipartUploadRequest request)
     {
-        if (request.Parts == null || request.Parts.Count == 0) return BadRequestResponse("Parts are required", "PARTS_REQUIRED");
+        if (request.Parts == null || request.Parts.Count == 0)
+            return BadRequestResponse("Parts are required", "PARTS_REQUIRED");
 
         // Detect file type from fileName
         var fileType = _fileValidator.DetectFileType(request.FileName);
-        if (!fileType.HasValue) return BadRequestResponse("Unable to determine file type from file name", "FILE_TYPE_DETECTION_FAILED");
+        if (!fileType.HasValue)
+            return BadRequestResponse("Unable to determine file type from file name", "FILE_TYPE_DETECTION_FAILED");
 
         try
         {
@@ -340,7 +346,8 @@ public class StorageController : BaseApiController
 
             var fileInfo = await _storageService.GetFileInfoAsync(filePath);
 
-            return OkResponse(new UploadFileResponse(filePath, url, expiresAt, fileInfo.Size), "Upload completed successfully");
+            return OkResponse(new UploadFileResponse(filePath, url, expiresAt, fileInfo.Size),
+                "Upload completed successfully");
         }
         catch (Exception ex)
         {
@@ -374,7 +381,8 @@ public class StorageController : BaseApiController
     {
         // Detect file type from fileName
         var fileType = _fileValidator.DetectFileType(request.FileName);
-        if (!fileType.HasValue) return BadRequestResponse("Unable to determine file type from file name", "FILE_TYPE_DETECTION_FAILED");
+        if (!fileType.HasValue)
+            return BadRequestResponse("Unable to determine file type from file name", "FILE_TYPE_DETECTION_FAILED");
 
         try
         {

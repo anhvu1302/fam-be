@@ -1,4 +1,3 @@
-using FAM.Domain.Common;
 using MediatR;
 
 namespace FAM.Application.Auth.SendEmailVerificationOtp;

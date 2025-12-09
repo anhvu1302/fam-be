@@ -13,7 +13,8 @@ public class GetAllMenusQueryHandler : IRequestHandler<GetAllMenusQuery, IEnumer
         _repository = repository;
     }
 
-    public async Task<IEnumerable<MenuItemFlatResponse>> Handle(GetAllMenusQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<MenuItemFlatResponse>> Handle(GetAllMenusQuery request,
+        CancellationToken cancellationToken)
     {
         var menus = await _repository.GetAllAsync(cancellationToken);
         return menus.Select(MenuItemFlatResponse.FromDomain);

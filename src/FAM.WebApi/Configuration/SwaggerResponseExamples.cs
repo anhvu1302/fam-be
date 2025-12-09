@@ -1,5 +1,3 @@
-using FAM.WebApi.Contracts.Common;
-
 namespace FAM.WebApi.Configuration;
 
 /// <summary>
@@ -62,60 +60,72 @@ public static class SwaggerResponseExamples
     /// <summary>
     /// 200 OK - Success response with data
     /// </summary>
-    public const string Response200Success = @"/// <response code=""200"">Success - Returns {success: true, message?: string, result: T}</response>";
+    public const string Response200Success =
+        @"/// <response code=""200"">Success - Returns {success: true, message?: string, result: T}</response>";
 
     /// <summary>
     /// 201 Created - Success response for resource creation
     /// </summary>
-    public const string Response201Created = @"/// <response code=""201"">Created - Returns {success: true, message?: string, result: T}</response>";
+    public const string Response201Created =
+        @"/// <response code=""201"">Created - Returns {success: true, message?: string, result: T}</response>";
 
     /// <summary>
     /// 204 No Content - Success with no response body
     /// </summary>
-    public const string Response204NoContent = @"/// <response code=""204"">No Content - Returns empty response</response>";
+    public const string Response204NoContent =
+        @"/// <response code=""204"">No Content - Returns empty response</response>";
 
     /// <summary>
     /// 400 Bad Request - Standard validation error
     /// </summary>
-    public const string Response400BadRequest = @"/// <response code=""400"">Bad Request - Returns {success: false, errors: [{message: string, code: string}]}</response>";
+    public const string Response400BadRequest =
+        @"/// <response code=""400"">Bad Request - Returns {success: false, errors: [{message: string, code: string}]}</response>";
 
     /// <summary>
     /// 400 File Required
     /// </summary>
-    public const string Response400FileRequired = @"/// <response code=""400"">Bad Request - Returns {success: false, errors: [{message: ""File is required"", code: ""FILE_REQUIRED""}]}</response>";
+    public const string Response400FileRequired =
+        @"/// <response code=""400"">Bad Request - Returns {success: false, errors: [{message: ""File is required"", code: ""FILE_REQUIRED""}]}</response>";
 
     /// <summary>
     /// 400 Validation Failed
     /// </summary>
-    public const string Response400ValidationFailed = @"/// <response code=""400"">Bad Request - Returns {success: false, errors: [{message: ""Validation failed"", code: ""VALIDATION_FAILED""}]}</response>";
+    public const string Response400ValidationFailed =
+        @"/// <response code=""400"">Bad Request - Returns {success: false, errors: [{message: ""Validation failed"", code: ""VALIDATION_FAILED""}]}</response>";
 
     /// <summary>
     /// 400 Invalid Parameters
     /// </summary>
-    public const string Response400InvalidParameters = @"/// <response code=""400"">Bad Request - Returns {success: false, errors: [{message: ""Invalid query parameters"", code: ""INVALID_PARAMETERS""}]}</response>";
+    public const string Response400InvalidParameters =
+        @"/// <response code=""400"">Bad Request - Returns {success: false, errors: [{message: ""Invalid query parameters"", code: ""INVALID_PARAMETERS""}]}</response>";
 
     /// <summary>
     /// 401 Unauthorized - User not authenticated
     /// </summary>
-    public const string Response401Unauthorized = @"/// <response code=""401"">Unauthorized - Returns {success: false, errors: [{message: ""User not authenticated"", code: ""UNAUTHORIZED""}]}</response>";
+    public const string Response401Unauthorized =
+        @"/// <response code=""401"">Unauthorized - Returns {success: false, errors: [{message: ""User not authenticated"", code: ""UNAUTHORIZED""}]}</response>";
 
     /// <summary>
     /// 403 Forbidden - User not authorized
     /// </summary>
-    public const string Response403Forbidden = @"/// <response code=""403"">Forbidden - Returns {success: false, errors: [{message: ""User not authorized"", code: ""FORBIDDEN""}]}</response>";
+    public const string Response403Forbidden =
+        @"/// <response code=""403"">Forbidden - Returns {success: false, errors: [{message: ""User not authorized"", code: ""FORBIDDEN""}]}</response>";
 
     /// <summary>
     /// 404 Not Found - Resource not found
     /// </summary>
-    public const string Response404NotFound = @"/// <response code=""404"">Not Found - Returns {success: false, errors: [{message: ""Resource not found"", code: ""NOT_FOUND""}]}</response>";
+    public const string Response404NotFound =
+        @"/// <response code=""404"">Not Found - Returns {success: false, errors: [{message: ""Resource not found"", code: ""NOT_FOUND""}]}</response>";
 
     /// <summary>
     /// 409 Conflict - Resource already exists
     /// </summary>
-    public const string Response409Conflict = @"/// <response code=""409"">Conflict - Returns {success: false, errors: [{message: ""Resource already exists"", code: ""ALREADY_EXISTS""}]}</response>";
+    public const string Response409Conflict =
+        @"/// <response code=""409"">Conflict - Returns {success: false, errors: [{message: ""Resource already exists"", code: ""ALREADY_EXISTS""}]}</response>";
 
     /// <summary>
     /// 500 Internal Server Error
     /// </summary>
-    public const string Response500InternalError = @"/// <response code=""500"">Internal Server Error - Returns {success: false, errors: [{message: ""Internal server error"", code: ""INTERNAL_ERROR""}]}</response>";
+    public const string Response500InternalError =
+        @"/// <response code=""500"">Internal Server Error - Returns {success: false, errors: [{message: ""Internal server error"", code: ""INTERNAL_ERROR""}]}</response>";
 }

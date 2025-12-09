@@ -3,7 +3,6 @@ using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Services;
 using FAM.Application.Settings;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

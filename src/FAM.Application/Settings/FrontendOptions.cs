@@ -25,7 +25,7 @@ public class BackendOptions
     public string GetBaseUrl()
     {
         var url = BaseUrl.TrimEnd('/');
-        
+
         // If Port is specified and URL doesn't already have a port, add it
         var schemeEndIndex = url.IndexOf("://", StringComparison.Ordinal);
         if (Port.HasValue && schemeEndIndex >= 0 && !url.Substring(schemeEndIndex + 3).Contains(':'))
@@ -33,14 +33,17 @@ public class BackendOptions
             var uri = new Uri(url);
             return $"{uri.Scheme}://{uri.Host}:{Port.Value}";
         }
-        
+
         return url;
     }
 
     /// <summary>
     /// Get full API URL with path
     /// </summary>
-    public string GetApiUrl(string path) => $"{GetBaseUrl()}/{path.TrimStart('/')}";
+    public string GetApiUrl(string path)
+    {
+        return $"{GetBaseUrl()}/{path.TrimStart('/')}";
+    }
 }
 
 /// <summary>
@@ -89,7 +92,7 @@ public class FrontendOptions
     private string GetBaseUrl()
     {
         var url = BaseUrl.TrimEnd('/');
-        
+
         // If Port is specified and URL doesn't already have a port, add it
         var schemeEndIndex = url.IndexOf("://", StringComparison.Ordinal);
         if (Port.HasValue && schemeEndIndex >= 0 && !url.Substring(schemeEndIndex + 3).Contains(':'))
@@ -97,22 +100,31 @@ public class FrontendOptions
             var uri = new Uri(url);
             return $"{uri.Scheme}://{uri.Host}:{Port.Value}";
         }
-        
+
         return url;
     }
 
     /// <summary>
     /// Get full reset password URL
     /// </summary>
-    public string GetResetPasswordUrl() => $"{GetBaseUrl()}{ResetPasswordPath}";
+    public string GetResetPasswordUrl()
+    {
+        return $"{GetBaseUrl()}{ResetPasswordPath}";
+    }
 
     /// <summary>
     /// Get full verify email URL
     /// </summary>
-    public string GetVerifyEmailUrl() => $"{GetBaseUrl()}{VerifyEmailPath}";
+    public string GetVerifyEmailUrl()
+    {
+        return $"{GetBaseUrl()}{VerifyEmailPath}";
+    }
 
     /// <summary>
     /// Get full login URL
     /// </summary>
-    public string GetLoginUrl() => $"{GetBaseUrl()}{LoginPath}";
+    public string GetLoginUrl()
+    {
+        return $"{GetBaseUrl()}{LoginPath}";
+    }
 }

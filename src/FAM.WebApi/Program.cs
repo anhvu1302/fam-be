@@ -14,7 +14,6 @@ using FAM.Infrastructure.Services.Email;
 using FAM.WebApi.Configuration;
 using FAM.WebApi.Middleware;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
@@ -74,16 +73,16 @@ builder.Services.AddOptimizedCors(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddControllers(options =>
-{
-    // Add validation filter to handle FluentValidation errors in our standard format
-    options.Filters.Add<ValidationFilter>();
-})
-.ConfigureApiBehaviorOptions(options =>
-{
-    // Disable automatic 400 responses for model validation errors
-    // Our ValidationFilter will handle it instead
-    options.SuppressModelStateInvalidFilter = true;
-});
+    {
+        // Add validation filter to handle FluentValidation errors in our standard format
+        options.Filters.Add<ValidationFilter>();
+    })
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        // Disable automatic 400 responses for model validation errors
+        // Our ValidationFilter will handle it instead
+        options.SuppressModelStateInvalidFilter = true;
+    });
 
 // Add FluentValidation - manual validation (no auto-validation to control error format)
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
@@ -93,10 +92,7 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails(options =>
 {
     // Don't map status codes to ProblemDetails - we handle it ourselves
-    options.CustomizeProblemDetails = context => 
-    {
-        context.ProblemDetails.Extensions.Clear();
-    };
+    options.CustomizeProblemDetails = context => { context.ProblemDetails.Extensions.Clear(); };
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -290,13 +286,9 @@ builder.Services.Configure<FrontendOptions>(options =>
         {
             options.BaseUrl = $"{uri.Scheme}://{uri.Host}";
             if (uri.Port != 80 && uri.Port != 443)
-            {
                 options.Port = uri.Port;
-            }
             else
-            {
                 options.Port = null; // Default ports
-            }
         }
         else
         {
@@ -307,10 +299,7 @@ builder.Services.Configure<FrontendOptions>(options =>
 
     // Override port separately if specified
     var frontendPort = Environment.GetEnvironmentVariable("FRONTEND_PORT");
-    if (!string.IsNullOrEmpty(frontendPort) && int.TryParse(frontendPort, out var port))
-    {
-        options.Port = port;
-    }
+    if (!string.IsNullOrEmpty(frontendPort) && int.TryParse(frontendPort, out var port)) options.Port = port;
 });
 builder.Services.AddSingleton(sp =>
     sp.GetRequiredService<IOptions<FrontendOptions>>().Value);
@@ -358,15 +347,15 @@ app.UseSerilogRequestLogging(options =>
 {
     // Customize the message template
     options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000}ms";
-    
+
     // Don't log exceptions for client errors (4xx) - they are handled by GlobalExceptionHandler
     options.GetLevel = (httpContext, elapsed, ex) =>
     {
         if (ex != null || httpContext.Response.StatusCode >= 500)
-            return Serilog.Events.LogEventLevel.Error;
+            return LogEventLevel.Error;
         if (httpContext.Response.StatusCode >= 400)
-            return Serilog.Events.LogEventLevel.Warning;
-        return Serilog.Events.LogEventLevel.Information;
+            return LogEventLevel.Warning;
+        return LogEventLevel.Information;
     };
 
     // Attach additional properties to the log event

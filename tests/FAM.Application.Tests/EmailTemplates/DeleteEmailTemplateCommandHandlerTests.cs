@@ -1,9 +1,8 @@
 using FAM.Application.EmailTemplates.Commands.DeleteEmailTemplate;
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.EmailTemplates;
 using Moq;
-using Xunit;
 
 namespace FAM.Application.Tests.EmailTemplates;
 
@@ -53,9 +52,8 @@ public class DeleteEmailTemplateCommandHandlerTests
             .ReturnsAsync((EmailTemplate?)null);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<NotFoundException>(
-            () => _handler.Handle(command, default));
-        
+        var exception = await Assert.ThrowsAsync<NotFoundException>(() => _handler.Handle(command, default));
+
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_NOT_FOUND, exception.ErrorCode);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(default), Times.Never);
     }
@@ -75,9 +73,8 @@ public class DeleteEmailTemplateCommandHandlerTests
             .ReturnsAsync(template);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<DomainException>(
-            () => _handler.Handle(command, default));
-        
+        var exception = await Assert.ThrowsAsync<DomainException>(() => _handler.Handle(command, default));
+
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_SYSTEM_CANNOT_DELETE, exception.ErrorCode);
     }
 }

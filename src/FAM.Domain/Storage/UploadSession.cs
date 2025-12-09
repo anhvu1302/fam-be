@@ -1,13 +1,15 @@
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Enums;
+using FAM.Domain.Common.Interfaces;
 
 namespace FAM.Domain.Storage;
 
 /// <summary>
 /// Tracks temporary file uploads until they are finalized or expired
 /// Implements "Upload tạm → Confirm khi create" pattern for eventual consistency
+/// Uses basic audit tracking (UpdatedAt tracking only, no audit user tracking)
 /// </summary>
-public class UploadSession : Entity
+public class UploadSession : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasDeletionTime
 {
     /// <summary>
     /// Unique identifier for this upload session (UUID)
@@ -78,6 +80,13 @@ public class UploadSession : Entity
     /// Idempotency key for safe retries
     /// </summary>
     public string? IdempotencyKey { get; private set; }
+
+    // Audit fields
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
 
     // EF Core
     private UploadSession()
@@ -240,4 +249,22 @@ public enum UploadSessionStatus
     /// Temp file cleaned up by garbage collector
     /// </summary>
     CleanedUp = 5
+}
+
+// Extension methods for UploadSession
+public static class UploadSessionExtensions
+{
+    public static void SoftDelete(this UploadSession session, long? deletedById = null)
+    {
+        session.IsDeleted = true;
+        session.DeletedAt = DateTime.UtcNow;
+        session.UpdatedAt = DateTime.UtcNow;
+    }
+
+    public static void Restore(this UploadSession session)
+    {
+        session.IsDeleted = false;
+        session.DeletedAt = null;
+        session.UpdatedAt = DateTime.UtcNow;
+    }
 }

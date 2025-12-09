@@ -1,5 +1,5 @@
 using FAM.Domain.Assets;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Assets;

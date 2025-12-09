@@ -7,7 +7,7 @@ namespace FAM.Infrastructure.PersistenceModels.Ef;
 /// Composite key: (RoleId, PermissionId)
 /// </summary>
 [Table("role_permissions")]
-public class RolePermissionEf : JunctionEntityEf
+public class RolePermissionEf
 {
     public long RoleId { get; set; }
     public long PermissionId { get; set; }

@@ -1,6 +1,7 @@
 using FAM.Domain.Assets.Events;
 using FAM.Domain.Categories;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Conditions;
 using FAM.Domain.Finance;
 using FAM.Domain.Geography;
@@ -18,9 +19,14 @@ namespace FAM.Domain.Assets;
 
 /// <summary>
 /// Tài sản chính - Aggregate Root
+/// Uses full audit trail with domain events
 /// </summary>
-public class Asset : AggregateRoot
+public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasModifier, IHasDeletionTime,
+    IHasDeleter, IHasDomainEvents
 {
+    private readonly List<IDomainEvent> _domainEvents = new();
+
+    // Domain fields
     public string Name { get; private set; } = string.Empty;
 
     // Company & Type
@@ -129,7 +135,22 @@ public class Asset : AggregateRoot
     public string? Notes { get; private set; }
     public string? InternalNotes { get; private set; } // Private notes, not visible to all users
 
-    // Navigation properties - EF Core
+    // Audit fields
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
+    // Domain events
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    // Navigation properties
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+    public User? DeletedBy { get; set; }
     public CompanyDetails? Company { get; set; }
     public AssetType? AssetType { get; set; }
     public AssetCategory? Category { get; set; }
@@ -145,7 +166,6 @@ public class Asset : AggregateRoot
     public User? Owner { get; set; }
     public LifecycleStatus? LifecycleStatus { get; set; }
     public UsageStatus? UsageStatus { get; set; }
-
     public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
     public ICollection<AssetEvent> AssetEvents { get; set; } = new List<AssetEvent>();
     public ICollection<FinanceEntry> FinanceEntries { get; set; } = new List<FinanceEntry>();
@@ -937,6 +957,35 @@ public class Asset : AggregateRoot
         return WarrantyUntil.HasValue
             ? (int?)(WarrantyUntil.Value - DateTime.UtcNow).Days
             : null;
+    }
+
+    // Domain event methods
+    protected void RaiseDomainEvent(IDomainEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
+
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
+
+    // Audit methods
+    public void SoftDelete(long? deletedById = null)
+    {
+        IsDeleted = true;
+        DeletedAt = DateTime.UtcNow;
+        DeletedById = deletedById;
+        UpdatedAt = DateTime.UtcNow;
+        UpdatedById = deletedById;
+    }
+
+    public void Restore()
+    {
+        IsDeleted = false;
+        DeletedAt = null;
+        DeletedById = null;
+        UpdatedAt = DateTime.UtcNow;
     }
 }
 

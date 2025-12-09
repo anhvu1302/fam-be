@@ -1,5 +1,4 @@
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
 using MediatR;
 
 namespace FAM.Application.Users.Commands.DeleteAllSessions;
@@ -21,7 +20,7 @@ public class DeleteAllSessionsCommandHandler : IRequestHandler<DeleteAllSessions
             request.UserId,
             request.ExcludeDeviceId,
             cancellationToken);
-            
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Unit.Value;

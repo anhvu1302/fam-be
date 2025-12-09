@@ -1,5 +1,5 @@
 using FAM.Domain.Abstractions;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using MediatR;
 
 namespace FAM.Application.Users.Commands.DeleteSession;
@@ -18,11 +18,9 @@ public class DeleteSessionCommandHandler : IRequestHandler<DeleteSessionCommand,
     public async Task<Unit> Handle(DeleteSessionCommand request, CancellationToken cancellationToken)
     {
         var device = await _userDeviceRepository.GetByIdAsync(request.SessionId, cancellationToken);
-        
+
         if (device == null || device.UserId != request.UserId)
-        {
             throw new DomainException(ErrorCodes.USER_SESSION_NOT_FOUND, "Session not found or access denied.");
-        }
 
         device.Deactivate();
         _userDeviceRepository.Update(device);

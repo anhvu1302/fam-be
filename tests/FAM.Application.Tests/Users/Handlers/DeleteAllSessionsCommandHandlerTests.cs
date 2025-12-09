@@ -1,6 +1,5 @@
 using FAM.Application.Users.Commands.DeleteAllSessions;
 using FAM.Domain.Abstractions;
-using FluentAssertions;
 using Moq;
 
 namespace FAM.Application.Tests.Users.Handlers;
@@ -34,7 +33,7 @@ public class DeleteAllSessionsCommandHandlerTests
 
         // Assert
         _mockUserDeviceRepository.Verify(
-            x => x.DeactivateAllUserDevicesAsync(userId, null, It.IsAny<CancellationToken>()), 
+            x => x.DeactivateAllUserDevicesAsync(userId, null, It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -45,7 +44,7 @@ public class DeleteAllSessionsCommandHandlerTests
         // Arrange
         var userId = 1L;
         var excludeDeviceId = "device123";
-        
+
         _mockUserDeviceRepository
             .Setup(x => x.DeactivateAllUserDevicesAsync(userId, excludeDeviceId, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -57,7 +56,7 @@ public class DeleteAllSessionsCommandHandlerTests
 
         // Assert
         _mockUserDeviceRepository.Verify(
-            x => x.DeactivateAllUserDevicesAsync(userId, excludeDeviceId, It.IsAny<CancellationToken>()), 
+            x => x.DeactivateAllUserDevicesAsync(userId, excludeDeviceId, It.IsAny<CancellationToken>()),
             Times.Once);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }

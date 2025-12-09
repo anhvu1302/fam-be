@@ -13,7 +13,7 @@ public sealed class RedisEmailQueue : IEmailQueue
 {
     private readonly IConnectionMultiplexer _redis;
     private readonly ILogger<RedisEmailQueue> _logger;
-    
+
     private const string QueueKey = "fam:email:queue";
     private const string ProcessingKey = "fam:email:processing";
     private const string FailedKey = "fam:email:failed";
@@ -55,7 +55,7 @@ public sealed class RedisEmailQueue : IEmailQueue
         {
             var db = _redis.GetDatabase();
             var json = JsonSerializer.Serialize(message, JsonOptions);
-            
+
             // RPUSH for FIFO queue (add to right, take from left)
             await db.ListRightPushAsync(QueueKey, json);
 
@@ -75,23 +75,18 @@ public sealed class RedisEmailQueue : IEmailQueue
         try
         {
             var db = _redis.GetDatabase();
-            
+
             // LPOP to get from left (FIFO)
             var json = await db.ListLeftPopAsync(QueueKey);
-            
-            if (json.IsNullOrEmpty)
-            {
-                return null;
-            }
+
+            if (json.IsNullOrEmpty) return null;
 
             var message = JsonSerializer.Deserialize<EmailMessage>(json!, JsonOptions);
-            
+
             if (message != null)
-            {
                 _logger.LogDebug(
                     "Email dequeued from Redis: {EmailId} to {To}, Queue size: {Count}",
                     message.Id, message.To, Count);
-            }
 
             return message;
         }
@@ -117,9 +112,9 @@ public sealed class RedisEmailQueue : IEmailQueue
                 FailedAt = DateTime.UtcNow
             };
             var json = JsonSerializer.Serialize(failedMessage, JsonOptions);
-            
+
             await db.ListRightPushAsync(FailedKey, json);
-            
+
             _logger.LogWarning(
                 "Email {EmailId} moved to failed queue: {Error}",
                 message.Id, errorMessage);

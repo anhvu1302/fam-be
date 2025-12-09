@@ -1,6 +1,6 @@
 using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
-using FAM.Domain.Common;
+using FAM.Domain.Common.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

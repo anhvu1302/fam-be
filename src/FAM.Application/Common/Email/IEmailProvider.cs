@@ -35,6 +35,7 @@ public interface IEmailProvider
             var result = await SendAsync(message, cancellationToken);
             results.Add(result);
         }
+
         return results;
     }
 }

@@ -17,7 +17,8 @@ public static class UserMappers
     /// <summary>
     /// Convert PaginationQueryParameters to GetUsersQuery
     /// </summary>
-    public static GetUsersQuery ToGetUsersQuery(this PaginationQueryParameters parameters, PaginationSettings paginationSettings)
+    public static GetUsersQuery ToGetUsersQuery(this PaginationQueryParameters parameters,
+        PaginationSettings paginationSettings)
     {
         var queryRequest = new QueryRequest
         {
