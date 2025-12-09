@@ -43,7 +43,7 @@ public class MongoDbUserSeeder : BaseDataSeeder
             {
                 DomainId = 1,
                 Username = "admin",
-                Email = "admin@fam.local",
+                Email = "admin@gmail.com",
                 FullName = "System Administrator",
                 PasswordHash = "RlI1JkKTEVI6+RhcU/dLzeKshHhDwe3NpWd6Z3BIFtY=", // Hash for Admin@123
                 PasswordSalt = "6eb1ccfd64a94810bd3398067dff13f5", // Salt for Admin@123

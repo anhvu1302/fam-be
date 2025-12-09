@@ -36,7 +36,7 @@ public class AdminUserSeeder : BaseDataSeeder
             new()
             {
                 Username = "admin",
-                Email = "admin@fam.local",
+                Email = "admin@gmail.com",
                 FirstName = "System",
                 LastName = "Administrator",
                 FullName = "System Administrator",
