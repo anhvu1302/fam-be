@@ -111,7 +111,7 @@ docker-clean:
 
 prod-deploy:
 	@echo "🚀 [1/4] Creating data directories..."
-	@mkdir -p data/postgres data/minio data/seq
+	@mkdir -p data/postgres data/minio data/seq data/redis
 	
 	@echo "🚀 [2/4] Building Docker image..."
 	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) build --build-arg CACHEBUST=$(NOW)
