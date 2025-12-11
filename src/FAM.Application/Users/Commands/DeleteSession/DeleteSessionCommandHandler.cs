@@ -1,3 +1,4 @@
+using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using MediatR;
@@ -8,11 +9,16 @@ public class DeleteSessionCommandHandler : IRequestHandler<DeleteSessionCommand,
 {
     private readonly IUserDeviceRepository _userDeviceRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ITokenBlacklistService _tokenBlacklistService;
 
-    public DeleteSessionCommandHandler(IUserDeviceRepository userDeviceRepository, IUnitOfWork unitOfWork)
+    public DeleteSessionCommandHandler(
+        IUserDeviceRepository userDeviceRepository,
+        IUnitOfWork unitOfWork,
+        ITokenBlacklistService tokenBlacklistService)
     {
         _userDeviceRepository = userDeviceRepository;
         _unitOfWork = unitOfWork;
+        _tokenBlacklistService = tokenBlacklistService;
     }
 
     public async Task<Unit> Handle(DeleteSessionCommand request, CancellationToken cancellationToken)
@@ -22,8 +28,29 @@ public class DeleteSessionCommandHandler : IRequestHandler<DeleteSessionCommand,
         if (device == null || device.UserId != request.UserId)
             throw new DomainException(ErrorCodes.USER_SESSION_NOT_FOUND, "Session not found or access denied.");
 
-        device.Deactivate();
-        _userDeviceRepository.Update(device);
+        // Blacklist the active access token using stored JTI before deleting the session
+        if (!string.IsNullOrEmpty(device.ActiveAccessTokenJti))
+        {
+            // Calculate expiration time using config (add extra buffer for clock skew)
+            var tokenExpiryTime = DateTime.UtcNow.AddHours(2); // Conservative estimate
+            
+            await _tokenBlacklistService.BlacklistTokenByJtiAsync(
+                device.ActiveAccessTokenJti,
+                tokenExpiryTime,
+                cancellationToken);
+        }
+        
+        // Also blacklist the current access token if provided (for immediate revocation)
+        if (!string.IsNullOrEmpty(request.AccessToken) && request.AccessTokenExpiration.HasValue)
+        {
+            await _tokenBlacklistService.BlacklistTokenAsync(
+                request.AccessToken,
+                request.AccessTokenExpiration.Value,
+                cancellationToken);
+        }
+
+        // Delete the device session entirely
+        _userDeviceRepository.Delete(device);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return Unit.Value;

@@ -4355,6 +4355,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
 
+                    b.Property<string>("ActiveAccessTokenJti")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("active_access_token_jti");
+
                     b.Property<string>("Browser")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")

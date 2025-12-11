@@ -36,4 +36,20 @@ public interface ITokenBlacklistService
     /// <param name="userId">User ID</param>
     /// <param name="cancellationToken">Cancellation token</param>
     Task<bool> AreUserTokensBlacklistedAsync(long userId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Blacklist a token by its JTI (JWT ID)
+    /// Used for immediate token revocation when session is deleted
+    /// </summary>
+    /// <param name="jti">JWT ID from the token claims</param>
+    /// <param name="expiryTime">When the token would naturally expire (TTL for cache)</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    Task BlacklistTokenByJtiAsync(string jti, DateTime expiryTime, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Check if a token is blacklisted by its JTI
+    /// </summary>
+    /// <param name="jti">JWT ID to check</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    Task<bool> IsTokenBlacklistedByJtiAsync(string jti, CancellationToken cancellationToken = default);
 }

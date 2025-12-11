@@ -37,6 +37,10 @@ public class LoginCommandHandlerTests
 
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
         _mockUnitOfWork.Setup(x => x.UserDevices).Returns(_mockUserDeviceRepository.Object);
+        
+        // Setup JWT service config properties
+        _mockJwtService.Setup(x => x.AccessTokenExpiryMinutes).Returns(60);
+        _mockJwtService.Setup(x => x.RefreshTokenExpiryDays).Returns(30);
 
         _handler = new LoginCommandHandler(
             _mockUnitOfWork.Object,

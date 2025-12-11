@@ -32,6 +32,7 @@ public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasMod
     public bool IsTrusted { get; private set; }
     public string? RefreshToken { get; private set; }
     public DateTime? RefreshTokenExpiresAt { get; private set; }
+    public string? ActiveAccessTokenJti { get; private set; }
 
     // Navigation property
     public User User { get; set; } = null!;
@@ -110,10 +111,33 @@ public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasMod
         RecordLogin(ipAddress, location);
     }
 
+    /// <summary>
+    /// Set the JTI of the currently active access token
+    /// This allows immediate revocation when session is deleted
+    /// </summary>
+    public void SetActiveAccessTokenJti(string jti)
+    {
+        ActiveAccessTokenJti = jti;
+    }
+    
+    /// <summary>
+    /// Update both refresh token and active access token JTI
+    /// Used during token refresh to track the new access token
+    /// </summary>
+    public void UpdateTokens(string refreshToken, DateTime refreshTokenExpiresAt, string accessTokenJti, 
+        string? ipAddress = null, string? location = null)
+    {
+        RefreshToken = refreshToken;
+        RefreshTokenExpiresAt = refreshTokenExpiresAt;
+        ActiveAccessTokenJti = accessTokenJti;
+        RecordLogin(ipAddress, location);
+    }
+
     public void ClearRefreshToken()
     {
         RefreshToken = null;
         RefreshTokenExpiresAt = null;
+        ActiveAccessTokenJti = null;
     }
 
     public void MarkAsTrusted()

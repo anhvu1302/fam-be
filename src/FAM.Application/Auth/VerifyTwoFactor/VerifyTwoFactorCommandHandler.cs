@@ -38,39 +38,33 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
     public async Task<VerifyTwoFactorResponse> Handle(VerifyTwoFactorCommand request,
         CancellationToken cancellationToken)
     {
-        // Extract user ID from session token (token already validated by JWT middleware)
         var userId = _jwtService.GetUserIdFromToken(request.TwoFactorSessionToken);
         if (userId == 0)
             throw new UnauthorizedAccessException("Invalid or expired two-factor session token");
 
-        // Get user
         var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
         if (user == null) throw new UnauthorizedAccessException("User not found");
 
-        // Check if 2FA is enabled
         if (!user.TwoFactorEnabled || string.IsNullOrEmpty(user.TwoFactorSecret))
             throw new UnauthorizedAccessException("Two-factor authentication is not enabled for this user");
 
-        // Verify 2FA code
         if (!VerifyTwoFactorCode(user.TwoFactorSecret, request.TwoFactorCode))
         {
             _logger.LogWarning("Invalid 2FA code provided for user {UserId}", userId);
             throw new UnauthorizedAccessException("Invalid two-factor code");
         }
 
-        // Get or create device (using device info from request)
         var device = user.GetOrCreateDevice(
             request.DeviceId,
             request.DeviceName ?? "Unknown Device",
             request.DeviceType ?? "browser",
             request.UserAgent,
             request.IpAddress,
-            request.Location // Location from IP geolocation
+            request.Location
         );
 
-        // Generate tokens using RSA
         var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
-        var roles = new List<string>(); // TODO: Load user roles from UserNodeRoles
+        var roles = new List<string>();
         var accessToken = _jwtService.GenerateAccessTokenWithRsa(
             user.Id,
             user.Username.Value,
@@ -79,28 +73,28 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
             activeKey.KeyId,
             activeKey.PrivateKey,
             activeKey.Algorithm);
+        
+        var accessTokenJti = _jwtService.GetJtiFromToken(accessToken);
+        
+        // Calculate expiration times from config
+        var accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
         var refreshToken = _jwtService.GenerateRefreshToken();
-        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(request.RememberMe ? 30 : 7);
+        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(request.RememberMe ? _jwtService.RefreshTokenExpiryDays : 7);
 
-        // Update device with refresh token
-        device.UpdateRefreshToken(refreshToken, refreshTokenExpiresAt, request.IpAddress);
+        device.UpdateTokens(refreshToken, refreshTokenExpiresAt, accessTokenJti ?? string.Empty, request.IpAddress);
 
-        // Update last login info
         user.RecordLogin(request.IpAddress);
 
-        // Save changes
-        // Check if device exists in DB
         var existingDeviceInDb = await _unitOfWork.UserDevices.GetByDeviceIdAsync(request.DeviceId, cancellationToken);
 
         if (existingDeviceInDb != null)
         {
-            // Device exists in DB, update it
-            existingDeviceInDb.UpdateRefreshToken(refreshToken, refreshTokenExpiresAt, request.IpAddress);
+            existingDeviceInDb.UpdateTokens(refreshToken, refreshTokenExpiresAt, accessTokenJti ?? string.Empty, 
+                request.IpAddress);
             _unitOfWork.UserDevices.Update(existingDeviceInDb);
         }
         else
         {
-            // New device, add it
             await _unitOfWork.UserDevices.AddAsync(device, cancellationToken);
         }
 
@@ -113,7 +107,8 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            ExpiresIn = 3600, // 1 hour - should be configurable
+            AccessTokenExpiresAt = accessTokenExpiresAt,
+            RefreshTokenExpiresAt = refreshTokenExpiresAt,
             TokenType = "Bearer",
             User = new UserInfoDto
             {

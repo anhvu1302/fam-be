@@ -32,6 +32,10 @@ public class VerifyTwoFactorCommandHandlerTests
 
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
         _mockUnitOfWork.Setup(x => x.UserDevices).Returns(_mockUserDeviceRepository.Object);
+        
+        // Setup JWT service config properties
+        _mockJwtService.Setup(x => x.AccessTokenExpiryMinutes).Returns(60);
+        _mockJwtService.Setup(x => x.RefreshTokenExpiryDays).Returns(30);
 
         _handler = new VerifyTwoFactorCommandHandler(
             _mockUserRepository.Object,
@@ -123,7 +127,8 @@ public class VerifyTwoFactorCommandHandlerTests
         result.Should().NotBeNull();
         result.AccessToken.Should().Be(accessToken);
         result.RefreshToken.Should().Be(refreshToken);
-        result.ExpiresIn.Should().Be(3600);
+        result.AccessTokenExpiresAt.Should().BeCloseTo(DateTime.UtcNow.AddMinutes(60), TimeSpan.FromSeconds(5));
+        result.RefreshTokenExpiresAt.Should().BeCloseTo(DateTime.UtcNow.AddDays(7), TimeSpan.FromSeconds(5)); // RememberMe = false
         result.TokenType.Should().Be("Bearer");
         result.User.Should().NotBeNull();
         result.User.Username.Should().Be("testuser");

@@ -35,9 +35,14 @@ public class VerifyEmailOtpLoginResponse
     public string RefreshToken { get; set; } = string.Empty;
 
     /// <summary>
-    /// Token expiry in seconds
+    /// Access token expiration timestamp (UTC)
     /// </summary>
-    public int ExpiresIn { get; set; }
+    public DateTime AccessTokenExpiresAt { get; set; }
+
+    /// <summary>
+    /// Refresh token expiration timestamp (UTC)
+    /// </summary>
+    public DateTime RefreshTokenExpiresAt { get; set; }
 
     /// <summary>
     /// Token type (Bearer)

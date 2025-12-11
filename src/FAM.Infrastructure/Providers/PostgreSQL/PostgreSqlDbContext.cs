@@ -146,6 +146,7 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(ud => ud.Browser).HasMaxLength(100);
             entity.Property(ud => ud.OperatingSystem).HasMaxLength(100);
             entity.Property(ud => ud.RefreshToken).HasMaxLength(500);
+            entity.Property(ud => ud.ActiveAccessTokenJti).HasMaxLength(255);
             entity.Property(ud => ud.IsActive).HasDefaultValue(true);
             entity.Property(ud => ud.IsTrusted).HasDefaultValue(false);
             entity.Property(ud => ud.IsDeleted).HasDefaultValue(false);

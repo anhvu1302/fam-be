@@ -1,3 +1,4 @@
+using FAM.Application.Auth.Services;
 using FAM.Application.Users.Commands.DeleteSession;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
@@ -11,36 +12,44 @@ public class DeleteSessionCommandHandlerTests
 {
     private readonly Mock<IUserDeviceRepository> _mockUserDeviceRepository;
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    private readonly Mock<ITokenBlacklistService> _mockTokenBlacklistService;
     private readonly DeleteSessionCommandHandler _handler;
 
     public DeleteSessionCommandHandlerTests()
     {
         _mockUserDeviceRepository = new Mock<IUserDeviceRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
-        _handler = new DeleteSessionCommandHandler(_mockUserDeviceRepository.Object, _mockUnitOfWork.Object);
+        _mockTokenBlacklistService = new Mock<ITokenBlacklistService>();
+        _handler = new DeleteSessionCommandHandler(_mockUserDeviceRepository.Object, _mockUnitOfWork.Object, _mockTokenBlacklistService.Object);
     }
 
     [Fact]
-    public async Task Handle_WithValidSession_ShouldDeactivateSession()
+    public async Task Handle_WithValidSession_ShouldDeleteSession()
     {
         // Arrange
         var userId = 1L;
         var sessionId = Guid.NewGuid();
         var device = UserDevice.Create(userId, "device1", "Chrome", "desktop");
+        var accessToken = "test_token";
+        var expirationTime = DateTime.UtcNow.AddHours(1);
 
         _mockUserDeviceRepository
             .Setup(x => x.GetByIdAsync(sessionId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(device);
 
-        var command = new DeleteSessionCommand(userId, sessionId);
+        _mockTokenBlacklistService
+            .Setup(x => x.BlacklistTokenAsync(accessToken, expirationTime, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        var command = new DeleteSessionCommand(userId, sessionId, accessToken, expirationTime);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        device.IsActive.Should().BeFalse();
-        _mockUserDeviceRepository.Verify(x => x.Update(device), Times.Once);
+        _mockUserDeviceRepository.Verify(x => x.Delete(device), Times.Once);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockTokenBlacklistService.Verify(x => x.BlacklistTokenAsync(accessToken, expirationTime, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]

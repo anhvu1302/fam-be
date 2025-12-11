@@ -71,7 +71,19 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
     public void Delete(UserDevice entity)
     {
         var efEntity = _mapper.Map<UserDeviceEf>(entity);
-        _context.UserDevices.Remove(efEntity);
+        
+        // Check if entity is already tracked
+        var trackedEntry = _context.UserDevices.Local.FirstOrDefault(d => d.Id == efEntity.Id);
+        if (trackedEntry != null)
+        {
+            // Use the already-tracked entity
+            _context.UserDevices.Remove(trackedEntry);
+        }
+        else
+        {
+            // Entity not tracked, remove the mapped entity
+            _context.UserDevices.Remove(efEntity);
+        }
     }
 
     public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)

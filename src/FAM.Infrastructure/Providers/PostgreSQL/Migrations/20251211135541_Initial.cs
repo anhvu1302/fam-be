@@ -821,6 +821,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     is_trusted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     refresh_token = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     refresh_token_expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    active_access_token_jti = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),

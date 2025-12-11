@@ -36,4 +36,20 @@ public interface IJwtService
     /// Get Key ID (kid) from token header
     /// </summary>
     string? GetKeyIdFromToken(string token);
+    
+    /// <summary>
+    /// Get JTI (JWT ID) from token claims
+    /// Used to track and revoke specific access tokens
+    /// </summary>
+    string? GetJtiFromToken(string token);
+    
+    /// <summary>
+    /// Get configured access token expiry time in minutes
+    /// </summary>
+    int AccessTokenExpiryMinutes { get; }
+    
+    /// <summary>
+    /// Get configured refresh token expiry time in days
+    /// </summary>
+    int RefreshTokenExpiryDays { get; }
 }

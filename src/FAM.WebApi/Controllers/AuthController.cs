@@ -814,16 +814,32 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpDelete("me/sessions/{sessionId:guid}")]
     [Authorize]
-    [RequireDeviceId]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteSession(Guid sessionId)
     {
-        var userId = GetCurrentUserId();
-        var command = new DeleteSessionCommand(userId, sessionId);
-        await _mediator.Send(command);
+        try
+        {
+            var userId = GetCurrentUserId();
+            
+            // Extract access token from Authorization header
+            var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var expirationTime = ExtractTokenExpiration(accessToken);
 
-        return NoContent();
+            var command = new DeleteSessionCommand(userId, sessionId, accessToken, expirationTime);
+            await _mediator.Send(command);
+
+            return NoContent();
+        }
+        catch (DomainException ex)
+        {
+            return NotFoundResponse(ex.Message, ex.ErrorCode);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting session {SessionId}: {Message}", sessionId, ex.Message);
+            return InternalErrorResponse("An error occurred while deleting session", "DELETE_SESSION_ERROR");
+        }
     }
 
     /// <summary>

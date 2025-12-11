@@ -115,6 +115,55 @@ public class TokenBlacklistService : ITokenBlacklistService
         }
     }
 
+    public async Task BlacklistTokenByJtiAsync(string jti, DateTime expiryTime, 
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var cacheKey = $"{TokenBlacklistPrefix}jti:{jti}";
+
+            // Calculate TTL - how long until token naturally expires
+            var ttl = expiryTime - DateTime.UtcNow;
+            if (ttl <= TimeSpan.Zero)
+            {
+                _logger.LogWarning("Attempted to blacklist token by JTI with already expired time: {JTI}", jti);
+                return; // Token already expired, no need to blacklist
+            }
+
+            var options = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = ttl
+            };
+
+            // Store a simple marker - we just need to know it exists
+            await _cache.SetStringAsync(cacheKey, "blacklisted", options, cancellationToken);
+
+            _logger.LogInformation("Token with JTI {JTI} blacklisted successfully, expires in {Minutes} minutes", 
+                jti, ttl.TotalMinutes);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error blacklisting token by JTI: {JTI}", jti);
+            throw;
+        }
+    }
+
+    public async Task<bool> IsTokenBlacklistedByJtiAsync(string jti, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var cacheKey = $"{TokenBlacklistPrefix}jti:{jti}";
+            var value = await _cache.GetStringAsync(cacheKey, cancellationToken);
+            return !string.IsNullOrEmpty(value);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error checking token blacklist by JTI: {JTI}", jti);
+            // Fail open - don't block valid tokens if cache is down
+            return false;
+        }
+    }
+
     /// <summary>
     /// Hash token using SHA256 to avoid storing full JWT
     /// </summary>

@@ -38,13 +38,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
     public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        // Find user by username or email
         var user = await _unitOfWork.Users.FindByIdentityAsync(request.Identity, cancellationToken);
 
         if (user == null)
             throw new UnauthorizedAccessException("Invalid username/email or password");
 
-        // Check if account is locked
         if (user.IsLockedOut())
         {
             var lockoutEnd = user.LockoutEnd!.Value;
@@ -52,16 +50,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             throw new UnauthorizedAccessException($"Account is locked. Try again in {minutesRemaining} minutes");
         }
 
-        // Check if account is active
         if (!user.IsActive)
             throw new UnauthorizedAccessException("Account is inactive");
 
-        // Verify password
         var isPasswordValid = user.Password.Verify(request.Password);
 
         if (!isPasswordValid)
         {
-            // Record failed login attempt
             user.RecordFailedLogin();
             _unitOfWork.Users.Update(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -69,7 +64,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             throw new UnauthorizedAccessException("Invalid username/email or password");
         }
 
-        // Check if email is verified - if not, send OTP and return email verification response
         if (!user.IsEmailVerified)
         {
             _logger.LogInformation("Email not verified for user {UserId}, sending verification OTP", user.Id);
@@ -77,10 +71,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             // Generate OTP using OtpService (which handles storage and rate limiting)
             try
             {
-                // Generate and store OTP (uses email as session identifier for email verification flow)
                 var otp = await _otpService.GenerateOtpAsync(
                     user.Id,
-                    user.Email.Value, // Use email as session identifier
+                    user.Email.Value,
                     10,
                     cancellationToken);
 
@@ -102,15 +95,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             return new LoginResponse
             {
                 RequiresEmailVerification = true,
-                MaskedEmail = MaskEmail(user.Email.Value),
-                User = new UserInfoDto() // Return minimal user info for display
+                MaskedEmail = user.Email.Value,
+                User = new UserInfoDto()
             };
         }
 
-        // Check if Two-Factor Authentication is enabled
         if (user.TwoFactorEnabled)
         {
-            // Generate a temporary session token for 2FA verification
             var twoFactorSessionToken = await GenerateTwoFactorSessionTokenAsync(user.Id, cancellationToken);
 
             return new LoginResponse
@@ -121,13 +112,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             };
         }
 
-        // Generate tokens using RSA
-        // Get active signing key from database
         var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
 
         // TODO: Load user roles from UserNodeRoles properly
         var roles = new List<string>();
-        // Temporary: Hardcode Admin role for admin user (for integration tests)
         if (user.Username.Value.Equals("admin", StringComparison.OrdinalIgnoreCase))
         {
             roles.Add("Admin");
@@ -142,11 +130,15 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             activeKey.KeyId,
             activeKey.PrivateKey,
             activeKey.Algorithm);
+        
+        var accessTokenJti = _jwtService.GetJtiFromToken(accessToken);
+        
+        // Calculate expiration times from config
+        var accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
         var refreshToken = _jwtService.GenerateRefreshToken();
-        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(request.RememberMe ? 30 : 7);
+        // Use shorter expiry if RememberMe is false (7 days vs configured default)
+        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(request.RememberMe ? _jwtService.RefreshTokenExpiryDays : 7);
 
-        // Get or create device via User aggregate
-        // This properly handles the device in the User's collection
         var device = user.GetOrCreateDevice(
             request.DeviceId,
             request.DeviceName ?? "Unknown Device",
@@ -156,29 +148,23 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             request.Location
         );
 
-        // Update device with refresh token
-        device.UpdateRefreshToken(refreshToken, refreshTokenExpiresAt, request.IpAddress);
+        // Update device with refresh token and active access token JTI
+        device.UpdateTokens(refreshToken, refreshTokenExpiresAt, accessTokenJti ?? string.Empty, request.IpAddress);
 
-        // Update last login info
         user.RecordLogin(request.IpAddress);
 
-        // Save device separately to avoid tracking conflicts
-        // Check if device already exists in database
         var existingDevice = await _unitOfWork.UserDevices.GetByIdAsync(device.Id, cancellationToken);
         if (existingDevice != null)
         {
-            // Update existing device
-            existingDevice.UpdateRefreshToken(refreshToken, refreshTokenExpiresAt, request.IpAddress);
-            existingDevice.RecordLogin(request.IpAddress, request.Location);
+            existingDevice.UpdateTokens(refreshToken, refreshTokenExpiresAt, accessTokenJti ?? string.Empty, 
+                request.IpAddress, request.Location);
             _unitOfWork.UserDevices.Update(existingDevice);
         }
         else
         {
-            // Add new device
             await _unitOfWork.UserDevices.AddAsync(device, cancellationToken);
         }
 
-        // Update user without devices
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -189,7 +175,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            ExpiresIn = 3600, // 1 hour - should be configurable
+            AccessTokenExpiresAt = accessTokenExpiresAt,
+            RefreshTokenExpiresAt = refreshTokenExpiresAt,
             TokenType = "Bearer",
             User = MapToUserInfoDto(user),
             DeviceId = device.DeviceId
@@ -220,7 +207,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
     private async Task<string> GenerateTwoFactorSessionTokenAsync(long userId, CancellationToken cancellationToken)
     {
-        // Generate a temporary JWT token for 2FA session using RSA
         var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
 
         var roles = new List<string> { "2fa_session" };
@@ -232,32 +218,5 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             activeKey.KeyId,
             activeKey.PrivateKey,
             activeKey.Algorithm);
-    }
-
-    /// <summary>
-    /// Generate random 6-digit OTP
-    /// </summary>
-    private static string GenerateOtp()
-    {
-        var random = new Random();
-        return random.Next(100000, 999999).ToString();
-    }
-
-    /// <summary>
-    /// Mask email address for display: user@email.com -> u***@email.com
-    /// </summary>
-    private static string MaskEmail(string email)
-    {
-        var parts = email.Split('@');
-        if (parts.Length != 2) return email;
-
-        var localPart = parts[0];
-        var domain = parts[1];
-
-        if (localPart.Length <= 2)
-            return $"{localPart}***@{domain}";
-
-        var masked = localPart[0] + new string('*', localPart.Length - 2) + localPart[^1];
-        return $"{masked}@{domain}";
     }
 }

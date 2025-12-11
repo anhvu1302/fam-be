@@ -14,10 +14,11 @@ public class JwtService : IJwtService
     private readonly string _issuer;
     private readonly string _audience;
     private readonly int _accessTokenExpiryMinutes;
+    private readonly int _refreshTokenExpiryDays;
 
     public JwtService()
     {
-        // Load from environment variables
+        // Load from environment variables (fallback for backward compatibility)
         _issuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "FAM.API";
         _audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "FAM.Client";
 
@@ -26,7 +27,16 @@ public class JwtService : IJwtService
             !string.IsNullOrEmpty(expiryMinutesStr) && int.TryParse(expiryMinutesStr, out var minutes)
                 ? minutes
                 : 60;
+                
+        var refreshDaysStr = Environment.GetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_DAYS");
+        _refreshTokenExpiryDays =
+            !string.IsNullOrEmpty(refreshDaysStr) && int.TryParse(refreshDaysStr, out var days)
+                ? days
+                : 30;
     }
+    
+    public int AccessTokenExpiryMinutes => _accessTokenExpiryMinutes;
+    public int RefreshTokenExpiryDays => _refreshTokenExpiryDays;
 
     /// <summary>
     /// Generate access token using RSA (asymmetric key)
@@ -147,6 +157,24 @@ public class JwtService : IJwtService
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
             return jwtToken.Header.Kid;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Get JTI (JWT ID) from JWT token claims
+    /// </summary>
+    public string? GetJtiFromToken(string token)
+    {
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var jtiClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti);
+            return jtiClaim?.Value;
         }
         catch
         {

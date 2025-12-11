@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using FAM.Application.Auth.Services;
@@ -157,8 +158,6 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services.AddEmailServices(builder.Configuration);
 
 builder.Services.AddScoped<IOtpService, OtpService>();
-
-// Register Token Blacklist Service (for immediate token invalidation on logout)
 builder.Services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
 
 // Register Connection Validator (for startup validation)
@@ -253,6 +252,7 @@ builder.Services.AddAuthentication(options =>
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
                 var userId = context.Principal?.FindFirst("user_id")?.Value ??
                              context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var jti = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
 
                 // Check if token is blacklisted
                 var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
@@ -261,13 +261,25 @@ builder.Services.AddAuthentication(options =>
                     var blacklistService = context.HttpContext.RequestServices
                         .GetRequiredService<ITokenBlacklistService>();
 
-                    // Check individual token blacklist
+                    // Check individual token blacklist (by full token hash)
                     var isBlacklisted = await blacklistService.IsTokenBlacklistedAsync(token);
                     if (isBlacklisted)
                     {
                         logger.LogWarning("Blacklisted token attempted for user: {UserId}", userId ?? "Unknown");
                         context.Fail("Token has been revoked");
                         return;
+                    }
+
+                    // Check if token is blacklisted by JTI (more efficient for session-based revocation)
+                    if (!string.IsNullOrEmpty(jti))
+                    {
+                        var isJtiBlacklisted = await blacklistService.IsTokenBlacklistedByJtiAsync(jti);
+                        if (isJtiBlacklisted)
+                        {
+                            logger.LogWarning("Token with JTI {JTI} is blacklisted for user: {UserId}", jti, userId ?? "Unknown");
+                            context.Fail("Token has been revoked");
+                            return;
+                        }
                     }
 
                     // Check if all user tokens are blacklisted (logout all scenario)
@@ -451,14 +463,11 @@ app.UseCors(); // Enable CORS
 // Add Rate Limiting middleware (after CORS, before Authentication)
 app.UseRateLimiter();
 
-// Add custom middleware to handle 401 responses with standard error format
-app.UseMiddleware<UnauthorizedResponseMiddleware>();
-
-// Add middleware to validate deviceId for authorized requests
-app.UseMiddleware<RequireDeviceIdMiddleware>();
-
 app.UseAuthentication(); // Add authentication middleware
 app.UseAuthorization();
+
+// Add middleware to validate deviceId for authorized requests (after auth)
+app.UseMiddleware<RequireDeviceIdMiddleware>();
 app.MapControllers();
 
 // Apply migrations before running the app

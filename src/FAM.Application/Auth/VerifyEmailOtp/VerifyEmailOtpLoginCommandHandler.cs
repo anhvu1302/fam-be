@@ -97,13 +97,17 @@ public class VerifyEmailOtpLoginCommandHandler
             activeKey.PrivateKey,
             activeKey.Algorithm);
 
+        // Calculate expiration times from config
+        var accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
         var refreshToken = _jwtService.GenerateRefreshToken();
+        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtService.RefreshTokenExpiryDays);
 
         return new VerifyEmailOtpLoginResponse
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken,
-            ExpiresIn = 3600, // 1 hour
+            AccessTokenExpiresAt = accessTokenExpiresAt,
+            RefreshTokenExpiresAt = refreshTokenExpiresAt,
             TokenType = "Bearer",
             User = MapToUserInfoDto(user),
             RequiresTwoFactor = false

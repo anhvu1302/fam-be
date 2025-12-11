@@ -28,6 +28,10 @@ public class RefreshTokenCommandHandlerTests
 
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
         _mockUnitOfWork.Setup(x => x.UserDevices).Returns(_mockUserDeviceRepository.Object);
+        
+        // Setup JWT service config properties
+        _mockJwtService.Setup(x => x.AccessTokenExpiryMinutes).Returns(60);
+        _mockJwtService.Setup(x => x.RefreshTokenExpiryDays).Returns(30);
 
         _handler = new RefreshTokenCommandHandler(_mockUnitOfWork.Object, _mockJwtService.Object,
             _mockSigningKeyService.Object);
@@ -97,7 +101,8 @@ public class RefreshTokenCommandHandlerTests
         result.Should().NotBeNull();
         result.AccessToken.Should().Be(newAccessToken);
         result.RefreshToken.Should().Be(newRefreshToken);
-        result.ExpiresIn.Should().Be(3600);
+        result.AccessTokenExpiresAt.Should().BeCloseTo(DateTime.UtcNow.AddMinutes(60), TimeSpan.FromSeconds(5));
+        result.RefreshTokenExpiresAt.Should().BeCloseTo(DateTime.UtcNow.AddDays(30), TimeSpan.FromSeconds(5));
         result.TokenType.Should().Be("Bearer");
         result.User.Should().NotBeNull();
         result.User.Username.Should().Be("testuser");

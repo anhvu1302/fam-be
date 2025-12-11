@@ -44,13 +44,18 @@ public class GlobalExceptionHandler : IExceptionHandler
         using (LogContext.PushProperty("StatusCode", statusCode))
         {
             if (statusCode >= 500)
+            {
+                // Log full exception details for server errors
                 _logger.LogError(exception,
-                    "Server error: {ExceptionType} - {ExceptionMessage}",
-                    exception.GetType().Name, exception.Message);
+                    "Server error: {ExceptionType} - {ExceptionMessage}\nStack Trace: {StackTrace}",
+                    exception.GetType().Name, exception.Message, exception.StackTrace);
+            }
             else
+            {
                 _logger.LogWarning(exception,
                     "Client error: {ExceptionType} - {ExceptionMessage}",
                     exception.GetType().Name, exception.Message);
+            }
         }
 
         httpContext.Response.StatusCode = statusCode;

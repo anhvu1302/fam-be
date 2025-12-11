@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 {
     [DbContext(typeof(PostgreSqlDbContext))]
-    [Migration("20251209100516_Initial")]
+    [Migration("20251211135541_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -4357,6 +4357,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id")
                         .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("ActiveAccessTokenJti")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("active_access_token_jti");
 
                     b.Property<string>("Browser")
                         .HasMaxLength(100)

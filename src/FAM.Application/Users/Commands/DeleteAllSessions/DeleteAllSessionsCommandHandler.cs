@@ -56,13 +56,41 @@ public class DeleteAllSessionsCommandHandler : IRequestHandler<DeleteAllSessions
             }
         }
 
+        // Get all active devices to blacklist their access tokens
+        var allDevices = await _userDeviceRepository.GetActiveDevicesByUserIdAsync(
+            request.UserId, 
+            cancellationToken);
+
+        // Blacklist access tokens for each device (except current if specified)
+        // Use conservative estimate for token expiry (add buffer for clock skew)
+        var tokenExpiryTime = DateTime.UtcNow.AddHours(2);
+        foreach (var device in allDevices)
+        {
+            // Skip current device if specified
+            if (!string.IsNullOrEmpty(request.ExcludeDeviceId) && device.DeviceId == request.ExcludeDeviceId)
+                continue;
+
+            // Blacklist the stored active access token JTI
+            if (!string.IsNullOrEmpty(device.ActiveAccessTokenJti))
+            {
+                await _tokenBlacklistService.BlacklistTokenByJtiAsync(
+                    device.ActiveAccessTokenJti,
+                    tokenExpiryTime,
+                    cancellationToken);
+                
+                _logger.LogInformation(
+                    "Blacklisted access token with JTI {JTI} for device {DeviceId} of user {UserId}",
+                    device.ActiveAccessTokenJti, device.DeviceId, request.UserId);
+            }
+        }
+
         // Deactivate all devices (except current if specified)
         await _userDeviceRepository.DeactivateAllUserDevicesAsync(
             request.UserId,
             request.ExcludeDeviceId,
             cancellationToken);
 
-        // Blacklist all tokens for this user to invalidate them immediately
+        // Also blacklist all tokens at user level for double protection
         await _tokenBlacklistService.BlacklistUserTokensAsync(request.UserId, cancellationToken);
         _logger.LogInformation("All tokens blacklisted for user {UserId}", request.UserId);
 

@@ -36,7 +36,18 @@ public class LoginResponse
 {
     public string AccessToken { get; set; } = string.Empty;
     public string RefreshToken { get; set; } = string.Empty;
-    public int ExpiresIn { get; set; }
+    
+    /// <summary>
+    /// Access token expiration timestamp (UTC)
+    /// FE can calculate seconds until expiry if needed
+    /// </summary>
+    public DateTime AccessTokenExpiresAt { get; set; }
+    
+    /// <summary>
+    /// Refresh token expiration timestamp (UTC)
+    /// </summary>
+    public DateTime RefreshTokenExpiresAt { get; set; }
+    
     public string TokenType { get; set; } = "Bearer";
     public UserInfoDto User { get; set; } = null!;
     public bool RequiresTwoFactor { get; set; }
@@ -68,7 +79,18 @@ public class VerifyTwoFactorResponse
 {
     public string AccessToken { get; set; } = string.Empty;
     public string RefreshToken { get; set; } = string.Empty;
-    public int ExpiresIn { get; set; }
+    
+    /// <summary>
+    /// Access token expiration timestamp (UTC)
+    /// FE can calculate seconds until expiry if needed
+    /// </summary>
+    public DateTime AccessTokenExpiresAt { get; set; }
+    
+    /// <summary>
+    /// Refresh token expiration timestamp (UTC)
+    /// </summary>
+    public DateTime RefreshTokenExpiresAt { get; set; }
+    
     public string TokenType { get; set; } = "Bearer";
     public UserInfoDto User { get; set; } = null!;
 }
