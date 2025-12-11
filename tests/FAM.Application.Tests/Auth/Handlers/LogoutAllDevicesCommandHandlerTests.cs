@@ -1,8 +1,10 @@
 using FAM.Application.Auth.Logout;
+using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace FAM.Application.Tests.Auth.Handlers;
@@ -12,6 +14,8 @@ public class LogoutAllDevicesCommandHandlerTests
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
     private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly Mock<IUserDeviceRepository> _mockUserDeviceRepository;
+    private readonly Mock<ITokenBlacklistService> _mockTokenBlacklistService;
+    private readonly Mock<ILogger<LogoutAllDevicesCommandHandler>> _mockLogger;
     private readonly LogoutAllDevicesCommandHandler _handler;
 
     public LogoutAllDevicesCommandHandlerTests()
@@ -19,11 +23,16 @@ public class LogoutAllDevicesCommandHandlerTests
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockUserRepository = new Mock<IUserRepository>();
         _mockUserDeviceRepository = new Mock<IUserDeviceRepository>();
+        _mockTokenBlacklistService = new Mock<ITokenBlacklistService>();
+        _mockLogger = new Mock<ILogger<LogoutAllDevicesCommandHandler>>();
 
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
         _mockUnitOfWork.Setup(x => x.UserDevices).Returns(_mockUserDeviceRepository.Object);
 
-        _handler = new LogoutAllDevicesCommandHandler(_mockUnitOfWork.Object);
+        _handler = new LogoutAllDevicesCommandHandler(
+            _mockUnitOfWork.Object,
+            _mockTokenBlacklistService.Object,
+            _mockLogger.Object);
     }
 
     [Fact]

@@ -13,6 +13,7 @@ using FAM.Infrastructure.Services;
 using FAM.Infrastructure.Services.Email;
 using FAM.WebApi.Configuration;
 using FAM.WebApi.Middleware;
+using FAM.WebApi.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -119,9 +120,20 @@ builder.Services.AddSwaggerGen(c =>
         BearerFormat = "JWT"
     });
 
+    // Add Device ID header requirement
+    c.AddSecurityDefinition("DeviceId", new OpenApiSecurityScheme
+    {
+        Description = "Device ID from login response or stored in cookie. Required for all authenticated requests.",
+        Name = "X-Device-Id",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "ApiKeyScheme"
+    });
+
     c.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
     {
-        [new OpenApiSecuritySchemeReference("Bearer", doc)] = new List<string>()
+        [new OpenApiSecuritySchemeReference("Bearer", doc)] = new List<string>(),
+        [new OpenApiSecuritySchemeReference("DeviceId", doc)] = new List<string>()
     });
 });
 
@@ -145,6 +157,12 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services.AddEmailServices(builder.Configuration);
 
 builder.Services.AddScoped<IOtpService, OtpService>();
+
+// Register Token Blacklist Service (for immediate token invalidation on logout)
+builder.Services.AddScoped<ITokenBlacklistService, TokenBlacklistService>();
+
+// Register Connection Validator (for startup validation)
+builder.Services.AddSingleton<IConnectionValidator, ConnectionValidator>();
 
 // Add JWT Authentication using RSA keys from database
 builder.Services.AddAuthentication(options =>
@@ -230,13 +248,43 @@ builder.Services.AddAuthentication(options =>
 
                 return Task.CompletedTask;
             },
-            OnTokenValidated = context =>
+            OnTokenValidated = async context =>
             {
                 var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
                 var userId = context.Principal?.FindFirst("user_id")?.Value ??
                              context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Check if token is blacklisted
+                var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    var blacklistService = context.HttpContext.RequestServices
+                        .GetRequiredService<ITokenBlacklistService>();
+
+                    // Check individual token blacklist
+                    var isBlacklisted = await blacklistService.IsTokenBlacklistedAsync(token);
+                    if (isBlacklisted)
+                    {
+                        logger.LogWarning("Blacklisted token attempted for user: {UserId}", userId ?? "Unknown");
+                        context.Fail("Token has been revoked");
+                        return;
+                    }
+
+                    // Check if all user tokens are blacklisted (logout all scenario)
+                    if (!string.IsNullOrEmpty(userId) && long.TryParse(userId, out var userIdLong))
+                    {
+                        var userBlacklisted = await blacklistService.AreUserTokensBlacklistedAsync(userIdLong);
+                        if (userBlacklisted)
+                        {
+                            logger.LogWarning("User {UserId} tokens are blacklisted (logged out from all devices)",
+                                userId);
+                            context.Fail("All sessions have been terminated");
+                            return;
+                        }
+                    }
+                }
+
                 logger.LogInformation("JWT Token validated successfully for user: {UserId}", userId ?? "Unknown");
-                return Task.CompletedTask;
             }
         };
     });
@@ -329,6 +377,21 @@ var app = builder.Build();
 Log.Information("FAM Web API started in {Environment} environment", environment);
 appConfig.LogConfiguration(app.Services.GetRequiredService<ILogger<Program>>());
 
+// Validate all external connections before starting
+try
+{
+    Log.Information("Validating all connections (PostgreSQL, Redis, MinIO)...");
+    using var validatorScope = app.Services.CreateScope();
+    var validator = validatorScope.ServiceProvider.GetRequiredService<IConnectionValidator>();
+    await validator.ValidateAllAsync();
+    Log.Information("✅ All connections validated successfully");
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "❌ Connection validation failed. Application will not start.");
+    throw;
+}
+
 // Configure the HTTP request pipeline.
 
 // IMPORTANT: Use forwarded headers BEFORE any other middleware
@@ -387,6 +450,12 @@ app.UseCors(); // Enable CORS
 
 // Add Rate Limiting middleware (after CORS, before Authentication)
 app.UseRateLimiter();
+
+// Add custom middleware to handle 401 responses with standard error format
+app.UseMiddleware<UnauthorizedResponseMiddleware>();
+
+// Add middleware to validate deviceId for authorized requests
+app.UseMiddleware<RequireDeviceIdMiddleware>();
 
 app.UseAuthentication(); // Add authentication middleware
 app.UseAuthorization();

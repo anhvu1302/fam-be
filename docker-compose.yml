@@ -47,6 +47,28 @@ services:
       timeout: 20s
       retries: 3
 
+  # Redis - In-memory cache for token blacklist, OTP, sessions
+  # Default port: 6379
+  redis:
+    image: redis:7-alpine
+    container_name: fam-redis
+    command: >
+      redis-server
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ./data/redis:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # Seq - Centralized structured logging server
   # Web UI: http://localhost:8081
   # Ingestion: http://localhost:5341

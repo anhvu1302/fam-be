@@ -52,6 +52,12 @@ public class LoginResponse
     /// Frontend should use this masked email and ask user to verify the full email
     /// </summary>
     public string? MaskedEmail { get; set; }
+
+    /// <summary>
+    /// Device ID for this login session
+    /// Client should store this in a cookie or localStorage for later use in logout/sessions
+    /// </summary>
+    public string? DeviceId { get; set; }
 }
 
 /// <summary>

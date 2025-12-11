@@ -126,6 +126,21 @@ public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasMod
         IsTrusted = false;
     }
 
+    /// <summary>
+    /// Check if device has been trusted for at least the specified number of days
+    /// This is a security measure to prevent newly compromised devices from deleting other sessions
+    /// </summary>
+    /// <param name="minimumDays">Minimum number of days device must be trusted (default 3)</param>
+    /// <returns>True if device is trusted and has been for the minimum period</returns>
+    public bool IsTrustedForDuration(int minimumDays = 3)
+    {
+        if (!IsTrusted) return false;
+
+        // Device must have been created at least minimumDays ago
+        var trustDuration = DateTime.UtcNow - CreatedAt;
+        return trustDuration.TotalDays >= minimumDays;
+    }
+
     public void Deactivate()
     {
         IsActive = false;

@@ -99,13 +99,11 @@ public class PostgreSqlDbContext : DbContext
         {
             // Ignore CreatedBy, UpdatedBy, DeletedBy navigation properties
             var auditNavProperties = entityType.ClrType.GetProperties()
-                .Where(p => p.PropertyType == typeof(UserEf) && 
-                           (p.Name == "CreatedBy" || p.Name == "UpdatedBy" || p.Name == "DeletedBy"));
-            
+                .Where(p => p.PropertyType == typeof(UserEf) &&
+                            (p.Name == "CreatedBy" || p.Name == "UpdatedBy" || p.Name == "DeletedBy"));
+
             foreach (var navProperty in auditNavProperties)
-            {
                 modelBuilder.Entity(entityType.ClrType).Ignore(navProperty.Name);
-            }
         }
 
         // Apply centralized snake_case naming convention (tables, columns, constraints, indexes)

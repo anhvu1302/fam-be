@@ -1,0 +1,128 @@
+using System.Security.Cryptography;
+using System.Text;
+using FAM.Application.Auth.Services;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
+
+namespace FAM.Infrastructure.Services;
+
+/// <summary>
+/// Redis-based token blacklist service
+/// Stores invalidated tokens with TTL matching their natural expiration
+/// </summary>
+public class TokenBlacklistService : ITokenBlacklistService
+{
+    private readonly IDistributedCache _cache;
+    private readonly ILogger<TokenBlacklistService> _logger;
+    private const string TokenBlacklistPrefix = "token_blacklist:";
+    private const string UserBlacklistPrefix = "user_blacklist:";
+
+    public TokenBlacklistService(IDistributedCache cache, ILogger<TokenBlacklistService> logger)
+    {
+        _cache = cache;
+        _logger = logger;
+    }
+
+    public async Task BlacklistTokenAsync(string token, DateTime expiryTime,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // Hash the token to avoid storing full JWT in cache
+            var tokenHash = HashToken(token);
+            var cacheKey = $"{TokenBlacklistPrefix}{tokenHash}";
+
+            // Calculate TTL - how long until token naturally expires
+            var ttl = expiryTime - DateTime.UtcNow;
+            if (ttl <= TimeSpan.Zero)
+            {
+                _logger.LogWarning("Attempted to blacklist an already expired token");
+                return; // Token already expired, no need to blacklist
+            }
+
+            var options = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = ttl
+            };
+
+            // Store a simple marker - we just need to know it exists
+            await _cache.SetStringAsync(cacheKey, "blacklisted", options, cancellationToken);
+
+            _logger.LogInformation("Token blacklisted successfully, expires in {Minutes} minutes", ttl.TotalMinutes);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error blacklisting token");
+            throw;
+        }
+    }
+
+    public async Task<bool> IsTokenBlacklistedAsync(string token, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var tokenHash = HashToken(token);
+            var cacheKey = $"{TokenBlacklistPrefix}{tokenHash}";
+
+            var value = await _cache.GetStringAsync(cacheKey, cancellationToken);
+            return !string.IsNullOrEmpty(value);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error checking token blacklist");
+            // Fail open - don't block valid tokens if cache is down
+            return false;
+        }
+    }
+
+    public async Task BlacklistUserTokensAsync(long userId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var cacheKey = $"{UserBlacklistPrefix}{userId}";
+
+            // Store for 24 hours - longer than typical access token lifetime
+            // This will invalidate ALL tokens for this user
+            var options = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
+            };
+
+            await _cache.SetStringAsync(cacheKey, DateTime.UtcNow.ToString("O"), options, cancellationToken);
+
+            _logger.LogInformation("All tokens blacklisted for user {UserId}", userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error blacklisting user tokens for user {UserId}", userId);
+            throw;
+        }
+    }
+
+    public async Task<bool> AreUserTokensBlacklistedAsync(long userId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var cacheKey = $"{UserBlacklistPrefix}{userId}";
+            var value = await _cache.GetStringAsync(cacheKey, cancellationToken);
+            return !string.IsNullOrEmpty(value);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error checking user blacklist for user {UserId}", userId);
+            // Fail open - don't block valid tokens if cache is down
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Hash token using SHA256 to avoid storing full JWT
+    /// </summary>
+    private static string HashToken(string token)
+    {
+        using var sha256 = SHA256.Create();
+        var bytes = Encoding.UTF8.GetBytes(token);
+        var hashBytes = sha256.ComputeHash(bytes);
+        return Convert.ToHexString(hashBytes).ToLowerInvariant();
+    }
+}

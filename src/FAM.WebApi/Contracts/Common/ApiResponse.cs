@@ -93,7 +93,7 @@ public sealed record ApiPagedResponse<TItem>(
     {
         return new ApiPagedResponse<TItem>(true, message, data,
             new PaginationMeta(page, pageSize, total, (long)Math.Ceiling((double)total / pageSize),
-                total > (page * pageSize)));
+                total > page * pageSize));
     }
 }
 

@@ -1,5 +1,7 @@
+using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Auth.Logout;
 
@@ -9,10 +11,17 @@ namespace FAM.Application.Auth.Logout;
 public class LogoutAllDevicesCommandHandler : IRequestHandler<LogoutAllDevicesCommand, Unit>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ITokenBlacklistService _tokenBlacklistService;
+    private readonly ILogger<LogoutAllDevicesCommandHandler> _logger;
 
-    public LogoutAllDevicesCommandHandler(IUnitOfWork unitOfWork)
+    public LogoutAllDevicesCommandHandler(
+        IUnitOfWork unitOfWork,
+        ITokenBlacklistService tokenBlacklistService,
+        ILogger<LogoutAllDevicesCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
+        _tokenBlacklistService = tokenBlacklistService;
+        _logger = logger;
     }
 
     public async Task<Unit> Handle(LogoutAllDevicesCommand request, CancellationToken cancellationToken)
@@ -27,6 +36,10 @@ public class LogoutAllDevicesCommandHandler : IRequestHandler<LogoutAllDevicesCo
             request.UserId,
             request.ExceptDeviceId,
             cancellationToken);
+
+        // Blacklist all tokens for this user to invalidate them immediately
+        await _tokenBlacklistService.BlacklistUserTokensAsync(request.UserId, cancellationToken);
+        _logger.LogInformation("All tokens blacklisted for user {UserId} during logout-all", request.UserId);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

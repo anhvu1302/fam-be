@@ -36,11 +36,11 @@ public class AppConfiguration
     public bool MinioUseSsl { get; }
     public string MinioBucketName { get; }
 
-    // Redis (from .env - optional)
-    public string RedisHost { get; } = string.Empty;
+    // Redis (from .env - required)
+    public string RedisHost { get; }
     public int RedisPort { get; }
-    public string RedisPassword { get; } = string.Empty;
-    public string RedisInstanceName { get; } = string.Empty;
+    public string RedisPassword { get; }
+    public string RedisInstanceName { get; }
     public string RedisConnectionString { get; }
 
     // Email/SMTP (from .env - sensitive, optional)
@@ -95,10 +95,11 @@ public class AppConfiguration
         MinioUseSsl = GetBool("MINIO_USE_SSL", false);
         MinioBucketName = GetOptional("MINIO_BUCKET_NAME") ?? "fam-assets";
 
-        // Redis (Optional)
-        RedisHost = GetOptional("REDIS_HOST") ?? "localhost";
+        // Redis (Required - Sensitive)
+        RedisHost = GetRequired("REDIS_HOST");
         RedisPort = GetInt("REDIS_PORT", 6379);
-        RedisPassword = GetOptional("REDIS_PASSWORD") ?? "";
+        ValidatePort(RedisPort, "REDIS_PORT");
+        RedisPassword = GetOptional("REDIS_PASSWORD") ?? ""; // Optional: empty for development
         RedisInstanceName = GetOptional("REDIS_INSTANCE_NAME") ?? "fam:";
 
         // Build Redis connection string
@@ -170,10 +171,10 @@ public class AppConfiguration
         return result;
     }
 
-    private static void ValidatePort(int port)
+    private static void ValidatePort(int port, string portName = "DB_PORT")
     {
         if (port < 1 || port > 65535)
-            throw new InvalidOperationException($"DB_PORT must be 1-65535. Got: {port}");
+            throw new InvalidOperationException($"{portName} must be 1-65535. Got: {port}");
     }
 
     private static void ValidateDatabaseProvider(string provider)
@@ -191,6 +192,8 @@ public class AppConfiguration
             DatabaseProvider, DbHost, DbPort, DbName);
         logger.LogInformation("MinIO: {Endpoint}, Bucket: {Bucket}, SSL: {Ssl}",
             MinioEndpoint, MinioBucketName, MinioUseSsl);
+        logger.LogInformation("Redis: {Host}:{Port}, Instance: {Instance}",
+            RedisHost, RedisPort, RedisInstanceName);
         logger.LogInformation("JWT: Issuer={Issuer}, AccessToken={Min}min, RefreshToken={Days}days",
             JwtIssuer, AccessTokenExpirationMinutes, RefreshTokenExpirationDays);
         logger.LogInformation("=========================");

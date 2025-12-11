@@ -7,31 +7,40 @@ Fixed Asset Management Backend API built with .NET 8
 1. **Setup environment variables:**
    ```bash
    cp .env.example .env
-   # Edit .env and set your configuration (especially JWT_SECRET and POSTGRES_CONNECTION)
+   # Edit .env and set your configuration (database, Redis, JWT, email, etc.)
    ```
 
-2. **Start PostgreSQL:**
+2. **Start infrastructure services (PostgreSQL, Redis, MinIO, Seq):**
    ```bash
    docker-compose up -d
    ```
 
-3. **Run migrations:**
+3. **Verify services are running:**
+   ```bash
+   docker ps
+   # You should see: fam-postgres, fam-redis, fam-minio, fam-seq
+   ```
+
+4. **Run migrations:**
    ```bash
    make update
    ```
 
-4. **Seed initial data:**
+5. **Seed initial data:**
    ```bash
    make seed
    ```
 
-5. **Start the application:**
+6. **Start the application:**
    ```bash
    dotnet run --project src/FAM.WebApi
    ```
 
-6. **Access Swagger UI:**
-   - http://localhost:5231/swagger
+7. **Access services:**
+   - API Swagger: http://localhost:8000/swagger
+   - MinIO Console: http://localhost:9001 (admin/Admin@123)
+   - Seq Logs: http://localhost:8081 (admin/Admin@123)
+   - Redis: localhost:6379 (no password in dev)
 
 ## ⚙️ Configuration
 

@@ -191,7 +191,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             RefreshToken = refreshToken,
             ExpiresIn = 3600, // 1 hour - should be configurable
             TokenType = "Bearer",
-            User = MapToUserInfoDto(user)
+            User = MapToUserInfoDto(user),
+            DeviceId = device.DeviceId
         };
     }
 

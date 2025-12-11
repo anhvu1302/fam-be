@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -20,10 +21,12 @@ using FAM.Application.Common.Services;
 using FAM.Application.Users.Commands.DeleteAllSessions;
 using FAM.Application.Users.Commands.DeleteSession;
 using FAM.Application.Users.Commands.UpdateUserTheme;
+using FAM.Application.Users.Queries.GetUserById;
 using FAM.Application.Users.Queries.GetUserSessions;
 using FAM.Application.Users.Queries.GetUserTheme;
 using FAM.Application.Users.Shared;
 using FAM.Domain.Common.Base;
+using FAM.WebApi.Attributes;
 using FAM.WebApi.Configuration;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.Users;
@@ -77,12 +80,15 @@ public class AuthController : BaseApiController
         {
             var ipAddress = GetClientIpAddress();
             var location = await _locationService.GetLocationFromIpAsync(ipAddress);
+            
+            // Generate device ID and store in cookie for future reference (logout, etc.)
+            var deviceId = GenerateDeviceId();
 
             var command = new LoginCommand
             {
                 Identity = request.Identity,
                 Password = request.Password,
-                DeviceId = GenerateDeviceId(),
+                DeviceId = deviceId,
                 DeviceName = GetDeviceName(),
                 DeviceType = GetDeviceType(),
                 IpAddress = ipAddress,
@@ -92,6 +98,7 @@ public class AuthController : BaseApiController
             };
 
             var response = await _mediator.Send(command);
+            
             return OkResponse(response, "Login successful");
         }
         catch (UnauthorizedAccessException ex)
@@ -186,23 +193,50 @@ public class AuthController : BaseApiController
 
     /// <summary>
     /// Logout from current device
-    /// Device is automatically detected from request headers
+    /// Device is automatically detected from request headers or cookies
     /// </summary>
     [HttpPost("logout")]
     [Authorize]
+    [RequireDeviceId]
     public async Task<ActionResult> Logout()
     {
         try
         {
+            // Extract access token from Authorization header
+            var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+            // Extract token expiration from JWT
+            var expirationTime = ExtractTokenExpiration(accessToken);
+
+            // Try to get deviceId from cookie first (persisted from login)
+            var deviceId = Request.Cookies["device_id"];
+            
+            // If no cookie, try to get from header (client can send it)
+            if (string.IsNullOrEmpty(deviceId))
+            {
+                deviceId = Request.Headers["X-Device-Id"].ToString();
+            }
+            
+            // If still no deviceId, use refresh token to find the device
+            // This is a fallback - client should ideally store and send device_id
+            if (string.IsNullOrEmpty(deviceId))
+            {
+                _logger.LogWarning("No device_id found in cookie or header. Logout may fail to find correct device.");
+                // Generate one for now, but this may not match stored device
+                deviceId = GenerateDeviceId();
+            }
+
             var command = new LogoutCommand
             {
                 RefreshToken = null, // Will be handled by deviceId
-                DeviceId = GenerateDeviceId(),
-                IpAddress = GetClientIpAddress()
+                DeviceId = deviceId,
+                IpAddress = GetClientIpAddress(),
+                AccessToken = accessToken, // Pass token to blacklist it
+                AccessTokenExpiration = expirationTime // Pass expiration time
             };
 
             await _mediator.Send(command);
-            return OkResponse("Logged out successfully");
+            return OkResponse(new { logoutTime = DateTime.UtcNow }, "Logged out successfully");
         }
         catch (Exception)
         {
@@ -215,6 +249,7 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpPost("logout-all")]
     [Authorize]
+    [RequireDeviceId]
     public async Task<ActionResult> LogoutAll([FromBody] LogoutAllRequest? request = null)
     {
         try
@@ -616,25 +651,24 @@ public class AuthController : BaseApiController
     }
 
     /// <summary>
-    /// Get current user info (test endpoint to verify JWT authentication)
+    /// Get current user profile information
+    /// Requires device_id to prevent accessing user info without active device session
     /// </summary>
     [HttpGet("me")]
     [Authorize]
-    public ActionResult<object> GetCurrentUser()
+    [RequireDeviceId]
+    public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
         var userId = GetCurrentUserId();
-        var username = User.FindFirst(ClaimTypes.Name)?.Value;
-        var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        var roles = User.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList();
+        var query = new GetUserByIdQuery(userId);
+        var user = await _mediator.Send(query);
 
-        return OkResponse(new
+        if (user == null)
         {
-            userId,
-            username,
-            email,
-            roles,
-            claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList()
-        });
+            return NotFoundResponse("User not found", "USER_NOT_FOUND");
+        }
+
+        return OkResponse(user, "User profile retrieved successfully");
     }
 
     #region Helper Methods
@@ -705,6 +739,23 @@ public class AuthController : BaseApiController
         return Convert.ToBase64String(hash)[..32];
     }
 
+    private DateTime? ExtractTokenExpiration(string? accessToken)
+    {
+        if (string.IsNullOrEmpty(accessToken))
+            return null;
+
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(accessToken);
+            return jwtToken.ValidTo;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
     private string GetDeviceName()
     {
         var userAgent = Request.Headers["User-Agent"].ToString();
@@ -763,6 +814,7 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpDelete("me/sessions/{sessionId:guid}")]
     [Authorize]
+    [RequireDeviceId]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteSession(Guid sessionId)
@@ -779,6 +831,7 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpDelete("me/sessions")]
     [Authorize]
+    [RequireDeviceId]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteAllSessions([FromQuery] string? currentDeviceId = null)
     {

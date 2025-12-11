@@ -10,6 +10,17 @@ public sealed record LogoutCommand : IRequest<Unit>
     public string? RefreshToken { get; init; }
     public string? DeviceId { get; init; }
     public string? IpAddress { get; init; }
+
+    /// <summary>
+    /// Access token to blacklist (invalidate immediately)
+    /// </summary>
+    public string? AccessToken { get; init; }
+
+    /// <summary>
+    /// Access token expiration time (UTC)
+    /// If not provided, token will still be blacklisted but with minimal TTL
+    /// </summary>
+    public DateTime? AccessTokenExpiration { get; init; }
 }
 
 /// <summary>

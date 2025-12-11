@@ -99,6 +99,12 @@ public static class ErrorCodes
     /// <summary>User session not found or access denied</summary>
     public const string USER_SESSION_NOT_FOUND = "USER_SESSION_NOT_FOUND";
 
+    /// <summary>Device not found</summary>
+    public const string DEVICE_NOT_FOUND = "DEVICE_NOT_FOUND";
+
+    /// <summary>Device is not trusted enough for this operation</summary>
+    public const string DEVICE_NOT_TRUSTED_FOR_OPERATION = "DEVICE_NOT_TRUSTED_FOR_OPERATION";
+
     #endregion
 
     #region Validation (VAL_xxx)

@@ -45,6 +45,9 @@ public static class ErrorMessages
         [ErrorCodes.USER_ALREADY_INACTIVE] = "User is already inactive",
         [ErrorCodes.USER_CANNOT_DELETE_SELF] = "You cannot delete your own account",
         [ErrorCodes.USER_SESSION_NOT_FOUND] = "Session not found or access denied",
+        [ErrorCodes.DEVICE_NOT_FOUND] = "Device not found",
+        [ErrorCodes.DEVICE_NOT_TRUSTED_FOR_OPERATION] =
+            "This device is not trusted enough for this operation. For security reasons, devices must be trusted for at least 3 days before they can delete other sessions.",
 
         #endregion
 
