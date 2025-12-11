@@ -58,8 +58,11 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
         var newRefreshToken = _jwtService.GenerateRefreshToken();
         var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtService.RefreshTokenExpiryDays);
 
+        // Update device tokens directly (device is detached from FindByRefreshTokenAsync)
         device.UpdateTokens(newRefreshToken, refreshTokenExpiresAt, accessTokenJti ?? string.Empty, 
             request.IpAddress, request.Location);
+        
+        // Explicitly attach and update the detached entity
         _unitOfWork.UserDevices.Update(device);
 
         user.RecordLogin(request.IpAddress);
