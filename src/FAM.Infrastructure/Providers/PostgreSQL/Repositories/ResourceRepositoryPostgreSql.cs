@@ -50,7 +50,19 @@ public class ResourceRepositoryPostgreSql : IResourceRepository
     public void Update(Resource entity)
     {
         var efEntity = _mapper.Map<ResourceEf>(entity);
-        _context.Resources.Update(efEntity);
+
+        var trackedEntry = _context.ChangeTracker.Entries<ResourceEf>()
+            .FirstOrDefault(e => e.Entity.Id == entity.Id);
+
+        if (trackedEntry != null)
+        {
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
+        }
+        else
+        {
+            _context.Resources.Attach(efEntity);
+            _context.Entry(efEntity).State = EntityState.Modified;
+        }
     }
 
     public void Delete(Resource entity)

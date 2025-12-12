@@ -47,7 +47,19 @@ public class RoleRepositoryPostgreSql : BasePostgreSqlRepository<Role, RoleEf>, 
     public void Update(Role entity)
     {
         var efEntity = Mapper.Map<RoleEf>(entity);
-        Context.Roles.Update(efEntity);
+
+        var trackedEntry = Context.ChangeTracker.Entries<RoleEf>()
+            .FirstOrDefault(e => e.Entity.Id == entity.Id);
+
+        if (trackedEntry != null)
+        {
+            Context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
+        }
+        else
+        {
+            Context.Roles.Attach(efEntity);
+            Context.Entry(efEntity).State = EntityState.Modified;
+        }
     }
 
     public void Delete(Role entity)

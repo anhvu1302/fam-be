@@ -49,45 +49,27 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
 
     public void Update(UserDevice entity)
     {
-        // Find if entity is already tracked
+        var efEntity = _mapper.Map<UserDeviceEf>(entity);
+        efEntity.UpdatedAt = DateTime.UtcNow;
+
         var trackedEntry = _context.ChangeTracker.Entries<UserDeviceEf>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
         {
-            // Entity is tracked, update its properties directly
-            var efEntity = trackedEntry.Entity;
-            efEntity.UserId = entity.UserId;
-            efEntity.DeviceId = entity.DeviceId;
-            efEntity.DeviceName = entity.DeviceName;
-            efEntity.DeviceType = entity.DeviceType;
-            efEntity.UserAgent = entity.UserAgent;
-            efEntity.IpAddress = entity.IpAddress != null ? entity.IpAddress.Value : null;
-            efEntity.Location = entity.Location;
-            efEntity.Browser = entity.Browser;
-            efEntity.OperatingSystem = entity.OperatingSystem;
-            efEntity.LastLoginAt = entity.LastLoginAt;
-            efEntity.LastActivityAt = entity.LastActivityAt;
-            efEntity.IsActive = entity.IsActive;
-            efEntity.IsTrusted = entity.IsTrusted;
-            efEntity.RefreshToken = entity.RefreshToken;
-            efEntity.RefreshTokenExpiresAt = entity.RefreshTokenExpiresAt;
-            efEntity.ActiveAccessTokenJti = entity.ActiveAccessTokenJti;
-            efEntity.UpdatedAt = DateTime.UtcNow;
-            trackedEntry.State = EntityState.Modified;
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
         }
         else
         {
-            // Entity is not tracked, map and attach normally
-            var efEntity = _mapper.Map<UserDeviceEf>(entity);
-            _context.UserDevices.Update(efEntity);
+            _context.UserDevices.Attach(efEntity);
+            _context.Entry(efEntity).State = EntityState.Modified;
         }
     }
 
     public void Delete(UserDevice entity)
     {
         var efEntity = _mapper.Map<UserDeviceEf>(entity);
-        
+
         // Check if entity is already tracked
         var trackedEntry = _context.UserDevices.Local.FirstOrDefault(d => d.Id == efEntity.Id);
         if (trackedEntry != null)

@@ -56,15 +56,19 @@ public class MenuItemRepository : IMenuItemRepository
 
     public void Update(MenuItem entity)
     {
-        var efEntity = _context.MenuItems.Local.FirstOrDefault(m => m.Id == entity.Id);
-        if (efEntity != null)
+        var efEntity = _mapper.Map<MenuItemEf>(entity);
+
+        var trackedEntry = _context.ChangeTracker.Entries<MenuItemEf>()
+            .FirstOrDefault(e => e.Entity.Id == entity.Id);
+
+        if (trackedEntry != null)
         {
-            _mapper.Map(entity, efEntity);
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
         }
         else
         {
-            efEntity = _mapper.Map<MenuItemEf>(entity);
-            _context.MenuItems.Update(efEntity);
+            _context.MenuItems.Attach(efEntity);
+            _context.Entry(efEntity).State = EntityState.Modified;
         }
     }
 

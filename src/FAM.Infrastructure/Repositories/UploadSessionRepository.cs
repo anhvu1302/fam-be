@@ -42,7 +42,18 @@ public class UploadSessionRepository : IUploadSessionRepository
 
     public void Update(UploadSession entity)
     {
-        _context.Set<UploadSession>().Update(entity);
+        var trackedEntry = _context.ChangeTracker.Entries<UploadSession>()
+            .FirstOrDefault(e => e.Entity.Id == entity.Id);
+
+        if (trackedEntry != null)
+        {
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(entity);
+        }
+        else
+        {
+            _context.Set<UploadSession>().Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+        }
     }
 
     public void Delete(UploadSession entity)

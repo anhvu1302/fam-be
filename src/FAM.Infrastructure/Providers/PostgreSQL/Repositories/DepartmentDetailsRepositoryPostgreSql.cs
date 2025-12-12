@@ -50,7 +50,19 @@ public class DepartmentDetailsRepositoryPostgreSql : IDepartmentDetailsRepositor
     public void Update(DepartmentDetails entity)
     {
         var efEntity = _mapper.Map<DepartmentDetailsEf>(entity);
-        _context.DepartmentDetails.Update(efEntity);
+
+        var trackedEntry = _context.ChangeTracker.Entries<DepartmentDetailsEf>()
+            .FirstOrDefault(e => e.Entity.Id == entity.Id);
+
+        if (trackedEntry != null)
+        {
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
+        }
+        else
+        {
+            _context.DepartmentDetails.Attach(efEntity);
+            _context.Entry(efEntity).State = EntityState.Modified;
+        }
     }
 
     public void Delete(DepartmentDetails entity)

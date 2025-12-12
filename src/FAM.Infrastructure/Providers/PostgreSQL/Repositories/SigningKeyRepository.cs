@@ -53,15 +53,19 @@ public class SigningKeyRepository : ISigningKeyRepository
 
     public void Update(SigningKey entity)
     {
-        var efEntity = _context.SigningKeys.Local.FirstOrDefault(k => k.Id == entity.Id);
-        if (efEntity != null)
+        var efEntity = _mapper.Map<SigningKeyEf>(entity);
+
+        var trackedEntry = _context.ChangeTracker.Entries<SigningKeyEf>()
+            .FirstOrDefault(e => e.Entity.Id == entity.Id);
+
+        if (trackedEntry != null)
         {
-            _mapper.Map(entity, efEntity);
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
         }
         else
         {
-            efEntity = _mapper.Map<SigningKeyEf>(entity);
-            _context.SigningKeys.Update(efEntity);
+            _context.SigningKeys.Attach(efEntity);
+            _context.Entry(efEntity).State = EntityState.Modified;
         }
     }
 

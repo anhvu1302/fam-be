@@ -50,7 +50,19 @@ public class OrgNodeRepositoryPostgreSql : IOrgNodeRepository
     public void Update(OrgNode entity)
     {
         var efEntity = _mapper.Map<OrgNodeEf>(entity);
-        _context.OrgNodes.Update(efEntity);
+
+        var trackedEntry = _context.ChangeTracker.Entries<OrgNodeEf>()
+            .FirstOrDefault(e => e.Entity.Id == entity.Id);
+
+        if (trackedEntry != null)
+        {
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
+        }
+        else
+        {
+            _context.OrgNodes.Attach(efEntity);
+            _context.Entry(efEntity).State = EntityState.Modified;
+        }
     }
 
     public void Delete(OrgNode entity)

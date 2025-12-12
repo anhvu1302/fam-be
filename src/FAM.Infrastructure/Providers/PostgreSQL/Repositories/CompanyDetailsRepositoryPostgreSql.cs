@@ -50,7 +50,19 @@ public class CompanyDetailsRepositoryPostgreSql : ICompanyDetailsRepository
     public void Update(CompanyDetails entity)
     {
         var efEntity = _mapper.Map<CompanyDetailsEf>(entity);
-        _context.CompanyDetails.Update(efEntity);
+
+        var trackedEntry = _context.ChangeTracker.Entries<CompanyDetailsEf>()
+            .FirstOrDefault(e => e.Entity.Id == entity.Id);
+
+        if (trackedEntry != null)
+        {
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
+        }
+        else
+        {
+            _context.CompanyDetails.Attach(efEntity);
+            _context.Entry(efEntity).State = EntityState.Modified;
+        }
     }
 
     public void Delete(CompanyDetails entity)

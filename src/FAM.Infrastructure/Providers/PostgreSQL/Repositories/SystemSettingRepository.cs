@@ -54,15 +54,19 @@ public class SystemSettingRepository : ISystemSettingRepository
 
     public void Update(SystemSetting entity)
     {
-        var efEntity = _context.SystemSettings.Local.FirstOrDefault(s => s.Id == entity.Id);
-        if (efEntity != null)
+        var efEntity = _mapper.Map<SystemSettingEf>(entity);
+
+        var trackedEntry = _context.ChangeTracker.Entries<SystemSettingEf>()
+            .FirstOrDefault(e => e.Entity.Id == entity.Id);
+
+        if (trackedEntry != null)
         {
-            _mapper.Map(entity, efEntity);
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
         }
         else
         {
-            efEntity = _mapper.Map<SystemSettingEf>(entity);
-            _context.SystemSettings.Update(efEntity);
+            _context.SystemSettings.Attach(efEntity);
+            _context.Entry(efEntity).State = EntityState.Modified;
         }
     }
 
