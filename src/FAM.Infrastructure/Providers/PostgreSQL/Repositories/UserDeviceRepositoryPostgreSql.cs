@@ -193,4 +193,26 @@ public class UserDeviceRepositoryPostgreSql : IUserDeviceRepository
     {
         return _mapper.Map<IEnumerable<UserDevice>>(efEntities);
     }
+
+    /// <summary>
+    /// Update last activity time for a device - works directly on EF entity to avoid mapping issues
+    /// </summary>
+    public async Task<bool> UpdateLastActivityAsync(string deviceId, string? ipAddress = null, CancellationToken cancellationToken = default)
+    {
+        var entity = await _context.UserDevices
+            .FirstOrDefaultAsync(d => d.DeviceId == deviceId && d.IsActive && !d.IsDeleted, cancellationToken);
+        
+        if (entity == null)
+            return false;
+
+        entity.LastActivityAt = DateTime.UtcNow;
+        entity.UpdatedAt = DateTime.UtcNow;
+        
+        if (!string.IsNullOrEmpty(ipAddress))
+        {
+            entity.IpAddress = ipAddress;
+        }
+
+        return true;
+    }
 }

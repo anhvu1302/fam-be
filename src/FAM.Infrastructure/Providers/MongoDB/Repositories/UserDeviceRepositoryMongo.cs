@@ -164,4 +164,25 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? _mapper.Map<UserDevice>(document) : null;
     }
+
+    public async Task<bool> UpdateLastActivityAsync(string deviceId, string? ipAddress = null, CancellationToken cancellationToken = default)
+    {
+        var filter = Builders<UserDeviceMongo>.Filter.And(
+            Builders<UserDeviceMongo>.Filter.Eq(d => d.DeviceId, deviceId),
+            Builders<UserDeviceMongo>.Filter.Eq(d => d.IsActive, true),
+            Builders<UserDeviceMongo>.Filter.Eq(d => d.IsDeleted, false)
+        );
+
+        var update = Builders<UserDeviceMongo>.Update
+            .Set(d => d.LastActivityAt, DateTime.UtcNow)
+            .Set(d => d.UpdatedAt, DateTime.UtcNow);
+
+        if (!string.IsNullOrEmpty(ipAddress))
+        {
+            update = update.Set(d => d.IpAddress, ipAddress);
+        }
+
+        var result = await _collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+        return result.ModifiedCount > 0;
+    }
 }

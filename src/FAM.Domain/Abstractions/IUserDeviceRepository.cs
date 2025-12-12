@@ -31,4 +31,10 @@ public interface IUserDeviceRepository : IRepository<UserDevice, Guid>
     /// Find device by refresh token - for token refresh
     /// </summary>
     Task<UserDevice?> FindByRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Update last activity time for a device
+    /// Returns true if device was found and updated, false otherwise
+    /// </summary>
+    Task<bool> UpdateLastActivityAsync(string deviceId, string? ipAddress = null, CancellationToken cancellationToken = default);
 }

@@ -3,7 +3,7 @@ using FAM.Application.Querying;
 using FAM.Application.Querying.Validation;
 using FAM.Domain.Authorization;
 
-namespace FAM.Application.Authorization.Roles;
+namespace FAM.Application.Authorization.Roles.Shared;
 
 /// <summary>
 /// Field map for Role domain entity - defines allowed fields for filtering and sorting

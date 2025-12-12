@@ -3,10 +3,12 @@ using FAM.Application.EmailTemplates.Commands.CreateEmailTemplate;
 using FAM.Application.EmailTemplates.Commands.DeactivateEmailTemplate;
 using FAM.Application.EmailTemplates.Commands.DeleteEmailTemplate;
 using FAM.Application.EmailTemplates.Commands.UpdateEmailTemplate;
-using FAM.Application.EmailTemplates.Queries.GetAllEmailTemplates;
 using FAM.Application.EmailTemplates.Queries.GetEmailTemplateByCode;
 using FAM.Application.EmailTemplates.Queries.GetEmailTemplateById;
+using FAM.Application.EmailTemplates.Queries.GetEmailTemplates;
 using FAM.Application.EmailTemplates.Shared;
+using FAM.Application.Querying;
+using FAM.Application.Querying.Extensions;
 using FAM.Domain.Common.Base;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.EmailTemplates;
@@ -35,56 +37,45 @@ public class EmailTemplatesController : BaseApiController
     }
 
     /// <summary>
-    /// Get all email templates
+    /// Get paginated list of email templates with advanced filtering and sorting
     /// </summary>
     /// <remarks>
-    /// Returns a list of all email templates with optional filtering by active status and category.
+    /// Returns a paginated list of email templates. Supports filtering, sorting, field selection, and includes.
     /// 
     /// Query Parameters:
-    /// - isActive: Filter by active status (true/false)
-    /// - category: Filter by category (1=Authentication, 2=Notification, 3=Marketing, 4=System)
+    /// - page: Page number (default: 1)
+    /// - pageSize: Items per page (default: 10)
+    /// - sortBy: Field to sort by (e.g., "id", "code", "name", "category")
+    /// - sortOrder: Sort order - "asc" or "desc" (default: asc)
+    /// - fields: Comma-separated fields to include in response
+    /// - filter: Filter expression (e.g., "isActive=true", "category=1")
     /// 
-    /// Example: GET /api/email-templates?isActive=true&amp;category=1
+    /// Example: GET /api/email-templates?page=1&amp;pageSize=10&amp;sortBy=name&amp;sortOrder=asc&amp;filter=isActive=true
     /// </remarks>
-    /// <param name="isActive">Filter by active status (optional)</param>
-    /// <param name="category">Filter by category - 1:Authentication, 2:Notification, 3:Marketing, 4:System (optional)</param>
-    /// <response code="200">Success - Returns {success: true, result: [EmailTemplateResponse, ...]}</response>
+    /// <param name="parameters">Query parameters for pagination, filtering, sorting, field selection and includes</param>
+    /// <response code="200">Success - Returns {success: true, result: {items: [EmailTemplate], totalCount, pageNumber, pageSize, totalPages}}</response>
+    /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Invalid query parameters", code: "INVALID_PARAMETERS"}]}</response>
     /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
     /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
     [HttpGet]
-    [ProducesResponseType(typeof(ApiSuccessResponse<IReadOnlyList<EmailTemplateResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<PageResult<Dictionary<string, object?>>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IReadOnlyList<EmailTemplateResponse>>> GetAllTemplates(
-        [FromQuery] bool? isActive = null,
-        [FromQuery] int? category = null)
+    public async Task<IActionResult> GetEmailTemplates([FromQuery] PaginationQueryParameters parameters)
     {
-        var query = new GetAllEmailTemplatesQuery
-        {
-            IsActive = isActive,
-            Category = category
-        };
-
+        var query = new GetEmailTemplatesQuery(parameters.ToQueryRequest());
         var result = await _mediator.Send(query);
 
-        var response = result.Select(dto => new EmailTemplateResponse(
-            dto.Id,
-            dto.Code,
-            dto.Name,
-            dto.Subject,
-            dto.HtmlBody,
-            dto.PlainTextBody,
-            dto.Description,
-            dto.AvailablePlaceholders,
-            dto.IsActive,
-            dto.IsSystem,
-            dto.Category,
-            dto.CategoryName,
-            dto.CreatedAt,
-            dto.UpdatedAt
-        )).ToList();
+        // Apply field selection if requested
+        var fields = parameters.GetFieldsArray();
+        if (fields != null && fields.Length > 0)
+        {
+            var selectedResult = result.SelectFieldsToResponse(fields);
+            return OkResponse(selectedResult);
+        }
 
-        return OkResponse(response);
+        return OkResponse(result.ToPagedResponse());
     }
 
     /// <summary>

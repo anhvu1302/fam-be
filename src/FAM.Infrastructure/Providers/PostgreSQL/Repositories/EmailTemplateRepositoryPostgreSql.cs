@@ -116,4 +116,86 @@ public class EmailTemplateRepositoryPostgreSql : BasePagedRepository<EmailTempla
 
         return await query.AnyAsync(cancellationToken);
     }
+
+    public async Task<(IEnumerable<EmailTemplate> Items, long Total)> GetPagedAsync(
+        Expression<Func<EmailTemplate, bool>>? filter = null,
+        string? sort = null,
+        int page = 1,
+        int pageSize = 10,
+        IEnumerable<Expression<Func<EmailTemplate, object>>>? includes = null,
+        CancellationToken cancellationToken = default)
+    {
+        // Build base query for counting
+        var countQuery = Context.EmailTemplates.AsQueryable();
+
+        // Build query for data
+        var dataQuery = Context.EmailTemplates.AsQueryable();
+
+        // Apply filter at database level
+        if (filter != null)
+        {
+            var efFilter = ConvertToEfExpression(filter);
+            countQuery = countQuery.Where(efFilter);
+            dataQuery = dataQuery.Where(efFilter);
+        }
+
+        // Get total count
+        var total = await countQuery.LongCountAsync(cancellationToken);
+
+        // Apply sorting - use base class method directly
+        if (!string.IsNullOrWhiteSpace(sort))
+        {
+            var sortParts = sort.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            IOrderedQueryable<EmailTemplateEf>? orderedQuery = null;
+
+            foreach (var sortPart in sortParts)
+            {
+                var trimmed = sortPart.Trim();
+                if (string.IsNullOrEmpty(trimmed)) continue;
+
+                var descending = trimmed.StartsWith('-');
+                var fieldName = descending ? trimmed[1..] : trimmed;
+                var sortExpression = GetSortExpression(fieldName);
+
+                orderedQuery = orderedQuery == null
+                    ? (descending ? dataQuery.OrderByDescending(sortExpression) : dataQuery.OrderBy(sortExpression))
+                    : (descending ? orderedQuery.ThenByDescending(sortExpression) : orderedQuery.ThenBy(sortExpression));
+            }
+
+            dataQuery = orderedQuery ?? dataQuery.OrderBy(t => t.Id);
+        }
+        else
+        {
+            dataQuery = dataQuery.OrderBy(t => t.Id);
+        }
+
+        // Apply pagination and execute
+        var entities = await dataQuery
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        // Map to domain entities
+        var templates = Mapper.Map<List<EmailTemplate>>(entities);
+
+        return (templates, total);
+    }
+
+    private Expression<Func<EmailTemplateEf, object>> GetSortExpression(string fieldName)
+    {
+        return fieldName.ToLowerInvariant() switch
+        {
+            "id" => t => t.Id,
+            "code" => t => t.Code,
+            "name" => t => t.Name,
+            "subject" => t => t.Subject,
+            "category" => t => t.Category,
+            "isactive" => t => t.IsActive,
+            "issystem" => t => t.IsSystem,
+            "createdat" => t => t.CreatedAt,
+            "updatedat" => t => t.UpdatedAt!,
+            _ => t => t.Id
+        };
+    }
 }

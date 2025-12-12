@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -25,6 +26,7 @@ using FAM.Application.Users.Queries.GetUserById;
 using FAM.Application.Users.Queries.GetUserSessions;
 using FAM.Application.Users.Queries.GetUserTheme;
 using FAM.Application.Users.Shared;
+using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.WebApi.Attributes;
 using FAM.WebApi.Configuration;
@@ -49,12 +51,14 @@ public class AuthController : BaseApiController
     private readonly IMediator _mediator;
     private readonly ILogger<AuthController> _logger;
     private readonly ILocationService _locationService;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public AuthController(IMediator mediator, ILogger<AuthController> logger, ILocationService locationService)
+    public AuthController(IMediator mediator, ILogger<AuthController> logger, ILocationService locationService, IUnitOfWork unitOfWork)
     {
         _mediator = mediator;
         _logger = logger;
         _locationService = locationService;
+        _unitOfWork = unitOfWork;
     }
 
     /// <summary>
@@ -80,7 +84,7 @@ public class AuthController : BaseApiController
         {
             var ipAddress = GetClientIpAddress();
             var location = await _locationService.GetLocationFromIpAsync(ipAddress);
-            
+
             // Generate device ID and store in cookie for future reference (logout, etc.)
             var deviceId = GenerateDeviceId();
 
@@ -98,7 +102,7 @@ public class AuthController : BaseApiController
             };
 
             var response = await _mediator.Send(command);
-            
+
             return OkResponse(response, "Login successful");
         }
         catch (UnauthorizedAccessException ex)
@@ -208,16 +212,8 @@ public class AuthController : BaseApiController
             // Extract token expiration from JWT
             var expirationTime = ExtractTokenExpiration(accessToken);
 
-            // Try to get deviceId from cookie first (persisted from login)
-            var deviceId = Request.Cookies["device_id"];
-            
-            // If no cookie, try to get from header (client can send it)
-            if (string.IsNullOrEmpty(deviceId))
-            {
-                deviceId = Request.Headers["X-Device-Id"].ToString();
-            }
-            
-            // If still no deviceId, use refresh token to find the device
+            string deviceId = GetDeviceId();
+
             // This is a fallback - client should ideally store and send device_id
             if (string.IsNullOrEmpty(deviceId))
             {
@@ -660,6 +656,16 @@ public class AuthController : BaseApiController
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
         var userId = GetCurrentUserId();
+        var deviceId = GetDeviceId();
+        var ipAddress = GetClientIpAddress();
+
+        // Update last activity for current device - using direct repository method to avoid AutoMapper issues
+        if (!string.IsNullOrEmpty(deviceId))
+        {
+            await _unitOfWork.UserDevices.UpdateLastActivityAsync(deviceId, ipAddress);
+            await _unitOfWork.SaveChangesAsync();
+        }
+
         var query = new GetUserByIdQuery(userId);
         var user = await _mediator.Send(query);
 
@@ -672,7 +678,6 @@ public class AuthController : BaseApiController
     }
 
     #region Helper Methods
-
     protected new string GetClientIpAddress()
     {
         // Priority order for getting real client IP:
@@ -737,6 +742,19 @@ public class AuthController : BaseApiController
         var hash = SHA256.HashData(
             Encoding.UTF8.GetBytes($"{userAgent}_{ip}_{DateTime.UtcNow.Ticks}"));
         return Convert.ToBase64String(hash)[..32];
+    }
+
+    /// <summary>
+    /// Get device ID from request headers or cookies
+    /// Returns the device_id if present in headers or cookies, otherwise returns empty string
+    /// </summary>
+    private string GetDeviceId()
+    {
+        var deviceId = Request.Headers["x-device-id"].ToString();
+        if (!string.IsNullOrEmpty(deviceId))
+            return deviceId;
+
+        return string.Empty;
     }
 
     private DateTime? ExtractTokenExpiration(string? accessToken)
@@ -821,7 +839,7 @@ public class AuthController : BaseApiController
         try
         {
             var userId = GetCurrentUserId();
-            
+
             // Extract access token from Authorization header
             var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             var expirationTime = ExtractTokenExpiration(accessToken);
