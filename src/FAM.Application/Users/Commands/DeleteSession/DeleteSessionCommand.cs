@@ -8,6 +8,7 @@ namespace FAM.Application.Users.Commands.DeleteSession;
 public record DeleteSessionCommand(
     long UserId,
     Guid SessionId,
+    string CurrentDeviceId,
     string? AccessToken = null,
     DateTime? AccessTokenExpiration = null
 ) : IRequest<Unit>;

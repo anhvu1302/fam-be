@@ -833,6 +833,7 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpDelete("me/sessions/{sessionId:guid}")]
     [Authorize]
+    [RequireDeviceId]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteSession(Guid sessionId)
@@ -840,12 +841,13 @@ public class AuthController : BaseApiController
         try
         {
             var userId = GetCurrentUserId();
+            var currentDeviceId = GetDeviceId();
 
             // Extract access token from Authorization header
             var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             DateTime? expirationTime = ExtractTokenExpiration(accessToken);
 
-            var command = new DeleteSessionCommand(userId, sessionId, accessToken, expirationTime);
+            var command = new DeleteSessionCommand(userId, sessionId, currentDeviceId, accessToken, expirationTime);
             await _mediator.Send(command);
 
             return NoContent();
@@ -862,15 +864,23 @@ public class AuthController : BaseApiController
     }
 
     /// <summary>
-    /// Delete all login sessions except current
+    /// Delete all login sessions except current device
     /// </summary>
+    /// <remarks>
+    /// Requires X-Device-Id header to identify the current device that should be kept active.
+    /// All other sessions will be terminated and their tokens blacklisted.
+    /// </remarks>
     [HttpDelete("me/sessions")]
     [Authorize]
     [RequireDeviceId]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> DeleteAllSessions([FromQuery] string? currentDeviceId = null)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> DeleteAllSessions()
     {
         var userId = GetCurrentUserId();
+        var currentDeviceId = GetDeviceId();
+        
         var command = new DeleteAllSessionsCommand(userId, currentDeviceId);
         await _mediator.Send(command);
 

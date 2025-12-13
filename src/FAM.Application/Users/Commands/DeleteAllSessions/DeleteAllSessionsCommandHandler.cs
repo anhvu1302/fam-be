@@ -14,19 +14,15 @@ public class DeleteAllSessionsCommandHandler : IRequestHandler<DeleteAllSessions
     private readonly IUserDeviceRepository _userDeviceRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ITokenBlacklistService _tokenBlacklistService;
-    private readonly ILogger<DeleteAllSessionsCommandHandler> _logger;
-    private const int MinimumTrustDaysForDeletion = 3;
 
     public DeleteAllSessionsCommandHandler(
         IUserDeviceRepository userDeviceRepository,
         IUnitOfWork unitOfWork,
-        ITokenBlacklistService tokenBlacklistService,
-        ILogger<DeleteAllSessionsCommandHandler> logger)
+        ITokenBlacklistService tokenBlacklistService)
     {
         _userDeviceRepository = userDeviceRepository;
         _unitOfWork = unitOfWork;
         _tokenBlacklistService = tokenBlacklistService;
-        _logger = logger;
     }
 
     public async Task<Unit> Handle(DeleteAllSessionsCommand request, CancellationToken cancellationToken)
@@ -39,23 +35,16 @@ public class DeleteAllSessionsCommandHandler : IRequestHandler<DeleteAllSessions
 
             if (currentDevice == null)
             {
-                _logger.LogWarning("Device {DeviceId} not found for user {UserId}", request.ExcludeDeviceId,
-                    request.UserId);
                 throw new DomainException(
                     ErrorCodes.DEVICE_NOT_FOUND,
                     "Current device not found. Please log in again.");
             }
 
-            if (!currentDevice.IsTrustedForDuration(MinimumTrustDaysForDeletion))
+            if (!currentDevice.IsTrustedForDuration(DomainRules.DeviceTrust.MinimumTrustDaysForSensitiveOperations))
             {
-                _logger.LogWarning(
-                    "User {UserId} attempted to delete all sessions from untrusted device {DeviceId} (created: {Created}, trusted: {IsTrusted})",
-                    request.UserId, request.ExcludeDeviceId, currentDevice.CreatedAt, currentDevice.IsTrusted);
-
                 throw new DomainException(
                     ErrorCodes.DEVICE_NOT_TRUSTED_FOR_OPERATION,
-                    $"For security reasons, this device must be trusted for at least {MinimumTrustDaysForDeletion} days before you can delete other sessions. " +
-                    "Please use a trusted device or contact support if you've lost access to your account.");
+                    $"Device must be trusted for at least {DomainRules.DeviceTrust.MinimumTrustDaysForSensitiveOperations} days to delete other sessions.");
             }
         }
 

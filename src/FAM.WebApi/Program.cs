@@ -424,13 +424,14 @@ app.UseSerilogRequestLogging(options =>
     // Customize the message template
     options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000}ms";
 
-    // Don't log exceptions for client errors (4xx) - they are handled by GlobalExceptionHandler
+    // Only log server errors (5xx), not client errors (4xx)
     options.GetLevel = (httpContext, elapsed, ex) =>
     {
         if (ex != null || httpContext.Response.StatusCode >= 500)
             return LogEventLevel.Error;
+        // Don't log 4xx responses (client errors) - they are expected business logic errors
         if (httpContext.Response.StatusCode >= 400)
-            return LogEventLevel.Warning;
+            return LogEventLevel.Debug; // Changed from Warning to Debug so they don't appear in console
         return LogEventLevel.Information;
     };
 

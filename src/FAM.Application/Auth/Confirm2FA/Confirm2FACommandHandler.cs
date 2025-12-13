@@ -28,13 +28,15 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
         User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
         if (user == null) throw new UnauthorizedAccessException("User not found");
 
+        // Security: Verify the secret matches the pending secret (from Enable2FA)
+        if (!user.IsPendingTwoFactorSecretValid(request.Secret))
+            throw new InvalidOperationException("Invalid or expired 2FA secret. Please generate a new one by calling Enable2FA.");
+
         // Verify the TOTP code with the provided secret
         var secretBytes = Base32Encoding.ToBytes(request.Secret);
         var totp = new Totp(secretBytes);
 
-        // Verify code with time window tolerance (1 step = 30 seconds)
-        // This allows for slight clock skew between server and client
-        var verificationWindow = new VerificationWindow(1, 1);
+        var verificationWindow = new VerificationWindow(0, 0);
 
         if (!totp.VerifyTotp(request.Code, out _, verificationWindow))
             throw new InvalidOperationException("Invalid verification code");

@@ -32,9 +32,20 @@ public class DeleteSessionCommandHandlerTests
         // Arrange
         var userId = 1L;
         var sessionId = Guid.NewGuid();
+        var currentDeviceId = "currentDevice123";
         var device = UserDevice.Create(userId, "device1", "Chrome", "desktop");
         var accessToken = "test_token";
         DateTime expirationTime = DateTime.UtcNow.AddHours(1);
+
+        // Mock current device as trusted (created 4 days ago)
+        var currentDevice = UserDevice.Create(userId, currentDeviceId, "Chrome", "desktop");
+        var createdAtField = typeof(UserDevice).GetProperty("CreatedAt");
+        createdAtField?.SetValue(currentDevice, DateTime.UtcNow.AddDays(-4));
+        currentDevice.MarkAsTrusted();
+
+        _mockUserDeviceRepository
+            .Setup(x => x.GetByDeviceIdAsync(currentDeviceId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(currentDevice);
 
         _mockUserDeviceRepository
             .Setup(x => x.GetByIdAsync(sessionId, It.IsAny<CancellationToken>()))
@@ -44,7 +55,7 @@ public class DeleteSessionCommandHandlerTests
             .Setup(x => x.BlacklistTokenAsync(accessToken, expirationTime, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var command = new DeleteSessionCommand(userId, sessionId, accessToken, expirationTime);
+        var command = new DeleteSessionCommand(userId, sessionId, currentDeviceId, accessToken, expirationTime);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
@@ -62,12 +73,23 @@ public class DeleteSessionCommandHandlerTests
         // Arrange
         var userId = 1L;
         var sessionId = Guid.NewGuid();
+        var currentDeviceId = "currentDevice123";
+
+        // Mock current device as trusted
+        var currentDevice = UserDevice.Create(userId, currentDeviceId, "Chrome", "desktop");
+        var createdAtField = typeof(UserDevice).GetProperty("CreatedAt");
+        createdAtField?.SetValue(currentDevice, DateTime.UtcNow.AddDays(-4));
+        currentDevice.MarkAsTrusted();
+
+        _mockUserDeviceRepository
+            .Setup(x => x.GetByDeviceIdAsync(currentDeviceId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(currentDevice);
 
         _mockUserDeviceRepository
             .Setup(x => x.GetByIdAsync(sessionId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserDevice?)null);
 
-        var command = new DeleteSessionCommand(userId, sessionId);
+        var command = new DeleteSessionCommand(userId, sessionId, currentDeviceId);
 
         // Act & Assert
         await Assert.ThrowsAsync<DomainException>(async () => await _handler.Handle(command, CancellationToken.None));
@@ -80,13 +102,24 @@ public class DeleteSessionCommandHandlerTests
         var userId = 1L;
         var otherUserId = 2L;
         var sessionId = Guid.NewGuid();
+        var currentDeviceId = "currentDevice123";
         var device = UserDevice.Create(otherUserId, "device1", "Chrome", "desktop");
+
+        // Mock current device as trusted
+        var currentDevice = UserDevice.Create(userId, currentDeviceId, "Chrome", "desktop");
+        var createdAtField = typeof(UserDevice).GetProperty("CreatedAt");
+        createdAtField?.SetValue(currentDevice, DateTime.UtcNow.AddDays(-4));
+        currentDevice.MarkAsTrusted();
+
+        _mockUserDeviceRepository
+            .Setup(x => x.GetByDeviceIdAsync(currentDeviceId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(currentDevice);
 
         _mockUserDeviceRepository
             .Setup(x => x.GetByIdAsync(sessionId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(device);
 
-        var command = new DeleteSessionCommand(userId, sessionId);
+        var command = new DeleteSessionCommand(userId, sessionId, currentDeviceId);
 
         // Act & Assert
         DomainException exception =

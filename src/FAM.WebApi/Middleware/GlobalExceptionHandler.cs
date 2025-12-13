@@ -42,19 +42,17 @@ public class GlobalExceptionHandler : IExceptionHandler
             _ => HandleGenericException(exception)
         };
 
-        // Log all errors with appropriate level
-        using (LogContext.PushProperty("ExceptionType", exception.GetType().Name))
-        using (LogContext.PushProperty("StatusCode", statusCode))
+        // Only log server errors (5xx), not client errors (4xx)
+        if (statusCode >= 500)
         {
-            if (statusCode >= 500)
+            using (LogContext.PushProperty("ExceptionType", exception.GetType().Name))
+            using (LogContext.PushProperty("StatusCode", statusCode))
+            {
                 // Log full exception details for server errors
                 _logger.LogError(exception,
                     "Server error: {ExceptionType} - {ExceptionMessage}\nStack Trace: {StackTrace}",
                     exception.GetType().Name, exception.Message, exception.StackTrace);
-            else
-                _logger.LogWarning(exception,
-                    "Client error: {ExceptionType} - {ExceptionMessage}",
-                    exception.GetType().Name, exception.Message);
+            }
         }
 
         httpContext.Response.StatusCode = statusCode;

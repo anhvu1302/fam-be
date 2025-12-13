@@ -29,8 +29,7 @@ public class DeleteAllSessionsCommandHandlerTests
         _handler = new DeleteAllSessionsCommandHandler(
             _mockUserDeviceRepository.Object,
             _mockUnitOfWork.Object,
-            _mockTokenBlacklistService.Object,
-            _mockLogger.Object);
+            _mockTokenBlacklistService.Object);
     }
 
     [Fact]

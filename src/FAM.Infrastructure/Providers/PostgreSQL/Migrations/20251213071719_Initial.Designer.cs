@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 {
     [DbContext(typeof(PostgreSqlDbContext))]
-    [Migration("20251211135541_Initial")]
+    [Migration("20251213071719_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -4595,6 +4595,15 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("password_salt");
+
+                    b.Property<string>("PendingTwoFactorSecret")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("pending_two_factor_secret");
+
+                    b.Property<DateTime?>("PendingTwoFactorSecretExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("pending_two_factor_secret_expires_at");
 
                     b.Property<string>("PhoneCountryCode")
                         .HasColumnType("text")

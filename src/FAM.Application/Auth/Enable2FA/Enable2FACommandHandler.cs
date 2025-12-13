@@ -30,6 +30,11 @@ public sealed class Enable2FACommandHandler : IRequestHandler<Enable2FACommand, 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
 
+        // Store pending secret for confirmation phase (10 minute expiration)
+        user.SetPendingTwoFactorSecret(base32Secret, expirationMinutes: 10);
+        _unitOfWork.Users.Update(user);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
         // Create QR code URI for authenticator apps
         // Format: otpauth://totp/{Issuer}:{AccountName}?secret={Secret}&issuer={Issuer}
         var issuer = "FAM"; // Fixed Asset Management

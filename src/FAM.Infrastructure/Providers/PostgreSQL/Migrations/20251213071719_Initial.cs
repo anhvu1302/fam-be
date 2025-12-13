@@ -571,6 +571,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     two_factor_secret = table.Column<string>(type: "text", nullable: true),
                     two_factor_backup_codes = table.Column<string>(type: "text", nullable: true),
                     two_factor_setup_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    pending_two_factor_secret = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    pending_two_factor_secret_expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     is_email_verified = table.Column<bool>(type: "boolean", nullable: false),
                     is_phone_verified = table.Column<bool>(type: "boolean", nullable: false),

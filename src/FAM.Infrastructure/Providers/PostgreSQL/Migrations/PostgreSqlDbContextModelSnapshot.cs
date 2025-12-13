@@ -4593,6 +4593,15 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("text")
                         .HasColumnName("password_salt");
 
+                    b.Property<string>("PendingTwoFactorSecret")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)")
+                        .HasColumnName("pending_two_factor_secret");
+
+                    b.Property<DateTime?>("PendingTwoFactorSecretExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("pending_two_factor_secret_expires_at");
+
                     b.Property<string>("PhoneCountryCode")
                         .HasColumnType("text")
                         .HasColumnName("phone_country_code");

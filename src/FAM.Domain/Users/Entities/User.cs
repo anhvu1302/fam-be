@@ -41,6 +41,10 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public string? TwoFactorSecret { get; private set; }
     public string? TwoFactorBackupCodes { get; private set; } // JSON array of backup codes
     public DateTime? TwoFactorSetupDate { get; private set; }
+    
+    // Pending 2FA Secret (for setup phase - before confirmation)
+    public string? PendingTwoFactorSecret { get; private set; }
+    public DateTime? PendingTwoFactorSecretExpiresAt { get; private set; } // TTL: 10 minutes
 
     // Password Reset
     public string? PasswordResetToken { get; private set; }
@@ -228,6 +232,21 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
         TwoFactorSecret = secret;
         TwoFactorBackupCodes = backupCodes;
         TwoFactorSetupDate = DateTime.UtcNow;
+        // Clear pending secret after confirmation
+        PendingTwoFactorSecret = null;
+        PendingTwoFactorSecretExpiresAt = null;
+    }
+
+    public void SetPendingTwoFactorSecret(string secret, int expirationMinutes = 10)
+    {
+        PendingTwoFactorSecret = secret;
+        PendingTwoFactorSecretExpiresAt = DateTime.UtcNow.AddMinutes(expirationMinutes);
+    }
+
+    public bool IsPendingTwoFactorSecretValid(string secret)
+    {
+        return PendingTwoFactorSecret == secret && 
+               PendingTwoFactorSecretExpiresAt > DateTime.UtcNow;
     }
 
     public void DisableTwoFactor()

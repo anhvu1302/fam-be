@@ -473,4 +473,17 @@ public static class DomainRules
     }
 
     #endregion
+
+    #region Device Trust Rules
+
+    public static class DeviceTrust
+    {
+        /// <summary>
+        /// Minimum number of days a device must be trusted before allowing sensitive operations like deleting other sessions
+        /// This prevents newly compromised devices from being used to delete other sessions
+        /// </summary>
+        public const int MinimumTrustDaysForSensitiveOperations = 3;
+    }
+
+    #endregion
 }
