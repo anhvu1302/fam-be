@@ -12,6 +12,7 @@ using FAM.Application.Users.Commands.CreateUser;
 using FAM.Infrastructure;
 using FAM.Infrastructure.Auth;
 using FAM.Infrastructure.Providers.PostgreSQL;
+using FAM.Infrastructure.Providers.RateLimit;
 using FAM.Infrastructure.Services;
 using FAM.Infrastructure.Services.Email;
 using FAM.WebApi.Configuration;
@@ -304,8 +305,9 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Add Rate Limiting
+// Add Rate Limiting with cache-based store
 builder.Services.AddRateLimitingPolicies();
+builder.Services.AddRateLimiterStore();
 
 // Add infrastructure (database provider) - no longer needs IConfiguration
 builder.Services.AddInfrastructure();
