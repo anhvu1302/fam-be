@@ -94,23 +94,18 @@ public sealed class DisableTwoFactorWithBackupCommandHandler : IRequestHandler<D
         // Otherwise, save the remaining codes
         if (hashedBackupCodes.Count == 0)
         {
-            _logger.LogInformation("Last backup code used. Disabling 2FA for user: {UserId}", user.Id);
             user.DisableTwoFactor();
         }
         else
         {
             // Still have backup codes - update but keep 2FA disabled for now
             // User needs to re-enable 2FA to get security back
-            _logger.LogInformation(
-                "Backup code verified. Disabling 2FA for user: {UserId}. Remaining backup codes: {Count}",
-                user.Id, hashedBackupCodes.Count);
             user.DisableTwoFactor();
         }
 
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("2FA disabled successfully using backup code for user: {UserId}", user.Id);
         return true;
     }
 }

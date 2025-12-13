@@ -26,7 +26,5 @@ public class UpdateMenuSortOrdersCommandHandler : IRequestHandler<UpdateMenuSort
     {
         await _repository.UpdateSortOrdersAsync(request.SortOrders, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        _logger.LogInformation("Updated sort orders for {Count} menu items", request.SortOrders.Count);
     }
 }

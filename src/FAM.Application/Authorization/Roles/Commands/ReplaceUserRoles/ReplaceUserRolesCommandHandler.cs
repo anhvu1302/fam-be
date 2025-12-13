@@ -60,8 +60,5 @@ public sealed class ReplaceUserRolesCommandHandler : IRequestHandler<ReplaceUser
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        _logger.LogInformation("Replaced roles for user {UserId} at node {NodeId} with {Count} roles",
-            request.UserId, request.NodeId, request.RoleIds.Length);
     }
 }

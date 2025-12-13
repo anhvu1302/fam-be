@@ -82,7 +82,6 @@ public sealed class SmtpEmailProvider : IEmailProvider
 
             await smtpClient.SendMailAsync(mailMessage, cancellationToken);
 
-            _logger.LogInformation("Email sent successfully via SMTP to {Email}", message.To);
 
             return EmailSendResult.Succeeded();
         }

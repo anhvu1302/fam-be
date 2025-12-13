@@ -55,7 +55,6 @@ public class SigningKeyService : ISigningKeyService
 
         if (activeKey != null && activeKey.CanSign()) return activeKey;
 
-        _logger.LogInformation("No active signing key found, generating new key");
         return await GenerateKeyAsync(cancellationToken: cancellationToken);
     }
 
@@ -112,9 +111,6 @@ public class SigningKeyService : ISigningKeyService
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation(
-            "Generated new signing key {KeyId} with algorithm {Algorithm} and size {KeySize}",
-            keyId, algorithm, keySize);
 
         return signingKey;
     }
@@ -132,7 +128,6 @@ public class SigningKeyService : ISigningKeyService
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Activated signing key {KeyId}", key.KeyId);
     }
 
     public async Task DeactivateKeyAsync(long keyId, CancellationToken cancellationToken = default)
@@ -144,7 +139,6 @@ public class SigningKeyService : ISigningKeyService
         _repository.Update(key);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Deactivated signing key {KeyId}", key.KeyId);
     }
 
     public async Task RevokeKeyAsync(long keyId, string? reason = null, CancellationToken cancellationToken = default)
@@ -190,11 +184,6 @@ public class SigningKeyService : ISigningKeyService
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        _logger.LogInformation(
-            "Rotated signing keys. New key: {NewKeyId}, Old key: {OldKeyId} ({Action})",
-            newKey.KeyId,
-            oldKey?.KeyId ?? "none",
-            revokeOldKey ? "revoked" : "deactivated");
 
         return newKey;
     }
@@ -226,7 +215,6 @@ public class SigningKeyService : ISigningKeyService
         _repository.Delete(key);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Deleted signing key {KeyId}", key.KeyId);
     }
 
     public async Task<IReadOnlyList<SigningKeyResponse>> GetExpiringKeysAsync(

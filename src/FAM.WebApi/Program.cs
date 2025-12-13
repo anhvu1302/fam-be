@@ -200,8 +200,6 @@ builder.Services.AddAuthentication(options =>
                 try
                 {
                     var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                    logger.LogInformation("JWT Token received (first 20 chars): {Token}",
-                        token.Length > 20 ? token.Substring(0, 20) + "..." : token);
 
                     // Get signing key service from request scope
                     ISigningKeyService signingKeyService = context.HttpContext.RequestServices
@@ -209,7 +207,6 @@ builder.Services.AddAuthentication(options =>
 
                     // Get JWKS from database
                     JwksDto jwks = await signingKeyService.GetJwksAsync(context.HttpContext.RequestAborted);
-                    logger.LogInformation("Loaded {Count} keys from database", jwks.Keys.Count);
 
                     // Convert JWKs to SecurityKeys
                     var keys = new List<SecurityKey>();
@@ -223,12 +220,10 @@ builder.Services.AddAuthentication(options =>
                                 Exponent = Base64UrlEncoder.DecodeBytes(jwk.E)
                             });
                             keys.Add(new RsaSecurityKey(rsa) { KeyId = jwk.Kid });
-                            logger.LogInformation("Added RSA key with Kid: {Kid}", jwk.Kid);
                         }
 
                     // Set the signing keys for this request
                     context.Options.TokenValidationParameters.IssuerSigningKeys = keys;
-                    logger.LogInformation("Set {Count} signing keys for token validation", keys.Count);
                 }
                 catch (Exception ex)
                 {

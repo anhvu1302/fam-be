@@ -30,7 +30,6 @@ public class SendEmailVerificationOtpCommandHandler
         SendEmailVerificationOtpCommand request,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Sending email verification OTP to {Email} during login", request.Email);
 
         // Generate 6-digit OTP
         var otp = GenerateOtp();
@@ -45,8 +44,6 @@ public class SendEmailVerificationOtpCommandHandler
                 otp,
                 request.Email,
                 cancellationToken);
-
-            _logger.LogInformation("Verification OTP email sent successfully to {Email}", request.Email);
         }
         catch (Exception ex)
         {

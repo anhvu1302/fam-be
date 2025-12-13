@@ -56,10 +56,6 @@ public class MinioStorageService : IStorageService
 
             await _minioClient.PutObjectAsync(putObjectArgs, cancellationToken);
 
-            _logger.LogInformation(
-                "Uploaded file {FileName} to {ObjectName} in bucket {Bucket}",
-                fileName, objectName, _settings.BucketName);
-
             return objectName;
         }
         catch (Exception ex)
@@ -83,10 +79,6 @@ public class MinioStorageService : IStorageService
 
             // MinIO SDK handles multipart internally, we create a unique upload ID
             var uploadId = $"{objectName}_{Guid.NewGuid():N}";
-
-            _logger.LogInformation(
-                "Initiated multipart upload for {FileName} with uploadId {UploadId}",
-                fileName, uploadId);
 
             return uploadId;
         }
@@ -117,10 +109,6 @@ public class MinioStorageService : IStorageService
                 .WithObjectSize(stream.Length);
 
             PutObjectResponse? response = await _minioClient.PutObjectAsync(putObjectArgs, cancellationToken);
-
-            _logger.LogInformation(
-                "Uploaded part {PartNumber} for uploadId {UploadId}",
-                partNumber, uploadId);
 
             return response.Etag;
         }
@@ -176,10 +164,6 @@ public class MinioStorageService : IStorageService
                 await DeleteFileAsync(tempObjectName, cancellationToken);
             }
 
-            _logger.LogInformation(
-                "Completed multipart upload for {FileName} with uploadId {UploadId}",
-                fileName, uploadId);
-
             return objectName;
         }
         catch (Exception ex)
@@ -206,10 +190,6 @@ public class MinioStorageService : IStorageService
 
             await foreach (Item? obj in _minioClient.ListObjectsEnumAsync(listArgs, cancellationToken))
                 await DeleteFileAsync(obj.Key, cancellationToken);
-
-            _logger.LogInformation(
-                "Aborted multipart upload for uploadId {UploadId}",
-                uploadId);
         }
         catch (Exception ex)
         {
@@ -230,10 +210,6 @@ public class MinioStorageService : IStorageService
                 .WithExpiry(expiryInSeconds);
 
             var url = await _minioClient.PresignedGetObjectAsync(args);
-
-            _logger.LogInformation(
-                "Generated presigned URL for {FilePath} with expiry {Expiry}s",
-                filePath, expiryInSeconds);
 
             return url;
         }
@@ -263,10 +239,6 @@ public class MinioStorageService : IStorageService
 
             var url = await _minioClient.PresignedPutObjectAsync(args);
 
-            _logger.LogInformation(
-                "Generated presigned upload URL for {FileName} with expiry {Expiry}s",
-                fileName, expiryInSeconds);
-
             return url;
         }
         catch (Exception ex)
@@ -287,8 +259,6 @@ public class MinioStorageService : IStorageService
                 .WithObject(filePath);
 
             await _minioClient.RemoveObjectAsync(args, cancellationToken);
-
-            _logger.LogInformation("Deleted file {FilePath}", filePath);
         }
         catch (Exception ex)
         {
@@ -362,8 +332,6 @@ public class MinioStorageService : IStorageService
                 if (!string.IsNullOrEmpty(_settings.Region)) makeBucketArgs.WithLocation(_settings.Region);
 
                 await _minioClient.MakeBucketAsync(makeBucketArgs, cancellationToken);
-
-                _logger.LogInformation("Created bucket {Bucket}", _settings.BucketName);
             }
         }
         catch (Exception ex)
@@ -437,8 +405,6 @@ public class MinioStorageService : IStorageService
             // MinIO doesn't have native "move", so we copy then delete
             await CopyObjectAsync(sourceKey, destKey, cancellationToken);
             await DeleteFileAsync(sourceKey, cancellationToken);
-
-            _logger.LogInformation("Moved object from {Source} to {Dest}", sourceKey, destKey);
         }
         catch (Exception ex)
         {
@@ -493,8 +459,6 @@ public class MinioStorageService : IStorageService
 
             if (errors?.Any() == true)
                 _logger.LogWarning("Errors during batch delete: {ErrorCount}", errors.Count);
-            else
-                _logger.LogInformation("Deleted {Count} objects", keysList.Count);
         }
         catch (Exception ex)
         {

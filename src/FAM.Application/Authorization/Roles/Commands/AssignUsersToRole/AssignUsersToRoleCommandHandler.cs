@@ -41,8 +41,6 @@ public sealed class AssignUsersToRoleCommandHandler : IRequestHandler<AssignUser
 
         if (!newUserIds.Any())
         {
-            _logger.LogInformation("No new users to assign to role {RoleId} at node {NodeId}",
-                request.RoleId, request.NodeId);
             return 0;
         }
 
@@ -70,9 +68,6 @@ public sealed class AssignUsersToRoleCommandHandler : IRequestHandler<AssignUser
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        _logger.LogInformation("Assigned {Count} users to role {RoleId} at node {NodeId}",
-            addedCount, request.RoleId, request.NodeId);
 
         return addedCount;
     }

@@ -94,11 +94,8 @@ public sealed class BrevoEmailProvider : IEmailProvider, IDisposable
 
             if (response.IsSuccessStatusCode)
             {
+                
                 BrevoSendEmailResponse? result = JsonSerializer.Deserialize<BrevoSendEmailResponse>(responseContent);
-
-                _logger.LogInformation(
-                    "Email sent successfully via Brevo. MessageId: {MessageId}, To: {To}",
-                    result?.MessageId, message.To);
 
                 return EmailSendResult.Succeeded(result?.MessageId, responseContent);
             }

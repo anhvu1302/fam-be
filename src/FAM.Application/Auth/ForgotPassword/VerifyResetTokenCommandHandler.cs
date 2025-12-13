@@ -49,8 +49,6 @@ public class VerifyResetTokenCommandHandler : IRequestHandler<VerifyResetTokenCo
                 ErrorMessages.GetMessage(ErrorCodes.AUTH_RESET_TOKEN_EXPIRED));
         }
 
-        _logger.LogInformation("Reset token verified successfully for user: {UserId}", user.Id);
-
         return new VerifyResetTokenResponse
         {
             MaskedEmail = MaskEmail(user.Email.Value)

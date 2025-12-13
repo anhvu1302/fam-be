@@ -50,10 +50,6 @@ public class InitUploadSessionHandler : IRequestHandler<InitUploadSessionCommand
 
             if (existingSession != null)
             {
-                _logger.LogInformation(
-                    "Returning existing session for idempotency key {IdempotencyKey}",
-                    request.IdempotencyKey);
-
                 return await GenerateResponseFromSession(existingSession, cancellationToken);
             }
         }
@@ -84,11 +80,6 @@ public class InitUploadSessionHandler : IRequestHandler<InitUploadSessionCommand
 
         await _sessionRepository.AddAsync(session, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        _logger.LogInformation(
-            "Created upload session {UploadId} for file {FileName}",
-            uploadId,
-            request.FileName);
 
         return await GenerateResponseFromSession(session, cancellationToken);
     }

@@ -32,9 +32,6 @@ public sealed class EmailQueueProcessor : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation(
-            "Email Queue Processor started. Provider: {Provider}",
-            _emailProvider.ProviderName);
 
         while (!stoppingToken.IsCancellationRequested)
             try
@@ -64,7 +61,6 @@ public sealed class EmailQueueProcessor : BackgroundService
                 await Task.Delay(_retryDelay, stoppingToken);
             }
 
-        _logger.LogInformation("Email Queue Processor stopped");
     }
 
     private async Task ProcessEmailAsync(EmailMessage message, CancellationToken cancellationToken)
@@ -92,7 +88,7 @@ public sealed class EmailQueueProcessor : BackgroundService
             {
                 EmailMessage retryMessage = message with { RetryCount = message.RetryCount + 1 };
                 await _emailQueue.EnqueueAsync(retryMessage, cancellationToken);
-
+                
                 _logger.LogInformation(
                     "Email {EmailId} re-queued for retry ({RetryCount}/{MaxRetries})",
                     message.Id, retryMessage.RetryCount, message.MaxRetries);

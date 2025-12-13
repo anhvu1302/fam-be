@@ -42,7 +42,6 @@ public class VerifyEmailOtpLoginCommandHandler
         VerifyEmailOtpLoginCommand request,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Verifying email OTP for {Email}", request.Email);
 
         // Find user to get their ID for OTP verification
         User? user = await _unitOfWork.Users.FindByEmailAsync(request.Email, cancellationToken);
@@ -62,7 +61,6 @@ public class VerifyEmailOtpLoginCommandHandler
 
         // OTP verified, remove from cache
         await _otpService.RemoveOtpAsync(user.Id, request.Email, cancellationToken);
-        _logger.LogInformation("Email OTP verified and removed for {Email}", request.Email);
 
         // Mark email as verified if not already
         if (!user.IsEmailVerified)
@@ -71,7 +69,6 @@ public class VerifyEmailOtpLoginCommandHandler
             typeof(User).GetProperty("IsEmailVerified")?.SetValue(user, true);
             _unitOfWork.Users.Update(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
-            _logger.LogInformation("Email marked as verified for user {UserId}", user.Id);
         }
 
         // Check if 2FA is enabled

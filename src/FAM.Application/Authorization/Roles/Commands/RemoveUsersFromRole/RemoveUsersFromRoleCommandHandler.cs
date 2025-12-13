@@ -48,9 +48,6 @@ public sealed class RemoveUsersFromRoleCommandHandler : IRequestHandler<RemoveUs
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Removed {Count} users from role {RoleId} at node {NodeId}",
-            removedCount, request.RoleId, request.NodeId);
-
         return removedCount;
     }
 }

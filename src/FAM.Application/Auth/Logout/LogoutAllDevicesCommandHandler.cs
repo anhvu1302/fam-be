@@ -42,7 +42,6 @@ public class LogoutAllDevicesCommandHandler : IRequestHandler<LogoutAllDevicesCo
 
         // Blacklist all tokens for this user to invalidate them immediately
         await _tokenBlacklistService.BlacklistUserTokensAsync(request.UserId, cancellationToken);
-        _logger.LogInformation("All tokens blacklisted for user {UserId} during logout-all", request.UserId);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

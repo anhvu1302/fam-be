@@ -81,8 +81,6 @@ public class UpdateMenuCommandHandler : IRequestHandler<UpdateMenuCommand, MenuI
         _repository.Update(menu);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Updated menu item: {Id}", request.Id);
-
         return MenuItemResponse.FromDomain(menu, false);
     }
 }

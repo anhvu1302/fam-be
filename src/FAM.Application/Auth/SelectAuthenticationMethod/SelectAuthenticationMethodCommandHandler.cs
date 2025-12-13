@@ -69,8 +69,6 @@ public class
                 response.SelectedMethod = "email_otp";
                 response.AdditionalInfo = $"Code sent to {MaskEmail(user.Email.Value)}";
                 response.ExpiresAt = DateTime.UtcNow.AddMinutes(10);
-
-                _logger.LogInformation("OTP sent to email for user {UserId}", userId);
                 break;
 
             case "authenticator_app":
@@ -80,8 +78,6 @@ public class
 
                 response.SelectedMethod = "authenticator_app";
                 response.AdditionalInfo = "Enter 6-digit code from your authenticator app";
-
-                _logger.LogInformation("Authenticator app method selected for user {UserId}", userId);
                 break;
 
             case "recovery_code":
@@ -90,8 +86,6 @@ public class
 
                 response.SelectedMethod = "recovery_code";
                 response.AdditionalInfo = "Enter your backup recovery code";
-
-                _logger.LogInformation("Recovery code method selected for user {UserId}", userId);
                 break;
 
             default:

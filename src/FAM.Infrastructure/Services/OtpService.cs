@@ -58,9 +58,6 @@ public class OtpService : IOtpService
         var attemptKey = GenerateAttemptKey(userId, sessionToken);
         await _cache.RemoveAsync(attemptKey, cancellationToken);
 
-        _logger.LogInformation("Generated OTP for user {UserId} with session binding, expires in {Minutes} minutes",
-            userId, expirationMinutes);
-
         return otp;
     }
 
@@ -118,7 +115,6 @@ public class OtpService : IOtpService
 
             if (isValid)
             {
-                _logger.LogInformation("OTP verified successfully for user {UserId}", userId);
                 // Clean up on success
                 await _cache.RemoveAsync(cacheKey, cancellationToken);
                 await _cache.RemoveAsync(attemptKey, cancellationToken);
@@ -147,7 +143,6 @@ public class OtpService : IOtpService
         await _cache.RemoveAsync(cacheKey, cancellationToken);
         await _cache.RemoveAsync(attemptKey, cancellationToken);
 
-        _logger.LogInformation("Removed OTP for user {UserId}", userId);
     }
 
     #region Private Helper Methods

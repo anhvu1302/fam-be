@@ -50,7 +50,6 @@ public class TokenBlacklistService : ITokenBlacklistService
             // Store a simple marker - we just need to know it exists
             await _cache.SetStringAsync(cacheKey, "blacklisted", options, cancellationToken);
 
-            _logger.LogInformation("Token blacklisted successfully, expires in {Minutes} minutes", ttl.TotalMinutes);
         }
         catch (Exception ex)
         {
@@ -92,7 +91,6 @@ public class TokenBlacklistService : ITokenBlacklistService
 
             await _cache.SetStringAsync(cacheKey, DateTime.UtcNow.ToString("O"), options, cancellationToken);
 
-            _logger.LogInformation("All tokens blacklisted for user {UserId}", userId);
         }
         catch (Exception ex)
         {
@@ -139,9 +137,6 @@ public class TokenBlacklistService : ITokenBlacklistService
 
             // Store a simple marker - we just need to know it exists
             await _cache.SetStringAsync(cacheKey, "blacklisted", options, cancellationToken);
-
-            _logger.LogInformation("Token with JTI {JTI} blacklisted successfully, expires in {Minutes} minutes",
-                jti, ttl.TotalMinutes);
         }
         catch (Exception ex)
         {

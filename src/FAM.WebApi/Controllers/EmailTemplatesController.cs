@@ -226,8 +226,6 @@ public class EmailTemplatesController : BaseApiController
 
         var templateId = await _mediator.Send(command);
 
-        _logger.LogInformation("Email template created: {TemplateId} - {TemplateCode}", templateId, request.Code);
-
         return CreatedAtAction(nameof(GetTemplateById), new { id = templateId }, templateId);
     }
 
@@ -285,8 +283,6 @@ public class EmailTemplatesController : BaseApiController
 
         await _mediator.Send(command);
 
-        _logger.LogInformation("Email template updated: {TemplateId}", id);
-
         return OkResponse();
     }
 
@@ -317,8 +313,6 @@ public class EmailTemplatesController : BaseApiController
         var command = new DeleteEmailTemplateCommand(id);
         await _mediator.Send(command);
 
-        _logger.LogInformation("Email template deleted: {TemplateId}", id);
-
         return NoContent();
     }
 
@@ -346,8 +340,6 @@ public class EmailTemplatesController : BaseApiController
         var command = new ActivateEmailTemplateCommand(id);
         await _mediator.Send(command);
 
-        _logger.LogInformation("Email template activated: {TemplateId}", id);
-
         return OkResponse();
     }
 
@@ -374,8 +366,6 @@ public class EmailTemplatesController : BaseApiController
     {
         var command = new DeactivateEmailTemplateCommand(id);
         await _mediator.Send(command);
-
-        _logger.LogInformation("Email template deactivated: {TemplateId}", id);
 
         return OkResponse();
     }

@@ -63,7 +63,6 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Unit>
                     request.AccessToken,
                     request.AccessTokenExpiration.Value,
                     cancellationToken);
-                _logger.LogInformation("Access token blacklisted for user {UserId}", device.UserId);
             }
             catch (Exception ex)
             {
@@ -75,8 +74,6 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Unit>
         // var logoutEvent = new UserLoggedOutEvent(device.UserId, device.DeviceId, request.IpAddress, DateTime.UtcNow);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        _logger.LogInformation("User {UserId} logged out from device {DeviceId}", device.UserId, device.DeviceId);
 
         return Unit.Value;
     }

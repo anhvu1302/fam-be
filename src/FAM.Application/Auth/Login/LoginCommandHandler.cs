@@ -70,8 +70,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
         if (!user.IsEmailVerified)
         {
-            _logger.LogInformation("Email not verified for user {UserId}, sending verification OTP", user.Id);
-
             // Generate OTP using OtpService (which handles storage and rate limiting)
             try
             {
@@ -87,8 +85,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
                     otp,
                     user.Username.Value,
                     cancellationToken);
-
-                _logger.LogInformation("Verification OTP sent to {Email}", user.Email.Value);
             }
             catch (Exception ex)
             {

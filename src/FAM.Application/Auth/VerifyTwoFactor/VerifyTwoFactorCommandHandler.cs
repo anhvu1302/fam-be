@@ -109,8 +109,6 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("User {UserId} successfully completed 2FA verification", userId);
-
         return new VerifyTwoFactorResponse
         {
             AccessToken = accessToken,

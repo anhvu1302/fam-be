@@ -48,8 +48,6 @@ public class MoveMenuCommandHandler : IRequestHandler<MoveMenuCommand, MenuItemR
         _repository.Update(menu);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Moved menu item: {Id} to parent: {ParentId}", request.Id, request.NewParentId);
-
         return MenuItemResponse.FromDomain(menu, false);
     }
 }

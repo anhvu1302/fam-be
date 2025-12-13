@@ -157,8 +157,6 @@ public class RolesController : BaseApiController
 
         var roleId = await _mediator.Send(command);
 
-        _logger.LogInformation("Role created: {RoleId} - {RoleCode}", roleId, request.Code);
-
         return CreatedAtAction(nameof(GetRoleById), new { id = roleId }, roleId);
     }
 
@@ -205,8 +203,6 @@ public class RolesController : BaseApiController
 
         await _mediator.Send(command);
 
-        _logger.LogInformation("Role updated: {RoleId}", id);
-
         return OkResponse("Role updated successfully");
     }
 
@@ -237,8 +233,6 @@ public class RolesController : BaseApiController
         var command = new DeleteRoleCommand(id);
         await _mediator.Send(command);
 
-        _logger.LogInformation("Role deleted: {RoleId}", id);
-
         return OkResponse("Role deleted successfully");
     }
 
@@ -262,9 +256,6 @@ public class RolesController : BaseApiController
 
         await _mediator.Send(command);
 
-        _logger.LogInformation("Permissions assigned to role: {RoleId}, Count: {Count}", id,
-            request.PermissionIds.Length);
-
         return OkResponse($"Successfully assigned {request.PermissionIds.Length} permission(s) to role");
     }
 
@@ -283,9 +274,6 @@ public class RolesController : BaseApiController
         };
 
         await _mediator.Send(command);
-
-        _logger.LogInformation("Permissions revoked from role: {RoleId}, Count: {Count}", id,
-            request.PermissionIds.Length);
 
         return OkResponse();
     }
@@ -314,9 +302,6 @@ public class RolesController : BaseApiController
 
         var addedCount = await _mediator.Send(command);
 
-        _logger.LogInformation("Added {Count} users to role: {RoleId} at node {NodeId}",
-            addedCount, id, request.NodeId);
-
         return OkResponse(new { addedCount, message = $"Successfully added {addedCount} user(s) to role" });
     }
 
@@ -337,9 +322,6 @@ public class RolesController : BaseApiController
         };
 
         var removedCount = await _mediator.Send(command);
-
-        _logger.LogInformation("Removed {Count} users from role: {RoleId} at node {NodeId}",
-            removedCount, id, request.NodeId);
 
         return OkResponse(new { removedCount, message = $"Successfully removed {removedCount} user(s) from role" });
     }
@@ -367,9 +349,6 @@ public class RolesController : BaseApiController
 
         var assignmentId = await _mediator.Send(command);
 
-        _logger.LogInformation("Role assigned to user: UserId={UserId}, RoleId={RoleId}, NodeId={NodeId}",
-            request.UserId, request.RoleId, request.NodeId);
-
         return CreatedAtAction(nameof(AssignRoleToUser), new { id = assignmentId }, assignmentId);
     }
 
@@ -383,9 +362,6 @@ public class RolesController : BaseApiController
     {
         var command = new RevokeRoleFromUserCommand(userId, nodeId, roleId);
         await _mediator.Send(command);
-
-        _logger.LogInformation("Role assignment revoked: User={UserId}, Node={NodeId}, Role={RoleId}",
-            userId, nodeId, roleId);
 
         return NoContent();
     }

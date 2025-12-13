@@ -82,8 +82,6 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
                 resetUrl,
                 _frontendOptions.PasswordResetTokenExpiryMinutes,
                 cancellationToken);
-
-            _logger.LogInformation("Password reset email sent to user {UserId}", user.Id);
         }
         catch (Exception ex)
         {

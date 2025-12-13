@@ -62,8 +62,6 @@ public class CreateMenuCommandHandler : IRequestHandler<CreateMenuCommand, MenuI
         await _repository.AddAsync(menu, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Created menu item: {Code}", request.Code);
-
         return MenuItemResponse.FromDomain(menu, false);
     }
 }

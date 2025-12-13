@@ -107,7 +107,6 @@ public class JwksController : BaseApiController
             cancellationToken);
 
         SigningKeyResponse? response = await _signingKeyService.GetKeyByIdAsync(key.Id, cancellationToken);
-        _logger.LogInformation("Generated new signing key {KeyId}", key.KeyId);
 
         return CreatedAtAction(nameof(GetKeyById), new { id = key.Id }, response);
     }
@@ -135,7 +134,6 @@ public class JwksController : BaseApiController
             cancellationToken);
 
         SigningKeyResponse? response = await _signingKeyService.GetKeyByIdAsync(key.Id, cancellationToken);
-        _logger.LogInformation("Rotated signing keys. New key: {KeyId}", key.KeyId);
 
         return OkResponse(response);
     }
@@ -153,7 +151,6 @@ public class JwksController : BaseApiController
     public async Task<ActionResult> ActivateKey(long id, CancellationToken cancellationToken)
     {
         await _signingKeyService.ActivateKeyAsync(id, cancellationToken);
-        _logger.LogInformation("Activated signing key {KeyId}", id);
         return OkResponse(new { message = "Key activated successfully" });
     }
 
@@ -169,7 +166,6 @@ public class JwksController : BaseApiController
     public async Task<ActionResult> DeactivateKey(long id, CancellationToken cancellationToken)
     {
         await _signingKeyService.DeactivateKeyAsync(id, cancellationToken);
-        _logger.LogInformation("Deactivated signing key {KeyId}", id);
         return OkResponse(new { message = "Key deactivated successfully" });
     }
 
@@ -207,7 +203,6 @@ public class JwksController : BaseApiController
     public async Task<ActionResult> DeleteKey(long id, CancellationToken cancellationToken)
     {
         await _signingKeyService.DeleteKeyAsync(id, cancellationToken);
-        _logger.LogInformation("Deleted signing key {KeyId}", id);
         return OkResponse(new { message = "Key deleted successfully" });
     }
 

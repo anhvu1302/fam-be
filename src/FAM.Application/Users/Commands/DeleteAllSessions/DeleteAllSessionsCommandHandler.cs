@@ -80,10 +80,6 @@ public class DeleteAllSessionsCommandHandler : IRequestHandler<DeleteAllSessions
                     device.ActiveAccessTokenJti,
                     tokenExpiryTime,
                     cancellationToken);
-
-                _logger.LogInformation(
-                    "Blacklisted access token with JTI {JTI} for device {DeviceId} of user {UserId}",
-                    device.ActiveAccessTokenJti, device.DeviceId, request.UserId);
             }
         }
 
@@ -95,7 +91,6 @@ public class DeleteAllSessionsCommandHandler : IRequestHandler<DeleteAllSessions
 
         // Also blacklist all tokens at user level for double protection
         await _tokenBlacklistService.BlacklistUserTokensAsync(request.UserId, cancellationToken);
-        _logger.LogInformation("All tokens blacklisted for user {UserId}", request.UserId);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

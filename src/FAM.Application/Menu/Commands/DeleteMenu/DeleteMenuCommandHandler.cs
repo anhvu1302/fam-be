@@ -35,7 +35,5 @@ public class DeleteMenuCommandHandler : IRequestHandler<DeleteMenuCommand>
 
         _repository.Delete(menu);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        _logger.LogInformation("Deleted menu item: {Id}", request.Id);
     }
 }

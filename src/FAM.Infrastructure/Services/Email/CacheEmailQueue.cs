@@ -166,7 +166,6 @@ public sealed class CacheEmailQueue : IEmailQueue
             }
         }
 
-        _logger.LogInformation("Retried {Count} failed emails", retried);
         return retried;
     }
 }

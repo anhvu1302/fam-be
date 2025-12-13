@@ -60,9 +60,6 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Password reset successfully for user: {UserId}. Reset token has been invalidated.",
-            user.Id);
-
         return new ResetPasswordResponse();
     }
 }

@@ -117,7 +117,6 @@ public class SystemSettingService : ISystemSettingService
         await _repository.AddAsync(setting, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Created system setting: {Key}", request.Key);
 
         return SystemSettingResponse.FromDomain(setting);
     }
@@ -155,7 +154,6 @@ public class SystemSettingService : ISystemSettingService
         _repository.Update(setting);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Updated system setting: {Id}", id);
 
         return SystemSettingResponse.FromDomain(setting);
     }
@@ -176,7 +174,6 @@ public class SystemSettingService : ISystemSettingService
         _repository.Update(setting);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Updated system setting value: {Key}", key);
 
         return SystemSettingResponse.FromDomain(setting);
     }
@@ -200,7 +197,6 @@ public class SystemSettingService : ISystemSettingService
         await _repository.BulkUpdateAsync(request.Settings, modifiedBy, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Bulk updated {Count} system settings", request.Settings.Count);
     }
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
@@ -211,7 +207,6 @@ public class SystemSettingService : ISystemSettingService
         _repository.Delete(setting);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Deleted system setting: {Id}", id);
     }
 
     public async Task<string?> GetValueAsync(string key, CancellationToken cancellationToken = default)
