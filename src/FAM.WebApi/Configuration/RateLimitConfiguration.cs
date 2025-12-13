@@ -1,11 +1,15 @@
 using System.Threading.RateLimiting;
 
+using FAM.Application.Abstractions;
+using FAM.Infrastructure.Providers.RateLimit;
+
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Logging;
 
 namespace FAM.WebApi.Configuration;
 
 /// <summary>
-/// Rate limiting configuration for API endpoints
+/// Rate limiting configuration for API endpoints using Redis for distributed rate limiting
 /// </summary>
 public static class RateLimitConfiguration
 {
@@ -15,41 +19,51 @@ public static class RateLimitConfiguration
     public const string SensitivePolicy = "SensitiveRateLimit";
 
     /// <summary>
-    /// Add rate limiting policies
+    /// Add Redis-backed distributed rate limiting policies
     /// </summary>
     public static IServiceCollection AddRateLimitingPolicies(this IServiceCollection services)
     {
         services.AddRateLimiter(options =>
         {
-            // Global rate limit: 100 requests per minute per IP
-            options.AddFixedWindowLimiter(GlobalPolicy, limiterOptions =>
+            // Global rate limit: 100 requests per minute per IP (Redis-backed)
+            options.AddPolicy<string>(GlobalPolicy, context =>
             {
-                limiterOptions.PermitLimit = 100;
-                limiterOptions.Window = TimeSpan.FromMinutes(1);
-                limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                limiterOptions.QueueLimit = 10;
+                var serviceProvider = context.RequestServices;
+                var store = serviceProvider.GetRequiredService<IRateLimiterStore>();
+                var logger = serviceProvider.GetRequiredService<ILogger<RedisRateLimiter>>();
+                var ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var partitionKey = $"ratelimit:global:{ipAddress}";
+
+                return RateLimitPartition.Get(partitionKey, _ => 
+                    new RedisRateLimiter(store, partitionKey, 100, TimeSpan.FromMinutes(1), 10, logger));
             });
 
-            // Authentication endpoints: 10 attempts per 15 minutes per IP
+            // Authentication endpoints: 10 attempts per 15 minutes per IP (Redis-backed)
             // For login, register, forgot password, etc.
-            options.AddSlidingWindowLimiter(AuthenticationPolicy, limiterOptions =>
+            options.AddPolicy<string>(AuthenticationPolicy, context =>
             {
-                limiterOptions.PermitLimit = 10;
-                limiterOptions.Window = TimeSpan.FromMinutes(15);
-                limiterOptions.SegmentsPerWindow = 3;
-                limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                limiterOptions.QueueLimit = 2;
+                var serviceProvider = context.RequestServices;
+                var store = serviceProvider.GetRequiredService<IRateLimiterStore>();
+                var logger = serviceProvider.GetRequiredService<ILogger<RedisRateLimiter>>();
+                var ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var partitionKey = $"ratelimit:auth:{ipAddress}";
+
+                return RateLimitPartition.Get(partitionKey, _ => 
+                    new RedisRateLimiter(store, partitionKey, 10, TimeSpan.FromMinutes(15), 2, logger));
             });
 
-            // Sensitive operations: 5 attempts per 15 minutes per IP
+            // Sensitive operations: 5 attempts per 15 minutes per IP (Redis-backed)
             // For OTP verify, password reset, recovery code verification
-            options.AddSlidingWindowLimiter(SensitivePolicy, limiterOptions =>
+            options.AddPolicy<string>(SensitivePolicy, context =>
             {
-                limiterOptions.PermitLimit = 5;
-                limiterOptions.Window = TimeSpan.FromMinutes(15);
-                limiterOptions.SegmentsPerWindow = 3;
-                limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                limiterOptions.QueueLimit = 0;
+                var serviceProvider = context.RequestServices;
+                var store = serviceProvider.GetRequiredService<IRateLimiterStore>();
+                var logger = serviceProvider.GetRequiredService<ILogger<RedisRateLimiter>>();
+                var ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var partitionKey = $"ratelimit:sensitive:{ipAddress}";
+
+                return RateLimitPartition.Get(partitionKey, _ => 
+                    new RedisRateLimiter(store, partitionKey, 5, TimeSpan.FromMinutes(15), 0, logger));
             });
 
             // Default rejection response
@@ -66,25 +80,31 @@ public static class RateLimitConfiguration
 
                 await context.HttpContext.Response.WriteAsJsonAsync(new
                 {
+                    success = false,
                     message = "Too many requests. Please try again later.",
-                    retryAfterSeconds = (int)retryAfter.TotalSeconds
+                    errors = new[]
+                    {
+                        new
+                        {
+                            message = "Rate limit exceeded",
+                            code = "RATE_LIMIT_EXCEEDED",
+                            retryAfterSeconds = (int)retryAfter.TotalSeconds
+                        }
+                    }
                 }, cancellationToken);
             };
 
-            // Use IP address as partition key
+            // Global limiter using Redis - applies to all endpoints without specific policy
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
             {
+                var serviceProvider = context.RequestServices;
+                var store = serviceProvider.GetRequiredService<IRateLimiterStore>();
+                var logger = serviceProvider.GetRequiredService<ILogger<RedisRateLimiter>>();
                 var ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                var partitionKey = $"ratelimit:global-limiter:{ipAddress}";
 
-                return RateLimitPartition.GetFixedWindowLimiter(
-                    ipAddress,
-                    _ => new FixedWindowRateLimiterOptions
-                    {
-                        PermitLimit = 1000, // Global limit: 1000 requests per minute
-                        Window = TimeSpan.FromMinutes(1),
-                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
-                        QueueLimit = 50
-                    });
+                return RateLimitPartition.Get(partitionKey, _ => 
+                    new RedisRateLimiter(store, partitionKey, 1000, TimeSpan.FromMinutes(1), 50, logger));
             });
         });
 

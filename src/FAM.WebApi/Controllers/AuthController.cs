@@ -323,7 +323,8 @@ public class AuthController : BaseApiController
     /// Get authentication methods for current user
     /// </summary>
     [HttpGet("authentication-methods")]
-    [Authorize]    [ProducesResponseType(typeof(ApiSuccessResponse<AuthenticationMethodsResponse>), StatusCodes.Status200OK)]
+    [Authorize]    
+    [ProducesResponseType(typeof(ApiSuccessResponse<AuthenticationMethodsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]    
     public async Task<ActionResult<AuthenticationMethodsResponse>> GetAuthenticationMethods()

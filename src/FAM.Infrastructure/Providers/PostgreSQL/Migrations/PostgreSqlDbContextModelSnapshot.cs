@@ -4583,10 +4583,22 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("lockout_end");
 
+                    b.Property<DateTime?>("PasswordChangedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("password_changed_at");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("password_hash");
+
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("text")
+                        .HasColumnName("password_reset_token");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("password_reset_token_expires_at");
 
                     b.Property<string>("PasswordSalt")
                         .IsRequired()

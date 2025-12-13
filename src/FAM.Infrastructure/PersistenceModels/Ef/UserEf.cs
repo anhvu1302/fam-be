@@ -37,6 +37,11 @@ public class UserEf : BaseEntityEf
     public string? PendingTwoFactorSecret { get; set; }
     public DateTime? PendingTwoFactorSecretExpiresAt { get; set; }
 
+    // Password Reset
+    public string? PasswordResetToken { get; set; }
+    public DateTime? PasswordResetTokenExpiresAt { get; set; }
+    public DateTime? PasswordChangedAt { get; set; }
+
     // Account Status
     public bool IsActive { get; set; } = true;
     public bool IsEmailVerified { get; set; }
