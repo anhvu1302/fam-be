@@ -29,6 +29,7 @@ using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.WebApi.Attributes;
 using FAM.WebApi.Configuration;
+using FAM.WebApi.Contracts.Auth;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.Users;
 
@@ -124,6 +125,10 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
     [HttpPost("verify-2fa")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiSuccessResponse<VerifyTwoFactorResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<VerifyTwoFactorResponse>> VerifyTwoFactor(
         [FromBody] WebApiContracts.VerifyTwoFactorRequest request)
     {
@@ -205,6 +210,9 @@ public class AuthController : BaseApiController
     [HttpPost("logout")]
     [Authorize]
     [RequireDeviceId]
+    [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Logout()
     {
         try
@@ -249,6 +257,9 @@ public class AuthController : BaseApiController
     [HttpPost("logout-all")]
     [Authorize]
     [RequireDeviceId]
+    [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> LogoutAll([FromBody] LogoutAllRequest? request = null)
     {
         try
@@ -276,6 +287,10 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpPost("change-password")]
     [Authorize]
+    [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> ChangePassword([FromBody] WebApiContracts.ChangePasswordRequest request)
     {
         try
@@ -308,7 +323,9 @@ public class AuthController : BaseApiController
     /// Get authentication methods for current user
     /// </summary>
     [HttpGet("authentication-methods")]
-    [Authorize]
+    [Authorize]    [ProducesResponseType(typeof(ApiSuccessResponse<AuthenticationMethodsResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]    
     public async Task<ActionResult<AuthenticationMethodsResponse>> GetAuthenticationMethods()
     {
         try
@@ -331,6 +348,10 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.AuthenticationPolicy)]
     [HttpPost("select-authentication-method")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiSuccessResponse<SelectAuthenticationMethodResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<SelectAuthenticationMethodResponse>> SelectAuthenticationMethod(
         [FromBody] WebApiContracts.SelectAuthenticationMethodRequest request)
     {
@@ -371,6 +392,10 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
     [HttpPost("verify-email-otp")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> VerifyEmailOtp([FromBody] WebApiContracts.VerifyEmailOtpRequest request)
     {
         try
@@ -400,6 +425,10 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
     [HttpPost("verify-recovery-code")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiSuccessResponse<VerifyTwoFactorResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> VerifyRecoveryCode([FromBody] WebApiContracts.VerifyRecoveryCodeRequest request)
     {
         try
@@ -439,6 +468,9 @@ public class AuthController : BaseApiController
     [EnableRateLimiting(RateLimitConfiguration.AuthenticationPolicy)]
     [HttpPost("forgot-password")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiSuccessResponse<ForgotPasswordResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword(
         [FromBody] WebApiContracts.ForgotPasswordRequest request)
     {
@@ -457,6 +489,10 @@ public class AuthController : BaseApiController
     /// <summary>
     /// Verify reset token
     /// </summary>
+    [ProducesResponseType(typeof(ApiSuccessResponse<VerifyResetTokenResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
     [HttpPost("verify-reset-token")]
     [AllowAnonymous]
@@ -518,6 +554,10 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpPost("enable-2fa")]
     [Authorize]
+    [ProducesResponseType(typeof(ApiSuccessResponse<Enable2FAResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<Enable2FAResponse>> Enable2FA([FromBody] WebApiContracts.Enable2FARequest request)
     {
         try
@@ -544,15 +584,14 @@ public class AuthController : BaseApiController
     }
 
     /// <summary>
-    /// Confirm 2FA setup by verifying code
-    /// <summary>
     /// Confirm 2FA setup and receive backup codes
     /// </summary>
     [HttpPost("confirm-2fa")]
     [Authorize]
-    [ProducesResponseType(typeof(Confirm2FAResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<Confirm2FAResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<Confirm2FAResponse>> Confirm2FA([FromBody] WebApiContracts.Confirm2FARequest request)
     {
         try
@@ -588,6 +627,10 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpPost("disable-2fa")]
     [Authorize]
+    [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> Disable2FA([FromBody] WebApiContracts.Disable2FARequest request)
     {
         try
@@ -619,6 +662,10 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpPost("disable-2fa-with-backup")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DisableTwoFactorWithBackup(
         [FromBody] WebApiContracts.DisableTwoFactorWithBackupRequest request)
     {
@@ -652,6 +699,10 @@ public class AuthController : BaseApiController
     /// <summary>
     /// Get current user profile information
     /// Requires device_id to prevent accessing user info without active device session
+    [ProducesResponseType(typeof(ApiSuccessResponse<UserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     /// </summary>
     [HttpGet("me")]
     [Authorize]
@@ -819,6 +870,8 @@ public class AuthController : BaseApiController
     [HttpGet("me/sessions")]
     [Authorize]
     [ProducesResponseType(typeof(ApiSuccessResponse<IReadOnlyList<UserSessionDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetMySessions()
     {
         var userId = GetCurrentUserId();
@@ -835,7 +888,9 @@ public class AuthController : BaseApiController
     [Authorize]
     [RequireDeviceId]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteSession(Guid sessionId)
     {
         try
@@ -874,8 +929,9 @@ public class AuthController : BaseApiController
     [Authorize]
     [RequireDeviceId]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteAllSessions()
     {
         var userId = GetCurrentUserId();
@@ -892,8 +948,10 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpGet("me/theme")]
     [Authorize]
-    [ProducesResponseType(typeof(UserThemeResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<UserThemeResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetMyTheme()
     {
         var userId = GetCurrentUserId();
@@ -923,8 +981,10 @@ public class AuthController : BaseApiController
     /// </summary>
     [HttpPut("me/theme")]
     [Authorize]
-    [ProducesResponseType(typeof(UserThemeResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<UserThemeResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateMyTheme([FromBody] UpdateUserThemeRequest request)
     {
         var userId = GetCurrentUserId();
@@ -959,14 +1019,4 @@ public class AuthController : BaseApiController
     #endregion
 }
 
-#region Request DTOs
 
-public class LogoutAllRequest
-{
-    /// <summary>
-    /// If true, keeps current device logged in (auto-detected from request headers)
-    /// </summary>
-    public bool ExceptCurrentDevice { get; set; } = false;
-}
-
-#endregion
