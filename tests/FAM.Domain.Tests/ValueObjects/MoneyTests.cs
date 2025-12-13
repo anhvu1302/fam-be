@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.ValueObjects;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.ValueObjects;
@@ -143,7 +144,7 @@ public class MoneyTests
         var money2 = Money.Create(50.50m, "USD");
 
         // Act
-        var result = money1.Add(money2);
+        Money result = money1.Add(money2);
 
         // Assert
         result.Amount.Should().Be(150.50m);
@@ -173,7 +174,7 @@ public class MoneyTests
         var money2 = Money.Create(30.50m, "USD");
 
         // Act
-        var result = money1.Subtract(money2);
+        Money result = money1.Subtract(money2);
 
         // Assert
         result.Amount.Should().Be(69.50m);
@@ -203,7 +204,7 @@ public class MoneyTests
         var multiplier = 1.5m;
 
         // Act
-        var result = money.Multiply(multiplier);
+        Money result = money.Multiply(multiplier);
 
         // Assert
         result.Amount.Should().Be(150.00m);
@@ -218,7 +219,7 @@ public class MoneyTests
         var multiplier = 0m;
 
         // Act
-        var result = money.Multiply(multiplier);
+        Money result = money.Multiply(multiplier);
 
         // Assert
         result.Amount.Should().Be(0);
@@ -233,7 +234,7 @@ public class MoneyTests
         var divisor = 4m;
 
         // Act
-        var result = money.Divide(divisor);
+        Money result = money.Divide(divisor);
 
         // Assert
         result.Amount.Should().Be(25.00m);

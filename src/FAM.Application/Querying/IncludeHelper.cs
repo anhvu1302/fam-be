@@ -16,7 +16,7 @@ public static class IncludeHelper
         if (string.IsNullOrWhiteSpace(includeParam))
             return new List<string>();
 
-        var opts = options ?? new IncludeOptions();
+        IncludeOptions opts = options ?? new IncludeOptions();
 
         return includeParam
             .Split(',')
@@ -39,7 +39,7 @@ public static class IncludeHelper
         if (string.IsNullOrWhiteSpace(includeParam))
             return (true, null);
 
-        var opts = options ?? new IncludeOptions();
+        IncludeOptions opts = options ?? new IncludeOptions();
         var includes = includeParam.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
 
         // Check count

@@ -1,5 +1,7 @@
 using AutoMapper;
+
 using FAM.Infrastructure.Providers.MongoDB;
+
 using MongoDB.Driver;
 
 namespace FAM.Infrastructure.Repositories;
@@ -29,7 +31,7 @@ public abstract class BaseMongoRepository<TDomain, TMongo> : BasePagedRepository
         if (string.IsNullOrWhiteSpace(sort))
             return null;
 
-        var sortBuilder = Builders<TMongo>.Sort;
+        SortDefinitionBuilder<TMongo>? sortBuilder = Builders<TMongo>.Sort;
         SortDefinition<TMongo>? sortDefinition = null;
 
         var sortParts = sort.Split(',', StringSplitOptions.RemoveEmptyEntries);
@@ -43,7 +45,7 @@ public abstract class BaseMongoRepository<TDomain, TMongo> : BasePagedRepository
 
             try
             {
-                var fieldSort = getFieldSort(fieldName.ToLowerInvariant());
+                SortDefinition<TMongo> fieldSort = getFieldSort(fieldName.ToLowerInvariant());
                 sortDefinition = sortDefinition == null
                     ? fieldSort
                     : sortBuilder.Combine(sortDefinition, fieldSort);

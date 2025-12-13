@@ -1,6 +1,9 @@
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+
 using MediatR;
+
 using OtpNet;
 
 namespace FAM.Application.Auth.Enable2FA;
@@ -17,7 +20,7 @@ public sealed class Enable2FACommandHandler : IRequestHandler<Enable2FACommand, 
     public async Task<Enable2FAResponse> Handle(Enable2FACommand request, CancellationToken cancellationToken)
     {
         // Get user by ID
-        var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
         if (user == null) throw new UnauthorizedAccessException("User not found");
 
         // Verify password

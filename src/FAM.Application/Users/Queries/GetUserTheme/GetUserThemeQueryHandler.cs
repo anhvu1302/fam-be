@@ -1,4 +1,6 @@
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users.Entities;
+
 using MediatR;
 
 namespace FAM.Application.Users.Queries.GetUserTheme;
@@ -14,7 +16,7 @@ public class GetUserThemeQueryHandler : IRequestHandler<GetUserThemeQuery, GetUs
 
     public async Task<GetUserThemeResponse?> Handle(GetUserThemeQuery request, CancellationToken cancellationToken)
     {
-        var theme = await _userThemeRepository.GetByUserIdAsync(request.UserId, cancellationToken);
+        UserTheme? theme = await _userThemeRepository.GetByUserIdAsync(request.UserId, cancellationToken);
 
         if (theme == null)
             return null;

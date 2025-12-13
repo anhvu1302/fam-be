@@ -5,8 +5,11 @@ using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
+
 using FluentAssertions;
+
 using Microsoft.Extensions.Logging;
+
 using Moq;
 
 namespace FAM.Application.Tests.Auth.Handlers;
@@ -52,7 +55,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         const string otp = "123456";
         const long userId = 1;
 
-        var user = CreateTestUser(userId, email);
+        User user = CreateTestUser(userId, email);
 
         _mockUserRepository.Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
@@ -79,7 +82,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         var command = new VerifyEmailOtpLoginCommand { Email = email, EmailOtp = otp };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        VerifyEmailOtpLoginResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -107,7 +110,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         const string otp = "123456";
         const long userId = 1;
 
-        var user = CreateTestUser(userId, email, false);
+        User user = CreateTestUser(userId, email, false);
 
         _mockUserRepository.Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
@@ -134,7 +137,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         var command = new VerifyEmailOtpLoginCommand { Email = email, EmailOtp = otp };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        VerifyEmailOtpLoginResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -153,7 +156,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         const string otp = "123456";
         const long userId = 1;
 
-        var user = CreateTestUser(userId, email, twoFactorEnabled: true);
+        User user = CreateTestUser(userId, email, twoFactorEnabled: true);
 
         _mockUserRepository.Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
@@ -177,7 +180,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         var command = new VerifyEmailOtpLoginCommand { Email = email, EmailOtp = otp };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        VerifyEmailOtpLoginResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -195,7 +198,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         const string invalidOtp = "000000";
         const long userId = 1;
 
-        var user = CreateTestUser(userId, email);
+        User user = CreateTestUser(userId, email);
 
         _mockUserRepository.Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);

@@ -1,6 +1,8 @@
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.PersistenceModels.Mongo;
+
 using Microsoft.Extensions.Logging;
+
 using MongoDB.Driver;
 
 namespace FAM.Infrastructure.Providers.MongoDB.Seeders;
@@ -24,7 +26,7 @@ public class MongoDbRoleSeeder : BaseDataSeeder
     {
         LogInfo("Starting to seed roles...");
 
-        var rolesCollection = _dbContext.GetCollection<RoleMongo>("roles");
+        IMongoCollection<RoleMongo> rolesCollection = _dbContext.GetCollection<RoleMongo>("roles");
 
         // Check if roles already exist
         var count = await rolesCollection.CountDocumentsAsync(
@@ -37,7 +39,7 @@ public class MongoDbRoleSeeder : BaseDataSeeder
             return;
         }
 
-        var roles = new[]
+        RoleMongo[] roles = new[]
         {
             new RoleMongo(1)
             {

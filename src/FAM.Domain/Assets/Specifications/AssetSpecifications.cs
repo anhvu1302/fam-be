@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+
 using FAM.Domain.Abstractions;
 
 namespace FAM.Domain.Assets.Specifications;
@@ -129,7 +130,7 @@ public class WarrantyExpiringSoonSpecification : Specification<Asset>
 
     public override Expression<Func<Asset, bool>> ToExpression()
     {
-        var checkDate = DateTime.UtcNow.AddDays(_daysBeforeExpiry);
+        DateTime checkDate = DateTime.UtcNow.AddDays(_daysBeforeExpiry);
         return asset =>
             !asset.IsDeleted &&
             asset.WarrantyUntil.HasValue &&

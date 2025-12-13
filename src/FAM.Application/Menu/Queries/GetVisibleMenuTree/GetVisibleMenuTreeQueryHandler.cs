@@ -1,5 +1,7 @@
 using FAM.Application.Menu.DTOs;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common.Entities;
+
 using MediatR;
 
 namespace FAM.Application.Menu.Queries.GetVisibleMenuTree;
@@ -18,7 +20,7 @@ public class GetVisibleMenuTreeQueryHandler : IRequestHandler<GetVisibleMenuTree
         CancellationToken cancellationToken)
     {
         var maxDepth = Math.Min(request.MaxDepth, MaxMenuDepth);
-        var menus = await _repository.GetVisibleMenuTreeAsync(
+        IReadOnlyList<MenuItem> menus = await _repository.GetVisibleMenuTreeAsync(
             request.UserPermissions,
             request.UserRoles,
             maxDepth,

@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+
 using FAM.Application.Querying.Validation;
 
 namespace FAM.Application.Querying;
@@ -37,7 +38,7 @@ public abstract class BaseFieldMap<TEntity> where TEntity : class
         var expressions = new List<Expression<Func<TEntity, object>>>();
 
         foreach (var includeName in includeNames)
-            if (AllowedIncludes.TryGetValue(includeName, out var expression))
+            if (AllowedIncludes.TryGetValue(includeName, out Expression<Func<TEntity, object>>? expression))
                 expressions.Add(expression);
             else
                 throw new InvalidOperationException(

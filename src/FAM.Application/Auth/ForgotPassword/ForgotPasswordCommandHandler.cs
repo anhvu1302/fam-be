@@ -1,9 +1,13 @@
 using System.Security.Cryptography;
+
 using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Services;
 using FAM.Application.Settings;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -36,7 +40,7 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         CancellationToken cancellationToken)
     {
         // Find user by email
-        var user = await _unitOfWork.Users.FindByEmailAsync(request.Email, cancellationToken);
+        User? user = await _unitOfWork.Users.FindByEmailAsync(request.Email, cancellationToken);
 
         // Always return success message (for security - don't reveal if email exists)
         var maskedEmail = MaskEmail(request.Email);

@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+
 using FAM.Application.Querying.Validation;
 
 namespace FAM.Application.Querying.Binding;
@@ -35,16 +36,16 @@ public static class SortBinder
                     "Sort parameter should contain field names only (e.g., 'username', '-createdAt'). " +
                     "Did you mean to use the 'filter' parameter instead?");
 
-            if (!fieldMap.TryGet(fieldName, out var expression, out _))
+            if (!fieldMap.TryGet(fieldName, out LambdaExpression expression, out _))
                 throw new InvalidOperationException($"Field '{fieldName}' not found for sorting");
 
             if (!fieldMap.CanSort(fieldName))
                 throw new InvalidOperationException($"Field '{fieldName}' cannot be used for sorting");
 
             // Cast to Expression<Func<T, object>> for sorting
-            var parameter = Expression.Parameter(typeof(T), "x");
+            ParameterExpression parameter = Expression.Parameter(typeof(T), "x");
             var visitor = new ParameterReplacerVisitor(expression.Parameters[0], parameter);
-            var body = visitor.Visit(expression.Body);
+            Expression body = visitor.Visit(expression.Body);
 
             // Box value types to object for sorting
             if (body.Type.IsValueType)

@@ -1,6 +1,7 @@
+using System.Text.Json;
+
 using FAM.WebApi.Attributes;
 using FAM.WebApi.Contracts.Common;
-using System.Text.Json;
 
 namespace FAM.WebApi.Middleware;
 
@@ -30,7 +31,7 @@ public class RequireDeviceIdMiddleware
         }
 
         // Get endpoint metadata to check if [RequireDeviceId] is applied
-        var endpoint = context.GetEndpoint();
+        Endpoint? endpoint = context.GetEndpoint();
         var requiresDeviceId = endpoint?.Metadata.GetMetadata<RequireDeviceIdAttribute>() != null;
 
         // If endpoint doesn't require device_id, skip validation
@@ -46,11 +47,8 @@ public class RequireDeviceIdMiddleware
         {
             // Check for deviceId in cookie or header
             var deviceId = context.Request.Cookies["device_id"];
-            
-            if (string.IsNullOrEmpty(deviceId))
-            {
-                deviceId = context.Request.Headers["X-Device-Id"].ToString();
-            }
+
+            if (string.IsNullOrEmpty(deviceId)) deviceId = context.Request.Headers["X-Device-Id"].ToString();
 
             if (string.IsNullOrEmpty(deviceId))
             {
@@ -61,17 +59,18 @@ public class RequireDeviceIdMiddleware
                 context.Response.ContentType = "application/json";
 
                 var errorResponse = new ApiErrorResponse(
-                    Success: false,
-                    Errors: new List<ApiError>
+                    false,
+                    new List<ApiError>
                     {
-                        new ApiError(
-                            Message: "Device ID is required. Please include 'device_id' in cookies or 'X-Device-Id' header.",
-                            Code: "DEVICE_ID_REQUIRED"
+                        new(
+                            "Device ID is required. Please include 'device_id' in cookies or 'X-Device-Id' header.",
+                            "DEVICE_ID_REQUIRED"
                         )
                     }
                 );
 
-                var json = JsonSerializer.Serialize(errorResponse, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+                var json = JsonSerializer.Serialize(errorResponse,
+                    new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
                 await context.Response.WriteAsync(json);
                 return;
             }
@@ -95,7 +94,7 @@ public class RequireDeviceIdMiddleware
             "/api/auth/select-authentication-method",
             "/api/auth/verify-recovery-code",
             "/swagger",
-            "/health",
+            "/health"
         };
 
         return publicPaths.Any(p => path.StartsWith(p, StringComparison.OrdinalIgnoreCase));

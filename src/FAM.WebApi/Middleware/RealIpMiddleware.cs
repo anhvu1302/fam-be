@@ -68,7 +68,7 @@ public class RealIpMiddleware
         if (!string.IsNullOrEmpty(clientIp) && IsValidIp(clientIp)) return clientIp.Trim();
 
         // Fallback to RemoteIpAddress (direct connection, no proxy)
-        var remoteIp = context.Connection.RemoteIpAddress;
+        IPAddress? remoteIp = context.Connection.RemoteIpAddress;
         if (remoteIp != null)
         {
             // Handle IPv6 loopback (::1) and map it to IPv4
@@ -90,7 +90,7 @@ public class RealIpMiddleware
 
     private bool IsPrivateIp(string ip)
     {
-        if (!IPAddress.TryParse(ip, out var address))
+        if (!IPAddress.TryParse(ip, out IPAddress? address))
             return false;
 
         // Check for private IP ranges

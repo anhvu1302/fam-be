@@ -1,5 +1,7 @@
 using FAM.Application.Querying;
+
 using Microsoft.AspNetCore.Mvc;
+
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace FAM.WebApi.Contracts.Common;

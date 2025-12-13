@@ -1,5 +1,6 @@
 using FAM.Application.Common.Email;
 using FAM.Application.Common.Services;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Infrastructure.Services.Email;
@@ -29,7 +30,7 @@ public sealed class QueuedEmailService : IEmailService
     {
         _logger.LogInformation("Queueing OTP email to {Email}", toEmail);
 
-        var message = _templateService.CreateOtpEmail(toEmail, userName, otpCode);
+        EmailMessage message = _templateService.CreateOtpEmail(toEmail, userName, otpCode);
         await _emailQueue.EnqueueAsync(message, cancellationToken);
 
         _logger.LogDebug("OTP email queued successfully. Queue size: {QueueSize}", _emailQueue.Count);
@@ -40,7 +41,8 @@ public sealed class QueuedEmailService : IEmailService
     {
         _logger.LogInformation("Queueing password reset email to {Email}", toEmail);
 
-        var message = _templateService.CreatePasswordResetEmail(toEmail, userName, resetToken, resetUrl, expiryMinutes);
+        EmailMessage message =
+            _templateService.CreatePasswordResetEmail(toEmail, userName, resetToken, resetUrl, expiryMinutes);
         await _emailQueue.EnqueueAsync(message, cancellationToken);
 
         _logger.LogDebug("Password reset email queued successfully. Queue size: {QueueSize}", _emailQueue.Count);
@@ -51,7 +53,7 @@ public sealed class QueuedEmailService : IEmailService
     {
         _logger.LogInformation("Queueing password changed confirmation to {Email}", toEmail);
 
-        var message = _templateService.CreatePasswordChangedEmail(toEmail, userName);
+        EmailMessage message = _templateService.CreatePasswordChangedEmail(toEmail, userName);
         await _emailQueue.EnqueueAsync(message, cancellationToken);
 
         _logger.LogDebug("Password changed email queued successfully. Queue size: {QueueSize}", _emailQueue.Count);

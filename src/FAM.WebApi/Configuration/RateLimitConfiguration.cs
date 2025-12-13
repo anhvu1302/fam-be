@@ -1,4 +1,5 @@
 using System.Threading.RateLimiting;
+
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace FAM.WebApi.Configuration;
@@ -56,8 +57,8 @@ public static class RateLimitConfiguration
             {
                 context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
 
-                var retryAfter = TimeSpan.Zero;
-                if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfterValue))
+                TimeSpan retryAfter = TimeSpan.Zero;
+                if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out TimeSpan retryAfterValue))
                 {
                     retryAfter = retryAfterValue;
                     context.HttpContext.Response.Headers.RetryAfter = ((int)retryAfter.TotalSeconds).ToString();

@@ -10,7 +10,9 @@ using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.Providers.MongoDB;
 using FAM.Infrastructure.Providers.PostgreSQL;
 using FAM.Infrastructure.Services;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using Minio;
 
 namespace FAM.Infrastructure;
@@ -26,7 +28,7 @@ public static class InfrastructureModule
         var providerStr = Environment.GetEnvironmentVariable("DB_PROVIDER") ?? "PostgreSQL";
 
         // Validate provider
-        if (!Enum.TryParse<DatabaseProvider>(providerStr, true, out var provider))
+        if (!Enum.TryParse<DatabaseProvider>(providerStr, true, out DatabaseProvider provider))
             throw new InvalidOperationException(
                 $"Invalid DB_PROVIDER value: '{providerStr}'. Valid values are: 'PostgreSQL', 'MongoDB'");
 

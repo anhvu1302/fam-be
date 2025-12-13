@@ -1,11 +1,14 @@
 using System.Linq.Expressions;
+
 using FAM.Application.Common.Helpers;
 using FAM.Application.Querying;
+using FAM.Application.Querying.Ast;
 using FAM.Application.Querying.Binding;
 using FAM.Application.Querying.Parsing;
 using FAM.Application.Users.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
+
 using MediatR;
 
 namespace FAM.Application.Users.Queries.GetUsers;
@@ -26,15 +29,15 @@ public sealed class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, PageRe
 
     public async Task<PageResult<UserDto>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
     {
-        var queryRequest = request.QueryRequest;
-        var fieldMap = UserFieldMap.Instance;
+        QueryRequest queryRequest = request.QueryRequest;
+        UserFieldMap fieldMap = UserFieldMap.Instance;
 
         // Parse filter expression
         Expression<Func<User, bool>>? filterExpression = null;
         if (!string.IsNullOrWhiteSpace(queryRequest.Filter))
             try
             {
-                var ast = _filterParser.Parse(queryRequest.Filter);
+                FilterNode ast = _filterParser.Parse(queryRequest.Filter);
                 filterExpression = EfFilterBinder<User>.Bind(ast, fieldMap.Fields);
             }
             catch (Exception ex)
@@ -47,11 +50,11 @@ public sealed class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, PageRe
         var pageSize = queryRequest.PageSize > 0 ? Math.Min(queryRequest.PageSize, 100) : 10;
 
         // Parse includes
-        var includes = fieldMap.ParseIncludes(queryRequest.Include);
-        var includeSet = IncludeParser.Parse(queryRequest.Include);
+        Expression<Func<User, object>>[] includes = fieldMap.ParseIncludes(queryRequest.Include);
+        HashSet<string> includeSet = IncludeParser.Parse(queryRequest.Include);
 
         // Call repository
-        var (items, total) = await _userRepository.GetPagedAsync(
+        (IEnumerable<User> items, var total) = await _userRepository.GetPagedAsync(
             filterExpression,
             queryRequest.Sort,
             page,

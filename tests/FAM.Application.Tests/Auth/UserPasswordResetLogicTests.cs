@@ -1,4 +1,5 @@
 using FAM.Domain.Users;
+
 using FluentAssertions;
 
 namespace FAM.Application.Tests.Auth;
@@ -12,7 +13,7 @@ public class UserPasswordResetLogicTests
     public void SetPasswordResetToken_ShouldSetTokenAndExpiry()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var token = "reset-token-123";
         var expiryHours = 1;
 
@@ -33,7 +34,7 @@ public class UserPasswordResetLogicTests
     public void IsPasswordResetTokenValid_WithValidToken_ShouldReturnTrue()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var token = "reset-token-123";
         user.SetPasswordResetToken(token, 1); // 1 hour expiry
 
@@ -48,7 +49,7 @@ public class UserPasswordResetLogicTests
     public void IsPasswordResetTokenValid_WithExpiredToken_ShouldReturnFalse()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var token = "reset-token-123";
         user.SetPasswordResetToken(token, -1); // Expired 1 hour ago
 
@@ -63,7 +64,7 @@ public class UserPasswordResetLogicTests
     public void IsPasswordResetTokenValid_WithWrongToken_ShouldReturnFalse()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         user.SetPasswordResetToken("correct-token", 1);
 
         // Act
@@ -77,7 +78,7 @@ public class UserPasswordResetLogicTests
     public void IsPasswordResetTokenValid_WithNoToken_ShouldReturnFalse()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         // No token set
 
         // Act
@@ -91,7 +92,7 @@ public class UserPasswordResetLogicTests
     public void ClearPasswordResetToken_ShouldRemoveTokenAndExpiry()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         user.SetPasswordResetToken("reset-token", 1);
 
         // Act
@@ -106,10 +107,10 @@ public class UserPasswordResetLogicTests
     public void PasswordChangedAt_ShouldBeSetAfterPasswordChange()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
 
         // Act - Simulate password change by setting timestamp
-        var beforeChange = DateTime.UtcNow;
+        DateTime beforeChange = DateTime.UtcNow;
         // Note: ChangePassword method doesn't exist yet, this tests the concept
         // In real implementation, handler will set PasswordChangedAt
 
@@ -121,7 +122,7 @@ public class UserPasswordResetLogicTests
     public void ResetPasswordFlow_ShouldValidateAndClearToken()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var resetToken = "reset-token-xyz";
 
         // Act - Step 1: Generate reset token

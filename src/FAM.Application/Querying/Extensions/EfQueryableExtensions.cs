@@ -1,3 +1,6 @@
+using System.Linq.Expressions;
+
+using FAM.Application.Querying.Ast;
 using FAM.Application.Querying.Binding;
 using FAM.Application.Querying.Parsing;
 using FAM.Application.Querying.Validation;
@@ -22,9 +25,9 @@ public static class EfQueryableExtensions
         // 1) Apply filter
         if (!string.IsNullOrWhiteSpace(request.Filter))
         {
-            var ast = parser.Parse(request.Filter);
+            FilterNode ast = parser.Parse(request.Filter);
             FilterValidator.Validate(ast, fieldMap);
-            var predicate = EfFilterBinder<T>.Bind(ast, fieldMap);
+            Expression<Func<T, bool>> predicate = EfFilterBinder<T>.Bind(ast, fieldMap);
             query = query.Where(predicate);
         }
 
@@ -51,9 +54,9 @@ public static class EfQueryableExtensions
         if (string.IsNullOrWhiteSpace(filter))
             return query;
 
-        var ast = parser.Parse(filter);
+        FilterNode ast = parser.Parse(filter);
         FilterValidator.Validate(ast, fieldMap);
-        var predicate = EfFilterBinder<T>.Bind(ast, fieldMap);
+        Expression<Func<T, bool>> predicate = EfFilterBinder<T>.Bind(ast, fieldMap);
         return query.Where(predicate);
     }
 

@@ -1,9 +1,13 @@
 using System.Linq.Expressions;
+
 using AutoMapper;
+
 using FAM.Domain.Abstractions;
 using FAM.Domain.Organizations;
 using FAM.Infrastructure.PersistenceModels.Ef;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -23,35 +27,35 @@ public class CompanyDetailsRepositoryPostgreSql : ICompanyDetailsRepository
 
     public async Task<CompanyDetails?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.CompanyDetails.FindAsync(new object[] { id }, cancellationToken);
+        CompanyDetailsEf? entity = await _context.CompanyDetails.FindAsync(new object[] { id }, cancellationToken);
         return entity != null ? _mapper.Map<CompanyDetails>(entity) : null;
     }
 
     public async Task<IEnumerable<CompanyDetails>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var entities = await _context.CompanyDetails.ToListAsync(cancellationToken);
+        List<CompanyDetailsEf> entities = await _context.CompanyDetails.ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<CompanyDetails>>(entities);
     }
 
     public async Task<IEnumerable<CompanyDetails>> FindAsync(Expression<Func<CompanyDetails, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        var allEntities = await _context.CompanyDetails.ToListAsync(cancellationToken);
-        var allCompanyDetails = _mapper.Map<IEnumerable<CompanyDetails>>(allEntities);
+        List<CompanyDetailsEf> allEntities = await _context.CompanyDetails.ToListAsync(cancellationToken);
+        IEnumerable<CompanyDetails>? allCompanyDetails = _mapper.Map<IEnumerable<CompanyDetails>>(allEntities);
         return allCompanyDetails.Where(predicate.Compile());
     }
 
     public async Task AddAsync(CompanyDetails entity, CancellationToken cancellationToken = default)
     {
-        var efEntity = _mapper.Map<CompanyDetailsEf>(entity);
+        CompanyDetailsEf? efEntity = _mapper.Map<CompanyDetailsEf>(entity);
         await _context.CompanyDetails.AddAsync(efEntity, cancellationToken);
     }
 
     public void Update(CompanyDetails entity)
     {
-        var efEntity = _mapper.Map<CompanyDetailsEf>(entity);
+        CompanyDetailsEf? efEntity = _mapper.Map<CompanyDetailsEf>(entity);
 
-        var trackedEntry = _context.ChangeTracker.Entries<CompanyDetailsEf>()
+        EntityEntry<CompanyDetailsEf>? trackedEntry = _context.ChangeTracker.Entries<CompanyDetailsEf>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -67,7 +71,7 @@ public class CompanyDetailsRepositoryPostgreSql : ICompanyDetailsRepository
 
     public void Delete(CompanyDetails entity)
     {
-        var efEntity = _mapper.Map<CompanyDetailsEf>(entity);
+        CompanyDetailsEf? efEntity = _mapper.Map<CompanyDetailsEf>(entity);
         _context.CompanyDetails.Remove(efEntity);
     }
 
@@ -78,21 +82,21 @@ public class CompanyDetailsRepositoryPostgreSql : ICompanyDetailsRepository
 
     public async Task<CompanyDetails?> GetByNodeIdAsync(long nodeId, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.CompanyDetails
+        CompanyDetailsEf? entity = await _context.CompanyDetails
             .FirstOrDefaultAsync(cd => cd.NodeId == nodeId, cancellationToken);
         return entity != null ? _mapper.Map<CompanyDetails>(entity) : null;
     }
 
     public async Task<CompanyDetails?> GetByTaxCodeAsync(string taxCode, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.CompanyDetails
+        CompanyDetailsEf? entity = await _context.CompanyDetails
             .FirstOrDefaultAsync(cd => cd.TaxCode == taxCode, cancellationToken);
         return entity != null ? _mapper.Map<CompanyDetails>(entity) : null;
     }
 
     public async Task<CompanyDetails?> GetByDomainAsync(string domain, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.CompanyDetails
+        CompanyDetailsEf? entity = await _context.CompanyDetails
             .FirstOrDefaultAsync(cd => cd.Domain == domain, cancellationToken);
         return entity != null ? _mapper.Map<CompanyDetails>(entity) : null;
     }

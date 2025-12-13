@@ -1,6 +1,10 @@
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+using FAM.Domain.Users.Entities;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Auth.Logout;
@@ -30,7 +34,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Unit>
     public async Task<Unit> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
         // Find device by refresh token or device ID
-        var device = !string.IsNullOrEmpty(request.RefreshToken)
+        UserDevice? device = !string.IsNullOrEmpty(request.RefreshToken)
             ? await _unitOfWork.UserDevices.FindByRefreshTokenAsync(request.RefreshToken, cancellationToken)
             : !string.IsNullOrEmpty(request.DeviceId)
                 ? await _unitOfWork.UserDevices.GetByDeviceIdAsync(request.DeviceId, cancellationToken)
@@ -44,7 +48,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Unit>
         }
 
         // Get user
-        var user = await _unitOfWork.Users.GetByIdAsync(device.UserId, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(device.UserId, cancellationToken);
 
         // Clear refresh token and deactivate device
         device.ClearRefreshToken();

@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+
 using FAM.Application.Querying;
 using FAM.Application.Querying.Validation;
 using FAM.Domain.Authorization;

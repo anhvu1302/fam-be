@@ -1,5 +1,7 @@
 using System.Threading.Channels;
+
 using FAM.Application.Common.Email;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Infrastructure.Services.Email;
@@ -48,7 +50,7 @@ public sealed class InMemoryEmailQueue : IEmailQueue
     {
         try
         {
-            var message = await _queue.Reader.ReadAsync(cancellationToken);
+            EmailMessage message = await _queue.Reader.ReadAsync(cancellationToken);
             Interlocked.Decrement(ref _count);
 
             _logger.LogDebug(

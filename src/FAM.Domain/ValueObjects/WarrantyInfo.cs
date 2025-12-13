@@ -36,7 +36,7 @@ public sealed class WarrantyInfo : ValueObject
         if (durationMonths <= 0)
             throw new DomainException(ErrorCodes.VO_WARRANTY_DURATION_INVALID);
 
-        var endDate = startDate?.AddMonths(durationMonths);
+        DateTime? endDate = startDate?.AddMonths(durationMonths);
         return new WarrantyInfo(startDate, endDate, durationMonths, terms, provider);
     }
 

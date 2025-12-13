@@ -2,6 +2,7 @@ using FAM.Application.Common;
 using FAM.Application.Users.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
+
 using MediatR;
 
 namespace FAM.Application.Users.Commands.CreateUser;

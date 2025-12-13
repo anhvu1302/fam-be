@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+
 using FAM.Infrastructure.PersistenceModels.Ef.Base;
 
 namespace FAM.Infrastructure.PersistenceModels.Ef;
@@ -26,7 +27,7 @@ public class UserDeviceEf : BaseEntityEfGuid
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiresAt { get; set; }
     public string? ActiveAccessTokenJti { get; set; }
-    
+
     // Audit fields
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public long? CreatedById { get; set; }

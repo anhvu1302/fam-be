@@ -14,7 +14,9 @@ using FAM.Application.Querying;
 using FAM.Application.Querying.Extensions;
 using FAM.WebApi.Contracts.Authorization;
 using FAM.WebApi.Contracts.Common;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -67,7 +69,7 @@ public class RolesController : BaseApiController
     public async Task<IActionResult> GetRoles([FromQuery] PaginationQueryParameters parameters)
     {
         var query = new GetRolesQuery(parameters.ToQueryRequest());
-        var result = await _mediator.Send(query);
+        PageResult<RoleDto> result = await _mediator.Send(query);
 
         // Apply field selection if requested
         var fields = parameters.GetFieldsArray();
@@ -103,7 +105,7 @@ public class RolesController : BaseApiController
     public async Task<ActionResult<RoleWithPermissionsDto>> GetRoleById(long id)
     {
         var query = new GetRoleByIdQuery(id);
-        var result = await _mediator.Send(query);
+        RoleWithPermissionsDto? result = await _mediator.Send(query);
 
         if (result == null)
             return NotFoundResponse($"Role with ID {id} not found", "ROLE_NOT_FOUND");

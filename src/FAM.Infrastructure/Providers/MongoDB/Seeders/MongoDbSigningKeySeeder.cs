@@ -1,7 +1,10 @@
 using System.Security.Cryptography;
+
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.PersistenceModels.Mongo;
+
 using Microsoft.Extensions.Logging;
+
 using MongoDB.Driver;
 
 namespace FAM.Infrastructure.Providers.MongoDB.Seeders;
@@ -25,7 +28,7 @@ public class MongoDbSigningKeySeeder : BaseDataSeeder
     {
         LogInfo("Checking for existing signing keys...");
 
-        var collection = _context.GetCollection<SigningKeyMongo>("signingKeys");
+        IMongoCollection<SigningKeyMongo> collection = _context.GetCollection<SigningKeyMongo>("signingKeys");
 
         // Check if an active signing key already exists
         var hasActiveKey = await collection

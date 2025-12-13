@@ -1,6 +1,8 @@
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.PersistenceModels.Mongo;
+
 using Microsoft.Extensions.Logging;
+
 using MongoDB.Driver;
 
 namespace FAM.Infrastructure.Providers.MongoDB.Seeders;
@@ -24,7 +26,7 @@ public class MongoDbUserSeeder : BaseDataSeeder
     {
         LogInfo("Starting to seed users...");
 
-        var usersCollection = _dbContext.GetCollection<UserMongo>("users");
+        IMongoCollection<UserMongo> usersCollection = _dbContext.GetCollection<UserMongo>("users");
 
         // Check if users already exist
         var count = await usersCollection.CountDocumentsAsync(

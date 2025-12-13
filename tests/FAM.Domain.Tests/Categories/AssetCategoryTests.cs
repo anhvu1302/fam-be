@@ -1,5 +1,6 @@
 using FAM.Domain.Categories;
 using FAM.Domain.Common.Base;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Categories;

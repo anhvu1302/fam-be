@@ -3,7 +3,11 @@ using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
+
 using FluentAssertions;
+
+using MediatR;
+
 using Moq;
 
 namespace FAM.Application.Tests.Auth.Handlers;
@@ -56,7 +60,7 @@ public class ChangePasswordCommandHandlerTests
             .ReturnsAsync(1);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Unit result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -161,7 +165,7 @@ public class ChangePasswordCommandHandlerTests
             .ReturnsAsync(1);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Unit result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -231,7 +235,7 @@ public class ChangePasswordCommandHandlerTests
             .ReturnsAsync(1);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Unit result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();

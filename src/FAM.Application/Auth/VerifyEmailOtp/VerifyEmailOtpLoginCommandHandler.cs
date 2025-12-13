@@ -2,9 +2,12 @@ using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Auth.VerifyEmailOtp;
@@ -42,7 +45,7 @@ public class VerifyEmailOtpLoginCommandHandler
         _logger.LogInformation("Verifying email OTP for {Email}", request.Email);
 
         // Find user to get their ID for OTP verification
-        var user = await _unitOfWork.Users.FindByEmailAsync(request.Email, cancellationToken);
+        User? user = await _unitOfWork.Users.FindByEmailAsync(request.Email, cancellationToken);
         if (user == null)
             throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS, "User not found");
 
@@ -85,7 +88,7 @@ public class VerifyEmailOtpLoginCommandHandler
         }
 
         // Generate tokens
-        var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
+        SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
         var roles = new List<string>(); // User roles can be loaded separately if needed
 
         var accessToken = _jwtService.GenerateAccessTokenWithRsa(
@@ -98,9 +101,9 @@ public class VerifyEmailOtpLoginCommandHandler
             activeKey.Algorithm);
 
         // Calculate expiration times from config
-        var accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
+        DateTime accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
         var refreshToken = _jwtService.GenerateRefreshToken();
-        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtService.RefreshTokenExpiryDays);
+        DateTime refreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtService.RefreshTokenExpiryDays);
 
         return new VerifyEmailOtpLoginResponse
         {
@@ -116,7 +119,7 @@ public class VerifyEmailOtpLoginCommandHandler
 
     private async Task<string> GenerateTwoFactorSessionTokenAsync(long userId, CancellationToken cancellationToken)
     {
-        var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
+        SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
         var roles = new List<string> { "2fa_session" };
 
         return _jwtService.GenerateAccessTokenWithRsa(

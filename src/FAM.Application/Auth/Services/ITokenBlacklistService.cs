@@ -45,7 +45,7 @@ public interface ITokenBlacklistService
     /// <param name="expiryTime">When the token would naturally expire (TTL for cache)</param>
     /// <param name="cancellationToken">Cancellation token</param>
     Task BlacklistTokenByJtiAsync(string jti, DateTime expiryTime, CancellationToken cancellationToken = default);
-    
+
     /// <summary>
     /// Check if a token is blacklisted by its JTI
     /// </summary>

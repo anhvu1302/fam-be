@@ -1,6 +1,8 @@
 using System.Data;
 using System.Data.Common;
+
 using FAM.Infrastructure.Common.Seeding;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
@@ -43,11 +45,11 @@ public class SeedHistoryRepositoryPostgreSql : ISeedHistoryRepository
 
     public async Task RecordExecutionAsync(SeedHistory history, CancellationToken cancellationToken = default)
     {
-        var connection = _dbContext.Database.GetDbConnection();
+        DbConnection connection = _dbContext.Database.GetDbConnection();
         if (connection.State != ConnectionState.Open)
             await connection.OpenAsync(cancellationToken);
 
-        using var command = connection.CreateCommand();
+        using DbCommand command = connection.CreateCommand();
         command.CommandText = @"
             INSERT INTO __seed_history 
                 (seeder_name, executed_at, executed_by, success, error_message, duration_ms)
@@ -72,7 +74,7 @@ public class SeedHistoryRepositoryPostgreSql : ISeedHistoryRepository
 
     private void AddParameter(DbCommand command, string name, object value)
     {
-        var parameter = command.CreateParameter();
+        DbParameter parameter = command.CreateParameter();
         parameter.ParameterName = name;
         parameter.Value = value;
         command.Parameters.Add(parameter);
@@ -85,13 +87,13 @@ public class SeedHistoryRepositoryPostgreSql : ISeedHistoryRepository
 
         var histories = new List<SeedHistory>();
 
-        var connection = _dbContext.Database.GetDbConnection();
+        DbConnection connection = _dbContext.Database.GetDbConnection();
         await connection.OpenAsync(cancellationToken);
 
-        using var command = connection.CreateCommand();
+        using DbCommand command = connection.CreateCommand();
         command.CommandText = "SELECT * FROM __seed_history ORDER BY executed_at DESC";
 
-        using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
             histories.Add(new SeedHistory
             {

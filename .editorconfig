@@ -1,0 +1,38 @@
+# top-most editorconfig file
+root = true
+
+# ==========================================================
+# 1. THIẾT LẬP LAYOUT CHUNG (CHO TẤT CẢ CÁC FILE)
+# ==========================================================
+[*]
+# Yêu cầu sử dụng space để thụt lề
+indent_style = space
+# Đặt kích thước thụt lề là 4 spaces
+indent_size = 4
+# Đảm bảo có ký tự xuống dòng cuối file
+insert_final_newline = true
+# Cắt bỏ khoảng trắng ở cuối dòng
+trim_trailing_whitespace = true
+
+# ==========================================================
+# 2. THIẾT LẬP CHO C# CODE (.cs)
+# ==========================================================
+[*.cs]
+# Thụt lề dấu ngoặc nhọn của các khối code C# (ví dụ: phương thức, lớp)
+csharp_indent_braces = false
+
+# SẮP XẾP VÀ PHÂN NHÓM USING
+# dotnet_separate_import_directive_groups: Tách các nhóm 'using' bằng một dòng trống
+dotnet_separate_import_directive_groups = true
+# dotnet_sort_system_directives_first: Đặt các 'using System' lên trên
+dotnet_sort_system_directives_first = true
+# csharp_using_directive_placement: Đặt các 'using' bên trong hoặc bên ngoài namespace
+# Nên đặt 'global' để dùng theo tiêu chuẩn (inside_namespace hoặc outside_namespace)
+csharp_using_directive_placement = outside_namespace
+
+# QUY TẮC CODE STYLE CƠ BẢN (KHUYẾN NGHỊ)
+# Khuyến khích sử dụng 'var' khi kiểu dữ liệu đã rõ ràng
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+# Khuyến khích sử dụng cú pháp thuộc tính tự động (auto-properties)
+csharp_style_expression_bodied_properties = true:suggestion

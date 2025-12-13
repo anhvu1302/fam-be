@@ -1,6 +1,8 @@
 using System.Linq.Expressions;
 using System.Reflection;
+
 using AutoMapper;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
@@ -32,9 +34,9 @@ public abstract class BasePagedRepository<TDomain, TEf>
     protected Expression<Func<TEf, bool>> ConvertToEfExpression(
         Expression<Func<TDomain, bool>> domainExpression)
     {
-        var parameter = Expression.Parameter(typeof(TEf), "e");
+        ParameterExpression parameter = Expression.Parameter(typeof(TEf), "e");
         var visitor = new DomainToEfExpressionVisitor(parameter, domainExpression.Parameters[0]);
-        var body = visitor.Visit(domainExpression.Body);
+        Expression body = visitor.Visit(domainExpression.Body);
         return Expression.Lambda<Func<TEf, bool>>(body, parameter);
     }
 
@@ -73,16 +75,16 @@ public abstract class BasePagedRepository<TDomain, TEf>
             var propertyName = descending ? trimmedField[1..] : trimmedField;
 
             // Get property info from EF type
-            var property = typeof(TEf).GetProperty(propertyName,
+            PropertyInfo? property = typeof(TEf).GetProperty(propertyName,
                 BindingFlags.IgnoreCase | BindingFlags.Public |
                 BindingFlags.Instance);
 
             if (property == null)
                 continue;
 
-            var parameter = Expression.Parameter(typeof(TEf), "x");
-            var propertyAccess = Expression.Property(parameter, property);
-            var lambda = Expression.Lambda(propertyAccess, parameter);
+            ParameterExpression parameter = Expression.Parameter(typeof(TEf), "x");
+            MemberExpression propertyAccess = Expression.Property(parameter, property);
+            LambdaExpression lambda = Expression.Lambda(propertyAccess, parameter);
 
             var methodName = isFirst
                 ? descending ? "OrderByDescending" : "OrderBy"
@@ -90,7 +92,7 @@ public abstract class BasePagedRepository<TDomain, TEf>
                     ? "ThenByDescending"
                     : "ThenBy";
 
-            var method = typeof(Queryable).GetMethods()
+            MethodInfo method = typeof(Queryable).GetMethods()
                 .First(m => m.Name == methodName && m.GetParameters().Length == 2)
                 .MakeGenericMethod(typeof(TEf), property.PropertyType);
 
@@ -128,7 +130,7 @@ public abstract class BasePagedRepository<TDomain, TEf>
             if (node.Expression is ParameterExpression paramExpr && paramExpr == _domainParameter)
             {
                 // Get the same property name on EF type
-                var efProperty = typeof(TEf).GetProperty(node.Member.Name);
+                PropertyInfo? efProperty = typeof(TEf).GetProperty(node.Member.Name);
                 if (efProperty != null)
                     return Expression.Property(_efParameter, efProperty);
             }

@@ -1,5 +1,6 @@
 using FAM.Application.Authorization.Permissions.Shared;
 using FAM.Application.Querying;
+
 using MediatR;
 
 namespace FAM.Application.Authorization.Permissions.Queries.GetPermissions;

@@ -82,7 +82,7 @@ public class UserNodeRole
     /// </summary>
     public bool IsActive()
     {
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
         if (StartAt.HasValue && now < StartAt.Value)
             return false;

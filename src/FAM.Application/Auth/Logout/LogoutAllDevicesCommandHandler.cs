@@ -1,6 +1,9 @@
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Auth.Logout;
@@ -27,7 +30,7 @@ public class LogoutAllDevicesCommandHandler : IRequestHandler<LogoutAllDevicesCo
     public async Task<Unit> Handle(LogoutAllDevicesCommand request, CancellationToken cancellationToken)
     {
         // Verify user exists
-        var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
 
         if (user == null) throw new KeyNotFoundException($"User with ID {request.UserId} not found");
 

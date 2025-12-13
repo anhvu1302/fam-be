@@ -1,6 +1,8 @@
 using System.Net;
 using System.Text.Json;
+
 using FAM.Application.Common.Services;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Infrastructure.Services;
@@ -30,7 +32,7 @@ public class IpApiLocationService : ILocationService
             // Skip for local/private IPs
             if (IsLocalOrPrivateIp(ipAddress)) return "Local Network";
 
-            var locationInfo = await GetDetailedLocationFromIpAsync(ipAddress);
+            LocationInfo? locationInfo = await GetDetailedLocationFromIpAsync(ipAddress);
             return locationInfo?.GetFormattedLocation();
         }
         catch (Exception ex)
@@ -54,7 +56,7 @@ public class IpApiLocationService : ILocationService
 
             var url =
                 $"{ApiBaseUrl}{ipAddress}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp";
-            var response = await _httpClient.GetAsync(url);
+            HttpResponseMessage response = await _httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -64,7 +66,7 @@ public class IpApiLocationService : ILocationService
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            var apiResponse = JsonSerializer.Deserialize<IpApiResponse>(json, new JsonSerializerOptions
+            IpApiResponse? apiResponse = JsonSerializer.Deserialize<IpApiResponse>(json, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
             });
@@ -105,7 +107,7 @@ public class IpApiLocationService : ILocationService
         if (ipAddress == "127.0.0.1" || ipAddress == "::1" || ipAddress == "localhost")
             return true;
 
-        if (!IPAddress.TryParse(ipAddress, out var ip))
+        if (!IPAddress.TryParse(ipAddress, out IPAddress? ip))
             return true;
 
         var bytes = ip.GetAddressBytes();

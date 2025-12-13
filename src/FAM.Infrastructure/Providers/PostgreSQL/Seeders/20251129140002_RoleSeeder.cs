@@ -1,5 +1,6 @@
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.PersistenceModels.Ef;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -31,7 +32,7 @@ public class RoleSeeder : BaseDataSeeder
             return;
         }
 
-        var roles = new[]
+        RoleEf[] roles = new[]
         {
             new RoleEf
             {

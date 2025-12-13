@@ -2,8 +2,11 @@ using FAM.Application.Abstractions;
 using FAM.Application.Storage.Commands;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Abstractions.Repositories;
+using FAM.Domain.Common.Enums;
 using FAM.Domain.Storage;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Storage.Handlers;
@@ -41,7 +44,7 @@ public class InitUploadSessionHandler : IRequestHandler<InitUploadSessionCommand
         // Check idempotency
         if (!string.IsNullOrEmpty(request.IdempotencyKey))
         {
-            var existingSession = await _sessionRepository.GetByIdempotencyKeyAsync(
+            UploadSession? existingSession = await _sessionRepository.GetByIdempotencyKeyAsync(
                 request.IdempotencyKey,
                 cancellationToken);
 
@@ -56,7 +59,7 @@ public class InitUploadSessionHandler : IRequestHandler<InitUploadSessionCommand
         }
 
         // Validate file
-        var (isValid, errorMessage, fileType) = _fileValidator.ValidateFile(
+        (var isValid, var errorMessage, FileType? fileType) = _fileValidator.ValidateFile(
             request.FileName,
             request.FileSize);
 

@@ -1,8 +1,11 @@
 using System.Linq.Expressions;
+
 using AutoMapper;
+
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users.Entities;
 using FAM.Infrastructure.PersistenceModels.Mongo;
+
 using MongoDB.Driver;
 
 namespace FAM.Infrastructure.Providers.MongoDB.Repositories;
@@ -25,14 +28,14 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
 
     public async Task<UserDevice?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var document = await _collection.Find(d => d.DomainId == id && !d.IsDeleted)
+        UserDeviceMongo? document = await _collection.Find(d => d.DomainId == id && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? _mapper.Map<UserDevice>(document) : null;
     }
 
     public async Task<IEnumerable<UserDevice>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var documents = await _collection.Find(d => !d.IsDeleted)
+        List<UserDeviceMongo>? documents = await _collection.Find(d => !d.IsDeleted)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<UserDevice>>(documents);
     }
@@ -42,22 +45,22 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
     {
         // Note: Converting domain expressions to MongoDB queries is complex
         // For now, we'll get all and filter in memory
-        var allDocuments = await _collection.Find(d => !d.IsDeleted)
+        List<UserDeviceMongo>? allDocuments = await _collection.Find(d => !d.IsDeleted)
             .ToListAsync(cancellationToken);
-        var allEntities = _mapper.Map<IEnumerable<UserDevice>>(allDocuments);
+        IEnumerable<UserDevice>? allEntities = _mapper.Map<IEnumerable<UserDevice>>(allDocuments);
         return allEntities.Where(predicate.Compile());
     }
 
     public async Task AddAsync(UserDevice entity, CancellationToken cancellationToken = default)
     {
-        var document = _mapper.Map<UserDeviceMongo>(entity);
+        UserDeviceMongo? document = _mapper.Map<UserDeviceMongo>(entity);
         await _collection.InsertOneAsync(document, cancellationToken: cancellationToken);
     }
 
     public async Task UpdateAsync(UserDevice entity)
     {
-        var document = _mapper.Map<UserDeviceMongo>(entity);
-        var filter = Builders<UserDeviceMongo>.Filter.Eq(d => d.DomainId, entity.Id);
+        UserDeviceMongo? document = _mapper.Map<UserDeviceMongo>(entity);
+        FilterDefinition<UserDeviceMongo>? filter = Builders<UserDeviceMongo>.Filter.Eq(d => d.DomainId, entity.Id);
         await _collection.ReplaceOneAsync(filter, document);
     }
 
@@ -68,7 +71,7 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
 
     public async Task DeleteAsync(UserDevice entity)
     {
-        var filter = Builders<UserDeviceMongo>.Filter.Eq(d => d.DomainId, entity.Id);
+        FilterDefinition<UserDeviceMongo>? filter = Builders<UserDeviceMongo>.Filter.Eq(d => d.DomainId, entity.Id);
         await _collection.DeleteOneAsync(filter);
     }
 
@@ -86,7 +89,7 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
 
     public async Task<UserDevice?> GetByDeviceIdAsync(string deviceId, CancellationToken cancellationToken = default)
     {
-        var document = await _collection.Find(d => d.DeviceId == deviceId && !d.IsDeleted)
+        UserDeviceMongo? document = await _collection.Find(d => d.DeviceId == deviceId && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? _mapper.Map<UserDevice>(document) : null;
     }
@@ -94,7 +97,7 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
     public async Task<IEnumerable<UserDevice>> GetByUserIdAsync(long userId,
         CancellationToken cancellationToken = default)
     {
-        var documents = await _collection.Find(d => d.UserId == userId && !d.IsDeleted)
+        List<UserDeviceMongo>? documents = await _collection.Find(d => d.UserId == userId && !d.IsDeleted)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<UserDevice>>(documents);
     }
@@ -102,7 +105,7 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
     public async Task<IEnumerable<UserDevice>> GetActiveDevicesByUserIdAsync(long userId,
         CancellationToken cancellationToken = default)
     {
-        var documents = await _collection.Find(d => d.UserId == userId && d.IsActive && !d.IsDeleted)
+        List<UserDeviceMongo>? documents = await _collection.Find(d => d.UserId == userId && d.IsActive && !d.IsDeleted)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<UserDevice>>(documents);
     }
@@ -110,7 +113,7 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
     public async Task<bool> IsDeviceIdTakenAsync(string deviceId, Guid? excludeDeviceId = null,
         CancellationToken cancellationToken = default)
     {
-        var filter = Builders<UserDeviceMongo>.Filter.And(
+        FilterDefinition<UserDeviceMongo>? filter = Builders<UserDeviceMongo>.Filter.And(
             Builders<UserDeviceMongo>.Filter.Eq(d => d.DeviceId, deviceId),
             Builders<UserDeviceMongo>.Filter.Eq(d => d.IsDeleted, false)
         );
@@ -127,8 +130,9 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
 
     public async Task DeactivateDeviceAsync(Guid deviceId, CancellationToken cancellationToken = default)
     {
-        var filter = Builders<UserDeviceMongo>.Filter.Eq((UserDeviceMongo d) => d.DomainId, deviceId);
-        var update = Builders<UserDeviceMongo>.Update
+        FilterDefinition<UserDeviceMongo>? filter =
+            Builders<UserDeviceMongo>.Filter.Eq((UserDeviceMongo d) => d.DomainId, deviceId);
+        UpdateDefinition<UserDeviceMongo>? update = Builders<UserDeviceMongo>.Update
             .Set(d => d.IsActive, false)
             .Set(d => d.RefreshToken, null)
             .Set(d => d.RefreshTokenExpiresAt, null);
@@ -138,7 +142,7 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
     public async Task DeactivateAllUserDevicesAsync(long userId, string? excludeDeviceId = null,
         CancellationToken cancellationToken = default)
     {
-        var filter = Builders<UserDeviceMongo>.Filter.And(
+        FilterDefinition<UserDeviceMongo>? filter = Builders<UserDeviceMongo>.Filter.And(
             Builders<UserDeviceMongo>.Filter.Eq(d => d.UserId, userId),
             Builders<UserDeviceMongo>.Filter.Eq(d => d.IsDeleted, false)
         );
@@ -150,7 +154,7 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
                 Builders<UserDeviceMongo>.Filter.Ne(d => d.DeviceId, excludeDeviceId)
             );
 
-        var update = Builders<UserDeviceMongo>.Update
+        UpdateDefinition<UserDeviceMongo>? update = Builders<UserDeviceMongo>.Update
             .Set(d => d.IsActive, false)
             .Set(d => d.RefreshToken, null)
             .Set(d => d.RefreshTokenExpiresAt, null);
@@ -160,29 +164,27 @@ public class UserDeviceRepositoryMongo : IUserDeviceRepository
     public async Task<UserDevice?> FindByRefreshTokenAsync(string refreshToken,
         CancellationToken cancellationToken = default)
     {
-        var document = await _collection.Find(d => d.RefreshToken == refreshToken && !d.IsDeleted)
+        UserDeviceMongo? document = await _collection.Find(d => d.RefreshToken == refreshToken && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? _mapper.Map<UserDevice>(document) : null;
     }
 
-    public async Task<bool> UpdateLastActivityAsync(string deviceId, string? ipAddress = null, CancellationToken cancellationToken = default)
+    public async Task<bool> UpdateLastActivityAsync(string deviceId, string? ipAddress = null,
+        CancellationToken cancellationToken = default)
     {
-        var filter = Builders<UserDeviceMongo>.Filter.And(
+        FilterDefinition<UserDeviceMongo>? filter = Builders<UserDeviceMongo>.Filter.And(
             Builders<UserDeviceMongo>.Filter.Eq(d => d.DeviceId, deviceId),
             Builders<UserDeviceMongo>.Filter.Eq(d => d.IsActive, true),
             Builders<UserDeviceMongo>.Filter.Eq(d => d.IsDeleted, false)
         );
 
-        var update = Builders<UserDeviceMongo>.Update
+        UpdateDefinition<UserDeviceMongo>? update = Builders<UserDeviceMongo>.Update
             .Set(d => d.LastActivityAt, DateTime.UtcNow)
             .Set(d => d.UpdatedAt, DateTime.UtcNow);
 
-        if (!string.IsNullOrEmpty(ipAddress))
-        {
-            update = update.Set(d => d.IpAddress, ipAddress);
-        }
+        if (!string.IsNullOrEmpty(ipAddress)) update = update.Set(d => d.IpAddress, ipAddress);
 
-        var result = await _collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
+        UpdateResult? result = await _collection.UpdateOneAsync(filter, update, cancellationToken: cancellationToken);
         return result.ModifiedCount > 0;
     }
 }

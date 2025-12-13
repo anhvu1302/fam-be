@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 using FAM.Application.Querying;
 using FAM.Application.Querying.Validation;
 using FAM.Domain.EmailTemplates;
@@ -10,11 +12,11 @@ namespace FAM.Application.EmailTemplates.Shared;
 public class EmailTemplateFieldMap : BaseFieldMap<EmailTemplate>
 {
     private static readonly Lazy<EmailTemplateFieldMap> _instance = new(() => new EmailTemplateFieldMap());
-    
+
     private EmailTemplateFieldMap()
     {
     }
-    
+
     public static EmailTemplateFieldMap Instance => _instance.Value;
 
     public override FieldMap<EmailTemplate> Fields { get; } = new FieldMap<EmailTemplate>()
@@ -35,7 +37,7 @@ public class EmailTemplateFieldMap : BaseFieldMap<EmailTemplate>
         .Add("isDeleted", t => t.IsDeleted)
         .Add("deletedAt", t => t.DeletedAt!);
 
-    protected override Dictionary<string, System.Linq.Expressions.Expression<Func<EmailTemplate, object>>> AllowedIncludes { get; } =
+    protected override Dictionary<string, Expression<Func<EmailTemplate, object>>> AllowedIncludes { get; } =
         new(StringComparer.OrdinalIgnoreCase)
         {
             // EmailTemplate doesn't have navigation properties to include

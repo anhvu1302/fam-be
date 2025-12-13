@@ -1,9 +1,12 @@
 using System.Reflection;
+
 using FAM.Application.Auth.Services;
 using FAM.Application.Users.Commands.DeleteAllSessions;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users.Entities;
+
 using Microsoft.Extensions.Logging;
+
 using Moq;
 
 namespace FAM.Application.Tests.Users.Handlers;
@@ -70,12 +73,12 @@ public class DeleteAllSessionsCommandHandlerTests
         );
 
         // Set creation date to 4 days ago to make it eligible for trust
-        var createdAtField = device.GetType().GetProperty("CreatedAt",
+        PropertyInfo? createdAtField = device.GetType().GetProperty("CreatedAt",
             BindingFlags.Public | BindingFlags.Instance);
         createdAtField?.SetValue(device, DateTime.UtcNow.AddDays(-4));
 
         // Mark device as trusted
-        var isTrustedField = device.GetType().GetProperty("IsTrusted",
+        PropertyInfo? isTrustedField = device.GetType().GetProperty("IsTrusted",
             BindingFlags.Public | BindingFlags.Instance);
         isTrustedField?.SetValue(device, true);
 

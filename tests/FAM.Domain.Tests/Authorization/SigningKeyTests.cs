@@ -1,5 +1,6 @@
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Authorization;
@@ -67,7 +68,7 @@ public class SigningKeyTests
     public void Create_WithInvalidKeyId_ShouldThrowDomainException(string? keyId)
     {
         // Act
-        var act = () => SigningKey.Create(
+        Func<SigningKey> act = () => SigningKey.Create(
             keyId!,
             ValidPublicKey,
             ValidPrivateKey);
@@ -84,7 +85,7 @@ public class SigningKeyTests
     public void Create_WithInvalidPublicKey_ShouldThrowDomainException(string? publicKey)
     {
         // Act
-        var act = () => SigningKey.Create(
+        Func<SigningKey> act = () => SigningKey.Create(
             ValidKeyId,
             publicKey!,
             ValidPrivateKey);
@@ -101,7 +102,7 @@ public class SigningKeyTests
     public void Create_WithInvalidPrivateKey_ShouldThrowDomainException(string? privateKey)
     {
         // Act
-        var act = () => SigningKey.Create(
+        Func<SigningKey> act = () => SigningKey.Create(
             ValidKeyId,
             ValidPublicKey,
             privateKey!);
@@ -119,7 +120,7 @@ public class SigningKeyTests
     public void Activate_WhenNotRevoked_ShouldSetIsActiveTrue()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
         key.Deactivate();
 
         // Act
@@ -133,11 +134,11 @@ public class SigningKeyTests
     public void Activate_WhenRevoked_ShouldThrowDomainException()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
         key.Revoke("Test revocation");
 
         // Act
-        var act = () => key.Activate();
+        Action act = () => key.Activate();
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -156,7 +157,7 @@ public class SigningKeyTests
         key.Deactivate();
 
         // Act
-        var act = () => key.Activate();
+        Action act = () => key.Activate();
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -167,7 +168,7 @@ public class SigningKeyTests
     public void Deactivate_ShouldSetIsActiveFalse()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
 
         // Act
         key.Deactivate();
@@ -184,7 +185,7 @@ public class SigningKeyTests
     public void Revoke_WhenNotRevoked_ShouldRevokeKey()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
         var reason = "Security breach";
 
         // Act
@@ -201,11 +202,11 @@ public class SigningKeyTests
     public void Revoke_WhenAlreadyRevoked_ShouldThrowDomainException()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
         key.Revoke("First revocation");
 
         // Act
-        var act = () => key.Revoke("Second revocation");
+        Action act = () => key.Revoke("Second revocation");
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -216,7 +217,7 @@ public class SigningKeyTests
     public void Revoke_WithoutReason_ShouldRevokeKey()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
 
         // Act
         key.Revoke();
@@ -234,7 +235,7 @@ public class SigningKeyTests
     public void CanSign_WhenActiveAndNotRevoked_ShouldReturnTrue()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
 
         // Assert
         key.CanSign().Should().BeTrue();
@@ -244,7 +245,7 @@ public class SigningKeyTests
     public void CanSign_WhenInactive_ShouldReturnFalse()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
         key.Deactivate();
 
         // Assert
@@ -255,7 +256,7 @@ public class SigningKeyTests
     public void CanSign_WhenRevoked_ShouldReturnFalse()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
         key.Revoke();
 
         // Assert
@@ -280,7 +281,7 @@ public class SigningKeyTests
     public void CanVerify_WhenNotRevoked_ShouldReturnTrue()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
 
         // Assert
         key.CanVerify().Should().BeTrue();
@@ -290,7 +291,7 @@ public class SigningKeyTests
     public void CanVerify_WhenInactiveButNotRevoked_ShouldReturnTrue()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
         key.Deactivate();
 
         // Assert - inactive keys can still verify old tokens
@@ -301,7 +302,7 @@ public class SigningKeyTests
     public void CanVerify_WhenRevoked_ShouldReturnFalse()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
         key.Revoke();
 
         // Assert
@@ -316,7 +317,7 @@ public class SigningKeyTests
     public void IsExpired_WhenNoExpiry_ShouldReturnFalse()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
 
         // Assert
         key.IsExpired().Should().BeFalse();
@@ -358,7 +359,7 @@ public class SigningKeyTests
     public void MarkAsUsed_ShouldUpdateLastUsedAt()
     {
         // Arrange
-        var key = CreateTestKey();
+        SigningKey key = CreateTestKey();
         key.LastUsedAt.Should().BeNull();
 
         // Act

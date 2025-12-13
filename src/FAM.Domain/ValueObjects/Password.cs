@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+
 using FAM.Domain.Common.Base;
 
 namespace FAM.Domain.ValueObjects;

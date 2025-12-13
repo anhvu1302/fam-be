@@ -1,4 +1,5 @@
 using FAM.Infrastructure.PersistenceModels.Mongo.Base;
+
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace FAM.Infrastructure.PersistenceModels.Mongo;

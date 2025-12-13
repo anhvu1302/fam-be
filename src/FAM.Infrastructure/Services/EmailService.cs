@@ -1,8 +1,11 @@
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
+using FAM.Domain.EmailTemplates;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Infrastructure.Services;
@@ -52,7 +55,7 @@ public class EmailService : IEmailService
         _logger.LogInformation("Sending OTP email to {Email}", toEmail);
 
         // Get template from database
-        var template = await _unitOfWork.EmailTemplates.GetByCodeAsync("OTP_EMAIL", cancellationToken);
+        EmailTemplate? template = await _unitOfWork.EmailTemplates.GetByCodeAsync("OTP_EMAIL", cancellationToken);
         if (template == null)
         {
             _logger.LogError("Email template OTP_EMAIL not found");
@@ -81,7 +84,7 @@ public class EmailService : IEmailService
         _logger.LogInformation("Sending password reset email to {Email}", toEmail);
 
         // Get template from database
-        var template = await _unitOfWork.EmailTemplates.GetByCodeAsync("PASSWORD_RESET", cancellationToken);
+        EmailTemplate? template = await _unitOfWork.EmailTemplates.GetByCodeAsync("PASSWORD_RESET", cancellationToken);
         if (template == null)
         {
             _logger.LogError("Email template PASSWORD_RESET not found");
@@ -114,7 +117,8 @@ public class EmailService : IEmailService
         _logger.LogInformation("Sending password changed confirmation to {Email}", toEmail);
 
         // Get template from database
-        var template = await _unitOfWork.EmailTemplates.GetByCodeAsync("PASSWORD_CHANGED", cancellationToken);
+        EmailTemplate? template =
+            await _unitOfWork.EmailTemplates.GetByCodeAsync("PASSWORD_CHANGED", cancellationToken);
         if (template == null)
         {
             _logger.LogError("Email template PASSWORD_CHANGED not found");

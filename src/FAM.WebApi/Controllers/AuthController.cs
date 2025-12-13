@@ -1,9 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using System.Runtime.CompilerServices;
-using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+
 using FAM.Application.Auth.ChangePassword;
 using FAM.Application.Auth.Confirm2FA;
 using FAM.Application.Auth.Disable2FA;
@@ -32,10 +31,13 @@ using FAM.WebApi.Attributes;
 using FAM.WebApi.Configuration;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.Users;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+
 using WebApiContracts = FAM.WebApi.Contracts.Auth;
 
 namespace FAM.WebApi.Controllers;
@@ -53,7 +55,8 @@ public class AuthController : BaseApiController
     private readonly ILocationService _locationService;
     private readonly IUnitOfWork _unitOfWork;
 
-    public AuthController(IMediator mediator, ILogger<AuthController> logger, ILocationService locationService, IUnitOfWork unitOfWork)
+    public AuthController(IMediator mediator, ILogger<AuthController> logger, ILocationService locationService,
+        IUnitOfWork unitOfWork)
     {
         _mediator = mediator;
         _logger = logger;
@@ -101,7 +104,7 @@ public class AuthController : BaseApiController
                 Location = location
             };
 
-            var response = await _mediator.Send(command);
+            LoginResponse response = await _mediator.Send(command);
 
             return OkResponse(response, "Login successful");
         }
@@ -142,7 +145,7 @@ public class AuthController : BaseApiController
                 RememberMe = request.RememberMe
             };
 
-            var response = await _mediator.Send(command);
+            VerifyTwoFactorResponse response = await _mediator.Send(command);
             return OkResponse(response, "2FA verification successful");
         }
         catch (UnauthorizedAccessException ex)
@@ -182,7 +185,7 @@ public class AuthController : BaseApiController
                 Location = null // Could parse from IP using GeoIP service
             };
 
-            var response = await _mediator.Send(command);
+            LoginResponse response = await _mediator.Send(command);
             return OkResponse(response, "Token refreshed successfully");
         }
         catch (UnauthorizedAccessException ex)
@@ -210,9 +213,9 @@ public class AuthController : BaseApiController
             var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
             // Extract token expiration from JWT
-            var expirationTime = ExtractTokenExpiration(accessToken);
+            DateTime? expirationTime = ExtractTokenExpiration(accessToken);
 
-            string deviceId = GetDeviceId();
+            var deviceId = GetDeviceId();
 
             // This is a fallback - client should ideally store and send device_id
             if (string.IsNullOrEmpty(deviceId))
@@ -312,7 +315,7 @@ public class AuthController : BaseApiController
         {
             var userId = GetCurrentUserId();
             var query = new GetAuthenticationMethodsQuery { UserId = userId };
-            var response = await _mediator.Send(query);
+            AuthenticationMethodsResponse response = await _mediator.Send(query);
             return OkResponse(response);
         }
         catch (Exception)
@@ -339,7 +342,7 @@ public class AuthController : BaseApiController
                 SelectedMethod = request.SelectedMethod
             };
 
-            var response = await _mediator.Send(command);
+            SelectAuthenticationMethodResponse response = await _mediator.Send(command);
             return OkResponse(response, "Authentication method selected successfully");
         }
         catch (UnauthorizedAccessException ex)
@@ -362,7 +365,7 @@ public class AuthController : BaseApiController
     /// - requiresEmailVerification: true
     /// - emailVerificationSessionToken
     /// - maskedEmail
-    /// 
+    ///
     /// Then call this endpoint with the email and OTP received
     /// </remarks>
     [EnableRateLimiting(RateLimitConfiguration.SensitivePolicy)]
@@ -378,7 +381,7 @@ public class AuthController : BaseApiController
                 Email = request.Email
             };
 
-            var response = await _mediator.Send(command);
+            VerifyEmailOtpLoginResponse response = await _mediator.Send(command);
             return OkResponse(response, "Email OTP verification successful");
         }
         catch (UnauthorizedException ex)
@@ -417,7 +420,7 @@ public class AuthController : BaseApiController
                 Location = location
             };
 
-            var response = await _mediator.Send(command);
+            VerifyTwoFactorResponse response = await _mediator.Send(command);
             return OkResponse(response, "Recovery code verification successful");
         }
         catch (UnauthorizedAccessException ex)
@@ -442,7 +445,7 @@ public class AuthController : BaseApiController
         try
         {
             var command = new ForgotPasswordCommand { Email = request.Email };
-            var response = await _mediator.Send(command);
+            ForgotPasswordResponse response = await _mediator.Send(command);
             return OkResponse(response, ErrorMessages.GetMessage(ErrorCodes.AUTH_RESET_EMAIL_SENT));
         }
         catch (Exception)
@@ -467,7 +470,7 @@ public class AuthController : BaseApiController
                 Email = request.Email,
                 ResetToken = request.ResetToken
             };
-            var response = await _mediator.Send(command);
+            VerifyResetTokenResponse response = await _mediator.Send(command);
             return OkResponse(response, ErrorMessages.GetMessage(ErrorCodes.AUTH_RESET_TOKEN_VALID));
         }
         catch (UnauthorizedException ex)
@@ -497,7 +500,7 @@ public class AuthController : BaseApiController
                 ResetToken = request.ResetToken,
                 NewPassword = request.NewPassword
             };
-            var response = await _mediator.Send(command);
+            ResetPasswordResponse response = await _mediator.Send(command);
             return OkResponse(response, ErrorMessages.GetMessage(ErrorCodes.AUTH_PASSWORD_RESET_SUCCESS));
         }
         catch (UnauthorizedException ex)
@@ -527,7 +530,7 @@ public class AuthController : BaseApiController
                 Password = request.Password
             };
 
-            var response = await _mediator.Send(command);
+            Enable2FAResponse response = await _mediator.Send(command);
             return OkResponse(response);
         }
         catch (UnauthorizedAccessException ex)
@@ -563,7 +566,7 @@ public class AuthController : BaseApiController
                 Code = request.Code
             };
 
-            var response = await _mediator.Send(command);
+            Confirm2FAResponse response = await _mediator.Send(command);
             return OkResponse(response, "Two-factor authentication enabled successfully");
         }
         catch (UnauthorizedAccessException ex)
@@ -667,17 +670,15 @@ public class AuthController : BaseApiController
         }
 
         var query = new GetUserByIdQuery(userId);
-        var user = await _mediator.Send(query);
+        UserDto? user = await _mediator.Send(query);
 
-        if (user == null)
-        {
-            return NotFoundResponse("User not found", "USER_NOT_FOUND");
-        }
+        if (user == null) return NotFoundResponse("User not found", "USER_NOT_FOUND");
 
         return OkResponse(user, "User profile retrieved successfully");
     }
 
     #region Helper Methods
+
     protected new string GetClientIpAddress()
     {
         // Priority order for getting real client IP:
@@ -719,7 +720,7 @@ public class AuthController : BaseApiController
         if (!string.IsNullOrEmpty(clientIp2)) return clientIp2.Trim();
 
         // Fallback to RemoteIpAddress (direct connection, no proxy)
-        var remoteIp = HttpContext.Connection.RemoteIpAddress;
+        IPAddress? remoteIp = HttpContext.Connection.RemoteIpAddress;
         if (remoteIp != null)
         {
             // Handle IPv6 loopback (::1) and map it to IPv4
@@ -765,7 +766,7 @@ public class AuthController : BaseApiController
         try
         {
             var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(accessToken);
+            JwtSecurityToken? jwtToken = handler.ReadJwtToken(accessToken);
             return jwtToken.ValidTo;
         }
         catch (Exception)
@@ -822,7 +823,7 @@ public class AuthController : BaseApiController
     {
         var userId = GetCurrentUserId();
         var query = new GetUserSessionsQuery(userId);
-        var result = await _mediator.Send(query);
+        IReadOnlyList<UserSessionDto> result = await _mediator.Send(query);
 
         return OkResponse(result);
     }
@@ -842,7 +843,7 @@ public class AuthController : BaseApiController
 
             // Extract access token from Authorization header
             var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var expirationTime = ExtractTokenExpiration(accessToken);
+            DateTime? expirationTime = ExtractTokenExpiration(accessToken);
 
             var command = new DeleteSessionCommand(userId, sessionId, accessToken, expirationTime);
             await _mediator.Send(command);
@@ -887,7 +888,7 @@ public class AuthController : BaseApiController
     {
         var userId = GetCurrentUserId();
         var query = new GetUserThemeQuery(userId);
-        var result = await _mediator.Send(query);
+        GetUserThemeResponse? result = await _mediator.Send(query);
 
         if (result == null)
             return NotFoundResponse("Theme not found. Using default theme.");
@@ -928,7 +929,7 @@ public class AuthController : BaseApiController
             request.CompactMode
         );
 
-        var result = await _mediator.Send(command);
+        UpdateUserThemeResponse result = await _mediator.Send(command);
 
         var response = new UserThemeResponse(
             result.Id,

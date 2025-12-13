@@ -1,4 +1,5 @@
 using FAM.Domain.Conditions;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Conditions;

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
+
 using Serilog.Context;
 
 namespace FAM.WebApi.Middleware;
@@ -41,7 +42,7 @@ public class RequestLoggingMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         var stopwatch = Stopwatch.StartNew();
-        var request = context.Request;
+        HttpRequest request = context.Request;
 
         // Lấy thông tin cơ bản
         var method = request.Method;
@@ -69,7 +70,7 @@ public class RequestLoggingMiddleware
             if (!string.IsNullOrEmpty(requestBody)) _logger.LogDebug("Request Body: {RequestBody}", requestBody);
 
             // Capture response
-            var originalBodyStream = context.Response.Body;
+            Stream originalBodyStream = context.Response.Body;
             using var responseBody = new MemoryStream();
             context.Response.Body = responseBody;
 
@@ -87,7 +88,7 @@ public class RequestLoggingMiddleware
                 using (LogContext.PushProperty("StatusCode", statusCode))
                 using (LogContext.PushProperty("ElapsedMs", elapsedMs))
                 {
-                    var logLevel = statusCode >= 500 ? LogLevel.Error
+                    LogLevel logLevel = statusCode >= 500 ? LogLevel.Error
                         : statusCode >= 400 ? LogLevel.Warning
                         : LogLevel.Information;
 

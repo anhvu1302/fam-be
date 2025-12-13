@@ -1,6 +1,7 @@
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.PersistenceModels.Ef;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -34,14 +35,16 @@ public class RolePermissionSeeder : BaseDataSeeder
         }
 
         // Get roles
-        var adminRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.Admin, cancellationToken);
-        var staffRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.Staff, cancellationToken);
-        var faWorkerRole =
+        RoleEf? adminRole =
+            await _dbContext.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.Admin, cancellationToken);
+        RoleEf? staffRole =
+            await _dbContext.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.Staff, cancellationToken);
+        RoleEf? faWorkerRole =
             await _dbContext.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.FAWorker, cancellationToken);
-        var faManagerRole =
+        RoleEf? faManagerRole =
             await _dbContext.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.FAManager, cancellationToken);
-        var picRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.PIC, cancellationToken);
-        var finStaffRole =
+        RoleEf? picRole = await _dbContext.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.PIC, cancellationToken);
+        RoleEf? finStaffRole =
             await _dbContext.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.FinStaff, cancellationToken);
 
         if (adminRole == null)
@@ -51,14 +54,14 @@ public class RolePermissionSeeder : BaseDataSeeder
         }
 
         // Get all permissions
-        var allPermissions = await _dbContext.Permissions.ToListAsync(cancellationToken);
+        List<PermissionEf> allPermissions = await _dbContext.Permissions.ToListAsync(cancellationToken);
         var rolePermissions = new List<RolePermissionEf>();
 
         // ==================== ADMIN - Full access to everything ====================
         if (adminRole != null)
         {
             LogInfo("Assigning ALL permissions to Admin role");
-            foreach (var permission in allPermissions)
+            foreach (PermissionEf permission in allPermissions)
                 rolePermissions.Add(new RolePermissionEf
                 {
                     RoleId = adminRole.Id,
@@ -91,7 +94,7 @@ public class RolePermissionSeeder : BaseDataSeeder
                 (p.Resource == Resources.Manufacturers && p.Action == Actions.View)
             ).ToList();
 
-            foreach (var permission in workerPermissions)
+            foreach (PermissionEf permission in workerPermissions)
                 rolePermissions.Add(new RolePermissionEf
                 {
                     RoleId = faWorkerRole.Id,
@@ -134,7 +137,7 @@ public class RolePermissionSeeder : BaseDataSeeder
                                                      p.Action == Actions.Export))
             ).ToList();
 
-            foreach (var permission in managerPermissions)
+            foreach (PermissionEf permission in managerPermissions)
                 rolePermissions.Add(new RolePermissionEf
                 {
                     RoleId = faManagerRole.Id,
@@ -155,7 +158,7 @@ public class RolePermissionSeeder : BaseDataSeeder
                 (p.Resource == Resources.Locations && p.Action == Actions.View)
             ).ToList();
 
-            foreach (var permission in picPermissions)
+            foreach (PermissionEf permission in picPermissions)
                 rolePermissions.Add(new RolePermissionEf
                 {
                     RoleId = picRole.Id,
@@ -180,7 +183,7 @@ public class RolePermissionSeeder : BaseDataSeeder
                 (p.Resource == Resources.Assets && p.Action == Actions.View)
             ).ToList();
 
-            foreach (var permission in finPermissions)
+            foreach (PermissionEf permission in finPermissions)
                 rolePermissions.Add(new RolePermissionEf
                 {
                     RoleId = finStaffRole.Id,

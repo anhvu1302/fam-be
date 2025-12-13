@@ -1,7 +1,11 @@
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
+using FAM.Domain.Organizations;
+using FAM.Domain.Users;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Authorization.Roles.Commands.AssignUsersToRole;
@@ -21,15 +25,15 @@ public sealed class AssignUsersToRoleCommandHandler : IRequestHandler<AssignUser
 
     public async Task<int> Handle(AssignUsersToRoleCommand request, CancellationToken cancellationToken)
     {
-        var role = await _unitOfWork.Roles.GetByIdAsync(request.RoleId, cancellationToken);
+        Role? role = await _unitOfWork.Roles.GetByIdAsync(request.RoleId, cancellationToken);
         if (role == null)
             throw new DomainException(ErrorCodes.ROLE_NOT_FOUND, "Role not found");
 
-        var node = await _unitOfWork.OrgNodes.GetByIdAsync(request.NodeId, cancellationToken);
+        OrgNode? node = await _unitOfWork.OrgNodes.GetByIdAsync(request.NodeId, cancellationToken);
         if (node == null)
             throw new DomainException(ErrorCodes.NODE_NOT_FOUND, "Organization node not found");
 
-        var existingAssignments = await _unitOfWork.UserNodeRoles
+        IEnumerable<UserNodeRole> existingAssignments = await _unitOfWork.UserNodeRoles
             .FindAsync(unr => unr.RoleId == request.RoleId && unr.NodeId == request.NodeId, cancellationToken);
 
         var existingUserIds = existingAssignments.Select(unr => unr.UserId).ToHashSet();
@@ -44,7 +48,7 @@ public sealed class AssignUsersToRoleCommandHandler : IRequestHandler<AssignUser
 
         foreach (var userId in newUserIds)
         {
-            var user = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken);
+            User? user = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken);
             if (user == null)
                 throw new DomainException(ErrorCodes.USER_NOT_FOUND, $"User {userId} not found");
         }

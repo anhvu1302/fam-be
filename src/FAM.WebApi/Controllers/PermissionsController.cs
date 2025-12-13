@@ -5,7 +5,9 @@ using FAM.Application.Querying.Extensions;
 using FAM.Application.Settings;
 using FAM.Domain.Authorization;
 using FAM.WebApi.Contracts.Common;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -61,7 +63,7 @@ public class PermissionsController : BaseApiController
     public async Task<IActionResult> GetPermissions([FromQuery] PaginationQueryParameters parameters)
     {
         var query = new GetPermissionsQuery(parameters.ToQueryRequest());
-        var result = await _mediator.Send(query);
+        PageResult<PermissionDto> result = await _mediator.Send(query);
 
         // Apply field selection if requested
         var fields = parameters.GetFieldsArray();
@@ -126,7 +128,7 @@ public class PermissionsController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public ActionResult GetResources()
     {
-        var resources = Resources.All;
+        IReadOnlyList<string> resources = Resources.All;
         return OkResponse(resources);
     }
 
@@ -148,7 +150,7 @@ public class PermissionsController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public ActionResult GetActions()
     {
-        var actions = Actions.All;
+        IReadOnlyList<string> actions = Actions.All;
         return OkResponse(actions);
     }
 }

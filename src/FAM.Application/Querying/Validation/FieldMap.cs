@@ -22,7 +22,7 @@ public sealed class FieldMap<T>
 
     public bool TryGet(string name, out LambdaExpression expression, out Type type)
     {
-        if (_map.TryGetValue(name, out var mapping))
+        if (_map.TryGetValue(name, out FieldMapping? mapping))
         {
             expression = mapping.Expression;
             type = mapping.Type;
@@ -36,17 +36,17 @@ public sealed class FieldMap<T>
 
     public bool CanFilter(string name)
     {
-        return _map.TryGetValue(name, out var mapping) && mapping.CanFilter;
+        return _map.TryGetValue(name, out FieldMapping? mapping) && mapping.CanFilter;
     }
 
     public bool CanSort(string name)
     {
-        return _map.TryGetValue(name, out var mapping) && mapping.CanSort;
+        return _map.TryGetValue(name, out FieldMapping? mapping) && mapping.CanSort;
     }
 
     public bool CanSelect(string name)
     {
-        return _map.TryGetValue(name, out var mapping) && mapping.CanSelect;
+        return _map.TryGetValue(name, out FieldMapping? mapping) && mapping.CanSelect;
     }
 
     public bool ContainsField(string name)

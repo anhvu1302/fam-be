@@ -1,6 +1,7 @@
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
+
 using MediatR;
 
 namespace FAM.Application.Authorization.Roles.Commands.CreateRole;
@@ -16,7 +17,7 @@ public sealed class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand
 
     public async Task<long> Handle(CreateRoleCommand request, CancellationToken cancellationToken)
     {
-        var existingRole = await _unitOfWork.Roles.GetByCodeAsync(request.Code, cancellationToken);
+        Role? existingRole = await _unitOfWork.Roles.GetByCodeAsync(request.Code, cancellationToken);
         if (existingRole != null)
             throw new ConflictException(ErrorCodes.ROLE_CODE_EXISTS, $"Role with code '{request.Code}' already exists");
 

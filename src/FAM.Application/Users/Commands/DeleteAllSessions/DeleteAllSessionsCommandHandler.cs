@@ -1,7 +1,10 @@
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
+using FAM.Domain.Users.Entities;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Users.Commands.DeleteAllSessions;
@@ -31,7 +34,7 @@ public class DeleteAllSessionsCommandHandler : IRequestHandler<DeleteAllSessions
         // SECURITY: Verify current device is trusted for at least 3 days before allowing this operation
         if (!string.IsNullOrEmpty(request.ExcludeDeviceId))
         {
-            var currentDevice =
+            UserDevice? currentDevice =
                 await _userDeviceRepository.GetByDeviceIdAsync(request.ExcludeDeviceId, cancellationToken);
 
             if (currentDevice == null)
@@ -57,14 +60,14 @@ public class DeleteAllSessionsCommandHandler : IRequestHandler<DeleteAllSessions
         }
 
         // Get all active devices to blacklist their access tokens
-        var allDevices = await _userDeviceRepository.GetActiveDevicesByUserIdAsync(
-            request.UserId, 
+        IEnumerable<UserDevice> allDevices = await _userDeviceRepository.GetActiveDevicesByUserIdAsync(
+            request.UserId,
             cancellationToken);
 
         // Blacklist access tokens for each device (except current if specified)
         // Use conservative estimate for token expiry (add buffer for clock skew)
-        var tokenExpiryTime = DateTime.UtcNow.AddHours(2);
-        foreach (var device in allDevices)
+        DateTime tokenExpiryTime = DateTime.UtcNow.AddHours(2);
+        foreach (UserDevice device in allDevices)
         {
             // Skip current device if specified
             if (!string.IsNullOrEmpty(request.ExcludeDeviceId) && device.DeviceId == request.ExcludeDeviceId)
@@ -77,7 +80,7 @@ public class DeleteAllSessionsCommandHandler : IRequestHandler<DeleteAllSessions
                     device.ActiveAccessTokenJti,
                     tokenExpiryTime,
                     cancellationToken);
-                
+
                 _logger.LogInformation(
                     "Blacklisted access token with JTI {JTI} for device {DeviceId} of user {UserId}",
                     device.ActiveAccessTokenJti, device.DeviceId, request.UserId);

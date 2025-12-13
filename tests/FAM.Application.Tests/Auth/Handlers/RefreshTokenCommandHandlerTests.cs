@@ -1,10 +1,13 @@
 using FAM.Application.Auth.RefreshToken;
 using FAM.Application.Auth.Services;
+using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
+
 using FluentAssertions;
+
 using Moq;
 
 namespace FAM.Application.Tests.Auth.Handlers;
@@ -28,7 +31,7 @@ public class RefreshTokenCommandHandlerTests
 
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
         _mockUnitOfWork.Setup(x => x.UserDevices).Returns(_mockUserDeviceRepository.Object);
-        
+
         // Setup JWT service config properties
         _mockJwtService.Setup(x => x.AccessTokenExpiryMinutes).Returns(60);
         _mockJwtService.Setup(x => x.RefreshTokenExpiryDays).Returns(30);
@@ -48,7 +51,7 @@ public class RefreshTokenCommandHandlerTests
             plainPassword
         );
 
-        var device = user.GetOrCreateDevice(
+        UserDevice device = user.GetOrCreateDevice(
             "device-123",
             "Test Device",
             "browser",
@@ -58,7 +61,7 @@ public class RefreshTokenCommandHandlerTests
         );
 
         var oldRefreshToken = "old-refresh-token";
-        var refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
+        DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(oldRefreshToken, refreshTokenExpiry, "192.168.1.1");
 
         var newAccessToken = "new-access-token";
@@ -95,7 +98,7 @@ public class RefreshTokenCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        LoginResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -147,7 +150,7 @@ public class RefreshTokenCommandHandlerTests
             plainPassword
         );
 
-        var device = user.GetOrCreateDevice(
+        UserDevice device = user.GetOrCreateDevice(
             "device-123",
             "Test Device",
             "browser",
@@ -157,7 +160,7 @@ public class RefreshTokenCommandHandlerTests
         );
 
         var expiredRefreshToken = "expired-refresh-token";
-        var expiredDate = DateTime.UtcNow.AddDays(-1); // Expired yesterday
+        DateTime expiredDate = DateTime.UtcNow.AddDays(-1); // Expired yesterday
         device.UpdateRefreshToken(expiredRefreshToken, expiredDate, "192.168.1.1");
 
         _mockUserDeviceRepository
@@ -189,7 +192,7 @@ public class RefreshTokenCommandHandlerTests
             plainPassword
         );
 
-        var device = user.GetOrCreateDevice(
+        UserDevice device = user.GetOrCreateDevice(
             "device-123",
             "Test Device",
             "browser",
@@ -199,7 +202,7 @@ public class RefreshTokenCommandHandlerTests
         );
 
         var refreshToken = "valid-refresh-token";
-        var refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
+        DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
         device.Deactivate(); // Deactivate the device
 
@@ -233,7 +236,7 @@ public class RefreshTokenCommandHandlerTests
         );
         user.Deactivate(); // Deactivate the user
 
-        var device = user.GetOrCreateDevice(
+        UserDevice device = user.GetOrCreateDevice(
             "device-123",
             "Test Device",
             "browser",
@@ -243,7 +246,7 @@ public class RefreshTokenCommandHandlerTests
         );
 
         var refreshToken = "valid-refresh-token";
-        var refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
+        DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
 
         _mockUserDeviceRepository
@@ -282,7 +285,7 @@ public class RefreshTokenCommandHandlerTests
         // Lock the user by recording failed attempts
         for (var i = 0; i < 5; i++) user.RecordFailedLogin();
 
-        var device = user.GetOrCreateDevice(
+        UserDevice device = user.GetOrCreateDevice(
             "device-123",
             "Test Device",
             "browser",
@@ -292,7 +295,7 @@ public class RefreshTokenCommandHandlerTests
         );
 
         var refreshToken = "valid-refresh-token";
-        var refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
+        DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
 
         _mockUserDeviceRepository
@@ -328,7 +331,7 @@ public class RefreshTokenCommandHandlerTests
             plainPassword
         );
 
-        var device = user.GetOrCreateDevice(
+        UserDevice device = user.GetOrCreateDevice(
             "device-123",
             "Test Device",
             "browser",
@@ -338,7 +341,7 @@ public class RefreshTokenCommandHandlerTests
         );
 
         var refreshToken = "valid-refresh-token";
-        var refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
+        DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
 
         _mockUserDeviceRepository

@@ -1,7 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+
 using FAM.Application.Auth.Services;
+
 using Microsoft.IdentityModel.Tokens;
 
 namespace FAM.Infrastructure.Auth;
@@ -27,14 +29,14 @@ public class JwtService : IJwtService
             !string.IsNullOrEmpty(expiryMinutesStr) && int.TryParse(expiryMinutesStr, out var minutes)
                 ? minutes
                 : 60;
-                
+
         var refreshDaysStr = Environment.GetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_DAYS");
         _refreshTokenExpiryDays =
             !string.IsNullOrEmpty(refreshDaysStr) && int.TryParse(refreshDaysStr, out var days)
                 ? days
                 : 30;
     }
-    
+
     public int AccessTokenExpiryMinutes => _accessTokenExpiryMinutes;
     public int RefreshTokenExpiryDays => _refreshTokenExpiryDays;
 
@@ -50,7 +52,7 @@ public class JwtService : IJwtService
         string privateKeyPem,
         string algorithm = "RS256")
     {
-        var claims = CreateClaims(userId, username, email, roles);
+        List<Claim> claims = CreateClaims(userId, username, email, roles);
 
         var rsa = RSA.Create(); // Don't dispose - key must live until token is written
         rsa.ImportFromPem(privateKeyPem);
@@ -71,7 +73,7 @@ public class JwtService : IJwtService
         var credentials = new SigningCredentials(rsaSecurityKey, signingAlgorithm);
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateJwtSecurityToken(
+        JwtSecurityToken? token = tokenHandler.CreateJwtSecurityToken(
             _issuer,
             _audience,
             new ClaimsIdentity(claims),
@@ -134,7 +136,7 @@ public class JwtService : IJwtService
         try
         {
             var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
+            JwtSecurityToken? jwtToken = handler.ReadJwtToken(token);
             var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
             if (long.TryParse(userIdClaim, out var userId)) return userId;
@@ -155,7 +157,7 @@ public class JwtService : IJwtService
         try
         {
             var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
+            JwtSecurityToken? jwtToken = handler.ReadJwtToken(token);
             return jwtToken.Header.Kid;
         }
         catch
@@ -172,8 +174,8 @@ public class JwtService : IJwtService
         try
         {
             var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
-            var jtiClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti);
+            JwtSecurityToken? jwtToken = handler.ReadJwtToken(token);
+            Claim? jtiClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti);
             return jtiClaim?.Value;
         }
         catch

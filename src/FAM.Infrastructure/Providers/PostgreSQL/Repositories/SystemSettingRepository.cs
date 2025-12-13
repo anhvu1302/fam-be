@@ -1,9 +1,13 @@
 using System.Linq.Expressions;
+
 using AutoMapper;
+
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Entities;
 using FAM.Infrastructure.PersistenceModels.Ef;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -23,14 +27,14 @@ public class SystemSettingRepository : ISystemSettingRepository
 
     public async Task<SystemSetting?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.SystemSettings
+        SystemSettingEf? entity = await _context.SystemSettings
             .FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted, cancellationToken);
         return entity != null ? _mapper.Map<SystemSetting>(entity) : null;
     }
 
     public async Task<IEnumerable<SystemSetting>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var entities = await _context.SystemSettings
+        List<SystemSettingEf> entities = await _context.SystemSettings
             .Where(s => !s.IsDeleted)
             .OrderBy(s => s.Group)
             .ThenBy(s => s.SortOrder)
@@ -42,21 +46,21 @@ public class SystemSettingRepository : ISystemSettingRepository
         Expression<Func<SystemSetting, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        var all = await GetAllAsync(cancellationToken);
+        IEnumerable<SystemSetting> all = await GetAllAsync(cancellationToken);
         return all.Where(predicate.Compile());
     }
 
     public async Task AddAsync(SystemSetting entity, CancellationToken cancellationToken = default)
     {
-        var efEntity = _mapper.Map<SystemSettingEf>(entity);
+        SystemSettingEf? efEntity = _mapper.Map<SystemSettingEf>(entity);
         await _context.SystemSettings.AddAsync(efEntity, cancellationToken);
     }
 
     public void Update(SystemSetting entity)
     {
-        var efEntity = _mapper.Map<SystemSettingEf>(entity);
+        SystemSettingEf? efEntity = _mapper.Map<SystemSettingEf>(entity);
 
-        var trackedEntry = _context.ChangeTracker.Entries<SystemSettingEf>()
+        EntityEntry<SystemSettingEf>? trackedEntry = _context.ChangeTracker.Entries<SystemSettingEf>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -72,7 +76,7 @@ public class SystemSettingRepository : ISystemSettingRepository
 
     public void Delete(SystemSetting entity)
     {
-        var efEntity = _context.SystemSettings.Local.FirstOrDefault(s => s.Id == entity.Id);
+        SystemSettingEf? efEntity = _context.SystemSettings.Local.FirstOrDefault(s => s.Id == entity.Id);
         if (efEntity != null)
         {
             efEntity.IsDeleted = true;
@@ -87,14 +91,14 @@ public class SystemSettingRepository : ISystemSettingRepository
 
     public async Task<SystemSetting?> GetByKeyAsync(string key, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.SystemSettings
+        SystemSettingEf? entity = await _context.SystemSettings
             .FirstOrDefaultAsync(s => s.Key == key.ToLowerInvariant() && !s.IsDeleted, cancellationToken);
         return entity != null ? _mapper.Map<SystemSetting>(entity) : null;
     }
 
     public async Task<IReadOnlyList<SystemSetting>> GetAllSettingsAsync(CancellationToken cancellationToken = default)
     {
-        var entities = await _context.SystemSettings
+        List<SystemSettingEf> entities = await _context.SystemSettings
             .Where(s => !s.IsDeleted)
             .OrderBy(s => s.Group)
             .ThenBy(s => s.SortOrder)
@@ -105,7 +109,7 @@ public class SystemSettingRepository : ISystemSettingRepository
     public async Task<IReadOnlyList<SystemSetting>> GetByGroupAsync(string group,
         CancellationToken cancellationToken = default)
     {
-        var entities = await _context.SystemSettings
+        List<SystemSettingEf> entities = await _context.SystemSettings
             .Where(s => s.Group == group.ToLowerInvariant() && !s.IsDeleted)
             .OrderBy(s => s.SortOrder)
             .ToListAsync(cancellationToken);
@@ -115,7 +119,7 @@ public class SystemSettingRepository : ISystemSettingRepository
     public async Task<IReadOnlyList<SystemSetting>> GetVisibleSettingsAsync(
         CancellationToken cancellationToken = default)
     {
-        var entities = await _context.SystemSettings
+        List<SystemSettingEf> entities = await _context.SystemSettings
             .Where(s => s.IsVisible && !s.IsDeleted)
             .OrderBy(s => s.Group)
             .ThenBy(s => s.SortOrder)
@@ -136,7 +140,8 @@ public class SystemSettingRepository : ISystemSettingRepository
     public async Task<bool> KeyExistsAsync(string key, long? excludeId = null,
         CancellationToken cancellationToken = default)
     {
-        var query = _context.SystemSettings.Where(s => s.Key == key.ToLowerInvariant() && !s.IsDeleted);
+        IQueryable<SystemSettingEf> query =
+            _context.SystemSettings.Where(s => s.Key == key.ToLowerInvariant() && !s.IsDeleted);
         if (excludeId.HasValue)
             query = query.Where(s => s.Id != excludeId.Value);
         return await query.AnyAsync(cancellationToken);
@@ -157,6 +162,7 @@ public class SystemSettingRepository : ISystemSettingRepository
     public async Task BulkUpdateAsync(Dictionary<string, string?> keyValues, long? modifiedBy = null,
         CancellationToken cancellationToken = default)
     {
-        foreach (var kvp in keyValues) await UpdateValueAsync(kvp.Key, kvp.Value, modifiedBy, cancellationToken);
+        foreach (KeyValuePair<string, string?> kvp in keyValues)
+            await UpdateValueAsync(kvp.Key, kvp.Value, modifiedBy, cancellationToken);
     }
 }

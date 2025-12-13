@@ -1,7 +1,11 @@
 using System.Text.Json;
+
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Auth.GetAuthenticationMethods;
@@ -27,7 +31,7 @@ public class
         GetAuthenticationMethodsQuery request,
         CancellationToken cancellationToken)
     {
-        var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
 
         if (user == null)
             throw new KeyNotFoundException($"User with ID {request.UserId} not found");
@@ -39,7 +43,7 @@ public class
         if (!string.IsNullOrWhiteSpace(user.TwoFactorBackupCodes))
             try
             {
-                var codes = JsonSerializer.Deserialize<List<string>>(user.TwoFactorBackupCodes);
+                List<string>? codes = JsonSerializer.Deserialize<List<string>>(user.TwoFactorBackupCodes);
                 if (codes != null && codes.Any())
                 {
                     remainingRecoveryCodes = codes.Count;

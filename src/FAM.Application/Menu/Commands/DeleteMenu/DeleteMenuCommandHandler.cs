@@ -1,6 +1,9 @@
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Entities;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Menu.Commands.DeleteMenu;
@@ -23,7 +26,7 @@ public class DeleteMenuCommandHandler : IRequestHandler<DeleteMenuCommand>
 
     public async Task Handle(DeleteMenuCommand request, CancellationToken cancellationToken)
     {
-        var menu = await _repository.GetByIdAsync(request.Id, cancellationToken);
+        MenuItem? menu = await _repository.GetByIdAsync(request.Id, cancellationToken);
         if (menu == null) throw new NotFoundException(ErrorCodes.MENU_NOT_FOUND, "MenuItem", request.Id);
 
         // Check if has children

@@ -3,6 +3,7 @@ using FAM.Application.Settings.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Entities;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Infrastructure.Services;
@@ -28,20 +29,20 @@ public class SystemSettingService : ISystemSettingService
 
     public async Task<IEnumerable<SystemSettingResponse>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var settings = await _repository.GetAllSettingsAsync(cancellationToken);
+        IReadOnlyList<SystemSetting> settings = await _repository.GetAllSettingsAsync(cancellationToken);
         return settings.Select(s => SystemSettingResponse.FromDomain(s));
     }
 
     public async Task<IEnumerable<PublicSettingResponse>> GetAllPublicAsync(
         CancellationToken cancellationToken = default)
     {
-        var settings = await _repository.GetVisibleSettingsAsync(cancellationToken);
+        IReadOnlyList<SystemSetting> settings = await _repository.GetVisibleSettingsAsync(cancellationToken);
         return settings.Select(PublicSettingResponse.FromDomain);
     }
 
     public async Task<IEnumerable<SettingsGroupResponse>> GetGroupedAsync(CancellationToken cancellationToken = default)
     {
-        var settings = await _repository.GetAllSettingsAsync(cancellationToken);
+        IReadOnlyList<SystemSetting> settings = await _repository.GetAllSettingsAsync(cancellationToken);
         return settings
             .GroupBy(s => s.Group)
             .OrderBy(g => g.Key)
@@ -53,7 +54,7 @@ public class SystemSettingService : ISystemSettingService
     public async Task<IEnumerable<PublicSettingsGroupResponse>> GetPublicGroupedAsync(
         CancellationToken cancellationToken = default)
     {
-        var settings = await _repository.GetVisibleSettingsAsync(cancellationToken);
+        IReadOnlyList<SystemSetting> settings = await _repository.GetVisibleSettingsAsync(cancellationToken);
         return settings
             .GroupBy(s => s.Group)
             .OrderBy(g => g.Key)
@@ -64,20 +65,20 @@ public class SystemSettingService : ISystemSettingService
 
     public async Task<SystemSettingResponse?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var setting = await _repository.GetByIdAsync(id, cancellationToken);
+        SystemSetting? setting = await _repository.GetByIdAsync(id, cancellationToken);
         return setting != null ? SystemSettingResponse.FromDomain(setting) : null;
     }
 
     public async Task<SystemSettingResponse?> GetByKeyAsync(string key, CancellationToken cancellationToken = default)
     {
-        var setting = await _repository.GetByKeyAsync(key, cancellationToken);
+        SystemSetting? setting = await _repository.GetByKeyAsync(key, cancellationToken);
         return setting != null ? SystemSettingResponse.FromDomain(setting) : null;
     }
 
     public async Task<IEnumerable<SystemSettingResponse>> GetByGroupAsync(string group,
         CancellationToken cancellationToken = default)
     {
-        var settings = await _repository.GetByGroupAsync(group, cancellationToken);
+        IReadOnlyList<SystemSetting> settings = await _repository.GetByGroupAsync(group, cancellationToken);
         return settings.Select(s => SystemSettingResponse.FromDomain(s));
     }
 
@@ -124,7 +125,7 @@ public class SystemSettingService : ISystemSettingService
     public async Task<SystemSettingResponse> UpdateAsync(long id, UpdateSystemSettingRequest request,
         CancellationToken cancellationToken = default)
     {
-        var setting = await _repository.GetByIdAsync(id, cancellationToken);
+        SystemSetting? setting = await _repository.GetByIdAsync(id, cancellationToken);
         if (setting == null) throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", id);
 
         setting.Update(
@@ -162,7 +163,7 @@ public class SystemSettingService : ISystemSettingService
     public async Task<SystemSettingResponse> UpdateValueAsync(string key, UpdateSettingValueRequest request,
         long? modifiedBy = null, CancellationToken cancellationToken = default)
     {
-        var setting = await _repository.GetByKeyAsync(key, cancellationToken);
+        SystemSetting? setting = await _repository.GetByKeyAsync(key, cancellationToken);
         if (setting == null) throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", key);
 
         if (!setting.IsEditable) throw new DomainException(ErrorCodes.SETTING_NOT_EDITABLE);
@@ -186,7 +187,7 @@ public class SystemSettingService : ISystemSettingService
         // Validate all settings exist and are editable
         foreach (var key in request.Settings.Keys)
         {
-            var setting = await _repository.GetByKeyAsync(key, cancellationToken);
+            SystemSetting? setting = await _repository.GetByKeyAsync(key, cancellationToken);
             if (setting == null) throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", key);
 
             if (!setting.IsEditable)
@@ -204,7 +205,7 @@ public class SystemSettingService : ISystemSettingService
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
-        var setting = await _repository.GetByIdAsync(id, cancellationToken);
+        SystemSetting? setting = await _repository.GetByIdAsync(id, cancellationToken);
         if (setting == null) throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", id);
 
         _repository.Delete(setting);
@@ -215,21 +216,21 @@ public class SystemSettingService : ISystemSettingService
 
     public async Task<string?> GetValueAsync(string key, CancellationToken cancellationToken = default)
     {
-        var setting = await _repository.GetByKeyAsync(key, cancellationToken);
+        SystemSetting? setting = await _repository.GetByKeyAsync(key, cancellationToken);
         return setting?.GetEffectiveValue();
     }
 
     public async Task<bool> GetBoolValueAsync(string key, bool defaultValue = false,
         CancellationToken cancellationToken = default)
     {
-        var setting = await _repository.GetByKeyAsync(key, cancellationToken);
+        SystemSetting? setting = await _repository.GetByKeyAsync(key, cancellationToken);
         return setting?.GetBoolValue(defaultValue) ?? defaultValue;
     }
 
     public async Task<int> GetIntValueAsync(string key, int defaultValue = 0,
         CancellationToken cancellationToken = default)
     {
-        var setting = await _repository.GetByKeyAsync(key, cancellationToken);
+        SystemSetting? setting = await _repository.GetByKeyAsync(key, cancellationToken);
         return setting?.GetIntValue(defaultValue) ?? defaultValue;
     }
 }

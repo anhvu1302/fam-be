@@ -1,8 +1,12 @@
 using FAM.Application.Auth.Confirm2FA;
+using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
+
 using FluentAssertions;
+
 using Moq;
+
 using OtpNet;
 
 namespace FAM.Application.Tests.Auth.Handlers;
@@ -52,7 +56,7 @@ public class Confirm2FACommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Confirm2FAResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -159,13 +163,13 @@ public class Confirm2FACommandHandlerTests
         var command2 = new Confirm2FACommand { UserId = user2.Id, Secret = base32Secret2, Code = validCode2 };
 
         // Act
-        var result1 = await _handler.Handle(command1, CancellationToken.None);
+        Confirm2FAResponse result1 = await _handler.Handle(command1, CancellationToken.None);
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user2.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user2);
 
-        var result2 = await _handler.Handle(command2, CancellationToken.None);
+        Confirm2FAResponse result2 = await _handler.Handle(command2, CancellationToken.None);
 
         // Assert - Backup codes should be different
         result1.BackupCodes.Should().NotBeEquivalentTo(result2.BackupCodes);
@@ -199,7 +203,7 @@ public class Confirm2FACommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Confirm2FAResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - Each backup code should match format: xxxxx-xxxxx
         foreach (var code in result.BackupCodes)

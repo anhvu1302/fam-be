@@ -1,7 +1,9 @@
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
+
 using FAM.Application.Querying.Ast;
 using FAM.Application.Querying.Validation;
+
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -14,7 +16,7 @@ public static class MongoFilterBinder<T>
 {
     public static FilterDefinition<T> Bind(FilterNode node, FieldMap<T> fieldMap)
     {
-        var builder = Builders<T>.Filter;
+        FilterDefinitionBuilder<T>? builder = Builders<T>.Filter;
         return BindNode(node, builder, fieldMap);
     }
 
@@ -332,7 +334,7 @@ public static class MongoFilterBinder<T>
 
     private static string GetFieldName(FieldNode field, FieldMap<T> fieldMap)
     {
-        if (!fieldMap.TryGet(field.Name, out var expression, out _))
+        if (!fieldMap.TryGet(field.Name, out LambdaExpression expression, out _))
             throw new InvalidOperationException($"Field '{field.Name}' not found in field map");
 
         // Extract property name from expression

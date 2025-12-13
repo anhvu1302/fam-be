@@ -1,5 +1,7 @@
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
+
 using MediatR;
 
 namespace FAM.Application.Auth.ChangePassword;
@@ -19,7 +21,7 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
     public async Task<Unit> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
         // Get user
-        var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
 
         if (user == null) throw new KeyNotFoundException($"User with ID {request.UserId} not found");
 

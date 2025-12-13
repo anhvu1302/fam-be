@@ -1,6 +1,7 @@
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Users.Entities;
+
 using MediatR;
 
 namespace FAM.Application.Users.Commands.UpdateUserTheme;
@@ -29,7 +30,7 @@ public class UpdateUserThemeCommandHandler : IRequestHandler<UpdateUserThemeComm
         if (!userExists) throw new DomainException(ErrorCodes.USER_NOT_FOUND, "User not found.");
 
         // Get or create theme
-        var theme = await _userThemeRepository.GetByUserIdAsync(request.UserId, cancellationToken);
+        UserTheme? theme = await _userThemeRepository.GetByUserIdAsync(request.UserId, cancellationToken);
 
         if (theme == null)
         {

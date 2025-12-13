@@ -36,5 +36,6 @@ public interface IUserDeviceRepository : IRepository<UserDevice, Guid>
     /// Update last activity time for a device
     /// Returns true if device was found and updated, false otherwise
     /// </summary>
-    Task<bool> UpdateLastActivityAsync(string deviceId, string? ipAddress = null, CancellationToken cancellationToken = default);
+    Task<bool> UpdateLastActivityAsync(string deviceId, string? ipAddress = null,
+        CancellationToken cancellationToken = default);
 }

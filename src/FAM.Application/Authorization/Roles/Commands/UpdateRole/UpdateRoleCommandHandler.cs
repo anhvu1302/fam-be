@@ -1,5 +1,7 @@
 using FAM.Domain.Abstractions;
+using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
+
 using MediatR;
 
 namespace FAM.Application.Authorization.Roles.Commands.UpdateRole;
@@ -15,7 +17,7 @@ public sealed class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand
 
     public async Task<bool> Handle(UpdateRoleCommand request, CancellationToken cancellationToken)
     {
-        var role = await _unitOfWork.Roles.GetByIdAsync(request.Id, cancellationToken);
+        Role? role = await _unitOfWork.Roles.GetByIdAsync(request.Id, cancellationToken);
         if (role == null)
             throw new NotFoundException(ErrorCodes.ROLE_NOT_FOUND, $"Role with ID {request.Id} not found");
 

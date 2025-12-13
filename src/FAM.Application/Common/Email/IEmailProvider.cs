@@ -30,9 +30,9 @@ public interface IEmailProvider
         CancellationToken cancellationToken = default)
     {
         var results = new List<EmailSendResult>();
-        foreach (var message in messages)
+        foreach (EmailMessage message in messages)
         {
-            var result = await SendAsync(message, cancellationToken);
+            EmailSendResult result = await SendAsync(message, cancellationToken);
             results.Add(result);
         }
 

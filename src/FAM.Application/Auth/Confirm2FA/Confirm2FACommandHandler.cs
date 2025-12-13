@@ -1,8 +1,12 @@
 using System.Security.Cryptography;
 using System.Text.Json;
+
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+
 using MediatR;
+
 using OtpNet;
 
 namespace FAM.Application.Auth.Confirm2FA;
@@ -21,7 +25,7 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
     public async Task<Confirm2FAResponse> Handle(Confirm2FACommand request, CancellationToken cancellationToken)
     {
         // Get user by ID
-        var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
         if (user == null) throw new UnauthorizedAccessException("User not found");
 
         // Verify the TOTP code with the provided secret
@@ -36,7 +40,7 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
             throw new InvalidOperationException("Invalid verification code");
 
         // Generate backup codes
-        var backupCodes = GenerateBackupCodes();
+        List<string> backupCodes = GenerateBackupCodes();
 
         // Hash backup codes before storing (for security)
         var hashedBackupCodes = backupCodes.Select(code => BCrypt.Net.BCrypt.HashPassword(code)).ToList();

@@ -70,7 +70,7 @@ public class DepreciationService : IDepreciationService
             return 0;
 
         var months = 0;
-        var current = asset.InServiceDate.Value;
+        DateTime current = asset.InServiceDate.Value;
 
         while (current < asOfDate)
         {

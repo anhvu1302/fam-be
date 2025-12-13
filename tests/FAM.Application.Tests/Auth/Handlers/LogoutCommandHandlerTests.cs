@@ -3,9 +3,13 @@ using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
+
 using FluentAssertions;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
+
 using Moq;
 
 namespace FAM.Application.Tests.Auth.Handlers;
@@ -50,7 +54,7 @@ public class LogoutCommandHandlerTests
             plainPassword
         );
 
-        var device = user.GetOrCreateDevice(
+        UserDevice device = user.GetOrCreateDevice(
             "device-123",
             "Test Device",
             "browser",
@@ -60,7 +64,7 @@ public class LogoutCommandHandlerTests
         );
 
         var refreshToken = "valid-refresh-token";
-        var refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
+        DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
 
         _mockUserDeviceRepository
@@ -78,7 +82,7 @@ public class LogoutCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Unit result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().Be(Unit.Value);
@@ -102,7 +106,7 @@ public class LogoutCommandHandlerTests
         );
 
         var deviceId = "device-123";
-        var device = user.GetOrCreateDevice(
+        UserDevice device = user.GetOrCreateDevice(
             deviceId,
             "Test Device",
             "browser",
@@ -126,7 +130,7 @@ public class LogoutCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Unit result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().Be(Unit.Value);
@@ -153,7 +157,7 @@ public class LogoutCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Unit result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - Should not throw, just return success
         result.Should().Be(Unit.Value);
@@ -177,7 +181,7 @@ public class LogoutCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Unit result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - Should not throw, just return success
         result.Should().Be(Unit.Value);
@@ -194,7 +198,7 @@ public class LogoutCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Unit result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - Should not throw, just return success
         result.Should().Be(Unit.Value);

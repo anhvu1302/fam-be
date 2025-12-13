@@ -67,7 +67,7 @@ public sealed class Address : ValueObject
 
     public override string ToString()
     {
-        var parts = new[] { Street, Ward, District, City, Province, CountryCode, PostalCode }
+        IEnumerable<string?> parts = new[] { Street, Ward, District, City, Province, CountryCode, PostalCode }
             .Where(p => !string.IsNullOrWhiteSpace(p));
         return string.Join(", ", parts);
     }

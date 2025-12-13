@@ -1,8 +1,11 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
 using FAM.Domain.Common.Base;
 using FAM.WebApi.Contracts.Common;
+
 using Microsoft.AspNetCore.Diagnostics;
+
 using Serilog.Context;
 
 namespace FAM.WebApi.Middleware;
@@ -25,7 +28,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-        var (statusCode, errorResponse) = exception switch
+        (var statusCode, ApiErrorResponse errorResponse) = exception switch
         {
             ValidationException validationEx => HandleValidationException(validationEx),
             NotFoundException notFoundEx => HandleNotFoundException(notFoundEx),
@@ -44,18 +47,14 @@ public class GlobalExceptionHandler : IExceptionHandler
         using (LogContext.PushProperty("StatusCode", statusCode))
         {
             if (statusCode >= 500)
-            {
                 // Log full exception details for server errors
                 _logger.LogError(exception,
                     "Server error: {ExceptionType} - {ExceptionMessage}\nStack Trace: {StackTrace}",
                     exception.GetType().Name, exception.Message, exception.StackTrace);
-            }
             else
-            {
                 _logger.LogWarning(exception,
                     "Client error: {ExceptionType} - {ExceptionMessage}",
                     exception.GetType().Name, exception.Message);
-            }
         }
 
         httpContext.Response.StatusCode = statusCode;

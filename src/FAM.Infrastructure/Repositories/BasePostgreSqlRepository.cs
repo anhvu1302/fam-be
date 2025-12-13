@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
+
 using AutoMapper;
+
 using FAM.Infrastructure.Providers.PostgreSQL;
 
 namespace FAM.Infrastructure.Repositories;
@@ -44,7 +46,7 @@ public abstract class BasePostgreSqlRepository<TDomain, TEf> : BasePagedReposito
 
             try
             {
-                var expression = getFieldExpression(fieldName.ToLowerInvariant());
+                Expression<Func<TEf, object>> expression = getFieldExpression(fieldName.ToLowerInvariant());
 
                 if (orderedQuery == null)
                     orderedQuery = descending

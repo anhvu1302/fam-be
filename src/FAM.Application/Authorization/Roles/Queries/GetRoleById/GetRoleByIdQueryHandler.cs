@@ -1,6 +1,8 @@
 using FAM.Application.Authorization.Permissions.Shared;
 using FAM.Application.Authorization.Roles.Shared;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Authorization;
+
 using MediatR;
 
 namespace FAM.Application.Authorization.Roles.Queries.GetRoleById;
@@ -16,17 +18,18 @@ public sealed class GetRoleByIdQueryHandler : IRequestHandler<GetRoleByIdQuery, 
 
     public async Task<RoleWithPermissionsDto?> Handle(GetRoleByIdQuery request, CancellationToken cancellationToken)
     {
-        var role = await _unitOfWork.Roles.GetByIdAsync(request.Id, cancellationToken);
+        Role? role = await _unitOfWork.Roles.GetByIdAsync(request.Id, cancellationToken);
         if (role == null)
             return null;
 
-        var rolePermissions = await _unitOfWork.RolePermissions.GetByRoleIdAsync(request.Id, cancellationToken);
+        IEnumerable<RolePermission> rolePermissions =
+            await _unitOfWork.RolePermissions.GetByRoleIdAsync(request.Id, cancellationToken);
         var permissionIds = rolePermissions.Select(rp => rp.PermissionId).ToList();
 
         var permissions = new List<PermissionDto>();
         foreach (var permissionId in permissionIds)
         {
-            var permission = await _unitOfWork.Permissions.GetByIdAsync(permissionId, cancellationToken);
+            Permission? permission = await _unitOfWork.Permissions.GetByIdAsync(permissionId, cancellationToken);
             if (permission != null)
                 permissions.Add(new PermissionDto(
                     permission.Id,

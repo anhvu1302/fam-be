@@ -1,5 +1,7 @@
 using System.Text;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace FAM.Infrastructure.Common.Extensions;
 
@@ -11,7 +13,7 @@ public static class ModelBuilderExtensions
 {
     public static void ApplySnakeCaseNamingConvention(this ModelBuilder modelBuilder)
     {
-        foreach (var entity in modelBuilder.Model.GetEntityTypes())
+        foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
         {
             // table name
             var tableName = entity.GetTableName();
@@ -19,10 +21,11 @@ public static class ModelBuilderExtensions
                 entity.SetTableName(ToSnakeCase(tableName));
 
             // columns
-            foreach (var property in entity.GetProperties()) property.SetColumnName(ToSnakeCase(property.Name));
+            foreach (IMutableProperty property in entity.GetProperties())
+                property.SetColumnName(ToSnakeCase(property.Name));
 
             // keys
-            foreach (var key in entity.GetKeys())
+            foreach (IMutableKey key in entity.GetKeys())
             {
                 var keyName = key.GetName();
                 if (!string.IsNullOrEmpty(keyName))
@@ -30,7 +33,7 @@ public static class ModelBuilderExtensions
             }
 
             // foreign keys
-            foreach (var fk in entity.GetForeignKeys())
+            foreach (IMutableForeignKey fk in entity.GetForeignKeys())
             {
                 var fkName = fk.GetConstraintName();
                 if (!string.IsNullOrEmpty(fkName))
@@ -38,7 +41,7 @@ public static class ModelBuilderExtensions
             }
 
             // indexes
-            foreach (var index in entity.GetIndexes())
+            foreach (IMutableIndex index in entity.GetIndexes())
             {
                 var indexName = index.GetDatabaseName();
                 if (!string.IsNullOrEmpty(indexName))

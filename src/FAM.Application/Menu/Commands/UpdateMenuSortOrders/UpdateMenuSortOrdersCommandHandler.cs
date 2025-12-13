@@ -1,5 +1,7 @@
 using FAM.Domain.Abstractions;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Menu.Commands.UpdateMenuSortOrders;

@@ -2,6 +2,7 @@ using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Organizations;
 using FAM.Domain.Users;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Authorization;
@@ -13,10 +14,10 @@ public class UserNodeRoleTests
     {
         // Arrange
         var user = User.Create("testuser", "test@example.com", "MySecurePass123!");
-        var node = CreateTestOrgNode();
+        OrgNode node = CreateTestOrgNode();
         var role = Role.Create("admin", "Administrator", 1);
-        var startAt = DateTime.UtcNow;
-        var endAt = startAt.AddDays(30);
+        DateTime startAt = DateTime.UtcNow;
+        DateTime endAt = startAt.AddDays(30);
 
         // Act
         var userNodeRole = UserNodeRole.Create(user, node, role, startAt, endAt);
@@ -38,10 +39,10 @@ public class UserNodeRoleTests
     {
         // Arrange
         var user = User.Create("testuser", "test@example.com", "MySecurePass123!");
-        var node = CreateTestOrgNode();
+        OrgNode node = CreateTestOrgNode();
         var role = Role.Create("admin", "Administrator", 1);
-        var startAt = DateTime.UtcNow;
-        var endAt = startAt.AddDays(-1);
+        DateTime startAt = DateTime.UtcNow;
+        DateTime endAt = startAt.AddDays(-1);
 
         // Act
         Action act = () => UserNodeRole.Create(user, node, role, startAt, endAt);
@@ -59,8 +60,8 @@ public class UserNodeRoleTests
             User.Create("testuser", "test@example.com", "MySecurePass123!"),
             CreateTestOrgNode(),
             Role.Create("admin", "Administrator", 1));
-        var newStartAt = DateTime.UtcNow;
-        var newEndAt = newStartAt.AddDays(60);
+        DateTime newStartAt = DateTime.UtcNow;
+        DateTime newEndAt = newStartAt.AddDays(60);
 
         // Act
         userNodeRole.UpdateDates(newStartAt, newEndAt);
@@ -78,11 +79,11 @@ public class UserNodeRoleTests
             User.Create("testuser", "test@example.com", "MySecurePass123!"),
             CreateTestOrgNode(),
             Role.Create("admin", "Administrator", 1));
-        var newStartAt = DateTime.UtcNow;
-        var newEndAt = newStartAt.AddDays(-1);
+        DateTime newStartAt = DateTime.UtcNow;
+        DateTime newEndAt = newStartAt.AddDays(-1);
 
         // Act
-        var act = () => userNodeRole.UpdateDates(newStartAt, newEndAt);
+        Action act = () => userNodeRole.UpdateDates(newStartAt, newEndAt);
 
         // Assert
         act.Should().Throw<DomainException>()

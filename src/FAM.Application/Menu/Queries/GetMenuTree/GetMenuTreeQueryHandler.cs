@@ -1,5 +1,7 @@
 using FAM.Application.Menu.DTOs;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common.Entities;
+
 using MediatR;
 
 namespace FAM.Application.Menu.Queries.GetMenuTree;
@@ -18,7 +20,7 @@ public class GetMenuTreeQueryHandler : IRequestHandler<GetMenuTreeQuery, IEnumer
         CancellationToken cancellationToken)
     {
         var maxDepth = Math.Min(request.MaxDepth, MaxMenuDepth);
-        var menus = await _repository.GetMenuTreeAsync(maxDepth, cancellationToken);
+        IReadOnlyList<MenuItem> menus = await _repository.GetMenuTreeAsync(maxDepth, cancellationToken);
         return menus.Select(m => MenuItemResponse.FromDomain(m, true, maxDepth));
     }
 }

@@ -1,9 +1,12 @@
 using System.Linq.Expressions;
+
 using AutoMapper;
+
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.PersistenceModels.Mongo;
 using FAM.Infrastructure.Repositories;
+
 using MongoDB.Driver;
 
 namespace FAM.Infrastructure.Providers.MongoDB.Repositories;
@@ -23,14 +26,14 @@ public class PermissionRepositoryMongo : BaseMongoRepository<Permission, Permiss
 
     public async Task<Permission?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var document = await _collection.Find(d => d.DomainId == id && !d.IsDeleted)
+        PermissionMongo? document = await _collection.Find(d => d.DomainId == id && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? Mapper.Map<Permission>(document) : null;
     }
 
     public async Task<IEnumerable<Permission>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var documents = await _collection.Find(d => !d.IsDeleted)
+        List<PermissionMongo>? documents = await _collection.Find(d => !d.IsDeleted)
             .ToListAsync(cancellationToken);
         return Mapper.Map<IEnumerable<Permission>>(documents);
     }
@@ -38,22 +41,22 @@ public class PermissionRepositoryMongo : BaseMongoRepository<Permission, Permiss
     public async Task<IEnumerable<Permission>> FindAsync(Expression<Func<Permission, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        var allDocuments = await _collection.Find(d => !d.IsDeleted)
+        List<PermissionMongo>? allDocuments = await _collection.Find(d => !d.IsDeleted)
             .ToListAsync(cancellationToken);
-        var allEntities = Mapper.Map<IEnumerable<Permission>>(allDocuments);
+        IEnumerable<Permission>? allEntities = Mapper.Map<IEnumerable<Permission>>(allDocuments);
         return allEntities.Where(predicate.Compile());
     }
 
     public async Task AddAsync(Permission entity, CancellationToken cancellationToken = default)
     {
-        var document = Mapper.Map<PermissionMongo>(entity);
+        PermissionMongo? document = Mapper.Map<PermissionMongo>(entity);
         await _collection.InsertOneAsync(document, cancellationToken: cancellationToken);
     }
 
     public async Task UpdateAsync(Permission entity)
     {
-        var document = Mapper.Map<PermissionMongo>(entity);
-        var filter = Builders<PermissionMongo>.Filter.Eq(d => d.DomainId, entity.Id);
+        PermissionMongo? document = Mapper.Map<PermissionMongo>(entity);
+        FilterDefinition<PermissionMongo>? filter = Builders<PermissionMongo>.Filter.Eq(d => d.DomainId, entity.Id);
         await _collection.ReplaceOneAsync(filter, document);
     }
 
@@ -64,7 +67,7 @@ public class PermissionRepositoryMongo : BaseMongoRepository<Permission, Permiss
 
     public async Task DeleteAsync(Permission entity)
     {
-        var filter = Builders<PermissionMongo>.Filter.Eq(d => d.DomainId, entity.Id);
+        FilterDefinition<PermissionMongo>? filter = Builders<PermissionMongo>.Filter.Eq(d => d.DomainId, entity.Id);
         await _collection.DeleteOneAsync(filter);
     }
 
@@ -83,7 +86,8 @@ public class PermissionRepositoryMongo : BaseMongoRepository<Permission, Permiss
     public async Task<Permission?> GetByResourceAndActionAsync(string resource, string action,
         CancellationToken cancellationToken = default)
     {
-        var document = await _collection.Find(d => d.Resource == resource && d.Action == action && !d.IsDeleted)
+        PermissionMongo? document = await _collection
+            .Find(d => d.Resource == resource && d.Action == action && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? Mapper.Map<Permission>(document) : null;
     }
@@ -91,7 +95,7 @@ public class PermissionRepositoryMongo : BaseMongoRepository<Permission, Permiss
     public async Task<IEnumerable<Permission>> GetByResourceAsync(string resource,
         CancellationToken cancellationToken = default)
     {
-        var documents = await _collection.Find(d => d.Resource == resource && !d.IsDeleted)
+        List<PermissionMongo>? documents = await _collection.Find(d => d.Resource == resource && !d.IsDeleted)
             .ToListAsync(cancellationToken);
         return Mapper.Map<IEnumerable<Permission>>(documents);
     }
@@ -113,17 +117,17 @@ public class PermissionRepositoryMongo : BaseMongoRepository<Permission, Permiss
         CancellationToken cancellationToken = default)
     {
         // Start with base filter for non-deleted documents
-        var filterBuilder = Builders<PermissionMongo>.Filter;
-        var mongoFilter = filterBuilder.Eq(d => d.IsDeleted, false);
+        FilterDefinitionBuilder<PermissionMongo>? filterBuilder = Builders<PermissionMongo>.Filter;
+        FilterDefinition<PermissionMongo>? mongoFilter = filterBuilder.Eq(d => d.IsDeleted, false);
 
         // Apply domain filter at database level
         if (filter != null)
         {
-            var efFilter = ConvertToEfExpression(filter);
+            Expression<Func<PermissionMongo, bool>> efFilter = ConvertToEfExpression(filter);
             // Convert EF expression to MongoDB filter (simplified approach)
             // For complex filters, may need to load and filter in memory
-            var allDocuments = await _collection.Find(mongoFilter).ToListAsync(cancellationToken);
-            var allEntities = Mapper.Map<IEnumerable<Permission>>(allDocuments);
+            List<PermissionMongo>? allDocuments = await _collection.Find(mongoFilter).ToListAsync(cancellationToken);
+            IEnumerable<Permission>? allEntities = Mapper.Map<IEnumerable<Permission>>(allDocuments);
             var filtered = allEntities.Where(filter.Compile()).ToList();
             var filteredIds = filtered.Select(p => p.Id).ToHashSet();
 
@@ -134,10 +138,10 @@ public class PermissionRepositoryMongo : BaseMongoRepository<Permission, Permiss
         }
 
         // Build MongoDB query
-        var query = _collection.Find(mongoFilter);
+        IFindFluent<PermissionMongo, PermissionMongo>? query = _collection.Find(mongoFilter);
 
         // Apply sorting using base method
-        var sortDefinition = ApplySort(sort, GetSortDefinition);
+        SortDefinition<PermissionMongo>? sortDefinition = ApplySort(sort, GetSortDefinition);
         if (sortDefinition != null)
             query = query.Sort(sortDefinition);
         else
@@ -148,20 +152,20 @@ public class PermissionRepositoryMongo : BaseMongoRepository<Permission, Permiss
         var total = await _collection.CountDocumentsAsync(mongoFilter, cancellationToken: cancellationToken);
 
         // Apply pagination and execute
-        var documents = await query
+        List<PermissionMongo>? documents = await query
             .Skip((page - 1) * pageSize)
             .Limit(pageSize)
             .ToListAsync(cancellationToken);
 
         // Map to domain entities
-        var permissions = Mapper.Map<List<Permission>>(documents);
+        List<Permission>? permissions = Mapper.Map<List<Permission>>(documents);
 
         return (permissions, total);
     }
 
     private SortDefinition<PermissionMongo> GetSortDefinition(string fieldName)
     {
-        var sortBuilder = Builders<PermissionMongo>.Sort;
+        SortDefinitionBuilder<PermissionMongo>? sortBuilder = Builders<PermissionMongo>.Sort;
         var descending = fieldName.StartsWith('-');
         var actualFieldName = descending ? fieldName[1..] : fieldName;
 

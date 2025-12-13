@@ -1,7 +1,9 @@
 using FAM.Application.Users.Queries.GetUserTheme;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users.Entities;
+
 using FluentAssertions;
+
 using Moq;
 
 namespace FAM.Application.Tests.Users.Handlers;
@@ -31,7 +33,7 @@ public class GetUserThemeQueryHandlerTests
         var query = new GetUserThemeQuery(userId);
 
         // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+        GetUserThemeResponse? result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -57,7 +59,7 @@ public class GetUserThemeQueryHandlerTests
         var query = new GetUserThemeQuery(userId);
 
         // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+        GetUserThemeResponse? result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().BeNull();

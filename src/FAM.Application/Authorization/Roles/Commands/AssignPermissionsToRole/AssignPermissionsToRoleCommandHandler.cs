@@ -1,6 +1,7 @@
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
+
 using MediatR;
 
 namespace FAM.Application.Authorization.Roles.Commands.AssignPermissionsToRole;
@@ -16,11 +17,11 @@ public sealed class AssignPermissionsToRoleCommandHandler : IRequestHandler<Assi
 
     public async Task<bool> Handle(AssignPermissionsToRoleCommand request, CancellationToken cancellationToken)
     {
-        var role = await _unitOfWork.Roles.GetByIdAsync(request.RoleId, cancellationToken);
+        Role? role = await _unitOfWork.Roles.GetByIdAsync(request.RoleId, cancellationToken);
         if (role == null)
             throw new NotFoundException(ErrorCodes.ROLE_NOT_FOUND, $"Role with ID {request.RoleId} not found");
 
-        var existingRolePermissions =
+        IEnumerable<RolePermission> existingRolePermissions =
             await _unitOfWork.RolePermissions.GetByRoleIdAsync(request.RoleId, cancellationToken);
         var existingPermissionIds = existingRolePermissions.Select(rp => rp.PermissionId).ToHashSet();
 
@@ -31,7 +32,7 @@ public sealed class AssignPermissionsToRoleCommandHandler : IRequestHandler<Assi
 
         foreach (var permissionId in newPermissionIds)
         {
-            var permission = await _unitOfWork.Permissions.GetByIdAsync(permissionId, cancellationToken);
+            Permission? permission = await _unitOfWork.Permissions.GetByIdAsync(permissionId, cancellationToken);
             if (permission == null)
                 throw new NotFoundException(ErrorCodes.PERMISSION_NOT_FOUND,
                     $"Permission with ID {permissionId} not found");

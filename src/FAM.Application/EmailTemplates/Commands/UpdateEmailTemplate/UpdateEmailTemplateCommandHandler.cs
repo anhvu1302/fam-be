@@ -1,6 +1,7 @@
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.Domain.EmailTemplates;
+
 using MediatR;
 
 namespace FAM.Application.EmailTemplates.Commands.UpdateEmailTemplate;
@@ -16,7 +17,7 @@ public sealed class UpdateEmailTemplateCommandHandler : IRequestHandler<UpdateEm
 
     public async Task<bool> Handle(UpdateEmailTemplateCommand request, CancellationToken cancellationToken)
     {
-        var template = await _unitOfWork.EmailTemplates.GetByIdAsync(request.Id, cancellationToken);
+        EmailTemplate? template = await _unitOfWork.EmailTemplates.GetByIdAsync(request.Id, cancellationToken);
         if (template == null)
             throw new NotFoundException(ErrorCodes.EMAIL_TEMPLATE_NOT_FOUND, "EmailTemplate", request.Id);
 

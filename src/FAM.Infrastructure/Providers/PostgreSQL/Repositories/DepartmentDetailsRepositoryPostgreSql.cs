@@ -1,9 +1,13 @@
 using System.Linq.Expressions;
+
 using AutoMapper;
+
 using FAM.Domain.Abstractions;
 using FAM.Domain.Organizations;
 using FAM.Infrastructure.PersistenceModels.Ef;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -23,35 +27,36 @@ public class DepartmentDetailsRepositoryPostgreSql : IDepartmentDetailsRepositor
 
     public async Task<DepartmentDetails?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.DepartmentDetails.FindAsync(new object[] { id }, cancellationToken);
+        DepartmentDetailsEf? entity =
+            await _context.DepartmentDetails.FindAsync(new object[] { id }, cancellationToken);
         return entity != null ? _mapper.Map<DepartmentDetails>(entity) : null;
     }
 
     public async Task<IEnumerable<DepartmentDetails>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var entities = await _context.DepartmentDetails.ToListAsync(cancellationToken);
+        List<DepartmentDetailsEf> entities = await _context.DepartmentDetails.ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<DepartmentDetails>>(entities);
     }
 
     public async Task<IEnumerable<DepartmentDetails>> FindAsync(Expression<Func<DepartmentDetails, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        var allEntities = await _context.DepartmentDetails.ToListAsync(cancellationToken);
-        var allDepartmentDetails = _mapper.Map<IEnumerable<DepartmentDetails>>(allEntities);
+        List<DepartmentDetailsEf> allEntities = await _context.DepartmentDetails.ToListAsync(cancellationToken);
+        IEnumerable<DepartmentDetails>? allDepartmentDetails = _mapper.Map<IEnumerable<DepartmentDetails>>(allEntities);
         return allDepartmentDetails.Where(predicate.Compile());
     }
 
     public async Task AddAsync(DepartmentDetails entity, CancellationToken cancellationToken = default)
     {
-        var efEntity = _mapper.Map<DepartmentDetailsEf>(entity);
+        DepartmentDetailsEf? efEntity = _mapper.Map<DepartmentDetailsEf>(entity);
         await _context.DepartmentDetails.AddAsync(efEntity, cancellationToken);
     }
 
     public void Update(DepartmentDetails entity)
     {
-        var efEntity = _mapper.Map<DepartmentDetailsEf>(entity);
+        DepartmentDetailsEf? efEntity = _mapper.Map<DepartmentDetailsEf>(entity);
 
-        var trackedEntry = _context.ChangeTracker.Entries<DepartmentDetailsEf>()
+        EntityEntry<DepartmentDetailsEf>? trackedEntry = _context.ChangeTracker.Entries<DepartmentDetailsEf>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -67,7 +72,7 @@ public class DepartmentDetailsRepositoryPostgreSql : IDepartmentDetailsRepositor
 
     public void Delete(DepartmentDetails entity)
     {
-        var efEntity = _mapper.Map<DepartmentDetailsEf>(entity);
+        DepartmentDetailsEf? efEntity = _mapper.Map<DepartmentDetailsEf>(entity);
         _context.DepartmentDetails.Remove(efEntity);
     }
 
@@ -78,7 +83,7 @@ public class DepartmentDetailsRepositoryPostgreSql : IDepartmentDetailsRepositor
 
     public async Task<DepartmentDetails?> GetByNodeIdAsync(long nodeId, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.DepartmentDetails
+        DepartmentDetailsEf? entity = await _context.DepartmentDetails
             .FirstOrDefaultAsync(dd => dd.NodeId == nodeId, cancellationToken);
         return entity != null ? _mapper.Map<DepartmentDetails>(entity) : null;
     }
@@ -86,7 +91,7 @@ public class DepartmentDetailsRepositoryPostgreSql : IDepartmentDetailsRepositor
     public async Task<DepartmentDetails?> GetByCostCenterAsync(string costCenter,
         CancellationToken cancellationToken = default)
     {
-        var entity = await _context.DepartmentDetails
+        DepartmentDetailsEf? entity = await _context.DepartmentDetails
             .FirstOrDefaultAsync(dd => dd.CostCenter == costCenter, cancellationToken);
         return entity != null ? _mapper.Map<DepartmentDetails>(entity) : null;
     }
@@ -94,7 +99,7 @@ public class DepartmentDetailsRepositoryPostgreSql : IDepartmentDetailsRepositor
     public async Task<IEnumerable<DepartmentDetails>> GetByParentNodeIdAsync(long parentNodeId,
         CancellationToken cancellationToken = default)
     {
-        var entities = await _context.DepartmentDetails
+        List<DepartmentDetailsEf> entities = await _context.DepartmentDetails
             .Join(_context.OrgNodes,
                 dd => dd.NodeId,
                 n => n.Id,

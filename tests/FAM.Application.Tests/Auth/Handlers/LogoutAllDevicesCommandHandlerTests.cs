@@ -2,9 +2,13 @@ using FAM.Application.Auth.Logout;
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
+
 using FluentAssertions;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
+
 using Moq;
 
 namespace FAM.Application.Tests.Auth.Handlers;
@@ -60,7 +64,7 @@ public class LogoutAllDevicesCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Unit result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().Be(Unit.Value);
@@ -97,7 +101,7 @@ public class LogoutAllDevicesCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Unit result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().Be(Unit.Value);

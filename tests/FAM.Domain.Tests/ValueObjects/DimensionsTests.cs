@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.ValueObjects;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.ValueObjects;
@@ -211,7 +212,7 @@ public class DimensionsTests
         var dimensions = Dimensions.Create(100, 50, 30, "cm");
 
         // Act
-        var converted = dimensions.ConvertTo("cm");
+        Dimensions converted = dimensions.ConvertTo("cm");
 
         // Assert
         converted.Length.Should().Be(100);
@@ -227,7 +228,7 @@ public class DimensionsTests
         var dimensions = Dimensions.Create(100, 50, 30, "cm");
 
         // Act
-        var converted = dimensions.ConvertTo("m");
+        Dimensions converted = dimensions.ConvertTo("m");
 
         // Assert
         converted.Length.Should().Be(1);
@@ -243,7 +244,7 @@ public class DimensionsTests
         var dimensions = Dimensions.Create(1, 0.5m, 0.3m, "m");
 
         // Act
-        var converted = dimensions.ConvertTo("cm");
+        Dimensions converted = dimensions.ConvertTo("cm");
 
         // Assert
         converted.Length.Should().Be(100);
@@ -259,7 +260,7 @@ public class DimensionsTests
         var dimensions = Dimensions.Create(1000, 500, 300, "mm");
 
         // Act
-        var converted = dimensions.ConvertTo("cm");
+        Dimensions converted = dimensions.ConvertTo("cm");
 
         // Assert
         converted.Length.Should().Be(100);

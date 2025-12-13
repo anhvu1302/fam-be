@@ -1,4 +1,6 @@
 using FAM.Domain.Users;
+using FAM.Domain.Users.Entities;
+
 using FluentAssertions;
 
 namespace FAM.Application.Tests.Auth;
@@ -12,7 +14,7 @@ public class UserTwoFactorAuthenticationTests
     public void EnableTwoFactor_ShouldSetTwoFactorEnabled()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var secret = "JBSWY3DPEHPK3PXP";
 
         // Act
@@ -29,7 +31,7 @@ public class UserTwoFactorAuthenticationTests
     public void DisableTwoFactor_ShouldClearAllTwoFactorData()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         user.EnableTwoFactor("JBSWY3DPEHPK3PXP");
 
         // Act
@@ -46,7 +48,7 @@ public class UserTwoFactorAuthenticationTests
     public void TwoFactorBackupCodes_ShouldStoreAndRetrieveJson()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         user.EnableTwoFactor("secret");
 
         // Assert
@@ -59,7 +61,7 @@ public class UserTwoFactorAuthenticationTests
     public void VerifyEmail_ShouldSetEmailVerifiedStatus()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         user.IsEmailVerified.Should().BeFalse();
 
         // Act
@@ -75,7 +77,7 @@ public class UserTwoFactorAuthenticationTests
     public void GetOrCreateDevice_ShouldCreateNewDevice_WhenNotExists()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var deviceId = "device-123";
         var deviceName = "Chrome on Windows";
         var deviceType = "browser";
@@ -84,7 +86,7 @@ public class UserTwoFactorAuthenticationTests
         var location = "Hanoi, Vietnam";
 
         // Act
-        var device = user.GetOrCreateDevice(
+        UserDevice device = user.GetOrCreateDevice(
             deviceId,
             deviceName,
             deviceType,
@@ -108,11 +110,11 @@ public class UserTwoFactorAuthenticationTests
     public void GetOrCreateDevice_ShouldReturnExistingDevice_WhenAlreadyExists()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var deviceId = "device-456";
 
         // Create device first time
-        var firstDevice = user.GetOrCreateDevice(
+        UserDevice firstDevice = user.GetOrCreateDevice(
             deviceId,
             "First Device",
             "mobile",
@@ -122,7 +124,7 @@ public class UserTwoFactorAuthenticationTests
         );
 
         // Act - Get same device
-        var secondDevice = user.GetOrCreateDevice(
+        UserDevice secondDevice = user.GetOrCreateDevice(
             deviceId,
             "Second Device", // Different name
             "tablet",
@@ -148,7 +150,7 @@ public class UserTwoFactorAuthenticationTests
     public void Activate_ShouldSetUserActive()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         user.Deactivate();
         user.IsActive.Should().BeFalse();
 
@@ -163,7 +165,7 @@ public class UserTwoFactorAuthenticationTests
     public void Deactivate_ShouldSetUserInactive()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         user.IsActive.Should().BeTrue();
 
         // Act
@@ -177,13 +179,13 @@ public class UserTwoFactorAuthenticationTests
     public void EnableTwoFactor_MultipleTimes_ShouldUpdateSecret()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var firstSecret = "FIRST_SECRET_123";
         var secondSecret = "SECOND_SECRET_456";
 
         // Act
         user.EnableTwoFactor(firstSecret);
-        var firstSetupDate = user.TwoFactorSetupDate;
+        DateTime? firstSetupDate = user.TwoFactorSetupDate;
 
         // Wait a bit and enable again
         Thread.Sleep(10);

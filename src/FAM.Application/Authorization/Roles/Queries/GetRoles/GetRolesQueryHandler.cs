@@ -1,12 +1,15 @@
 using System.Linq.Expressions;
+
 using FAM.Application.Authorization.Roles.Shared;
 using FAM.Application.Common.Exceptions;
 using FAM.Application.Common.Helpers;
 using FAM.Application.Querying;
+using FAM.Application.Querying.Ast;
 using FAM.Application.Querying.Binding;
 using FAM.Application.Querying.Parsing;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
+
 using MediatR;
 
 namespace FAM.Application.Authorization.Roles.Queries.GetRoles;
@@ -26,14 +29,14 @@ public sealed class GetRolesQueryHandler : IRequestHandler<GetRolesQuery, PageRe
 
     public async Task<PageResult<RoleDto>> Handle(GetRolesQuery request, CancellationToken cancellationToken)
     {
-        var fieldMap = RoleFieldMap.Instance;
-        var queryRequest = request.QueryRequest;
+        RoleFieldMap fieldMap = RoleFieldMap.Instance;
+        QueryRequest queryRequest = request.QueryRequest;
 
         Expression<Func<Role, bool>>? filterExpression = null;
         if (!string.IsNullOrWhiteSpace(queryRequest.Filter))
             try
             {
-                var ast = _filterParser.Parse(queryRequest.Filter);
+                FilterNode ast = _filterParser.Parse(queryRequest.Filter);
                 filterExpression = EfFilterBinder<Role>.Bind(ast, fieldMap.Fields);
             }
             catch (InvalidOperationException ex)
@@ -48,10 +51,10 @@ public sealed class GetRolesQueryHandler : IRequestHandler<GetRolesQuery, PageRe
         var page = queryRequest.GetEffectivePage();
         var pageSize = queryRequest.GetEffectivePageSize();
 
-        var includes = fieldMap.ParseIncludes(queryRequest.Include);
-        var includeSet = IncludeParser.Parse(queryRequest.Include);
+        Expression<Func<Role, object>>[] includes = fieldMap.ParseIncludes(queryRequest.Include);
+        HashSet<string> includeSet = IncludeParser.Parse(queryRequest.Include);
 
-        var (roles, totalCount) = await _roleRepository.GetPagedAsync(
+        (IEnumerable<Role> roles, var totalCount) = await _roleRepository.GetPagedAsync(
             filterExpression,
             queryRequest.Sort,
             page,

@@ -1,4 +1,5 @@
 using System.Text.Json;
+
 using FAM.WebApi.Contracts.Common;
 
 namespace FAM.WebApi.Middleware;
@@ -20,7 +21,7 @@ public class UnauthorizedResponseMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         // Store the original response body stream
-        var originalBodyStream = context.Response.Body;
+        Stream originalBodyStream = context.Response.Body;
 
         try
         {

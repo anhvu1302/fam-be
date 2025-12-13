@@ -1,7 +1,9 @@
 using FAM.Application.Common;
 using FAM.Application.Users.Shared;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
+
 using MediatR;
 
 namespace FAM.Application.Users.Commands.UpdateUser;
@@ -20,7 +22,7 @@ public sealed class UpdateUserCommandHandler
         UpdateUserCommand request,
         CancellationToken cancellationToken)
     {
-        var user = await _unitOfWork.Users.GetByIdAsync(request.Id, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(request.Id, cancellationToken);
         if (user == null)
             return Result<UpdateUserResult>.Failure($"User with ID {request.Id} not found", ErrorType.NotFound);
 

@@ -2,6 +2,7 @@ using FAM.Application.EmailTemplates.Commands.DeactivateEmailTemplate;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.Domain.EmailTemplates;
+
 using Moq;
 
 namespace FAM.Application.Tests.EmailTemplates;
@@ -52,7 +53,8 @@ public class DeactivateEmailTemplateCommandHandlerTests
             .ReturnsAsync((EmailTemplate?)null);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<NotFoundException>(() => _handler.Handle(command, default));
+        NotFoundException exception =
+            await Assert.ThrowsAsync<NotFoundException>(() => _handler.Handle(command, default));
 
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_NOT_FOUND, exception.ErrorCode);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(default), Times.Never);

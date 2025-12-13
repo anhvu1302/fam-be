@@ -1,8 +1,11 @@
 using System.Linq.Expressions;
+
 using AutoMapper;
+
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.PersistenceModels.Ef;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
@@ -23,34 +26,34 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
 
     public async Task<IEnumerable<UserNodeRole>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var entities = await _context.UserNodeRoles.ToListAsync(cancellationToken);
+        List<UserNodeRoleEf> entities = await _context.UserNodeRoles.ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<UserNodeRole>>(entities);
     }
 
     public async Task<IEnumerable<UserNodeRole>> FindAsync(Expression<Func<UserNodeRole, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        var allEntities = await _context.UserNodeRoles.ToListAsync(cancellationToken);
-        var allUserNodeRoles = _mapper.Map<IEnumerable<UserNodeRole>>(allEntities);
+        List<UserNodeRoleEf> allEntities = await _context.UserNodeRoles.ToListAsync(cancellationToken);
+        IEnumerable<UserNodeRole>? allUserNodeRoles = _mapper.Map<IEnumerable<UserNodeRole>>(allEntities);
         return allUserNodeRoles.Where(predicate.Compile());
     }
 
     public async Task AddAsync(UserNodeRole entity, CancellationToken cancellationToken = default)
     {
-        var efEntity = _mapper.Map<UserNodeRoleEf>(entity);
+        UserNodeRoleEf? efEntity = _mapper.Map<UserNodeRoleEf>(entity);
         await _context.UserNodeRoles.AddAsync(efEntity, cancellationToken);
     }
 
     public void Delete(UserNodeRole entity)
     {
-        var efEntity = _mapper.Map<UserNodeRoleEf>(entity);
+        UserNodeRoleEf? efEntity = _mapper.Map<UserNodeRoleEf>(entity);
         _context.UserNodeRoles.Remove(efEntity);
     }
 
     public async Task<IEnumerable<UserNodeRole>> GetByUserIdAsync(long userId,
         CancellationToken cancellationToken = default)
     {
-        var entities = await _context.UserNodeRoles
+        List<UserNodeRoleEf> entities = await _context.UserNodeRoles
             .Where(unr => unr.UserId == userId)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<UserNodeRole>>(entities);
@@ -59,7 +62,7 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
     public async Task<IEnumerable<UserNodeRole>> GetByNodeIdAsync(long nodeId,
         CancellationToken cancellationToken = default)
     {
-        var entities = await _context.UserNodeRoles
+        List<UserNodeRoleEf> entities = await _context.UserNodeRoles
             .Where(unr => unr.NodeId == nodeId)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<UserNodeRole>>(entities);
@@ -68,7 +71,7 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
     public async Task<IEnumerable<UserNodeRole>> GetByRoleIdAsync(long roleId,
         CancellationToken cancellationToken = default)
     {
-        var entities = await _context.UserNodeRoles
+        List<UserNodeRoleEf> entities = await _context.UserNodeRoles
             .Where(unr => unr.RoleId == roleId)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<UserNodeRole>>(entities);
@@ -77,7 +80,7 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
     public async Task<UserNodeRole?> GetByUserAndNodeAndRoleAsync(long userId, long nodeId, long roleId,
         CancellationToken cancellationToken = default)
     {
-        var entity = await _context.UserNodeRoles
+        UserNodeRoleEf? entity = await _context.UserNodeRoles
             .FirstOrDefaultAsync(unr => unr.UserId == userId && unr.NodeId == nodeId && unr.RoleId == roleId,
                 cancellationToken);
         return entity != null ? _mapper.Map<UserNodeRole>(entity) : null;
@@ -85,7 +88,7 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
 
     public async Task DeleteByUserIdAsync(long userId, CancellationToken cancellationToken = default)
     {
-        var entities = await _context.UserNodeRoles
+        List<UserNodeRoleEf> entities = await _context.UserNodeRoles
             .Where(unr => unr.UserId == userId)
             .ToListAsync(cancellationToken);
 
@@ -94,7 +97,7 @@ public class UserNodeRoleRepositoryPostgreSql : IUserNodeRoleRepository
 
     public async Task DeleteByNodeIdAsync(long nodeId, CancellationToken cancellationToken = default)
     {
-        var entities = await _context.UserNodeRoles
+        List<UserNodeRoleEf> entities = await _context.UserNodeRoles
             .Where(unr => unr.NodeId == nodeId)
             .ToListAsync(cancellationToken);
 

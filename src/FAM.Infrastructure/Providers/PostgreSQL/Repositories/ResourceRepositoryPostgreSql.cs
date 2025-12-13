@@ -1,9 +1,13 @@
 using System.Linq.Expressions;
+
 using AutoMapper;
+
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.PersistenceModels.Ef;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -23,35 +27,35 @@ public class ResourceRepositoryPostgreSql : IResourceRepository
 
     public async Task<Resource?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var entity = await _context.Resources.FindAsync(new object[] { id }, cancellationToken);
+        ResourceEf? entity = await _context.Resources.FindAsync(new object[] { id }, cancellationToken);
         return entity != null ? _mapper.Map<Resource>(entity) : null;
     }
 
     public async Task<IEnumerable<Resource>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var entities = await _context.Resources.ToListAsync(cancellationToken);
+        List<ResourceEf> entities = await _context.Resources.ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<Resource>>(entities);
     }
 
     public async Task<IEnumerable<Resource>> FindAsync(Expression<Func<Resource, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        var allEntities = await _context.Resources.ToListAsync(cancellationToken);
-        var allResources = _mapper.Map<IEnumerable<Resource>>(allEntities);
+        List<ResourceEf> allEntities = await _context.Resources.ToListAsync(cancellationToken);
+        IEnumerable<Resource>? allResources = _mapper.Map<IEnumerable<Resource>>(allEntities);
         return allResources.Where(predicate.Compile());
     }
 
     public async Task AddAsync(Resource entity, CancellationToken cancellationToken = default)
     {
-        var efEntity = _mapper.Map<ResourceEf>(entity);
+        ResourceEf? efEntity = _mapper.Map<ResourceEf>(entity);
         await _context.Resources.AddAsync(efEntity, cancellationToken);
     }
 
     public void Update(Resource entity)
     {
-        var efEntity = _mapper.Map<ResourceEf>(entity);
+        ResourceEf? efEntity = _mapper.Map<ResourceEf>(entity);
 
-        var trackedEntry = _context.ChangeTracker.Entries<ResourceEf>()
+        EntityEntry<ResourceEf>? trackedEntry = _context.ChangeTracker.Entries<ResourceEf>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -67,7 +71,7 @@ public class ResourceRepositoryPostgreSql : IResourceRepository
 
     public void Delete(Resource entity)
     {
-        var efEntity = _mapper.Map<ResourceEf>(entity);
+        ResourceEf? efEntity = _mapper.Map<ResourceEf>(entity);
         _context.Resources.Remove(efEntity);
     }
 
@@ -79,7 +83,7 @@ public class ResourceRepositoryPostgreSql : IResourceRepository
     public async Task<Resource?> GetByTypeAndNodeIdAsync(string type, long nodeId,
         CancellationToken cancellationToken = default)
     {
-        var entity = await _context.Resources
+        ResourceEf? entity = await _context.Resources
             .FirstOrDefaultAsync(r => r.Type == type && r.NodeId == nodeId, cancellationToken);
         return entity != null ? _mapper.Map<Resource>(entity) : null;
     }
@@ -87,7 +91,7 @@ public class ResourceRepositoryPostgreSql : IResourceRepository
     public async Task<IEnumerable<Resource>> GetByNodeIdAsync(long nodeId,
         CancellationToken cancellationToken = default)
     {
-        var entities = await _context.Resources
+        List<ResourceEf> entities = await _context.Resources
             .Where(r => r.NodeId == nodeId)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<Resource>>(entities);
@@ -95,7 +99,7 @@ public class ResourceRepositoryPostgreSql : IResourceRepository
 
     public async Task<IEnumerable<Resource>> GetByTypeAsync(string type, CancellationToken cancellationToken = default)
     {
-        var entities = await _context.Resources
+        List<ResourceEf> entities = await _context.Resources
             .Where(r => r.Type == type)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<Resource>>(entities);

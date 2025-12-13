@@ -1,6 +1,7 @@
 using FAM.Domain.Authorization;
 using FAM.Domain.Authorization.Events;
 using FAM.Domain.Common.Base;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Authorization;
@@ -58,7 +59,7 @@ public class RoleTests
 
         // Assert
         role.DomainEvents.Should().HaveCount(1);
-        var domainEvent = role.DomainEvents.First();
+        IDomainEvent domainEvent = role.DomainEvents.First();
         domainEvent.Should().BeOfType<RoleCreated>();
         var roleCreatedEvent = (RoleCreated)domainEvent;
         roleCreatedEvent.RoleId.Should().Be(role.Id);
@@ -148,7 +149,7 @@ public class RoleTests
 
         // Assert
         role.DomainEvents.Should().HaveCount(1);
-        var domainEvent = role.DomainEvents.First();
+        IDomainEvent domainEvent = role.DomainEvents.First();
         domainEvent.Should().BeOfType<RoleUpdated>();
         var roleUpdatedEvent = (RoleUpdated)domainEvent;
         roleUpdatedEvent.RoleId.Should().Be(role.Id);
@@ -165,7 +166,7 @@ public class RoleTests
         var newRank = 2;
 
         // Act
-        var act = () => role.Update(newName, newRank);
+        Action act = () => role.Update(newName, newRank);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -181,7 +182,7 @@ public class RoleTests
         var newRank = 2;
 
         // Act
-        var act = () => role.Update(newName, newRank);
+        Action act = () => role.Update(newName, newRank);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -197,7 +198,7 @@ public class RoleTests
         var newRank = -1;
 
         // Act
-        var act = () => role.Update(newName, newRank);
+        Action act = () => role.Update(newName, newRank);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -211,7 +212,7 @@ public class RoleTests
         var role = Role.Create("custom", "Custom Role", 50);
 
         // Act
-        var act = () => role.ValidateCanDelete();
+        Action act = () => role.ValidateCanDelete();
 
         // Assert
         act.Should().NotThrow();
@@ -224,7 +225,7 @@ public class RoleTests
         var role = Role.Create("admin", "Administrator", 1, isSystemRole: true);
 
         // Act
-        var act = () => role.ValidateCanDelete();
+        Action act = () => role.ValidateCanDelete();
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -248,7 +249,7 @@ public class RoleTests
 
         // Assert
         role.DomainEvents.Should().HaveCount(1);
-        var domainEvent = role.DomainEvents.First();
+        IDomainEvent domainEvent = role.DomainEvents.First();
         domainEvent.Should().BeOfType<PermissionsAssignedToRole>();
         var assignedEvent = (PermissionsAssignedToRole)domainEvent;
         assignedEvent.RoleId.Should().Be(role.Id);
@@ -263,7 +264,7 @@ public class RoleTests
         var permissions = new List<Permission>();
 
         // Act
-        var act = () => role.AssignPermissions(permissions);
+        Action act = () => role.AssignPermissions(permissions);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -283,7 +284,7 @@ public class RoleTests
 
         // Assert
         role.DomainEvents.Should().HaveCount(1);
-        var domainEvent = role.DomainEvents.First();
+        IDomainEvent domainEvent = role.DomainEvents.First();
         domainEvent.Should().BeOfType<PermissionsRevokedFromRole>();
         var revokedEvent = (PermissionsRevokedFromRole)domainEvent;
         revokedEvent.RoleId.Should().Be(role.Id);
@@ -298,7 +299,7 @@ public class RoleTests
         var permissionIds = new List<long>();
 
         // Act
-        var act = () => role.RevokePermissions(permissionIds);
+        Action act = () => role.RevokePermissions(permissionIds);
 
         // Assert
         act.Should().Throw<DomainException>()

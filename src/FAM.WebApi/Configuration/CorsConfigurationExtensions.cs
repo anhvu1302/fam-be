@@ -8,7 +8,7 @@ public static class CorsConfigurationExtensions
 {
     public static IServiceCollection AddOptimizedCors(this IServiceCollection services, IConfiguration configuration)
     {
-        var corsSettings = LoadCorsSettings(configuration);
+        CorsSettings corsSettings = LoadCorsSettings(configuration);
 
         services.AddCors(options =>
         {
@@ -39,7 +39,7 @@ public static class CorsConfigurationExtensions
         var settings = new CorsSettings();
 
         // Từ appsettings.json
-        var corsSection = configuration.GetSection("Cors");
+        IConfigurationSection corsSection = configuration.GetSection("Cors");
         if (corsSection.Exists())
         {
             settings.AllowedOrigins = corsSection.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();

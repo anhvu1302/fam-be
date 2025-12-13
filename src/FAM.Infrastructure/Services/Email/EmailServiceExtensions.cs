@@ -1,10 +1,12 @@
+using FAM.Application.Abstractions;
 using FAM.Application.Common.Email;
 using FAM.Application.Common.Services;
+using FAM.Infrastructure.Providers.Cache;
 using FAM.Infrastructure.Services.Email.Providers;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
 
 namespace FAM.Infrastructure.Services.Email;
 
@@ -73,59 +75,26 @@ public static class EmailServiceExtensions
                 options.Smtp.EnableSsl = enableSsl;
         });
 
-        // Register Redis connection for email queue
-        services.AddSingleton<IConnectionMultiplexer>(sp =>
-        {
-            var redisHost = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "localhost";
-            var redisPort = Environment.GetEnvironmentVariable("REDIS_PORT") ?? "6379";
-            var redisPassword = Environment.GetEnvironmentVariable("REDIS_PASSWORD");
+        // Register cache provider for email queue
+        services.AddCacheProvider(configuration);
 
-            var configOptions = new ConfigurationOptions
-            {
-                EndPoints = { $"{redisHost}:{redisPort}" },
-                AbortOnConnectFail = false,
-                ConnectRetry = 3,
-                ConnectTimeout = 5000
-            };
-
-            if (!string.IsNullOrEmpty(redisPassword)) configOptions.Password = redisPassword;
-
-            var logger = sp.GetRequiredService<ILogger<RedisEmailQueue>>();
-
-            try
-            {
-                var connection = ConnectionMultiplexer.Connect(configOptions);
-                logger.LogInformation("Connected to Redis for email queue at {Host}:{Port}", redisHost, redisPort);
-                return connection;
-            }
-            catch (Exception ex)
-            {
-                logger.LogWarning(ex, "Failed to connect to Redis. Falling back to in-memory queue.");
-                throw;
-            }
-        });
-
-        // Register Redis queue as primary, with fallback to in-memory
+        // Register email queue with cache provider (try cache-backed first, fallback to in-memory)
         services.AddSingleton<IEmailQueue>(sp =>
         {
             try
             {
-                var redis = sp.GetService<IConnectionMultiplexer>();
-                if (redis != null && redis.IsConnected)
-                {
-                    var logger = sp.GetRequiredService<ILogger<RedisEmailQueue>>();
-                    return new RedisEmailQueue(redis, logger);
-                }
+                ICacheProvider cache = sp.GetRequiredService<ICacheProvider>();
+                ILogger<CacheEmailQueue> logger = sp.GetRequiredService<ILogger<CacheEmailQueue>>();
+                logger.LogInformation("Using cache-backed email queue");
+                return new CacheEmailQueue(cache, logger);
             }
-            catch
+            catch (Exception ex)
             {
-                // Fall through to in-memory
+                // Fallback to in-memory queue
+                ILogger<InMemoryEmailQueue> memLogger = sp.GetRequiredService<ILogger<InMemoryEmailQueue>>();
+                memLogger.LogWarning(ex, "Failed to initialize cache email queue. Using in-memory email queue.");
+                return new InMemoryEmailQueue(memLogger);
             }
-
-            // Fallback to in-memory queue
-            var memLogger = sp.GetRequiredService<ILogger<InMemoryEmailQueue>>();
-            memLogger.LogWarning("Using in-memory email queue. Emails will be lost on restart!");
-            return new InMemoryEmailQueue(memLogger);
         });
 
         // Register template service

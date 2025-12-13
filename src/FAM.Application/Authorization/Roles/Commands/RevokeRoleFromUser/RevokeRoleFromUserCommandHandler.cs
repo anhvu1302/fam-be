@@ -1,5 +1,7 @@
 using FAM.Domain.Abstractions;
+using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
+
 using MediatR;
 
 namespace FAM.Application.Authorization.Roles.Commands.RevokeRoleFromUser;
@@ -15,7 +17,7 @@ public sealed class RevokeRoleFromUserCommandHandler : IRequestHandler<RevokeRol
 
     public async Task<bool> Handle(RevokeRoleFromUserCommand request, CancellationToken cancellationToken)
     {
-        var userNodeRole = await _unitOfWork.UserNodeRoles.GetByUserAndNodeAndRoleAsync(
+        UserNodeRole? userNodeRole = await _unitOfWork.UserNodeRoles.GetByUserAndNodeAndRoleAsync(
             request.UserId, request.NodeId, request.RoleId, cancellationToken);
 
         if (userNodeRole == null)

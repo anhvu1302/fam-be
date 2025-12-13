@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+
 using FAM.Domain.Common.Base;
 
 namespace FAM.Domain.ValueObjects;
@@ -29,7 +30,7 @@ public sealed class IPAddress : ValueObject
             // Default to localhost for unknown IPs
             ipAddress = "127.0.0.1";
 
-        var type = DetermineType(ipAddress);
+        IPAddressType type = DetermineType(ipAddress);
         if (type == IPAddressType.Invalid)
             throw new DomainException(ErrorCodes.VO_IP_INVALID);
 
@@ -38,7 +39,7 @@ public sealed class IPAddress : ValueObject
 
     private static IPAddressType DetermineType(string ip)
     {
-        if (System.Net.IPAddress.TryParse(ip, out var parsed))
+        if (System.Net.IPAddress.TryParse(ip, out System.Net.IPAddress? parsed))
             return parsed.AddressFamily == AddressFamily.InterNetwork
                 ? IPAddressType.IPv4
                 : IPAddressType.IPv6;

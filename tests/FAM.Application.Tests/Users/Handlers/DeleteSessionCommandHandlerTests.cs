@@ -3,7 +3,9 @@ using FAM.Application.Users.Commands.DeleteSession;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Users.Entities;
+
 using FluentAssertions;
+
 using Moq;
 
 namespace FAM.Application.Tests.Users.Handlers;
@@ -20,7 +22,8 @@ public class DeleteSessionCommandHandlerTests
         _mockUserDeviceRepository = new Mock<IUserDeviceRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
         _mockTokenBlacklistService = new Mock<ITokenBlacklistService>();
-        _handler = new DeleteSessionCommandHandler(_mockUserDeviceRepository.Object, _mockUnitOfWork.Object, _mockTokenBlacklistService.Object);
+        _handler = new DeleteSessionCommandHandler(_mockUserDeviceRepository.Object, _mockUnitOfWork.Object,
+            _mockTokenBlacklistService.Object);
     }
 
     [Fact]
@@ -31,7 +34,7 @@ public class DeleteSessionCommandHandlerTests
         var sessionId = Guid.NewGuid();
         var device = UserDevice.Create(userId, "device1", "Chrome", "desktop");
         var accessToken = "test_token";
-        var expirationTime = DateTime.UtcNow.AddHours(1);
+        DateTime expirationTime = DateTime.UtcNow.AddHours(1);
 
         _mockUserDeviceRepository
             .Setup(x => x.GetByIdAsync(sessionId, It.IsAny<CancellationToken>()))
@@ -49,7 +52,8 @@ public class DeleteSessionCommandHandlerTests
         // Assert
         _mockUserDeviceRepository.Verify(x => x.Delete(device), Times.Once);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        _mockTokenBlacklistService.Verify(x => x.BlacklistTokenAsync(accessToken, expirationTime, It.IsAny<CancellationToken>()), Times.Once);
+        _mockTokenBlacklistService.Verify(
+            x => x.BlacklistTokenAsync(accessToken, expirationTime, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -85,7 +89,7 @@ public class DeleteSessionCommandHandlerTests
         var command = new DeleteSessionCommand(userId, sessionId);
 
         // Act & Assert
-        var exception =
+        DomainException exception =
             await Assert.ThrowsAsync<DomainException>(async () =>
                 await _handler.Handle(command, CancellationToken.None));
 

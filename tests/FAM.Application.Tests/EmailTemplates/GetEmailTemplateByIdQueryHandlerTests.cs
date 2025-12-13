@@ -1,6 +1,8 @@
 using FAM.Application.EmailTemplates.Queries.GetEmailTemplateById;
+using FAM.Application.EmailTemplates.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.EmailTemplates;
+
 using Moq;
 
 namespace FAM.Application.Tests.EmailTemplates;
@@ -33,7 +35,7 @@ public class GetEmailTemplateByIdQueryHandlerTests
             .ReturnsAsync(template);
 
         // Act
-        var result = await _handler.Handle(query, default);
+        EmailTemplateDto? result = await _handler.Handle(query, default);
 
         // Assert
         Assert.NotNull(result);
@@ -53,7 +55,7 @@ public class GetEmailTemplateByIdQueryHandlerTests
             .ReturnsAsync((EmailTemplate?)null);
 
         // Act
-        var result = await _handler.Handle(query, default);
+        EmailTemplateDto? result = await _handler.Handle(query, default);
 
         // Assert
         Assert.Null(result);

@@ -20,7 +20,7 @@ public abstract class Specification<T> : ISpecification<T>
 
     public bool IsSatisfiedBy(T entity)
     {
-        var predicate = ToExpression().Compile();
+        Func<T, bool> predicate = ToExpression().Compile();
         return predicate(entity);
     }
 
@@ -56,8 +56,8 @@ internal class AndSpecification<T> : Specification<T>
     {
         var leftExpr = _left.ToExpression();
         var rightExpr = _right.ToExpression();
-        var param = Expression.Parameter(typeof(T));
-        var body = Expression.AndAlso(
+        ParameterExpression param = Expression.Parameter(typeof(T));
+        BinaryExpression body = Expression.AndAlso(
             Expression.Invoke(leftExpr, param),
             Expression.Invoke(rightExpr, param)
         );
@@ -80,8 +80,8 @@ internal class OrSpecification<T> : Specification<T>
     {
         var leftExpr = _left.ToExpression();
         var rightExpr = _right.ToExpression();
-        var param = Expression.Parameter(typeof(T));
-        var body = Expression.OrElse(
+        ParameterExpression param = Expression.Parameter(typeof(T));
+        BinaryExpression body = Expression.OrElse(
             Expression.Invoke(leftExpr, param),
             Expression.Invoke(rightExpr, param)
         );
@@ -101,8 +101,8 @@ internal class NotSpecification<T> : Specification<T>
     public override Expression<Func<T, bool>> ToExpression()
     {
         var expr = _spec.ToExpression();
-        var param = Expression.Parameter(typeof(T));
-        var body = Expression.Not(
+        ParameterExpression param = Expression.Parameter(typeof(T));
+        UnaryExpression body = Expression.Not(
             Expression.Invoke(expr, param)
         );
         return Expression.Lambda<Func<T, bool>>(body, param);

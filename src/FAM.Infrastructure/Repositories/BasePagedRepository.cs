@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using System.Reflection;
+
 using AutoMapper;
 
 namespace FAM.Infrastructure.Repositories;
@@ -25,9 +27,9 @@ public abstract class BasePagedRepository<TDomain, TEf>
     protected Expression<Func<TEf, bool>> ConvertToEfExpression(
         Expression<Func<TDomain, bool>> domainExpression)
     {
-        var parameter = Expression.Parameter(typeof(TEf), "e");
+        ParameterExpression parameter = Expression.Parameter(typeof(TEf), "e");
         var visitor = new DomainToEfExpressionVisitor(parameter, domainExpression.Parameters[0]);
-        var body = visitor.Visit(domainExpression.Body);
+        Expression body = visitor.Visit(domainExpression.Body);
         return Expression.Lambda<Func<TEf, bool>>(body, parameter);
     }
 
@@ -66,7 +68,7 @@ public abstract class BasePagedRepository<TDomain, TEf>
         var expressions = new List<Expression<Func<TDomain, object>>>();
 
         foreach (var includeName in includeNames)
-            if (allowedIncludes.TryGetValue(includeName, out var expression))
+            if (allowedIncludes.TryGetValue(includeName, out Expression<Func<TDomain, object>>? expression))
                 expressions.Add(expression);
             else
                 throw new InvalidOperationException(
@@ -107,7 +109,7 @@ public abstract class BasePagedRepository<TDomain, TEf>
                 {
                     // This is accessing a property on a ValueObject (e.g., p.Resource.Value)
                     // We want to map this to the EF property (e.g., p.Resource)
-                    var efProperty = typeof(TEf).GetProperty(innerMember.Member.Name);
+                    PropertyInfo? efProperty = typeof(TEf).GetProperty(innerMember.Member.Name);
                     if (efProperty != null)
                         // Return just the EF property, dropping the .Value access
                         return Expression.Property(_efParameter, efProperty);
@@ -117,7 +119,7 @@ public abstract class BasePagedRepository<TDomain, TEf>
             if (node.Expression is ParameterExpression directParamExpr && directParamExpr == _domainParameter)
             {
                 // Get the same property name on EF type
-                var efProperty = typeof(TEf).GetProperty(node.Member.Name);
+                PropertyInfo? efProperty = typeof(TEf).GetProperty(node.Member.Name);
                 if (efProperty != null) return Expression.Property(_efParameter, efProperty);
             }
 

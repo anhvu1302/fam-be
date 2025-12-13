@@ -1,4 +1,6 @@
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+
 using MediatR;
 
 namespace FAM.Application.Users.Commands.DeleteUser;
@@ -14,7 +16,7 @@ public sealed class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand
 
     public async Task<bool> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _unitOfWork.Users.GetByIdAsync(request.Id, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(request.Id, cancellationToken);
         if (user == null) return false;
 
         _unitOfWork.Users.Delete(user);

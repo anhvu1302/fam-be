@@ -1,6 +1,7 @@
 using FAM.Application.Settings.DTOs;
 using FAM.Application.Settings.Services;
 using FAM.Domain.Common.Base;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +35,7 @@ public class SettingsController : BaseApiController
     public async Task<ActionResult<IEnumerable<PublicSettingResponse>>> GetPublicSettings(
         CancellationToken cancellationToken = default)
     {
-        var settings = await _settingService.GetAllPublicAsync(cancellationToken);
+        IEnumerable<PublicSettingResponse> settings = await _settingService.GetAllPublicAsync(cancellationToken);
         return OkResponse(settings);
     }
 
@@ -47,7 +48,8 @@ public class SettingsController : BaseApiController
     public async Task<ActionResult<IEnumerable<PublicSettingsGroupResponse>>> GetPublicSettingsGrouped(
         CancellationToken cancellationToken = default)
     {
-        var settings = await _settingService.GetPublicGroupedAsync(cancellationToken);
+        IEnumerable<PublicSettingsGroupResponse> settings =
+            await _settingService.GetPublicGroupedAsync(cancellationToken);
         return OkResponse(settings);
     }
 
@@ -64,12 +66,12 @@ public class SettingsController : BaseApiController
         var value = await _settingService.GetValueAsync(key, cancellationToken);
         if (value == null)
         {
-            var setting = await _settingService.GetByKeyAsync(key, cancellationToken);
+            SystemSettingResponse? setting = await _settingService.GetByKeyAsync(key, cancellationToken);
             if (setting == null)
                 throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", key);
         }
 
-        var result = await _settingService.GetByKeyAsync(key, cancellationToken);
+        SystemSettingResponse? result = await _settingService.GetByKeyAsync(key, cancellationToken);
         return OkResponse(new PublicSettingResponse(
             result!.Key,
             result.IsSensitive ? null : result.EffectiveValue,
@@ -91,7 +93,7 @@ public class SettingsController : BaseApiController
     public async Task<ActionResult<IEnumerable<SystemSettingResponse>>> GetAllSettings(
         CancellationToken cancellationToken = default)
     {
-        var settings = await _settingService.GetAllAsync(cancellationToken);
+        IEnumerable<SystemSettingResponse> settings = await _settingService.GetAllAsync(cancellationToken);
         return OkResponse(settings);
     }
 
@@ -104,7 +106,7 @@ public class SettingsController : BaseApiController
     public async Task<ActionResult<IEnumerable<SettingsGroupResponse>>> GetSettingsGrouped(
         CancellationToken cancellationToken = default)
     {
-        var settings = await _settingService.GetGroupedAsync(cancellationToken);
+        IEnumerable<SettingsGroupResponse> settings = await _settingService.GetGroupedAsync(cancellationToken);
         return OkResponse(settings);
     }
 
@@ -116,7 +118,7 @@ public class SettingsController : BaseApiController
     [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<string>>> GetGroups(CancellationToken cancellationToken = default)
     {
-        var groups = await _settingService.GetGroupsAsync(cancellationToken);
+        IEnumerable<string> groups = await _settingService.GetGroupsAsync(cancellationToken);
         return OkResponse(groups);
     }
 
@@ -130,7 +132,7 @@ public class SettingsController : BaseApiController
         string group,
         CancellationToken cancellationToken = default)
     {
-        var settings = await _settingService.GetByGroupAsync(group, cancellationToken);
+        IEnumerable<SystemSettingResponse> settings = await _settingService.GetByGroupAsync(group, cancellationToken);
         return OkResponse(settings);
     }
 
@@ -144,7 +146,7 @@ public class SettingsController : BaseApiController
     public async Task<ActionResult<SystemSettingResponse>> GetSettingById(long id,
         CancellationToken cancellationToken = default)
     {
-        var setting = await _settingService.GetByIdAsync(id, cancellationToken);
+        SystemSettingResponse? setting = await _settingService.GetByIdAsync(id, cancellationToken);
         if (setting == null)
             throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", id);
         return OkResponse(setting);
@@ -160,7 +162,7 @@ public class SettingsController : BaseApiController
     public async Task<ActionResult<SystemSettingResponse>> GetSettingByKey(string key,
         CancellationToken cancellationToken = default)
     {
-        var setting = await _settingService.GetByKeyAsync(key, cancellationToken);
+        SystemSettingResponse? setting = await _settingService.GetByKeyAsync(key, cancellationToken);
         if (setting == null)
             throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", key);
         return OkResponse(setting);
@@ -177,7 +179,7 @@ public class SettingsController : BaseApiController
         [FromBody] CreateSystemSettingRequest request,
         CancellationToken cancellationToken = default)
     {
-        var setting = await _settingService.CreateAsync(request, cancellationToken);
+        SystemSettingResponse setting = await _settingService.CreateAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetSettingById), new { id = setting.Id }, setting);
     }
 
@@ -194,7 +196,7 @@ public class SettingsController : BaseApiController
         [FromBody] UpdateSystemSettingRequest request,
         CancellationToken cancellationToken = default)
     {
-        var setting = await _settingService.UpdateAsync(id, request, cancellationToken);
+        SystemSettingResponse setting = await _settingService.UpdateAsync(id, request, cancellationToken);
         return OkResponse(setting);
     }
 
@@ -212,7 +214,7 @@ public class SettingsController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         var userId = GetCurrentUserId();
-        var setting = await _settingService.UpdateValueAsync(key, request, userId, cancellationToken);
+        SystemSettingResponse setting = await _settingService.UpdateValueAsync(key, request, userId, cancellationToken);
         return OkResponse(setting);
     }
 

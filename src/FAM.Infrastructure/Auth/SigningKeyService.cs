@@ -1,9 +1,11 @@
 using System.Security.Cryptography;
+
 using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
@@ -30,13 +32,13 @@ public class SigningKeyService : ISigningKeyService
 
     public async Task<JwksDto> GetJwksAsync(CancellationToken cancellationToken = default)
     {
-        var keys = await _repository.GetAllActiveKeysAsync(cancellationToken);
+        IReadOnlyList<SigningKey> keys = await _repository.GetAllActiveKeysAsync(cancellationToken);
         var jwks = new JwksDto();
 
-        foreach (var key in keys.Where(k => k.CanVerify()))
+        foreach (SigningKey key in keys.Where(k => k.CanVerify()))
             try
             {
-                var jwk = ConvertToJwk(key);
+                JwkDto jwk = ConvertToJwk(key);
                 jwks.Keys.Add(jwk);
             }
             catch (Exception ex)
@@ -49,7 +51,7 @@ public class SigningKeyService : ISigningKeyService
 
     public async Task<SigningKey> GetOrCreateActiveKeyAsync(CancellationToken cancellationToken = default)
     {
-        var activeKey = await _repository.GetActiveKeyAsync(cancellationToken);
+        SigningKey? activeKey = await _repository.GetActiveKeyAsync(cancellationToken);
 
         if (activeKey != null && activeKey.CanSign()) return activeKey;
 
@@ -95,8 +97,8 @@ public class SigningKeyService : ISigningKeyService
         if (activateImmediately)
         {
             // Deactivate all other keys
-            var allKeys = await _repository.GetAllAsync(cancellationToken);
-            foreach (var key in allKeys.Where(k => k.Id != signingKey.Id && k.IsActive))
+            IEnumerable<SigningKey> allKeys = await _repository.GetAllAsync(cancellationToken);
+            foreach (SigningKey key in allKeys.Where(k => k.Id != signingKey.Id && k.IsActive))
             {
                 key.Deactivate();
                 _repository.Update(key);
@@ -119,7 +121,7 @@ public class SigningKeyService : ISigningKeyService
 
     public async Task ActivateKeyAsync(long keyId, CancellationToken cancellationToken = default)
     {
-        var key = await _repository.GetByIdAsync(keyId, cancellationToken);
+        SigningKey? key = await _repository.GetByIdAsync(keyId, cancellationToken);
         if (key == null) throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
 
         key.Activate();
@@ -135,7 +137,7 @@ public class SigningKeyService : ISigningKeyService
 
     public async Task DeactivateKeyAsync(long keyId, CancellationToken cancellationToken = default)
     {
-        var key = await _repository.GetByIdAsync(keyId, cancellationToken);
+        SigningKey? key = await _repository.GetByIdAsync(keyId, cancellationToken);
         if (key == null) throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
 
         key.Deactivate();
@@ -147,7 +149,7 @@ public class SigningKeyService : ISigningKeyService
 
     public async Task RevokeKeyAsync(long keyId, string? reason = null, CancellationToken cancellationToken = default)
     {
-        var key = await _repository.GetByIdAsync(keyId, cancellationToken);
+        SigningKey? key = await _repository.GetByIdAsync(keyId, cancellationToken);
         if (key == null) throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
 
         key.Revoke(reason);
@@ -166,10 +168,10 @@ public class SigningKeyService : ISigningKeyService
         string? revocationReason = null,
         CancellationToken cancellationToken = default)
     {
-        var oldKey = await _repository.GetActiveKeyAsync(cancellationToken);
+        SigningKey? oldKey = await _repository.GetActiveKeyAsync(cancellationToken);
 
         // Generate new key
-        var newKey = await GenerateKeyAsync(
+        SigningKey newKey = await GenerateKeyAsync(
             algorithm,
             keySize,
             expiresAt,
@@ -199,13 +201,13 @@ public class SigningKeyService : ISigningKeyService
 
     public async Task<IReadOnlyList<SigningKeyResponse>> GetAllKeysAsync(CancellationToken cancellationToken = default)
     {
-        var keys = await _repository.GetAllAsync(cancellationToken);
+        IEnumerable<SigningKey> keys = await _repository.GetAllAsync(cancellationToken);
         return keys.Select(MapToResponse).ToList();
     }
 
     public async Task<SigningKeyResponse?> GetKeyByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var key = await _repository.GetByIdAsync(id, cancellationToken);
+        SigningKey? key = await _repository.GetByIdAsync(id, cancellationToken);
         return key != null ? MapToResponse(key) : null;
     }
 
@@ -216,7 +218,7 @@ public class SigningKeyService : ISigningKeyService
 
     public async Task DeleteKeyAsync(long keyId, CancellationToken cancellationToken = default)
     {
-        var key = await _repository.GetByIdAsync(keyId, cancellationToken);
+        SigningKey? key = await _repository.GetByIdAsync(keyId, cancellationToken);
         if (key == null) throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
 
         if (!key.IsRevoked) throw new DomainException(ErrorCodes.KEY_MUST_REVOKE_FIRST);
@@ -231,7 +233,8 @@ public class SigningKeyService : ISigningKeyService
         TimeSpan withinTimeSpan,
         CancellationToken cancellationToken = default)
     {
-        var keys = await _repository.GetKeysExpiringWithinAsync(withinTimeSpan, cancellationToken);
+        IReadOnlyList<SigningKey>
+            keys = await _repository.GetKeysExpiringWithinAsync(withinTimeSpan, cancellationToken);
         return keys.Select(MapToResponse).ToList();
     }
 
@@ -251,7 +254,7 @@ public class SigningKeyService : ISigningKeyService
     {
         using var rsa = RSA.Create();
         rsa.ImportFromPem(key.PublicKey);
-        var parameters = rsa.ExportParameters(false);
+        RSAParameters parameters = rsa.ExportParameters(false);
 
         return new JwkDto
         {

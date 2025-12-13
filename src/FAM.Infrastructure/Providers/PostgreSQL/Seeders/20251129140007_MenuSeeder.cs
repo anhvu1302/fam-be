@@ -1,5 +1,6 @@
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.PersistenceModels.Ef;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -38,19 +39,19 @@ public class MenuSeeder : BaseDataSeeder
         var menus = new List<MenuItemEf>();
 
         // Dashboard
-        var dashboard = CreateMenu("dashboard", "Dashboard", "dashboard", "/dashboard", sortOrder: 0);
+        MenuItemEf dashboard = CreateMenu("dashboard", "Dashboard", "dashboard", "/dashboard", sortOrder: 0);
         menus.Add(dashboard);
 
         // Asset Management (Parent)
-        var assets = CreateMenu("assets", "Asset Management", "inventory_2", null, sortOrder: 1);
+        MenuItemEf assets = CreateMenu("assets", "Asset Management", "inventory_2", null, sortOrder: 1);
         menus.Add(assets);
 
         // Reports (Parent)
-        var reports = CreateMenu("reports", "Reports", "assessment", null, sortOrder: 2);
+        MenuItemEf reports = CreateMenu("reports", "Reports", "assessment", null, sortOrder: 2);
         menus.Add(reports);
 
         // Settings (Parent)
-        var settings = CreateMenu("settings", "Settings", "settings", null, sortOrder: 3,
+        MenuItemEf settings = CreateMenu("settings", "Settings", "settings", null, sortOrder: 3,
             requiredRoles: "Admin,SuperAdmin");
         menus.Add(settings);
 

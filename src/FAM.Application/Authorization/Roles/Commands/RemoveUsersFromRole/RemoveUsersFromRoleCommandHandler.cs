@@ -1,6 +1,9 @@
 using FAM.Domain.Abstractions;
+using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Authorization.Roles.Commands.RemoveUsersFromRole;
@@ -23,7 +26,7 @@ public sealed class RemoveUsersFromRoleCommandHandler : IRequestHandler<RemoveUs
         if (!request.UserIds.Any())
             throw new DomainException(ErrorCodes.ROLE_NO_PERMISSIONS_PROVIDED, "No user IDs provided");
 
-        var assignments = await _unitOfWork.UserNodeRoles.FindAsync(
+        IEnumerable<UserNodeRole> assignments = await _unitOfWork.UserNodeRoles.FindAsync(
             unr => unr.RoleId == request.RoleId
                    && unr.NodeId == request.NodeId
                    && request.UserIds.Contains(unr.UserId),
@@ -37,7 +40,7 @@ public sealed class RemoveUsersFromRoleCommandHandler : IRequestHandler<RemoveUs
         }
 
         var removedCount = 0;
-        foreach (var assignment in assignments)
+        foreach (UserNodeRole assignment in assignments)
         {
             _unitOfWork.UserNodeRoles.Delete(assignment);
             removedCount++;

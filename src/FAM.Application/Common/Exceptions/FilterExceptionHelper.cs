@@ -1,5 +1,7 @@
 using FAM.Application.Querying.Validation;
 
+using LambdaExpression = System.Linq.Expressions.LambdaExpression;
+
 namespace FAM.Application.Common.Exceptions;
 
 /// <summary>
@@ -30,13 +32,13 @@ public static class FilterExceptionHelper
     {
         var descriptions = new List<string>();
 
-        foreach (var field in fieldMap.GetAllFields())
+        foreach ((string FieldName, LambdaExpression Expression, Type Type) field in fieldMap.GetAllFields())
         {
             var fieldName = field.FieldName;
-            var expression = field.Expression;
+            LambdaExpression expression = field.Expression;
 
             // Determine field type from expression
-            var returnType = expression.ReturnType;
+            Type returnType = expression.ReturnType;
             var fieldType = GetFieldTypeName(returnType);
             var operations = GetOperationsForType(returnType);
 
@@ -49,7 +51,7 @@ public static class FilterExceptionHelper
     private static string GetFieldTypeName(Type type)
     {
         // Handle nullable types
-        var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
+        Type underlyingType = Nullable.GetUnderlyingType(type) ?? type;
 
         if (underlyingType == typeof(string))
             return "string";
@@ -73,7 +75,7 @@ public static class FilterExceptionHelper
 
     private static string GetOperationsForType(Type type)
     {
-        var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
+        Type underlyingType = Nullable.GetUnderlyingType(type) ?? type;
 
         if (underlyingType == typeof(string) || type == typeof(object))
             return "@contains, @startswith, @endswith, ==";
@@ -96,11 +98,12 @@ public static class FilterExceptionHelper
         var fields = fieldMap.GetAllFields().ToList();
 
         // Try to generate smart examples based on available fields
-        foreach (var field in fields.Take(3)) // Take first 3 fields for examples
+        foreach ((string FieldName, LambdaExpression Expression, Type Type) field in
+                 fields.Take(3)) // Take first 3 fields for examples
         {
             var fieldName = field.FieldName;
-            var returnType = field.Expression.ReturnType;
-            var underlyingType = Nullable.GetUnderlyingType(returnType) ?? returnType;
+            Type returnType = field.Expression.ReturnType;
+            Type underlyingType = Nullable.GetUnderlyingType(returnType) ?? returnType;
 
             if (underlyingType == typeof(string) || returnType == typeof(object))
             {
@@ -130,10 +133,10 @@ public static class FilterExceptionHelper
         {
             var firstField = fields[0].FieldName;
             var secondField = fields[1].FieldName;
-            var firstType = Nullable.GetUnderlyingType(fields[0].Expression.ReturnType) ??
-                            fields[0].Expression.ReturnType;
-            var secondType = Nullable.GetUnderlyingType(fields[1].Expression.ReturnType) ??
-                             fields[1].Expression.ReturnType;
+            Type firstType = Nullable.GetUnderlyingType(fields[0].Expression.ReturnType) ??
+                             fields[0].Expression.ReturnType;
+            Type secondType = Nullable.GetUnderlyingType(fields[1].Expression.ReturnType) ??
+                              fields[1].Expression.ReturnType;
 
             if (firstType == typeof(bool) &&
                 (secondType == typeof(string) || fields[1].Expression.ReturnType == typeof(object)))

@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.ValueObjects;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.ValueObjects;
@@ -10,7 +11,7 @@ public class WarrantyInfoTests
     public void Create_WithValidData_ShouldCreateWarrantyInfo()
     {
         // Arrange
-        var startDate = DateTime.UtcNow;
+        DateTime startDate = DateTime.UtcNow;
         var durationMonths = 12;
 
         // Act
@@ -29,7 +30,7 @@ public class WarrantyInfoTests
     public void Create_WithTermsAndProvider_ShouldCreateWarrantyInfo()
     {
         // Arrange
-        var startDate = DateTime.UtcNow;
+        DateTime startDate = DateTime.UtcNow;
         var durationMonths = 24;
         var terms = "Full coverage";
         var provider = "Manufacturer";
@@ -46,7 +47,7 @@ public class WarrantyInfoTests
     public void Create_WithZeroDuration_ShouldThrowDomainException()
     {
         // Arrange
-        var startDate = DateTime.UtcNow;
+        DateTime startDate = DateTime.UtcNow;
         var durationMonths = 0;
 
         // Act
@@ -61,7 +62,7 @@ public class WarrantyInfoTests
     public void Create_WithNegativeDuration_ShouldThrowDomainException()
     {
         // Arrange
-        var startDate = DateTime.UtcNow;
+        DateTime startDate = DateTime.UtcNow;
         var durationMonths = -6;
 
         // Act
@@ -107,7 +108,7 @@ public class WarrantyInfoTests
     public void IsActive_WithFutureEndDate_ShouldReturnTrue()
     {
         // Arrange
-        var startDate = DateTime.UtcNow.AddMonths(-6);
+        DateTime startDate = DateTime.UtcNow.AddMonths(-6);
         var warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act
@@ -121,7 +122,7 @@ public class WarrantyInfoTests
     public void IsActive_WithPastEndDate_ShouldReturnFalse()
     {
         // Arrange
-        var startDate = DateTime.UtcNow.AddMonths(-18);
+        DateTime startDate = DateTime.UtcNow.AddMonths(-18);
         var warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act
@@ -135,7 +136,7 @@ public class WarrantyInfoTests
     public void IsExpired_WithPastEndDate_ShouldReturnTrue()
     {
         // Arrange
-        var startDate = DateTime.UtcNow.AddMonths(-18);
+        DateTime startDate = DateTime.UtcNow.AddMonths(-18);
         var warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act
@@ -149,7 +150,7 @@ public class WarrantyInfoTests
     public void IsExpired_WithFutureEndDate_ShouldReturnFalse()
     {
         // Arrange
-        var startDate = DateTime.UtcNow.AddMonths(-6);
+        DateTime startDate = DateTime.UtcNow.AddMonths(-6);
         var warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act
@@ -163,7 +164,7 @@ public class WarrantyInfoTests
     public void DaysRemaining_WithActiveWarranty_ShouldReturnPositiveDays()
     {
         // Arrange
-        var startDate = DateTime.UtcNow.AddMonths(-6);
+        DateTime startDate = DateTime.UtcNow.AddMonths(-6);
         var warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act
@@ -177,7 +178,7 @@ public class WarrantyInfoTests
     public void DaysRemaining_WithExpiredWarranty_ShouldReturnZero()
     {
         // Arrange
-        var startDate = DateTime.UtcNow.AddMonths(-18);
+        DateTime startDate = DateTime.UtcNow.AddMonths(-18);
         var warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act

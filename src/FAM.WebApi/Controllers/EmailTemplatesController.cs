@@ -12,7 +12,9 @@ using FAM.Application.Querying.Extensions;
 using FAM.Domain.Common.Base;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.EmailTemplates;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -65,7 +67,7 @@ public class EmailTemplatesController : BaseApiController
     public async Task<IActionResult> GetEmailTemplates([FromQuery] PaginationQueryParameters parameters)
     {
         var query = new GetEmailTemplatesQuery(parameters.ToQueryRequest());
-        var result = await _mediator.Send(query);
+        PageResult<EmailTemplateDto> result = await _mediator.Send(query);
 
         // Apply field selection if requested
         var fields = parameters.GetFieldsArray();
@@ -99,7 +101,7 @@ public class EmailTemplatesController : BaseApiController
     public async Task<ActionResult<EmailTemplateResponse>> GetTemplateById(long id)
     {
         var query = new GetEmailTemplateByIdQuery(id);
-        var dto = await _mediator.Send(query);
+        EmailTemplateDto? dto = await _mediator.Send(query);
 
         if (dto == null)
             throw new NotFoundException(ErrorCodes.GEN_NOT_FOUND, "EmailTemplate", id);
@@ -145,7 +147,7 @@ public class EmailTemplatesController : BaseApiController
     public async Task<ActionResult<EmailTemplateResponse>> GetTemplateByCode(string code)
     {
         var query = new GetEmailTemplateByCodeQuery(code);
-        var dto = await _mediator.Send(query);
+        EmailTemplateDto? dto = await _mediator.Send(query);
 
         if (dto == null)
             throw new NotFoundException(ErrorCodes.GEN_NOT_FOUND, "EmailTemplate", code);

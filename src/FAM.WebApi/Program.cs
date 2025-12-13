@@ -1,7 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+
 using FAM.Application.Auth.Services;
+using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Options;
 using FAM.Application.Common.Services;
 using FAM.Application.Querying.Parsing;
@@ -15,13 +17,16 @@ using FAM.Infrastructure.Services.Email;
 using FAM.WebApi.Configuration;
 using FAM.WebApi.Middleware;
 using FAM.WebApi.Services;
+
 using FluentValidation;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+
 using Serilog;
 using Serilog.Events;
 
@@ -32,7 +37,7 @@ DotEnvLoader.LoadForEnvironment(environment);
 // Load and validate configuration
 var appConfig = new AppConfiguration();
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // ===== Configure Serilog =====
 builder.Host.UseSerilog((context, services, configuration) => configuration
@@ -190,7 +195,7 @@ builder.Services.AddAuthentication(options =>
         {
             OnMessageReceived = async context =>
             {
-                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                ILogger<Program> logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
 
                 try
                 {
@@ -199,16 +204,16 @@ builder.Services.AddAuthentication(options =>
                         token.Length > 20 ? token.Substring(0, 20) + "..." : token);
 
                     // Get signing key service from request scope
-                    var signingKeyService = context.HttpContext.RequestServices
+                    ISigningKeyService signingKeyService = context.HttpContext.RequestServices
                         .GetRequiredService<ISigningKeyService>();
 
                     // Get JWKS from database
-                    var jwks = await signingKeyService.GetJwksAsync(context.HttpContext.RequestAborted);
+                    JwksDto jwks = await signingKeyService.GetJwksAsync(context.HttpContext.RequestAborted);
                     logger.LogInformation("Loaded {Count} keys from database", jwks.Keys.Count);
 
                     // Convert JWKs to SecurityKeys
                     var keys = new List<SecurityKey>();
-                    foreach (var jwk in jwks.Keys)
+                    foreach (JwkDto jwk in jwks.Keys)
                         if (jwk.Kty == "RSA")
                         {
                             var rsa = RSA.Create(); // Don't use 'using' - key needs to live longer
@@ -232,7 +237,7 @@ builder.Services.AddAuthentication(options =>
             },
             OnAuthenticationFailed = context =>
             {
-                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                ILogger<Program> logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
                 logger.LogError(context.Exception, "JWT Authentication failed: {Message}", context.Exception.Message);
 
                 if (context.Exception is SecurityTokenExpiredException)
@@ -249,7 +254,7 @@ builder.Services.AddAuthentication(options =>
             },
             OnTokenValidated = async context =>
             {
-                var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+                ILogger<Program> logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
                 var userId = context.Principal?.FindFirst("user_id")?.Value ??
                              context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var jti = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
@@ -258,7 +263,7 @@ builder.Services.AddAuthentication(options =>
                 var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 if (!string.IsNullOrEmpty(token))
                 {
-                    var blacklistService = context.HttpContext.RequestServices
+                    ITokenBlacklistService blacklistService = context.HttpContext.RequestServices
                         .GetRequiredService<ITokenBlacklistService>();
 
                     // Check individual token blacklist (by full token hash)
@@ -276,7 +281,8 @@ builder.Services.AddAuthentication(options =>
                         var isJtiBlacklisted = await blacklistService.IsTokenBlacklistedByJtiAsync(jti);
                         if (isJtiBlacklisted)
                         {
-                            logger.LogWarning("Token with JTI {JTI} is blacklisted for user: {UserId}", jti, userId ?? "Unknown");
+                            logger.LogWarning("Token with JTI {JTI} is blacklisted for user: {UserId}", jti,
+                                userId ?? "Unknown");
                             context.Fail("Token has been revoked");
                             return;
                         }
@@ -342,7 +348,7 @@ builder.Services.Configure<FrontendOptions>(options =>
     if (!string.IsNullOrEmpty(frontendUrl))
     {
         // If URL contains port, split it
-        if (Uri.TryCreate(frontendUrl, UriKind.Absolute, out var uri))
+        if (Uri.TryCreate(frontendUrl, UriKind.Absolute, out Uri? uri))
         {
             options.BaseUrl = $"{uri.Scheme}://{uri.Host}";
             if (uri.Port != 80 && uri.Port != 443)
@@ -365,7 +371,7 @@ builder.Services.AddSingleton(sp =>
     sp.GetRequiredService<IOptions<FrontendOptions>>().Value);
 
 // Legacy paging options (backward compatibility)
-var paginationSection = builder.Configuration.GetSection(PaginationSettings.SectionName);
+IConfigurationSection paginationSection = builder.Configuration.GetSection(PaginationSettings.SectionName);
 builder.Services.Configure<PagingOptions>(options =>
 {
     options.MaxPageSize = paginationSection.GetValue<int>("MaxPageSize", 100);
@@ -383,7 +389,7 @@ builder.Services.Configure<MinioSettings>(options =>
     options.BucketName = appConfig.MinioBucketName;
 });
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Log configuration on startup
 Log.Information("FAM Web API started in {Environment} environment", environment);
@@ -393,8 +399,8 @@ appConfig.LogConfiguration(app.Services.GetRequiredService<ILogger<Program>>());
 try
 {
     Log.Information("Validating all connections (PostgreSQL, Redis, MinIO)...");
-    using var validatorScope = app.Services.CreateScope();
-    var validator = validatorScope.ServiceProvider.GetRequiredService<IConnectionValidator>();
+    using IServiceScope validatorScope = app.Services.CreateScope();
+    IConnectionValidator validator = validatorScope.ServiceProvider.GetRequiredService<IConnectionValidator>();
     await validator.ValidateAllAsync();
     Log.Information("✅ All connections validated successfully");
 }
@@ -474,9 +480,9 @@ app.MapControllers();
 try
 {
     Log.Information("Applying database migrations...");
-    using (var scope = app.Services.CreateScope())
+    using (IServiceScope scope = app.Services.CreateScope())
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<PostgreSqlDbContext>();
+        PostgreSqlDbContext dbContext = scope.ServiceProvider.GetRequiredService<PostgreSqlDbContext>();
         await dbContext.Database.MigrateAsync();
         Log.Information("✅ Database migrations applied successfully");
     }

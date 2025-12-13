@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+
 using FAM.Domain.Common.Base;
 
 namespace FAM.Domain.ValueObjects;
@@ -24,7 +25,7 @@ public sealed class MACAddress : ValueObject
 
         macAddress = macAddress.Trim().ToUpperInvariant();
 
-        var format = DetermineFormat(macAddress);
+        MACAddressFormat format = DetermineFormat(macAddress);
         if (format == MACAddressFormat.Invalid)
             throw new DomainException(ErrorCodes.VO_MAC_INVALID);
 

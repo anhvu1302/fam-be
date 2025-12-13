@@ -1,5 +1,7 @@
 using System.Globalization;
 using System.Linq.Expressions;
+using System.Reflection;
+
 using FAM.Application.Querying.Ast;
 using FAM.Application.Querying.Validation;
 
@@ -12,8 +14,8 @@ public static class EfFilterBinder<T>
 {
     public static Expression<Func<T, bool>> Bind(FilterNode node, FieldMap<T> fieldMap)
     {
-        var parameter = Expression.Parameter(typeof(T), "x");
-        var body = BindNode(node, parameter, fieldMap);
+        ParameterExpression parameter = Expression.Parameter(typeof(T), "x");
+        Expression body = BindNode(node, parameter, fieldMap);
         return Expression.Lambda<Func<T, bool>>(body, parameter);
     }
 
@@ -33,8 +35,8 @@ public static class EfFilterBinder<T>
 
     private static Expression BindBinary(BinaryNode node, ParameterExpression parameter, FieldMap<T> fieldMap)
     {
-        var left = BindNode(node.Left, parameter, fieldMap);
-        var right = BindNode(node.Right, parameter, fieldMap);
+        Expression left = BindNode(node.Left, parameter, fieldMap);
+        Expression right = BindNode(node.Right, parameter, fieldMap);
 
         return node.Operator switch
         {
@@ -52,7 +54,7 @@ public static class EfFilterBinder<T>
 
     private static Expression BindUnary(UnaryNode node, ParameterExpression parameter, FieldMap<T> fieldMap)
     {
-        var operand = BindNode(node.Operand, parameter, fieldMap);
+        Expression operand = BindNode(node.Operand, parameter, fieldMap);
 
         return node.Operator switch
         {
@@ -65,7 +67,7 @@ public static class EfFilterBinder<T>
 
     private static Expression BindCall(CallNode node, ParameterExpression parameter, FieldMap<T> fieldMap)
     {
-        var target = BindNode(node.Target, parameter, fieldMap);
+        Expression target = BindNode(node.Target, parameter, fieldMap);
         var args = node.Arguments.Select(a => BindNode(a, parameter, fieldMap)).ToList();
 
         return node.Operator switch
@@ -84,7 +86,7 @@ public static class EfFilterBinder<T>
 
     private static Expression BindField(FieldNode node, ParameterExpression parameter, FieldMap<T> fieldMap)
     {
-        if (!fieldMap.TryGet(node.Name, out var expression, out _))
+        if (!fieldMap.TryGet(node.Name, out LambdaExpression expression, out _))
             throw new InvalidOperationException($"Field '{node.Name}' not found in field map");
 
         // Replace parameter in expression
@@ -129,12 +131,12 @@ public static class EfFilterBinder<T>
     private static Expression BuildStringMethod(Expression target, Expression arg, string methodName)
     {
         // Handle null strings
-        var nullCheck = Expression.NotEqual(target, Expression.Constant(null, target.Type));
+        BinaryExpression nullCheck = Expression.NotEqual(target, Expression.Constant(null, target.Type));
 
-        var method = typeof(string).GetMethod(methodName, new[] { typeof(string) })
-                     ?? throw new InvalidOperationException($"Method {methodName} not found on string");
+        MethodInfo method = typeof(string).GetMethod(methodName, new[] { typeof(string) })
+                            ?? throw new InvalidOperationException($"Method {methodName} not found on string");
 
-        var call = Expression.Call(target, method, ConvertIfNeeded(arg, typeof(string)));
+        MethodCallExpression call = Expression.Call(target, method, ConvertIfNeeded(arg, typeof(string)));
 
         return Expression.AndAlso(nullCheck, call);
     }
@@ -144,11 +146,11 @@ public static class EfFilterBinder<T>
         if (values.Count == 0)
             return Expression.Constant(false);
 
-        var targetType = target.Type;
+        Type targetType = target.Type;
         var convertedValues = values.Select(v => ConvertIfNeeded(v, targetType)).ToList();
 
         // Build: target == value1 || target == value2 || ...
-        var condition = BuildEqual(target, convertedValues[0]);
+        Expression condition = BuildEqual(target, convertedValues[0]);
         for (var i = 1; i < convertedValues.Count; i++)
             condition = Expression.OrElse(condition, BuildEqual(target, convertedValues[i]));
 
@@ -157,12 +159,12 @@ public static class EfFilterBinder<T>
 
     private static Expression BuildBetween(Expression target, Expression min, Expression max)
     {
-        var targetType = target.Type;
+        Type targetType = target.Type;
         min = ConvertIfNeeded(min, targetType);
         max = ConvertIfNeeded(max, targetType);
 
-        var gte = Expression.GreaterThanOrEqual(target, min);
-        var lte = Expression.LessThanOrEqual(target, max);
+        BinaryExpression gte = Expression.GreaterThanOrEqual(target, min);
+        BinaryExpression lte = Expression.LessThanOrEqual(target, max);
 
         return Expression.AndAlso(gte, lte);
     }
@@ -176,7 +178,7 @@ public static class EfFilterBinder<T>
             if (values.Count == 0)
                 return Expression.Constant(false);
 
-            var condition = BuildStringMethod(target, values[0], nameof(string.Contains));
+            Expression condition = BuildStringMethod(target, values[0], nameof(string.Contains));
             for (var i = 1; i < values.Count; i++)
                 condition = Expression.OrElse(condition, BuildStringMethod(target, values[i], nameof(string.Contains)));
             return condition;
@@ -191,8 +193,8 @@ public static class EfFilterBinder<T>
             return expression;
 
         // Handle nullable types
-        var underlyingTargetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
-        var underlyingSourceType = Nullable.GetUnderlyingType(expression.Type) ?? expression.Type;
+        Type underlyingTargetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+        Type underlyingSourceType = Nullable.GetUnderlyingType(expression.Type) ?? expression.Type;
 
         if (expression is ConstantExpression constant)
         {

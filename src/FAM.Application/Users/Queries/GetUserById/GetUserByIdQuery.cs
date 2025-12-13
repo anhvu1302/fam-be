@@ -1,4 +1,5 @@
 using FAM.Application.Users.Shared;
+
 using MediatR;
 
 namespace FAM.Application.Users.Queries.GetUserById;

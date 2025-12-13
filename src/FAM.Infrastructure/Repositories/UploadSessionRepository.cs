@@ -1,8 +1,11 @@
 using System.Linq.Expressions;
+
 using FAM.Domain.Abstractions.Repositories;
 using FAM.Domain.Storage;
 using FAM.Infrastructure.Providers.PostgreSQL;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Repositories;
 
@@ -42,7 +45,7 @@ public class UploadSessionRepository : IUploadSessionRepository
 
     public void Update(UploadSession entity)
     {
-        var trackedEntry = _context.ChangeTracker.Entries<UploadSession>()
+        EntityEntry<UploadSession>? trackedEntry = _context.ChangeTracker.Entries<UploadSession>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -78,7 +81,7 @@ public class UploadSessionRepository : IUploadSessionRepository
         int batchSize = 100,
         CancellationToken cancellationToken = default)
     {
-        var now = DateTime.UtcNow;
+        DateTime now = DateTime.UtcNow;
 
         return await _context.Set<UploadSession>()
             .Where(s =>

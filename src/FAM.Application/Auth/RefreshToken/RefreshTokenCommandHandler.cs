@@ -1,6 +1,10 @@
 using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Authorization;
+using FAM.Domain.Users;
+using FAM.Domain.Users.Entities;
+
 using MediatR;
 
 namespace FAM.Application.Auth.RefreshToken;
@@ -24,7 +28,8 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
 
     public async Task<LoginResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var device = await _unitOfWork.UserDevices.FindByRefreshTokenAsync(request.RefreshToken, cancellationToken);
+        UserDevice? device =
+            await _unitOfWork.UserDevices.FindByRefreshTokenAsync(request.RefreshToken, cancellationToken);
 
         if (device == null) throw new UnauthorizedAccessException("Invalid refresh token");
 
@@ -32,7 +37,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
 
         if (!device.IsActive) throw new UnauthorizedAccessException("Device is inactive");
 
-        var user = await _unitOfWork.Users.GetByIdAsync(device.UserId, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(device.UserId, cancellationToken);
 
         if (user == null) throw new UnauthorizedAccessException("User not found");
 
@@ -40,7 +45,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
 
         if (user.IsLockedOut()) throw new UnauthorizedAccessException("Account is locked");
 
-        var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
+        SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
         var roles = new List<string>(); // TODO: Load user roles from UserNodeRoles
         var accessToken = _jwtService.GenerateAccessTokenWithRsa(
             user.Id,
@@ -54,14 +59,14 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
         var accessTokenJti = _jwtService.GetJtiFromToken(accessToken);
 
         // Calculate expiration times from config
-        var accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
+        DateTime accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
         var newRefreshToken = _jwtService.GenerateRefreshToken();
-        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtService.RefreshTokenExpiryDays);
+        DateTime refreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtService.RefreshTokenExpiryDays);
 
         // Update device tokens directly (device is detached from FindByRefreshTokenAsync)
-        device.UpdateTokens(newRefreshToken, refreshTokenExpiresAt, accessTokenJti ?? string.Empty, 
+        device.UpdateTokens(newRefreshToken, refreshTokenExpiresAt, accessTokenJti ?? string.Empty,
             request.IpAddress, request.Location);
-        
+
         // Explicitly attach and update the detached entity
         _unitOfWork.UserDevices.Update(device);
 

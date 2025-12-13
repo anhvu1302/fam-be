@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.ValueObjects;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.ValueObjects;
@@ -31,7 +32,7 @@ public class InsuranceInfoTests
         // Arrange
         var policyNumber = "POL-123456";
         var insuredValue = 100000.00m;
-        var expiryDate = DateTime.UtcNow.AddYears(1);
+        DateTime expiryDate = DateTime.UtcNow.AddYears(1);
 
         // Act
         var insuranceInfo = InsuranceInfo.Create(policyNumber, insuredValue, expiryDate);

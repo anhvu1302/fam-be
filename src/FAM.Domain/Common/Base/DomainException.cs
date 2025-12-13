@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace FAM.Domain.Common.Base;
 
 /// <summary>
@@ -95,7 +97,7 @@ public class DomainException : Exception
             return dict;
 
         var dictionary = new Dictionary<string, object>();
-        foreach (var prop in obj.GetType().GetProperties())
+        foreach (PropertyInfo prop in obj.GetType().GetProperties())
         {
             var value = prop.GetValue(obj);
             if (value != null)

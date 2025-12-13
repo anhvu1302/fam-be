@@ -1,5 +1,6 @@
 using FAM.Application.Querying;
 using FAM.Application.Users.Shared;
+
 using MediatR;
 
 namespace FAM.Application.Users.Queries.GetUsers;

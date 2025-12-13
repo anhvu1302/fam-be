@@ -1,8 +1,12 @@
+using System.Reflection;
+
 using FAM.Domain.Storage;
 using FAM.Infrastructure.Common.Extensions;
 using FAM.Infrastructure.Common.Options;
 using FAM.Infrastructure.PersistenceModels.Ef;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL;
 
@@ -95,14 +99,14 @@ public class PostgreSqlDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // Ignore audit navigation properties globally (they are for tracking only, not FK constraints)
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
         {
             // Ignore CreatedBy, UpdatedBy, DeletedBy navigation properties
-            var auditNavProperties = entityType.ClrType.GetProperties()
+            IEnumerable<PropertyInfo> auditNavProperties = entityType.ClrType.GetProperties()
                 .Where(p => p.PropertyType == typeof(UserEf) &&
                             (p.Name == "CreatedBy" || p.Name == "UpdatedBy" || p.Name == "DeletedBy"));
 
-            foreach (var navProperty in auditNavProperties)
+            foreach (PropertyInfo navProperty in auditNavProperties)
                 modelBuilder.Entity(entityType.ClrType).Ignore(navProperty.Name);
         }
 

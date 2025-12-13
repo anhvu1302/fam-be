@@ -1,7 +1,10 @@
+using FAM.Application.Common;
 using FAM.Application.Users.Commands.UpdateUser;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
+
 using FluentAssertions;
+
 using Moq;
 
 namespace FAM.Application.Tests.Users.Handlers;
@@ -60,7 +63,7 @@ public class UpdateUserCommandHandlerTests
             .ReturnsAsync(1);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Result<UpdateUserResult> result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -92,7 +95,7 @@ public class UpdateUserCommandHandlerTests
             .ReturnsAsync((User?)null);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Result<UpdateUserResult> result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.Should().BeFalse();

@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.Organizations;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Organizations;
@@ -99,7 +100,7 @@ public class DepartmentDetailsTests
         var budgetYear = 1000000m;
 
         // Act
-        var act = () => details.Update(costCenter, headcount, budgetYear);
+        Action act = () => details.Update(costCenter, headcount, budgetYear);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -116,7 +117,7 @@ public class DepartmentDetailsTests
         var budgetYear = -1000m;
 
         // Act
-        var act = () => details.Update(costCenter, headcount, budgetYear);
+        Action act = () => details.Update(costCenter, headcount, budgetYear);
 
         // Assert
         act.Should().Throw<DomainException>()

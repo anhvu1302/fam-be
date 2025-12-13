@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.Geography;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Geography;

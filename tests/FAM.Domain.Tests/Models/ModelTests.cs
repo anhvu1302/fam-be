@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.Models;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Models;
@@ -100,7 +101,7 @@ public class ModelTests
         string? nullName = null;
 
         // Act
-        var act = () => model.UpdateBasicInfo(nullName!, null, null, null, null);
+        Action act = () => model.UpdateBasicInfo(nullName!, null, null, null, null);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -115,7 +116,7 @@ public class ModelTests
         var negativeWeight = -5.5m;
 
         // Act
-        var act = () => model.UpdatePhysicalSpecs(negativeWeight, "kg", "30x20x5", "cm", "Black", "Plastic");
+        Action act = () => model.UpdatePhysicalSpecs(negativeWeight, "kg", "30x20x5", "cm", "Black", "Plastic");
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -130,7 +131,7 @@ public class ModelTests
         var negativePowerConsumption = -100m;
 
         // Act
-        var act = () =>
+        Action act = () =>
             model.UpdatePowerEnvironmental("100-240V", negativePowerConsumption, "Energy Star", "0-40°C", "10-90%");
 
         // Assert
@@ -146,7 +147,7 @@ public class ModelTests
         var negativeMSRP = -1999.99m;
 
         // Act
-        var act = () => model.UpdatePricing(negativeMSRP, "USD", 1500m, "USD");
+        Action act = () => model.UpdatePricing(negativeMSRP, "USD", 1500m, "USD");
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -161,7 +162,7 @@ public class ModelTests
         var negativeAverageCost = -1200m;
 
         // Act
-        var act = () => model.UpdatePricing(1999.99m, "USD", negativeAverageCost, "USD");
+        Action act = () => model.UpdatePricing(1999.99m, "USD", negativeAverageCost, "USD");
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -176,7 +177,7 @@ public class ModelTests
         var negativeUsefulLifeMonths = -60;
 
         // Act
-        var act = () => model.UpdateDepreciation(negativeUsefulLifeMonths, "Straight Line", 10m);
+        Action act = () => model.UpdateDepreciation(negativeUsefulLifeMonths, "Straight Line", 10m);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -191,7 +192,7 @@ public class ModelTests
         var residualValuePercentageOver100 = 150m;
 
         // Act
-        var act = () => model.UpdateDepreciation(60, "Straight Line", residualValuePercentageOver100);
+        Action act = () => model.UpdateDepreciation(60, "Straight Line", residualValuePercentageOver100);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -206,7 +207,7 @@ public class ModelTests
         var negativeResidualValuePercentage = -10m;
 
         // Act
-        var act = () => model.UpdateDepreciation(60, "Straight Line", negativeResidualValuePercentage);
+        Action act = () => model.UpdateDepreciation(60, "Straight Line", negativeResidualValuePercentage);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -221,7 +222,7 @@ public class ModelTests
         var negativeLicenseDurationMonths = -12;
 
         // Act
-        var act = () => model.UpdateSoftwareLicensing("Subscription", negativeLicenseDurationMonths, true, 5);
+        Action act = () => model.UpdateSoftwareLicensing("Subscription", negativeLicenseDurationMonths, true, 5);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -236,7 +237,7 @@ public class ModelTests
         var negativeMaxInstallations = -5;
 
         // Act
-        var act = () => model.UpdateSoftwareLicensing("Subscription", 12, true, negativeMaxInstallations);
+        Action act = () => model.UpdateSoftwareLicensing("Subscription", 12, true, negativeMaxInstallations);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -251,7 +252,7 @@ public class ModelTests
         var negativeReorderLevel = -10;
 
         // Act
-        var act = () => model.UpdateInventory(negativeReorderLevel, 100, DateTime.UtcNow);
+        Action act = () => model.UpdateInventory(negativeReorderLevel, 100, DateTime.UtcNow);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -266,7 +267,7 @@ public class ModelTests
         var negativeCurrentStock = -50;
 
         // Act
-        var act = () => model.UpdateInventory(10, negativeCurrentStock, DateTime.UtcNow);
+        Action act = () => model.UpdateInventory(10, negativeCurrentStock, DateTime.UtcNow);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -308,7 +309,7 @@ public class ModelTests
         var invalidImageUrl = "not-a-url";
 
         // Act
-        var act = () => model.UpdateMedia(invalidImageUrl, null, null, null, null);
+        Action act = () => model.UpdateMedia(invalidImageUrl, null, null, null, null);
 
         // Assert
         act.Should().Throw<DomainException>()

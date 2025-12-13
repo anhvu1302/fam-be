@@ -1,8 +1,11 @@
 using FAM.Application.Auth.Disable2FA;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
+
 using FluentAssertions;
+
 using Moq;
+
 using OtpNet;
 
 namespace FAM.Application.Tests.Auth.Handlers;

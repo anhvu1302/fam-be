@@ -1,7 +1,10 @@
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
+using FAM.Domain.Users;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Auth.ForgotPassword;
@@ -27,7 +30,7 @@ public class VerifyResetTokenCommandHandler : IRequestHandler<VerifyResetTokenCo
         CancellationToken cancellationToken)
     {
         // Find user by email
-        var user = await _unitOfWork.Users.FindByEmailAsync(request.Email, cancellationToken);
+        User? user = await _unitOfWork.Users.FindByEmailAsync(request.Email, cancellationToken);
 
         if (user == null)
         {

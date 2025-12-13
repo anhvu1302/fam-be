@@ -1,10 +1,14 @@
 using System.Linq.Expressions;
+
 using AutoMapper;
+
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.PersistenceModels.Ef;
 using FAM.Infrastructure.Repositories;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -20,35 +24,35 @@ public class PermissionRepositoryPostgreSql : BasePostgreSqlRepository<Permissio
 
     public async Task<Permission?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var entity = await Context.Permissions.FindAsync(new object[] { id }, cancellationToken);
+        PermissionEf? entity = await Context.Permissions.FindAsync(new object[] { id }, cancellationToken);
         return entity != null ? Mapper.Map<Permission>(entity) : null;
     }
 
     public async Task<IEnumerable<Permission>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var entities = await Context.Permissions.ToListAsync(cancellationToken);
+        List<PermissionEf> entities = await Context.Permissions.ToListAsync(cancellationToken);
         return Mapper.Map<IEnumerable<Permission>>(entities);
     }
 
     public async Task<IEnumerable<Permission>> FindAsync(Expression<Func<Permission, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        var allEntities = await Context.Permissions.ToListAsync(cancellationToken);
-        var allPermissions = Mapper.Map<IEnumerable<Permission>>(allEntities);
+        List<PermissionEf> allEntities = await Context.Permissions.ToListAsync(cancellationToken);
+        IEnumerable<Permission>? allPermissions = Mapper.Map<IEnumerable<Permission>>(allEntities);
         return allPermissions.Where(predicate.Compile());
     }
 
     public async Task AddAsync(Permission entity, CancellationToken cancellationToken = default)
     {
-        var efEntity = Mapper.Map<PermissionEf>(entity);
+        PermissionEf? efEntity = Mapper.Map<PermissionEf>(entity);
         await Context.Permissions.AddAsync(efEntity, cancellationToken);
     }
 
     public void Update(Permission entity)
     {
-        var efEntity = Mapper.Map<PermissionEf>(entity);
+        PermissionEf? efEntity = Mapper.Map<PermissionEf>(entity);
 
-        var trackedEntry = Context.ChangeTracker.Entries<PermissionEf>()
+        EntityEntry<PermissionEf>? trackedEntry = Context.ChangeTracker.Entries<PermissionEf>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -64,7 +68,7 @@ public class PermissionRepositoryPostgreSql : BasePostgreSqlRepository<Permissio
 
     public void Delete(Permission entity)
     {
-        var efEntity = Mapper.Map<PermissionEf>(entity);
+        PermissionEf? efEntity = Mapper.Map<PermissionEf>(entity);
         Context.Permissions.Remove(efEntity);
     }
 
@@ -76,7 +80,7 @@ public class PermissionRepositoryPostgreSql : BasePostgreSqlRepository<Permissio
     public async Task<Permission?> GetByResourceAndActionAsync(string resource, string action,
         CancellationToken cancellationToken = default)
     {
-        var entity = await Context.Permissions
+        PermissionEf? entity = await Context.Permissions
             .FirstOrDefaultAsync(p => p.Resource == resource && p.Action == action, cancellationToken);
         return entity != null ? Mapper.Map<Permission>(entity) : null;
     }
@@ -84,7 +88,7 @@ public class PermissionRepositoryPostgreSql : BasePostgreSqlRepository<Permissio
     public async Task<IEnumerable<Permission>> GetByResourceAsync(string resource,
         CancellationToken cancellationToken = default)
     {
-        var entities = await Context.Permissions
+        List<PermissionEf> entities = await Context.Permissions
             .Where(p => p.Resource == resource)
             .ToListAsync(cancellationToken);
         return Mapper.Map<IEnumerable<Permission>>(entities);
@@ -106,14 +110,14 @@ public class PermissionRepositoryPostgreSql : BasePostgreSqlRepository<Permissio
         CancellationToken cancellationToken = default)
     {
         // Build base query for counting
-        var countQuery = Context.Permissions.AsQueryable();
+        IQueryable<PermissionEf> countQuery = Context.Permissions.AsQueryable();
 
         // Build query for data
-        var dataQuery = Context.Permissions.AsQueryable();
+        IQueryable<PermissionEf> dataQuery = Context.Permissions.AsQueryable();
 
         // Apply includes dynamically if provided
         if (includes != null && includes.Any())
-            foreach (var include in includes)
+            foreach (Expression<Func<Permission, object>> include in includes)
             {
                 var propertyPath = GetPropertyName(include.Body);
                 dataQuery = dataQuery.Include(propertyPath);
@@ -122,7 +126,7 @@ public class PermissionRepositoryPostgreSql : BasePostgreSqlRepository<Permissio
         // Apply filter at database level
         if (filter != null)
         {
-            var efFilter = ConvertToEfExpression(filter);
+            Expression<Func<PermissionEf, bool>> efFilter = ConvertToEfExpression(filter);
             countQuery = countQuery.Where(efFilter);
             dataQuery = dataQuery.Where(efFilter);
         }
@@ -134,14 +138,14 @@ public class PermissionRepositoryPostgreSql : BasePostgreSqlRepository<Permissio
         dataQuery = ApplySort(dataQuery, sort, GetSortExpression, p => p.Id);
 
         // Apply pagination and execute
-        var entities = await dataQuery
+        List<PermissionEf> entities = await dataQuery
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
         // Map to domain entities
-        var permissions = Mapper.Map<List<Permission>>(entities);
+        List<Permission>? permissions = Mapper.Map<List<Permission>>(entities);
 
         return (permissions, total);
     }

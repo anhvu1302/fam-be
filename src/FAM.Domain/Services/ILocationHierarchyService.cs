@@ -35,11 +35,11 @@ public class LocationHierarchyService : ILocationHierarchyService
     public IEnumerable<Location> GetAncestors(Location location, IEnumerable<Location> allLocations)
     {
         var ancestors = new List<Location>();
-        var current = location;
+        Location current = location;
 
         while (current.ParentId.HasValue)
         {
-            var parent = allLocations.FirstOrDefault(l => l.Id == current.ParentId.Value);
+            Location? parent = allLocations.FirstOrDefault(l => l.Id == current.ParentId.Value);
             if (parent == null)
                 break;
 
@@ -58,10 +58,10 @@ public class LocationHierarchyService : ILocationHierarchyService
 
         while (queue.Count > 0)
         {
-            var current = queue.Dequeue();
-            var children = allLocations.Where(l => l.ParentId == current.Id);
+            Location current = queue.Dequeue();
+            IEnumerable<Location> children = allLocations.Where(l => l.ParentId == current.Id);
 
-            foreach (var child in children)
+            foreach (Location child in children)
             {
                 descendants.Add(child);
                 queue.Enqueue(child);
@@ -78,7 +78,7 @@ public class LocationHierarchyService : ILocationHierarchyService
 
     public bool IsAncestorOf(Location potentialAncestor, Location location, IEnumerable<Location> allLocations)
     {
-        var ancestors = GetAncestors(location, allLocations);
+        IEnumerable<Location> ancestors = GetAncestors(location, allLocations);
         return ancestors.Any(a => a.Id == potentialAncestor.Id);
     }
 
@@ -87,8 +87,8 @@ public class LocationHierarchyService : ILocationHierarchyService
         if (locationId == newParentId)
             return true;
 
-        var location = allLocations.FirstOrDefault(l => l.Id == locationId);
-        var newParent = allLocations.FirstOrDefault(l => l.Id == newParentId);
+        Location? location = allLocations.FirstOrDefault(l => l.Id == locationId);
+        Location? newParent = allLocations.FirstOrDefault(l => l.Id == newParentId);
 
         if (location == null || newParent == null)
             return false;

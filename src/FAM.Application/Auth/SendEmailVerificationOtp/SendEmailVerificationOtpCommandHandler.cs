@@ -1,6 +1,9 @@
 using System.Text;
+
 using FAM.Application.Common.Services;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Auth.SendEmailVerificationOtp;
@@ -53,7 +56,7 @@ public class SendEmailVerificationOtpCommandHandler
 
         // Create OTP session token 
         // Format: base64(email:expiry)
-        var expiryTime = DateTime.UtcNow.AddMinutes(10);
+        DateTime expiryTime = DateTime.UtcNow.AddMinutes(10);
         var otpSessionToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(
             $"{request.Email}:{expiryTime:O}"));
 

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+
 using FAM.Application.Menu.Commands.CreateMenu;
 using FAM.Application.Menu.Commands.DeleteMenu;
 using FAM.Application.Menu.Commands.MoveMenu;
@@ -12,7 +13,9 @@ using FAM.Application.Menu.Queries.GetMenuTree;
 using FAM.Application.Menu.Queries.GetVisibleMenuTree;
 using FAM.Domain.Common.Base;
 using FAM.WebApi.Contracts.Common;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,7 +61,7 @@ public class MenusController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         var query = new GetMenuTreeQuery(maxDepth);
-        var menus = await _mediator.Send(query, cancellationToken);
+        IEnumerable<MenuItemResponse> menus = await _mediator.Send(query, cancellationToken);
         return OkResponse(menus);
     }
 
@@ -97,7 +100,7 @@ public class MenusController : BaseApiController
             .ToList();
 
         var query = new GetVisibleMenuTreeQuery(permissions, roles, maxDepth);
-        var menus = await _mediator.Send(query, cancellationToken);
+        IEnumerable<MenuItemResponse> menus = await _mediator.Send(query, cancellationToken);
         return OkResponse(menus);
     }
 
@@ -129,7 +132,7 @@ public class MenusController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         var query = new GetAllMenusQuery();
-        var menus = await _mediator.Send(query, cancellationToken);
+        IEnumerable<MenuItemFlatResponse> menus = await _mediator.Send(query, cancellationToken);
         return OkResponse(menus);
     }
 
@@ -159,7 +162,7 @@ public class MenusController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         var query = new GetMenuByIdQuery(id);
-        var menu = await _mediator.Send(query, cancellationToken);
+        MenuItemResponse? menu = await _mediator.Send(query, cancellationToken);
         if (menu == null)
             throw new NotFoundException(ErrorCodes.MENU_NOT_FOUND, "MenuItem", id);
         return OkResponse(menu);
@@ -191,7 +194,7 @@ public class MenusController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         var query = new GetMenuByCodeQuery(code);
-        var menu = await _mediator.Send(query, cancellationToken);
+        MenuItemResponse? menu = await _mediator.Send(query, cancellationToken);
         if (menu == null)
             throw new NotFoundException(ErrorCodes.MENU_NOT_FOUND, "MenuItem", code);
         return OkResponse(menu);
@@ -251,7 +254,7 @@ public class MenusController : BaseApiController
             request.RequiredPermission,
             request.RequiredRoles,
             request.OpenInNewTab);
-        var menu = await _mediator.Send(command, cancellationToken);
+        MenuItemResponse menu = await _mediator.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetMenuById), new { id = menu.Id }, menu);
     }
 
@@ -304,7 +307,7 @@ public class MenusController : BaseApiController
             request.CssClass,
             request.Badge,
             request.BadgeVariant);
-        var menu = await _mediator.Send(command, cancellationToken);
+        MenuItemResponse menu = await _mediator.Send(command, cancellationToken);
         return OkResponse(menu);
     }
 
@@ -417,7 +420,7 @@ public class MenusController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         var command = new MoveMenuCommand(id, parentId, sortOrder);
-        var menu = await _mediator.Send(command, cancellationToken);
+        MenuItemResponse menu = await _mediator.Send(command, cancellationToken);
         return OkResponse(menu);
     }
 

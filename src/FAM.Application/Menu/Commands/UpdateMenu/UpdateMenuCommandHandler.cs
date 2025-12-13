@@ -1,7 +1,10 @@
 using FAM.Application.Menu.DTOs;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
+using FAM.Domain.Common.Entities;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Menu.Commands.UpdateMenu;
@@ -25,7 +28,7 @@ public class UpdateMenuCommandHandler : IRequestHandler<UpdateMenuCommand, MenuI
 
     public async Task<MenuItemResponse> Handle(UpdateMenuCommand request, CancellationToken cancellationToken)
     {
-        var menu = await _repository.GetByIdAsync(request.Id, cancellationToken);
+        MenuItem? menu = await _repository.GetByIdAsync(request.Id, cancellationToken);
         if (menu == null) throw new NotFoundException(ErrorCodes.MENU_NOT_FOUND, "MenuItem", request.Id);
 
         // Validate parent if changed
@@ -33,7 +36,7 @@ public class UpdateMenuCommandHandler : IRequestHandler<UpdateMenuCommand, MenuI
         {
             if (request.ParentId.Value == request.Id) throw new DomainException(ErrorCodes.MENU_CIRCULAR_REFERENCE);
 
-            var parent = await _repository.GetByIdAsync(request.ParentId.Value, cancellationToken);
+            MenuItem? parent = await _repository.GetByIdAsync(request.ParentId.Value, cancellationToken);
             if (parent == null) throw new DomainException(ErrorCodes.MENU_INVALID_PARENT);
 
             if (parent.Level >= MaxMenuDepth - 1) throw new DomainException(ErrorCodes.MENU_MAX_DEPTH_EXCEEDED);

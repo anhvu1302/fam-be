@@ -1,4 +1,5 @@
 using System.Diagnostics;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -37,14 +38,14 @@ public class DataSeederOrchestrator
         }
 
         // Get seed history repository
-        var historyRepo = _serviceProvider.GetService<ISeedHistoryRepository>();
+        ISeedHistoryRepository? historyRepo = _serviceProvider.GetService<ISeedHistoryRepository>();
 
         if (historyRepo != null && !forceReseed)
             _logger.LogInformation("Seed tracking is enabled. Checking execution history...");
 
         _logger.LogInformation("Found {Count} seeder(s) to execute", seeders.Count);
 
-        foreach (var seeder in seeders)
+        foreach (IDataSeeder seeder in seeders)
         {
             // Check if already executed
             if (historyRepo != null && !forceReseed)
@@ -109,7 +110,7 @@ public class DataSeederOrchestrator
     /// </summary>
     public async Task<List<SeedHistory>> GetHistoryAsync(CancellationToken cancellationToken = default)
     {
-        var historyRepo = _serviceProvider.GetService<ISeedHistoryRepository>();
+        ISeedHistoryRepository? historyRepo = _serviceProvider.GetService<ISeedHistoryRepository>();
         if (historyRepo == null)
         {
             _logger.LogWarning("Seed history tracking is not configured");

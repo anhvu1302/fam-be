@@ -1,5 +1,6 @@
 using FAM.Application.EmailTemplates.Shared;
 using FAM.Application.Querying;
+
 using MediatR;
 
 namespace FAM.Application.EmailTemplates.Queries.GetEmailTemplates;

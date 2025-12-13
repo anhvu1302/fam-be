@@ -5,6 +5,7 @@ using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 using FAM.Infrastructure.Providers.PostgreSQL.Seeders;
 using FAM.Infrastructure.Repositories;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL;

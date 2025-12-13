@@ -1,7 +1,10 @@
 using FAM.Application.Users.Queries.GetUserSessions;
+using FAM.Application.Users.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users.Entities;
+
 using FluentAssertions;
+
 using Moq;
 
 namespace FAM.Application.Tests.Users.Handlers;
@@ -37,7 +40,7 @@ public class GetUserSessionsQueryHandlerTests
         var query = new GetUserSessionsQuery(userId);
 
         // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+        IReadOnlyList<UserSessionDto> result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -57,7 +60,7 @@ public class GetUserSessionsQueryHandlerTests
         var query = new GetUserSessionsQuery(userId);
 
         // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+        IReadOnlyList<UserSessionDto> result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();

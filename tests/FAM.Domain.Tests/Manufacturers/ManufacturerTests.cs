@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.Manufacturers;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Manufacturers;
@@ -122,7 +123,7 @@ public class ManufacturerTests
         string? nullName = null;
 
         // Act
-        var act = () => manufacturer.UpdateBasicInfo(nullName!, null, null, null);
+        Action act = () => manufacturer.UpdateBasicInfo(nullName!, null, null, null);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -156,7 +157,7 @@ public class ManufacturerTests
         var invalidLogoUrl = "not-a-url";
 
         // Act
-        var act = () => manufacturer.UpdateBrand("Brand", invalidLogoUrl, "Tagline");
+        Action act = () => manufacturer.UpdateBrand("Brand", invalidLogoUrl, "Tagline");
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -233,7 +234,7 @@ public class ManufacturerTests
         var negativeEmployeeCount = -10;
 
         // Act
-        var act = () => manufacturer.UpdateBusinessInfo("Tech", "Private", null, negativeEmployeeCount);
+        Action act = () => manufacturer.UpdateBusinessInfo("Tech", "Private", null, negativeEmployeeCount);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -248,7 +249,7 @@ public class ManufacturerTests
         var negativeRevenue = -1000000m;
 
         // Act
-        var act = () => manufacturer.UpdateFinancialInfo(negativeRevenue, "USD", "Net 30", "USD", 10m);
+        Action act = () => manufacturer.UpdateFinancialInfo(negativeRevenue, "USD", "Net 30", "USD", 10m);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -263,7 +264,7 @@ public class ManufacturerTests
         var discountRateOver100 = 150m;
 
         // Act
-        var act = () => manufacturer.UpdateFinancialInfo(1000000m, "USD", "Net 30", "USD", discountRateOver100);
+        Action act = () => manufacturer.UpdateFinancialInfo(1000000m, "USD", "Net 30", "USD", discountRateOver100);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -278,7 +279,7 @@ public class ManufacturerTests
         var negativeDiscountRate = -5m;
 
         // Act
-        var act = () => manufacturer.UpdateFinancialInfo(1000000m, "USD", "Net 30", "USD", negativeDiscountRate);
+        Action act = () => manufacturer.UpdateFinancialInfo(1000000m, "USD", "Net 30", "USD", negativeDiscountRate);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -293,7 +294,7 @@ public class ManufacturerTests
         var negativeWarrantyMonths = -12;
 
         // Act
-        var act = () =>
+        Action act = () =>
             manufacturer.UpdateWarrantySupport("Standard Warranty", negativeWarrantyMonths, "https://example.com/sla");
 
         // Assert
@@ -309,7 +310,7 @@ public class ManufacturerTests
         var ratingBelow1 = 0.5m;
 
         // Act
-        var act = () => manufacturer.UpdateRatings(ratingBelow1, 4m, 3m, "Good manufacturer");
+        Action act = () => manufacturer.UpdateRatings(ratingBelow1, 4m, 3m, "Good manufacturer");
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -324,7 +325,7 @@ public class ManufacturerTests
         var ratingAbove5 = 6m;
 
         // Act
-        var act = () => manufacturer.UpdateRatings(4m, ratingAbove5, 3m, "Good manufacturer");
+        Action act = () => manufacturer.UpdateRatings(4m, ratingAbove5, 3m, "Good manufacturer");
 
         // Assert
         act.Should().Throw<DomainException>()

@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.Organizations;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Organizations;
@@ -122,7 +123,7 @@ public class OrgNodeTests
         var newName = "";
 
         // Act
-        var act = () => node.UpdateName(newName);
+        Action act = () => node.UpdateName(newName);
 
         // Assert
         act.Should().Throw<DomainException>()

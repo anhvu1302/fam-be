@@ -2,7 +2,10 @@ using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Auth.SelectAuthenticationMethod;
@@ -43,7 +46,7 @@ public class
         if (userId == 0)
             throw new UnauthorizedAccessException("Invalid or expired 2FA session token");
 
-        var user = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken);
         if (user == null)
             throw new UnauthorizedAccessException("User not found");
 

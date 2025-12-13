@@ -1,7 +1,9 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+
 using FAM.Application.Common.Email;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -50,7 +52,7 @@ public sealed class BrevoEmailProvider : IEmailProvider, IDisposable
         try
         {
             // Check account info to verify API key
-            var response = await _httpClient.GetAsync("/account", cancellationToken);
+            HttpResponseMessage response = await _httpClient.GetAsync("/account", cancellationToken);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -82,7 +84,7 @@ public sealed class BrevoEmailProvider : IEmailProvider, IDisposable
 
             _logger.LogDebug("Sending email via Brevo to {To}", message.To);
 
-            var response = await _httpClient.PostAsJsonAsync(
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(
                 "/smtp/email",
                 request,
                 new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull },
@@ -92,7 +94,7 @@ public sealed class BrevoEmailProvider : IEmailProvider, IDisposable
 
             if (response.IsSuccessStatusCode)
             {
-                var result = JsonSerializer.Deserialize<BrevoSendEmailResponse>(responseContent);
+                BrevoSendEmailResponse? result = JsonSerializer.Deserialize<BrevoSendEmailResponse>(responseContent);
 
                 _logger.LogInformation(
                     "Email sent successfully via Brevo. MessageId: {MessageId}, To: {To}",

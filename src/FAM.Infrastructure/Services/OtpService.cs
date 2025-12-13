@@ -1,7 +1,9 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+
 using FAM.Application.Common.Services;
+
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
@@ -87,7 +89,7 @@ public class OtpService : IOtpService
 
         try
         {
-            var otpData = JsonSerializer.Deserialize<OtpData>(cached);
+            OtpData? otpData = JsonSerializer.Deserialize<OtpData>(cached);
             if (otpData == null)
             {
                 _logger.LogWarning("Failed to deserialize OTP data for user {UserId}", userId);

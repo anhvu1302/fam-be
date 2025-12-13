@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+
 using FAM.Application.Querying.Validation;
 
 namespace FAM.Application.Querying.Binding;
@@ -39,8 +40,8 @@ public static class ProjectionBinder
         }
 
         // Build projection expression dynamically
-        var parameter = Expression.Parameter(typeof(TSource), "x");
-        var dtoType = typeof(TDto);
+        ParameterExpression parameter = Expression.Parameter(typeof(TSource), "x");
+        Type dtoType = typeof(TDto);
 
         // Create member bindings for each requested field
         var bindings = new List<MemberBinding>();
@@ -48,11 +49,11 @@ public static class ProjectionBinder
         foreach (var fieldName in fields)
         {
             // Get source expression from field map
-            if (!fieldMap.TryGet(fieldName, out var sourceExpression, out _))
+            if (!fieldMap.TryGet(fieldName, out LambdaExpression sourceExpression, out _))
                 continue;
 
             // Find matching property in DTO
-            var dtoProperty = dtoType.GetProperty(
+            PropertyInfo? dtoProperty = dtoType.GetProperty(
                 fieldName,
                 BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 
@@ -61,7 +62,7 @@ public static class ProjectionBinder
 
             // Replace parameter in source expression
             var visitor = new ParameterReplacerVisitor(sourceExpression.Parameters[0], parameter);
-            var sourceBody = visitor.Visit(sourceExpression.Body);
+            Expression sourceBody = visitor.Visit(sourceExpression.Body);
 
             // Convert if types don't match
             if (sourceBody.Type != dtoProperty.PropertyType)
@@ -73,7 +74,7 @@ public static class ProjectionBinder
         }
 
         // Create: x => new TDto { Field1 = x.Field1, Field2 = x.Field2, ... }
-        var memberInit = Expression.MemberInit(Expression.New(dtoType), bindings);
+        MemberInitExpression memberInit = Expression.MemberInit(Expression.New(dtoType), bindings);
         var lambda = Expression.Lambda<Func<TSource, TDto>>(memberInit, parameter);
 
         return query.Select(lambda);
@@ -91,9 +92,9 @@ public static class ProjectionBinder
         string[]? fields,
         FieldMap<TSource> fieldMap)
     {
-        var parameter = Expression.Parameter(typeof(TSource), "x");
-        var dictType = typeof(Dictionary<string, object?>);
-        var addMethod = dictType.GetMethod("Add", new[] { typeof(string), typeof(object) })!;
+        ParameterExpression parameter = Expression.Parameter(typeof(TSource), "x");
+        Type dictType = typeof(Dictionary<string, object?>);
+        MethodInfo addMethod = dictType.GetMethod("Add", new[] { typeof(string), typeof(object) })!;
 
         var bindings = new List<ElementInit>();
 
@@ -104,7 +105,7 @@ public static class ProjectionBinder
 
         foreach (var fieldName in fieldsToSelect)
         {
-            if (!fieldMap.TryGet(fieldName, out var sourceExpression, out _))
+            if (!fieldMap.TryGet(fieldName, out LambdaExpression sourceExpression, out _))
                 continue;
 
             if (!fieldMap.CanSelect(fieldName))
@@ -112,17 +113,17 @@ public static class ProjectionBinder
 
             // Replace parameter in source expression
             var visitor = new ParameterReplacerVisitor(sourceExpression.Parameters[0], parameter);
-            var sourceBody = visitor.Visit(sourceExpression.Body);
+            Expression sourceBody = visitor.Visit(sourceExpression.Body);
 
             // Convert to object
-            var objectValue = Expression.Convert(sourceBody, typeof(object));
+            UnaryExpression objectValue = Expression.Convert(sourceBody, typeof(object));
 
             // Use camelCase for dictionary key
-            var key = Expression.Constant(ToCamelCase(fieldName));
+            ConstantExpression key = Expression.Constant(ToCamelCase(fieldName));
             bindings.Add(Expression.ElementInit(addMethod, key, objectValue));
         }
 
-        var dictInit = Expression.ListInit(Expression.New(dictType), bindings);
+        ListInitExpression dictInit = Expression.ListInit(Expression.New(dictType), bindings);
         return Expression.Lambda<Func<TSource, Dictionary<string, object?>>>(dictInit, parameter);
     }
 

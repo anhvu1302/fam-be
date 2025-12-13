@@ -1,4 +1,5 @@
 using FAM.Domain.Statuses;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Statuses;
@@ -64,7 +65,7 @@ public class LifecycleStatusTests
     public void Create_WithDifferentStatuses_ShouldCreateLifecycleStatus()
     {
         // Arrange
-        var testCases = new[]
+        (string, string)[] testCases = new[]
         {
             ("DRAFT", "Draft"),
             ("PENDING_APPROVAL", "Pending Approval"),

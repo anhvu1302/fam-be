@@ -43,7 +43,7 @@ public static class FilterValidator
 
             case CallNode call:
                 ValidateNode(call.Target, fieldMap);
-                foreach (var arg in call.Arguments)
+                foreach (FilterNode arg in call.Arguments)
                     ValidateNode(arg, fieldMap);
                 ValidateCallOperator(call, fieldMap);
                 break;
@@ -81,8 +81,8 @@ public static class FilterValidator
             return;
 
         // Comparison operators need compatible types
-        var leftType = GetNodeType(node.Left, fieldMap);
-        var rightType = GetNodeType(node.Right, fieldMap);
+        Type? leftType = GetNodeType(node.Left, fieldMap);
+        Type? rightType = GetNodeType(node.Right, fieldMap);
 
         if (leftType == null || rightType == null)
             return; // Can't validate without type info
@@ -96,14 +96,14 @@ public static class FilterValidator
         if (node.Operator == FilterOperator.Not)
             return; // NOT can be applied to any boolean expression
 
-        var operandType = GetNodeType(node.Operand, fieldMap);
+        Type? operandType = GetNodeType(node.Operand, fieldMap);
         if (operandType != null)
             ValidateOperatorForType(node.Operator, operandType);
     }
 
     private static void ValidateCallOperator<T>(CallNode node, FieldMap<T> fieldMap)
     {
-        var targetType = GetNodeType(node.Target, fieldMap);
+        Type? targetType = GetNodeType(node.Target, fieldMap);
         if (targetType == null)
             return;
 
@@ -114,7 +114,7 @@ public static class FilterValidator
     {
         return node switch
         {
-            FieldNode field when fieldMap.TryGet(field.Name, out _, out var type) => type,
+            FieldNode field when fieldMap.TryGet(field.Name, out _, out Type type) => type,
             LiteralNode literal => literal.Type,
             _ => null
         };
@@ -164,7 +164,7 @@ public static class FilterValidator
 
     private static bool IsNumericType(Type type)
     {
-        var underlyingType = Nullable.GetUnderlyingType(type) ?? type;
+        Type underlyingType = Nullable.GetUnderlyingType(type) ?? type;
         return underlyingType == typeof(int)
                || underlyingType == typeof(long)
                || underlyingType == typeof(short)

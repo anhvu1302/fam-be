@@ -1,10 +1,16 @@
+using System.Reflection;
 using System.Security.Cryptography;
+
+using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
 using FAM.Infrastructure.Auth;
+
 using FluentAssertions;
+
 using Microsoft.Extensions.Logging;
+
 using Moq;
 
 namespace FAM.Application.Tests.Auth;
@@ -50,7 +56,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync(keys);
 
         // Act
-        var result = await _service.GetJwksAsync();
+        JwksDto result = await _service.GetJwksAsync();
 
         // Assert
         result.Should().NotBeNull();
@@ -74,7 +80,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync(new List<SigningKey>());
 
         // Act
-        var result = await _service.GetJwksAsync();
+        JwksDto result = await _service.GetJwksAsync();
 
         // Assert
         result.Should().NotBeNull();
@@ -85,8 +91,8 @@ public class SigningKeyServiceTests
     public async Task GetJwksAsync_WithRevokedKey_ShouldExcludeRevokedKey()
     {
         // Arrange
-        var activeKey = CreateTestSigningKey("active_key");
-        var revokedKey = CreateTestSigningKey("revoked_key");
+        SigningKey activeKey = CreateTestSigningKey("active_key");
+        SigningKey revokedKey = CreateTestSigningKey("revoked_key");
         revokedKey.Revoke("Test");
 
         _mockRepository
@@ -94,7 +100,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync(new List<SigningKey> { activeKey, revokedKey });
 
         // Act
-        var result = await _service.GetJwksAsync();
+        JwksDto result = await _service.GetJwksAsync();
 
         // Assert
         result.Keys.Should().HaveCount(1);
@@ -109,13 +115,13 @@ public class SigningKeyServiceTests
     public async Task GetOrCreateActiveKeyAsync_WithExistingActiveKey_ShouldReturnExistingKey()
     {
         // Arrange
-        var existingKey = CreateTestSigningKey("existing_key");
+        SigningKey existingKey = CreateTestSigningKey("existing_key");
         _mockRepository
             .Setup(r => r.GetActiveKeyAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingKey);
 
         // Act
-        var result = await _service.GetOrCreateActiveKeyAsync();
+        SigningKey result = await _service.GetOrCreateActiveKeyAsync();
 
         // Assert
         result.Should().Be(existingKey);
@@ -135,7 +141,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync(new List<SigningKey>());
 
         // Act
-        var result = await _service.GetOrCreateActiveKeyAsync();
+        SigningKey result = await _service.GetOrCreateActiveKeyAsync();
 
         // Assert
         result.Should().NotBeNull();
@@ -157,7 +163,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync(new List<SigningKey>());
 
         // Act
-        var result = await _service.GenerateKeyAsync(
+        SigningKey result = await _service.GenerateKeyAsync(
             "RS256",
             2048,
             description: "Test key");
@@ -183,7 +189,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync(new List<SigningKey>());
 
         // Act
-        var result = await _service.GenerateKeyAsync(algorithm);
+        SigningKey result = await _service.GenerateKeyAsync(algorithm);
 
         // Assert
         result.Algorithm.Should().Be(algorithm);
@@ -193,7 +199,7 @@ public class SigningKeyServiceTests
     public async Task GenerateKeyAsync_WithInvalidAlgorithm_ShouldThrowArgumentException()
     {
         // Act
-        var act = async () => await _service.GenerateKeyAsync("INVALID");
+        Func<Task<SigningKey>> act = async () => await _service.GenerateKeyAsync("INVALID");
 
         // Assert
         await act.Should().ThrowAsync<DomainException>()
@@ -212,7 +218,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync(new List<SigningKey>());
 
         // Act
-        var result = await _service.GenerateKeyAsync(keySize: keySize);
+        SigningKey result = await _service.GenerateKeyAsync(keySize: keySize);
 
         // Assert
         result.KeySize.Should().Be(keySize);
@@ -222,7 +228,7 @@ public class SigningKeyServiceTests
     public async Task GenerateKeyAsync_WithInvalidKeySize_ShouldThrowArgumentException()
     {
         // Act
-        var act = async () => await _service.GenerateKeyAsync(keySize: 1024);
+        Func<Task<SigningKey>> act = async () => await _service.GenerateKeyAsync(keySize: 1024);
 
         // Assert
         await act.Should().ThrowAsync<DomainException>()
@@ -234,7 +240,7 @@ public class SigningKeyServiceTests
     {
         // Arrange
         // Create existing key and set its Id via reflection to simulate DB-assigned Id
-        var existingKey = CreateTestSigningKey("existing");
+        SigningKey existingKey = CreateTestSigningKey("existing");
         SetPrivateProperty(existingKey, "Id", 999L); // Simulate existing key in DB with Id != 0
 
         _mockRepository
@@ -250,7 +256,7 @@ public class SigningKeyServiceTests
 
     private static void SetPrivateProperty<T>(object obj, string propertyName, T value)
     {
-        var property = obj.GetType().GetProperty(propertyName);
+        PropertyInfo? property = obj.GetType().GetProperty(propertyName);
         property?.SetValue(obj, value);
     }
 
@@ -263,7 +269,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync(new List<SigningKey>());
 
         // Act
-        var result = await _service.GenerateKeyAsync(activateImmediately: false);
+        SigningKey result = await _service.GenerateKeyAsync(activateImmediately: false);
 
         // Assert
         result.IsActive.Should().BeFalse();
@@ -277,7 +283,7 @@ public class SigningKeyServiceTests
     public async Task ActivateKeyAsync_WithValidKey_ShouldActivateKey()
     {
         // Arrange
-        var key = CreateTestSigningKey("test_key");
+        SigningKey key = CreateTestSigningKey("test_key");
         key.Deactivate();
 
         _mockRepository
@@ -302,7 +308,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync((SigningKey?)null);
 
         // Act
-        var act = async () => await _service.ActivateKeyAsync(999);
+        Func<Task> act = async () => await _service.ActivateKeyAsync(999);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();
@@ -316,7 +322,7 @@ public class SigningKeyServiceTests
     public async Task DeactivateKeyAsync_WithValidKey_ShouldDeactivateKey()
     {
         // Arrange
-        var key = CreateTestSigningKey("test_key");
+        SigningKey key = CreateTestSigningKey("test_key");
         _mockRepository
             .Setup(r => r.GetByIdAsync(1L, It.IsAny<CancellationToken>()))
             .ReturnsAsync(key);
@@ -338,7 +344,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync((SigningKey?)null);
 
         // Act
-        var act = async () => await _service.DeactivateKeyAsync(999);
+        Func<Task> act = async () => await _service.DeactivateKeyAsync(999);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();
@@ -352,7 +358,7 @@ public class SigningKeyServiceTests
     public async Task RevokeKeyAsync_WithValidKey_ShouldRevokeKey()
     {
         // Arrange
-        var key = CreateTestSigningKey("test_key");
+        SigningKey key = CreateTestSigningKey("test_key");
         var reason = "Security breach";
 
         _mockRepository
@@ -377,7 +383,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync((SigningKey?)null);
 
         // Act
-        var act = async () => await _service.RevokeKeyAsync(999L);
+        Func<Task> act = async () => await _service.RevokeKeyAsync(999L);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();
@@ -391,7 +397,7 @@ public class SigningKeyServiceTests
     public async Task RotateKeyAsync_WithExistingActiveKey_ShouldRotateKeys()
     {
         // Arrange
-        var oldKey = CreateTestSigningKey("old_key");
+        SigningKey oldKey = CreateTestSigningKey("old_key");
 
         _mockRepository
             .Setup(r => r.GetActiveKeyAsync(It.IsAny<CancellationToken>()))
@@ -402,7 +408,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync(new List<SigningKey> { oldKey });
 
         // Act
-        var result = await _service.RotateKeyAsync(revokeOldKey: false);
+        SigningKey result = await _service.RotateKeyAsync(revokeOldKey: false);
 
         // Assert
         result.Should().NotBeNull();
@@ -415,7 +421,7 @@ public class SigningKeyServiceTests
     public async Task RotateKeyAsync_WithRevokeOldKey_ShouldRevokeOldKey()
     {
         // Arrange
-        var oldKey = CreateTestSigningKey("old_key");
+        SigningKey oldKey = CreateTestSigningKey("old_key");
 
         _mockRepository
             .Setup(r => r.GetActiveKeyAsync(It.IsAny<CancellationToken>()))
@@ -441,7 +447,7 @@ public class SigningKeyServiceTests
     public async Task DeleteKeyAsync_WithRevokedKey_ShouldDeleteKey()
     {
         // Arrange
-        var key = CreateTestSigningKey("test_key");
+        SigningKey key = CreateTestSigningKey("test_key");
         key.Revoke("Test");
 
         _mockRepository
@@ -460,14 +466,14 @@ public class SigningKeyServiceTests
     public async Task DeleteKeyAsync_WithNonRevokedKey_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var key = CreateTestSigningKey("test_key"); // Not revoked
+        SigningKey key = CreateTestSigningKey("test_key"); // Not revoked
 
         _mockRepository
             .Setup(r => r.GetByIdAsync(1L, It.IsAny<CancellationToken>()))
             .ReturnsAsync(key);
 
         // Act
-        var act = async () => await _service.DeleteKeyAsync(1L);
+        Func<Task> act = async () => await _service.DeleteKeyAsync(1L);
 
         // Assert
         await act.Should().ThrowAsync<DomainException>()
@@ -483,7 +489,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync((SigningKey?)null);
 
         // Act
-        var act = async () => await _service.DeleteKeyAsync(999);
+        Func<Task> act = async () => await _service.DeleteKeyAsync(999);
 
         // Assert
         await act.Should().ThrowAsync<NotFoundException>();
@@ -509,7 +515,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync(keys);
 
         // Act
-        var result = await _service.GetAllKeysAsync();
+        IReadOnlyList<SigningKeyResponse> result = await _service.GetAllKeysAsync();
 
         // Assert
         result.Should().HaveCount(3);
@@ -529,14 +535,14 @@ public class SigningKeyServiceTests
     public async Task GetExpiringKeysAsync_ShouldReturnExpiringKeys()
     {
         // Arrange
-        var expiringKey = CreateTestSigningKey("expiring_key", DateTime.UtcNow.AddDays(5));
+        SigningKey expiringKey = CreateTestSigningKey("expiring_key", DateTime.UtcNow.AddDays(5));
 
         _mockRepository
             .Setup(r => r.GetKeysExpiringWithinAsync(It.IsAny<TimeSpan>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<SigningKey> { expiringKey });
 
         // Act
-        var result = await _service.GetExpiringKeysAsync(TimeSpan.FromDays(7));
+        IReadOnlyList<SigningKeyResponse> result = await _service.GetExpiringKeysAsync(TimeSpan.FromDays(7));
 
         // Assert
         result.Should().HaveCount(1);

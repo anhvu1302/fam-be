@@ -1,7 +1,10 @@
+using System.Reflection;
+
 using FAM.Application.EmailTemplates.Commands.CreateEmailTemplate;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.Domain.EmailTemplates;
+
 using Moq;
 
 namespace FAM.Application.Tests.EmailTemplates;
@@ -41,7 +44,7 @@ public class CreateEmailTemplateCommandHandlerTests
             .Callback<EmailTemplate, CancellationToken>((t, ct) =>
             {
                 // Simulate database assigning ID
-                var idField = typeof(EmailTemplate).BaseType!.GetProperty("Id");
+                PropertyInfo? idField = typeof(EmailTemplate).BaseType!.GetProperty("Id");
                 idField!.SetValue(t, 1L);
             })
             .Returns(Task.CompletedTask);
@@ -72,7 +75,8 @@ public class CreateEmailTemplateCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<ConflictException>(() => _handler.Handle(command, default));
+        ConflictException exception =
+            await Assert.ThrowsAsync<ConflictException>(() => _handler.Handle(command, default));
 
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_CODE_EXISTS, exception.ErrorCode);
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<EmailTemplate>(), default), Times.Never);
@@ -101,7 +105,7 @@ public class CreateEmailTemplateCommandHandlerTests
         _repositoryMock.Setup(x => x.AddAsync(It.IsAny<EmailTemplate>(), default))
             .Callback<EmailTemplate, CancellationToken>((t, ct) =>
             {
-                var idField = typeof(EmailTemplate).BaseType!.GetProperty("Id");
+                PropertyInfo? idField = typeof(EmailTemplate).BaseType!.GetProperty("Id");
                 idField!.SetValue(t, 1L);
             })
             .Returns(Task.CompletedTask);
@@ -138,7 +142,7 @@ public class CreateEmailTemplateCommandHandlerTests
         _repositoryMock.Setup(x => x.AddAsync(It.IsAny<EmailTemplate>(), default))
             .Callback<EmailTemplate, CancellationToken>((t, ct) =>
             {
-                var idField = typeof(EmailTemplate).BaseType!.GetProperty("Id");
+                PropertyInfo? idField = typeof(EmailTemplate).BaseType!.GetProperty("Id");
                 idField!.SetValue(t, 1L);
             })
             .Returns(Task.CompletedTask);

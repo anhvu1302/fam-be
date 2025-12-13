@@ -4,14 +4,18 @@ using FAM.Application.Querying;
 using FAM.Application.Querying.Extensions;
 using FAM.Application.Settings;
 using FAM.Application.Users.Commands;
+using FAM.Application.Users.Commands.CreateUser;
 using FAM.Application.Users.Commands.DeleteUser;
+using FAM.Application.Users.Commands.UpdateUser;
 using FAM.Application.Users.Shared;
 using FAM.Domain.Common.Base;
 using FAM.WebApi.Contracts.Authorization;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.Users;
 using FAM.WebApi.Mappers;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace FAM.WebApi.Controllers;
@@ -50,7 +54,7 @@ public class UsersController : BaseApiController
     public async Task<IActionResult> GetUsers([FromQuery] PaginationQueryParameters parameters)
     {
         var query = parameters.ToGetUsersQuery(_pagination);
-        var result = await _mediator.Send(query);
+        PageResult<UserDto> result = await _mediator.Send(query);
 
         // Apply field selection if requested
         if (parameters.GetFieldsArray() != null && parameters.GetFieldsArray()!.Length > 0)
@@ -80,7 +84,7 @@ public class UsersController : BaseApiController
     public async Task<IActionResult> GetUserById(long id, [FromQuery] string? include = null)
     {
         var query = id.ToGetUserByIdQuery(include);
-        var result = await _mediator.Send(query);
+        UserDto? result = await _mediator.Send(query);
 
         if (result == null)
             throw new NotFoundException(ErrorCodes.GEN_NOT_FOUND, "User", id);
@@ -107,8 +111,8 @@ public class UsersController : BaseApiController
         // Web API validation: ModelState checks DataAnnotations
 
         // Map Web API request → Application Command using extension method
-        var command = request.ToCommand();
-        var result = await _mediator.Send(command);
+        CreateUserCommand command = request.ToCommand();
+        Application.Common.Result<CreateUserResult> result = await _mediator.Send(command);
 
         return result.Match<IActionResult>(
             success => CreatedAtAction(nameof(GetUserById), new { id = success.User.Id },
@@ -139,8 +143,8 @@ public class UsersController : BaseApiController
         // Web API validation: ModelState checks DataAnnotations
 
         // Map Web API request → Application Command using extension method
-        var command = request.ToCommand(id);
-        var result = await _mediator.Send(command);
+        UpdateUserCommand command = request.ToCommand(id);
+        Application.Common.Result<UpdateUserResult> result = await _mediator.Send(command);
 
         return result.Match<IActionResult>(
             success => Ok(success.User.ToUserResponse()),
@@ -212,7 +216,7 @@ public class UsersController : BaseApiController
             UploadId = request.UploadId
         };
 
-        var result = await _mediator.Send(command);
+        UpdateAvatarResponse result = await _mediator.Send(command);
         return OkResponse(result);
     }
 
@@ -241,7 +245,7 @@ public class UsersController : BaseApiController
             FileSize = file.Length
         };
 
-        var result = await _mediator.Send(command);
+        UploadAvatarDirectResponse result = await _mediator.Send(command);
         return OkResponse(result);
     }
 

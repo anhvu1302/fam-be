@@ -3,6 +3,7 @@ using FAM.Infrastructure.Common.Options;
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.Providers.MongoDB.Repositories;
 using FAM.Infrastructure.Providers.MongoDB.Seeders;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FAM.Infrastructure.Providers.MongoDB;

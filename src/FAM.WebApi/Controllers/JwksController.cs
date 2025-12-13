@@ -1,6 +1,8 @@
 using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
+using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,7 +35,7 @@ public class JwksController : BaseApiController
     [ProducesResponseType(typeof(JwksDto), StatusCodes.Status200OK)]
     public async Task<ActionResult<JwksDto>> GetJwks(CancellationToken cancellationToken)
     {
-        var jwks = await _signingKeyService.GetJwksAsync(cancellationToken);
+        JwksDto jwks = await _signingKeyService.GetJwksAsync(cancellationToken);
         return OkResponse(jwks);
     }
 
@@ -62,7 +64,7 @@ public class JwksController : BaseApiController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<IEnumerable<SigningKeyResponse>>> GetAllKeys(CancellationToken cancellationToken)
     {
-        var keys = await _signingKeyService.GetAllKeysAsync(cancellationToken);
+        IReadOnlyList<SigningKeyResponse> keys = await _signingKeyService.GetAllKeysAsync(cancellationToken);
         return OkResponse(keys);
     }
 
@@ -77,7 +79,7 @@ public class JwksController : BaseApiController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<SigningKeyResponse>> GetKeyById(long id, CancellationToken cancellationToken)
     {
-        var key = await _signingKeyService.GetKeyByIdAsync(id, cancellationToken);
+        SigningKeyResponse? key = await _signingKeyService.GetKeyByIdAsync(id, cancellationToken);
         if (key == null)
             throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", id);
         return OkResponse(key);
@@ -96,7 +98,7 @@ public class JwksController : BaseApiController
         [FromBody] GenerateSigningKeyRequest request,
         CancellationToken cancellationToken)
     {
-        var key = await _signingKeyService.GenerateKeyAsync(
+        SigningKey key = await _signingKeyService.GenerateKeyAsync(
             request.Algorithm,
             request.KeySize,
             request.ExpiresAt,
@@ -104,7 +106,7 @@ public class JwksController : BaseApiController
             request.ActivateImmediately,
             cancellationToken);
 
-        var response = await _signingKeyService.GetKeyByIdAsync(key.Id, cancellationToken);
+        SigningKeyResponse? response = await _signingKeyService.GetKeyByIdAsync(key.Id, cancellationToken);
         _logger.LogInformation("Generated new signing key {KeyId}", key.KeyId);
 
         return CreatedAtAction(nameof(GetKeyById), new { id = key.Id }, response);
@@ -123,7 +125,7 @@ public class JwksController : BaseApiController
         [FromBody] RotateKeyRequest request,
         CancellationToken cancellationToken)
     {
-        var key = await _signingKeyService.RotateKeyAsync(
+        SigningKey key = await _signingKeyService.RotateKeyAsync(
             request.Algorithm,
             request.KeySize,
             request.ExpiresAt,
@@ -132,7 +134,7 @@ public class JwksController : BaseApiController
             request.RevocationReason,
             cancellationToken);
 
-        var response = await _signingKeyService.GetKeyByIdAsync(key.Id, cancellationToken);
+        SigningKeyResponse? response = await _signingKeyService.GetKeyByIdAsync(key.Id, cancellationToken);
         _logger.LogInformation("Rotated signing keys. New key: {KeyId}", key.KeyId);
 
         return OkResponse(response);
@@ -221,7 +223,8 @@ public class JwksController : BaseApiController
         [FromQuery] int days = 7,
         CancellationToken cancellationToken = default)
     {
-        var keys = await _signingKeyService.GetExpiringKeysAsync(TimeSpan.FromDays(days), cancellationToken);
+        IReadOnlyList<SigningKeyResponse> keys =
+            await _signingKeyService.GetExpiringKeysAsync(TimeSpan.FromDays(days), cancellationToken);
         return OkResponse(keys);
     }
 

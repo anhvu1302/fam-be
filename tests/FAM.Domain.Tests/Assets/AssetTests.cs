@@ -1,5 +1,6 @@
 using FAM.Domain.Assets;
 using FAM.Domain.Common.Base;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Assets;
@@ -133,7 +134,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        var act = () => asset.UpdateBasicInfo(newName!, null, updatedBy);
+        Action act = () => asset.UpdateBasicInfo(newName!, null, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -149,7 +150,7 @@ public class AssetTests
         var updatedBy = 0L;
 
         // Act
-        var act = () => asset.UpdateBasicInfo(newName, null, updatedBy);
+        Action act = () => asset.UpdateBasicInfo(newName, null, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -161,13 +162,13 @@ public class AssetTests
     {
         // Arrange
         var asset = Asset.Create("Test Asset", 1L);
-        var purchaseDate = DateTime.UtcNow;
+        DateTime purchaseDate = DateTime.UtcNow;
         decimal? purchaseCost = -100;
         var supplierId = 1;
         var updatedBy = 2L;
 
         // Act
-        var act = () => asset.SetPurchaseInfo(purchaseDate, purchaseCost, supplierId, updatedBy);
+        Action act = () => asset.SetPurchaseInfo(purchaseDate, purchaseCost, supplierId, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -179,7 +180,7 @@ public class AssetTests
     {
         // Arrange
         var asset = Asset.Create("Test Asset", 1L);
-        var purchaseDate = DateTime.UtcNow;
+        DateTime purchaseDate = DateTime.UtcNow;
         decimal? purchaseCost = 1000;
         var supplierId = 1;
         var updatedBy = 2L;
@@ -206,7 +207,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        var act = () =>
+        Action act = () =>
             asset.SetExtendedPurchaseInfo(purchaseOrderNo, invoiceNo, warrantyMonths, warrantyTerms, updatedBy);
 
         // Assert
@@ -219,7 +220,7 @@ public class AssetTests
     {
         // Arrange
         var asset = Asset.Create("Test Asset", 1, 1, 1, "TAG001");
-        var purchaseDate = DateTime.UtcNow;
+        DateTime purchaseDate = DateTime.UtcNow;
 
         // Act
         asset.SetPurchaseInfo(purchaseDate, 1000, 1, 1);
@@ -244,7 +245,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        var act = () => asset.UpdateDepreciation(currentBookValue, accumulatedDepreciation, updatedBy);
+        Action act = () => asset.UpdateDepreciation(currentBookValue, accumulatedDepreciation, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -261,7 +262,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        var act = () => asset.UpdateDepreciation(currentBookValue, accumulatedDepreciation, updatedBy);
+        Action act = () => asset.UpdateDepreciation(currentBookValue, accumulatedDepreciation, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -296,7 +297,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        var act = () => asset.ScheduleMaintenance(intervalDays, updatedBy);
+        Action act = () => asset.ScheduleMaintenance(intervalDays, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -312,7 +313,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        var act = () => asset.ScheduleMaintenance(intervalDays, updatedBy);
+        Action act = () => asset.ScheduleMaintenance(intervalDays, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -345,12 +346,12 @@ public class AssetTests
         var asset = Asset.Create("Test Asset", 1L);
         var version = "1.0.0";
         var licenseKey = "ABC123";
-        var licenseExpiry = DateTime.UtcNow.AddYears(1);
+        DateTime licenseExpiry = DateTime.UtcNow.AddYears(1);
         int? licenseCount = -1;
         var updatedBy = 2L;
 
         // Act
-        var act = () => asset.SetSoftwareInfo(version, licenseKey, licenseExpiry, licenseCount, updatedBy);
+        Action act = () => asset.SetSoftwareInfo(version, licenseKey, licenseExpiry, licenseCount, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -364,7 +365,7 @@ public class AssetTests
         var asset = Asset.Create("Test Asset", 1L);
         var version = "1.0.0";
         var licenseKey = "ABC123";
-        var licenseExpiry = DateTime.UtcNow.AddYears(1);
+        DateTime licenseExpiry = DateTime.UtcNow.AddYears(1);
         int? licenseCount = 5;
         var updatedBy = 2L;
 
@@ -391,7 +392,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        var act = () => asset.SetPhysicalCharacteristics(weight, dimensions, color, material, updatedBy);
+        Action act = () => asset.SetPhysicalCharacteristics(weight, dimensions, color, material, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -431,7 +432,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        var act = () =>
+        Action act = () =>
             asset.SetEnvironmentalInfo(powerConsumption, energyRating, isEnvironmentallyFriendly, updatedBy);
 
         // Assert
@@ -469,7 +470,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        var act = () => asset.SetReplacementInfo(replacementCost, estimatedRemainingLifeMonths, updatedBy);
+        Action act = () => asset.SetReplacementInfo(replacementCost, estimatedRemainingLifeMonths, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -486,7 +487,7 @@ public class AssetTests
         var updatedBy = 2L;
 
         // Act
-        var act = () => asset.SetReplacementInfo(replacementCost, estimatedRemainingLifeMonths, updatedBy);
+        Action act = () => asset.SetReplacementInfo(replacementCost, estimatedRemainingLifeMonths, updatedBy);
 
         // Assert
         act.Should().Throw<DomainException>()
@@ -668,7 +669,7 @@ public class AssetTests
         var asset = Asset.Create("Test Asset", 1, 1, 1, "TAG001");
 
         // Act
-        var healthStatus = asset.GetHealthStatus();
+        AssetHealthStatus healthStatus = asset.GetHealthStatus();
 
         // Assert
         healthStatus.Should().Be(AssetHealthStatus.Healthy);
@@ -683,7 +684,7 @@ public class AssetTests
         // This test would need to be updated when various update methods are available
 
         // Act
-        var healthStatus = asset.GetHealthStatus();
+        AssetHealthStatus healthStatus = asset.GetHealthStatus();
 
         // Assert
         healthStatus.Should().Be(AssetHealthStatus.Healthy); // No issues set, should be healthy

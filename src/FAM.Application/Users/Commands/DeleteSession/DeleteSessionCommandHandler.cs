@@ -1,6 +1,8 @@
 using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
+using FAM.Domain.Users.Entities;
+
 using MediatR;
 
 namespace FAM.Application.Users.Commands.DeleteSession;
@@ -23,7 +25,7 @@ public class DeleteSessionCommandHandler : IRequestHandler<DeleteSessionCommand,
 
     public async Task<Unit> Handle(DeleteSessionCommand request, CancellationToken cancellationToken)
     {
-        var device = await _userDeviceRepository.GetByIdAsync(request.SessionId, cancellationToken);
+        UserDevice? device = await _userDeviceRepository.GetByIdAsync(request.SessionId, cancellationToken);
 
         if (device == null || device.UserId != request.UserId)
             throw new DomainException(ErrorCodes.USER_SESSION_NOT_FOUND, "Session not found or access denied.");
@@ -32,22 +34,20 @@ public class DeleteSessionCommandHandler : IRequestHandler<DeleteSessionCommand,
         if (!string.IsNullOrEmpty(device.ActiveAccessTokenJti))
         {
             // Calculate expiration time using config (add extra buffer for clock skew)
-            var tokenExpiryTime = DateTime.UtcNow.AddHours(2); // Conservative estimate
-            
+            DateTime tokenExpiryTime = DateTime.UtcNow.AddHours(2); // Conservative estimate
+
             await _tokenBlacklistService.BlacklistTokenByJtiAsync(
                 device.ActiveAccessTokenJti,
                 tokenExpiryTime,
                 cancellationToken);
         }
-        
+
         // Also blacklist the current access token if provided (for immediate revocation)
         if (!string.IsNullOrEmpty(request.AccessToken) && request.AccessTokenExpiration.HasValue)
-        {
             await _tokenBlacklistService.BlacklistTokenAsync(
                 request.AccessToken,
                 request.AccessTokenExpiration.Value,
                 cancellationToken);
-        }
 
         // Delete the device session entirely
         _userDeviceRepository.Delete(device);

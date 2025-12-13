@@ -1,6 +1,7 @@
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.PersistenceModels.Ef;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -33,7 +34,7 @@ public class PermissionSeeder : BaseDataSeeder
         }
 
         // Get all predefined permissions from Domain
-        var allPermissions = Permissions.All;
+        IReadOnlyList<(string Resource, string Action, string Description)> allPermissions = Permissions.All;
 
         var permissionEntities = new List<PermissionEf>();
 

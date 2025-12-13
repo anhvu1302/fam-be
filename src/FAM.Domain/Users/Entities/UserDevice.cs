@@ -119,12 +119,12 @@ public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasMod
     {
         ActiveAccessTokenJti = jti;
     }
-    
+
     /// <summary>
     /// Update both refresh token and active access token JTI
     /// Used during token refresh to track the new access token
     /// </summary>
-    public void UpdateTokens(string refreshToken, DateTime refreshTokenExpiresAt, string accessTokenJti, 
+    public void UpdateTokens(string refreshToken, DateTime refreshTokenExpiresAt, string accessTokenJti,
         string? ipAddress = null, string? location = null)
     {
         RefreshToken = refreshToken;
@@ -161,7 +161,7 @@ public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasMod
         if (!IsTrusted) return false;
 
         // Device must have been created at least minimumDays ago
-        var trustDuration = DateTime.UtcNow - CreatedAt;
+        TimeSpan trustDuration = DateTime.UtcNow - CreatedAt;
         return trustDuration.TotalDays >= minimumDays;
     }
 

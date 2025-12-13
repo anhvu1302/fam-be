@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.ValueObjects;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.ValueObjects;
@@ -163,7 +164,7 @@ public class PercentageTests
         var percentage2 = Percentage.Create(30m);
 
         // Act
-        var result = percentage1.Add(percentage2);
+        Percentage result = percentage1.Add(percentage2);
 
         // Assert
         result.Value.Should().Be(55m);
@@ -192,7 +193,7 @@ public class PercentageTests
         var percentage2 = Percentage.Create(25m);
 
         // Act
-        var result = percentage1.Subtract(percentage2);
+        Percentage result = percentage1.Subtract(percentage2);
 
         // Assert
         result.Value.Should().Be(50m);
@@ -221,7 +222,7 @@ public class PercentageTests
         var factor = 0.5m;
 
         // Act
-        var result = percentage.Multiply(factor);
+        Percentage result = percentage.Multiply(factor);
 
         // Assert
         result.Value.Should().Be(25m);

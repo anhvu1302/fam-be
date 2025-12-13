@@ -1,6 +1,8 @@
 using FAM.Application.Common.Helpers;
 using FAM.Application.Users.Shared;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+
 using MediatR;
 
 namespace FAM.Application.Users.Queries.GetUserById;
@@ -19,12 +21,12 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
 
     public async Task<UserDto?> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
+        User? user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (user == null)
             return null;
 
-        var includeSet = IncludeParser.Parse(request.Include);
+        HashSet<string> includeSet = IncludeParser.Parse(request.Include);
         return user.ToUserDto(includeSet);
     }
 }

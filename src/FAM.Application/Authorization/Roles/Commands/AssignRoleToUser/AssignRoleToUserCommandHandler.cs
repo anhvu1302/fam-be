@@ -1,6 +1,8 @@
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
+using FAM.Domain.Users;
+
 using MediatR;
 
 namespace FAM.Application.Authorization.Roles.Commands.AssignRoleToUser;
@@ -16,20 +18,20 @@ public sealed class AssignRoleToUserCommandHandler : IRequestHandler<AssignRoleT
 
     public async Task<bool> Handle(AssignRoleToUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
         if (user == null)
             throw new NotFoundException(ErrorCodes.USER_NOT_FOUND, $"User with ID {request.UserId} not found");
 
-        var role = await _unitOfWork.Roles.GetByIdAsync(request.RoleId, cancellationToken);
+        Role? role = await _unitOfWork.Roles.GetByIdAsync(request.RoleId, cancellationToken);
         if (role == null)
             throw new NotFoundException(ErrorCodes.ROLE_NOT_FOUND, $"Role with ID {request.RoleId} not found");
 
-        var node = await _unitOfWork.Resources.GetByIdAsync(request.NodeId, cancellationToken);
+        Resource? node = await _unitOfWork.Resources.GetByIdAsync(request.NodeId, cancellationToken);
         if (node == null)
             throw new NotFoundException(ErrorCodes.VAL_INVALID_VALUE,
                 $"Organization node with ID {request.NodeId} not found");
 
-        var existingAssignment = await _unitOfWork.UserNodeRoles
+        UserNodeRole? existingAssignment = await _unitOfWork.UserNodeRoles
             .GetByUserAndNodeAndRoleAsync(request.UserId, request.NodeId, request.RoleId, cancellationToken);
 
         if (existingAssignment != null)

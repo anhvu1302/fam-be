@@ -1,6 +1,7 @@
 using FAM.Application.EmailTemplates.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.EmailTemplates;
+
 using MediatR;
 
 namespace FAM.Application.EmailTemplates.Queries.GetEmailTemplateById;
@@ -16,7 +17,7 @@ public sealed class GetEmailTemplateByIdQueryHandler : IRequestHandler<GetEmailT
 
     public async Task<EmailTemplateDto?> Handle(GetEmailTemplateByIdQuery request, CancellationToken cancellationToken)
     {
-        var template = await _unitOfWork.EmailTemplates.GetByIdAsync(request.Id, cancellationToken);
+        EmailTemplate? template = await _unitOfWork.EmailTemplates.GetByIdAsync(request.Id, cancellationToken);
         if (template == null)
             return null;
 

@@ -1,4 +1,5 @@
 using AutoMapper;
+
 using FAM.Domain.Authorization;
 using FAM.Domain.Organizations;
 using FAM.Domain.Users;

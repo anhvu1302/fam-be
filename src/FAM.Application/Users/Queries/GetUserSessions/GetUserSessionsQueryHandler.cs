@@ -1,5 +1,7 @@
 using FAM.Application.Users.Shared;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users.Entities;
+
 using MediatR;
 
 namespace FAM.Application.Users.Queries.GetUserSessions;
@@ -16,7 +18,8 @@ public class GetUserSessionsQueryHandler : IRequestHandler<GetUserSessionsQuery,
     public async Task<IReadOnlyList<UserSessionDto>> Handle(GetUserSessionsQuery request,
         CancellationToken cancellationToken)
     {
-        var devices = await _userDeviceRepository.GetByUserIdAsync(request.UserId, cancellationToken);
+        IEnumerable<UserDevice> devices =
+            await _userDeviceRepository.GetByUserIdAsync(request.UserId, cancellationToken);
 
         var sessions = devices
             .OrderByDescending(d => d.LastLoginAt)

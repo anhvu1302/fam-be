@@ -1,5 +1,6 @@
 using FAM.Infrastructure;
 using FAM.Infrastructure.Common.Seeding;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -15,7 +16,7 @@ internal class Program
             // Load .env file before anything else
             LoadDotEnv();
 
-            var host = CreateHostBuilder(args).Build();
+            IHost host = CreateHostBuilder(args).Build();
 
             if (args.Length == 0)
             {
@@ -162,8 +163,8 @@ internal class Program
     {
         var forceReseed = flags.Contains("--force");
 
-        using var scope = host.Services.CreateScope();
-        var orchestrator = scope.ServiceProvider.GetRequiredService<DataSeederOrchestrator>();
+        using IServiceScope scope = host.Services.CreateScope();
+        DataSeederOrchestrator orchestrator = scope.ServiceProvider.GetRequiredService<DataSeederOrchestrator>();
 
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -194,8 +195,8 @@ internal class Program
 
     private static async Task<int> ShowSeedHistory(IHost host)
     {
-        using var scope = host.Services.CreateScope();
-        var orchestrator = scope.ServiceProvider.GetRequiredService<DataSeederOrchestrator>();
+        using IServiceScope scope = host.Services.CreateScope();
+        DataSeederOrchestrator orchestrator = scope.ServiceProvider.GetRequiredService<DataSeederOrchestrator>();
 
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.Cyan;
@@ -203,7 +204,7 @@ internal class Program
         Console.ResetColor();
         Console.WriteLine();
 
-        var history = await orchestrator.GetHistoryAsync();
+        List<SeedHistory> history = await orchestrator.GetHistoryAsync();
 
         if (!history.Any())
         {
@@ -212,16 +213,16 @@ internal class Program
             return 0;
         }
 
-        var grouped = history
+        IEnumerable<IGrouping<string, SeedHistory>> grouped = history
             .OrderBy(h => h.SeederName, StringComparer.Ordinal)
             .ThenByDescending(h => h.ExecutedAt)
             .GroupBy(h => h.SeederName);
 
-        foreach (var group in grouped)
+        foreach (IGrouping<string, SeedHistory> group in grouped)
         {
-            var latest = group.First();
+            SeedHistory latest = group.First();
             var status = latest.Success ? "✓" : "✗";
-            var color = latest.Success ? ConsoleColor.Green : ConsoleColor.Red;
+            ConsoleColor color = latest.Success ? ConsoleColor.Green : ConsoleColor.Red;
 
             Console.ForegroundColor = color;
             Console.Write($"{status} ");
@@ -253,7 +254,7 @@ internal class Program
 
     private static async Task<int> ListAvailableSeeders(IHost host)
     {
-        using var scope = host.Services.CreateScope();
+        using IServiceScope scope = host.Services.CreateScope();
         var seeders = scope.ServiceProvider.GetServices<IDataSeeder>()
             .OrderBy(s => s.Name, StringComparer.Ordinal)
             .ToList();
@@ -271,16 +272,16 @@ internal class Program
             return 0;
         }
 
-        var orchestrator = scope.ServiceProvider.GetRequiredService<DataSeederOrchestrator>();
-        var history = await orchestrator.GetHistoryAsync();
+        DataSeederOrchestrator orchestrator = scope.ServiceProvider.GetRequiredService<DataSeederOrchestrator>();
+        List<SeedHistory> history = await orchestrator.GetHistoryAsync();
         var executedNames = history.Where(h => h.Success).Select(h => h.SeederName).ToHashSet();
 
         var index = 1;
-        foreach (var seeder in seeders)
+        foreach (IDataSeeder seeder in seeders)
         {
             var executed = executedNames.Contains(seeder.Name);
             var statusIcon = executed ? "✓" : "○";
-            var statusColor = executed ? ConsoleColor.Green : ConsoleColor.Yellow;
+            ConsoleColor statusColor = executed ? ConsoleColor.Green : ConsoleColor.Yellow;
 
             Console.ForegroundColor = statusColor;
             Console.Write($"{statusIcon} ");

@@ -220,7 +220,7 @@ public class MenuItem : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     /// </summary>
     private bool IsDescendantOf(MenuItem potentialAncestor)
     {
-        var current = Parent;
+        MenuItem? current = Parent;
         while (current != null)
         {
             if (current.Id == potentialAncestor.Id)
@@ -339,7 +339,7 @@ public class MenuItem : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         // Check required roles
         if (!string.IsNullOrEmpty(RequiredRoles))
         {
-            var requiredRoleList = RequiredRoles.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            IEnumerable<string> requiredRoleList = RequiredRoles.Split(',', StringSplitOptions.RemoveEmptyEntries)
                 .Select(r => r.Trim());
             if (userRoles == null || !requiredRoleList.Any(r => userRoles.Contains(r)))
                 return false;

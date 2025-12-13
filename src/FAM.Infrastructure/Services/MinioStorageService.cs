@@ -1,10 +1,16 @@
 using FAM.Application.Abstractions;
 using FAM.Application.Settings;
 using FAM.Domain.Common.Enums;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using Minio;
+using Minio.DataModel;
 using Minio.DataModel.Args;
+using Minio.DataModel.Response;
+using Minio.Exceptions;
+
 using FileInfo = FAM.Application.Abstractions.FileInfo;
 
 namespace FAM.Infrastructure.Services;
@@ -41,7 +47,7 @@ public class MinioStorageService : IStorageService
 
             var objectName = GenerateObjectName(fileName, fileType);
 
-            var putObjectArgs = new PutObjectArgs()
+            PutObjectArgs? putObjectArgs = new PutObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(objectName)
                 .WithStreamData(stream)
@@ -104,13 +110,13 @@ public class MinioStorageService : IStorageService
             // For simplicity, we'll store each part as a temporary object
             var tempObjectName = $"temp/{uploadId}/part-{partNumber}";
 
-            var putObjectArgs = new PutObjectArgs()
+            PutObjectArgs? putObjectArgs = new PutObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(tempObjectName)
                 .WithStreamData(stream)
                 .WithObjectSize(stream.Length);
 
-            var response = await _minioClient.PutObjectAsync(putObjectArgs, cancellationToken);
+            PutObjectResponse? response = await _minioClient.PutObjectAsync(putObjectArgs, cancellationToken);
 
             _logger.LogInformation(
                 "Uploaded part {PartNumber} for uploadId {UploadId}",
@@ -145,7 +151,7 @@ public class MinioStorageService : IStorageService
             {
                 var tempObjectName = $"temp/{uploadId}/part-{partNumber}";
 
-                var getArgs = new GetObjectArgs()
+                GetObjectArgs? getArgs = new GetObjectArgs()
                     .WithBucket(_settings.BucketName)
                     .WithObject(tempObjectName)
                     .WithCallbackStream(async (stream, ct) => { await stream.CopyToAsync(memoryStream, ct); });
@@ -155,7 +161,7 @@ public class MinioStorageService : IStorageService
 
             // Upload merged file
             memoryStream.Position = 0;
-            var putArgs = new PutObjectArgs()
+            PutObjectArgs? putArgs = new PutObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(objectName)
                 .WithStreamData(memoryStream)
@@ -193,12 +199,12 @@ public class MinioStorageService : IStorageService
         {
             // Clean up all temporary parts
             var prefix = $"temp/{uploadId}/";
-            var listArgs = new ListObjectsArgs()
+            ListObjectsArgs? listArgs = new ListObjectsArgs()
                 .WithBucket(_settings.BucketName)
                 .WithPrefix(prefix)
                 .WithRecursive(true);
 
-            await foreach (var obj in _minioClient.ListObjectsEnumAsync(listArgs, cancellationToken))
+            await foreach (Item? obj in _minioClient.ListObjectsEnumAsync(listArgs, cancellationToken))
                 await DeleteFileAsync(obj.Key, cancellationToken);
 
             _logger.LogInformation(
@@ -218,7 +224,7 @@ public class MinioStorageService : IStorageService
     {
         try
         {
-            var args = new PresignedGetObjectArgs()
+            PresignedGetObjectArgs? args = new PresignedGetObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(filePath)
                 .WithExpiry(expiryInSeconds);
@@ -250,7 +256,7 @@ public class MinioStorageService : IStorageService
 
             var objectName = GenerateObjectName(fileName, fileType);
 
-            var args = new PresignedPutObjectArgs()
+            PresignedPutObjectArgs? args = new PresignedPutObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(objectName)
                 .WithExpiry(expiryInSeconds);
@@ -276,7 +282,7 @@ public class MinioStorageService : IStorageService
     {
         try
         {
-            var args = new RemoveObjectArgs()
+            RemoveObjectArgs? args = new RemoveObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(filePath);
 
@@ -297,7 +303,7 @@ public class MinioStorageService : IStorageService
     {
         try
         {
-            var args = new StatObjectArgs()
+            StatObjectArgs? args = new StatObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(filePath);
 
@@ -316,11 +322,11 @@ public class MinioStorageService : IStorageService
     {
         try
         {
-            var args = new StatObjectArgs()
+            StatObjectArgs? args = new StatObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(filePath);
 
-            var stat = await _minioClient.StatObjectAsync(args, cancellationToken);
+            ObjectStat? stat = await _minioClient.StatObjectAsync(args, cancellationToken);
 
             return new FileInfo
             {
@@ -343,14 +349,14 @@ public class MinioStorageService : IStorageService
     {
         try
         {
-            var bucketExistsArgs = new BucketExistsArgs()
+            BucketExistsArgs? bucketExistsArgs = new BucketExistsArgs()
                 .WithBucket(_settings.BucketName);
 
             var exists = await _minioClient.BucketExistsAsync(bucketExistsArgs, cancellationToken);
 
             if (!exists)
             {
-                var makeBucketArgs = new MakeBucketArgs()
+                MakeBucketArgs? makeBucketArgs = new MakeBucketArgs()
                     .WithBucket(_settings.BucketName);
 
                 if (!string.IsNullOrEmpty(_settings.Region)) makeBucketArgs.WithLocation(_settings.Region);
@@ -403,7 +409,7 @@ public class MinioStorageService : IStorageService
         {
             await EnsureBucketExistsAsync(cancellationToken);
 
-            var args = new PresignedPutObjectArgs()
+            PresignedPutObjectArgs? args = new PresignedPutObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(objectKey)
                 .WithExpiry(expiryInSeconds);
@@ -448,11 +454,11 @@ public class MinioStorageService : IStorageService
     {
         try
         {
-            var copySourceArgs = new CopySourceObjectArgs()
+            CopySourceObjectArgs? copySourceArgs = new CopySourceObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(sourceKey);
 
-            var copyObjectArgs = new CopyObjectArgs()
+            CopyObjectArgs? copyObjectArgs = new CopyObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(destKey)
                 .WithCopyObjectSource(copySourceArgs);
@@ -479,11 +485,11 @@ public class MinioStorageService : IStorageService
                 return;
 
             // MinIO batch delete - returns list of errors
-            var removeObjectsArgs = new RemoveObjectsArgs()
+            RemoveObjectsArgs? removeObjectsArgs = new RemoveObjectsArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObjects(keysList);
 
-            var errors = await _minioClient.RemoveObjectsAsync(removeObjectsArgs, cancellationToken);
+            IList<DeleteError>? errors = await _minioClient.RemoveObjectsAsync(removeObjectsArgs, cancellationToken);
 
             if (errors?.Any() == true)
                 _logger.LogWarning("Errors during batch delete: {ErrorCount}", errors.Count);

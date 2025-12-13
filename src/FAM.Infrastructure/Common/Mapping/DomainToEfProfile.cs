@@ -1,4 +1,5 @@
 using AutoMapper;
+
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Entities;
 using FAM.Domain.EmailTemplates;

@@ -1,5 +1,7 @@
 using FAM.Application.Common.Email;
 using FAM.Domain.Abstractions;
+using FAM.Domain.EmailTemplates;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -29,7 +31,7 @@ public sealed class EmailTemplateService : IEmailTemplateService
 
     public EmailMessage CreateOtpEmail(string toEmail, string userName, string otpCode)
     {
-        var template = _unitOfWork.EmailTemplates.GetByCodeAsync("OTP_EMAIL").GetAwaiter().GetResult();
+        EmailTemplate? template = _unitOfWork.EmailTemplates.GetByCodeAsync("OTP_EMAIL").GetAwaiter().GetResult();
         if (template == null)
         {
             _logger.LogError("Email template OTP_EMAIL not found. Falling back to hardcoded template.");
@@ -68,7 +70,7 @@ public sealed class EmailTemplateService : IEmailTemplateService
     public EmailMessage CreatePasswordResetEmail(string toEmail, string userName, string resetToken, string resetUrl,
         int expiryMinutes)
     {
-        var template = _unitOfWork.EmailTemplates.GetByCodeAsync("PASSWORD_RESET").GetAwaiter().GetResult();
+        EmailTemplate? template = _unitOfWork.EmailTemplates.GetByCodeAsync("PASSWORD_RESET").GetAwaiter().GetResult();
         if (template == null)
         {
             _logger.LogError("Email template PASSWORD_RESET not found. Falling back to hardcoded template.");
@@ -109,7 +111,8 @@ public sealed class EmailTemplateService : IEmailTemplateService
 
     public EmailMessage CreatePasswordChangedEmail(string toEmail, string userName)
     {
-        var template = _unitOfWork.EmailTemplates.GetByCodeAsync("PASSWORD_CHANGED").GetAwaiter().GetResult();
+        EmailTemplate? template =
+            _unitOfWork.EmailTemplates.GetByCodeAsync("PASSWORD_CHANGED").GetAwaiter().GetResult();
         if (template == null)
         {
             _logger.LogError("Email template PASSWORD_CHANGED not found. Falling back to hardcoded template.");
@@ -146,7 +149,7 @@ public sealed class EmailTemplateService : IEmailTemplateService
 
     public EmailMessage CreateWelcomeEmail(string toEmail, string userName)
     {
-        var template = _unitOfWork.EmailTemplates.GetByCodeAsync("WELCOME_EMAIL").GetAwaiter().GetResult();
+        EmailTemplate? template = _unitOfWork.EmailTemplates.GetByCodeAsync("WELCOME_EMAIL").GetAwaiter().GetResult();
         if (template == null)
         {
             _logger.LogError("Email template WELCOME_EMAIL not found. Falling back to hardcoded template.");
@@ -182,7 +185,7 @@ public sealed class EmailTemplateService : IEmailTemplateService
 
     public EmailMessage CreateAccountLockedEmail(string toEmail, string userName, string reason)
     {
-        var template = _unitOfWork.EmailTemplates.GetByCodeAsync("ACCOUNT_LOCKED").GetAwaiter().GetResult();
+        EmailTemplate? template = _unitOfWork.EmailTemplates.GetByCodeAsync("ACCOUNT_LOCKED").GetAwaiter().GetResult();
         if (template == null)
         {
             _logger.LogError("Email template ACCOUNT_LOCKED not found. Falling back to hardcoded template.");

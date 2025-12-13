@@ -1,8 +1,14 @@
 using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Authorization;
+using FAM.Domain.Users;
+using FAM.Domain.Users.Entities;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
+
 using OtpNet;
 
 namespace FAM.Application.Auth.VerifyTwoFactor;
@@ -42,7 +48,7 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
         if (userId == 0)
             throw new UnauthorizedAccessException("Invalid or expired two-factor session token");
 
-        var user = await _userRepository.GetByIdAsync(userId, cancellationToken);
+        User? user = await _userRepository.GetByIdAsync(userId, cancellationToken);
         if (user == null) throw new UnauthorizedAccessException("User not found");
 
         if (!user.TwoFactorEnabled || string.IsNullOrEmpty(user.TwoFactorSecret))
@@ -54,7 +60,7 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
             throw new UnauthorizedAccessException("Invalid two-factor code");
         }
 
-        var device = user.GetOrCreateDevice(
+        UserDevice device = user.GetOrCreateDevice(
             request.DeviceId,
             request.DeviceName ?? "Unknown Device",
             request.DeviceType ?? "browser",
@@ -63,7 +69,7 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
             request.Location
         );
 
-        var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
+        SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
         var roles = new List<string>();
         var accessToken = _jwtService.GenerateAccessTokenWithRsa(
             user.Id,
@@ -73,23 +79,25 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
             activeKey.KeyId,
             activeKey.PrivateKey,
             activeKey.Algorithm);
-        
+
         var accessTokenJti = _jwtService.GetJtiFromToken(accessToken);
-        
+
         // Calculate expiration times from config
-        var accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
+        DateTime accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
         var refreshToken = _jwtService.GenerateRefreshToken();
-        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(request.RememberMe ? _jwtService.RefreshTokenExpiryDays : 7);
+        DateTime refreshTokenExpiresAt =
+            DateTime.UtcNow.AddDays(request.RememberMe ? _jwtService.RefreshTokenExpiryDays : 7);
 
         device.UpdateTokens(refreshToken, refreshTokenExpiresAt, accessTokenJti ?? string.Empty, request.IpAddress);
 
         user.RecordLogin(request.IpAddress);
 
-        var existingDeviceInDb = await _unitOfWork.UserDevices.GetByDeviceIdAsync(request.DeviceId, cancellationToken);
+        UserDevice? existingDeviceInDb =
+            await _unitOfWork.UserDevices.GetByDeviceIdAsync(request.DeviceId, cancellationToken);
 
         if (existingDeviceInDb != null)
         {
-            existingDeviceInDb.UpdateTokens(refreshToken, refreshTokenExpiresAt, accessTokenJti ?? string.Empty, 
+            existingDeviceInDb.UpdateTokens(refreshToken, refreshTokenExpiresAt, accessTokenJti ?? string.Empty,
                 request.IpAddress);
             _unitOfWork.UserDevices.Update(existingDeviceInDb);
         }

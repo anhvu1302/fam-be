@@ -2,7 +2,9 @@ using FAM.Application.Users.Commands.UpdateUserTheme;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Users.Entities;
+
 using FluentAssertions;
+
 using Moq;
 
 namespace FAM.Application.Tests.Users.Handlers;
@@ -42,7 +44,7 @@ public class UpdateUserThemeCommandHandlerTests
             userId, "Dark", "#FF5733", 0.8m, 12, true, true, false);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        UpdateUserThemeResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -78,7 +80,7 @@ public class UpdateUserThemeCommandHandlerTests
             userId, "BlueJelly", "#3B82F6", 0.7m, 16, true, false, true);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        UpdateUserThemeResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -107,7 +109,7 @@ public class UpdateUserThemeCommandHandlerTests
             userId, "Dark", null, 0.5m, 8, false, false, false);
 
         // Act & Assert
-        var exception =
+        DomainException exception =
             await Assert.ThrowsAsync<DomainException>(async () =>
                 await _handler.Handle(command, CancellationToken.None));
 

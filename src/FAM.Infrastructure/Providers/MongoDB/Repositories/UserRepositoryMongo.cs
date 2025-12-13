@@ -1,8 +1,11 @@
 using System.Linq.Expressions;
+
 using AutoMapper;
+
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
 using FAM.Infrastructure.PersistenceModels.Mongo;
+
 using MongoDB.Driver;
 
 namespace FAM.Infrastructure.Providers.MongoDB.Repositories;
@@ -25,14 +28,14 @@ public class UserRepositoryMongo : IUserRepository
 
     public async Task<User?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        var document = await _collection.Find(d => d.DomainId == id && !d.IsDeleted)
+        UserMongo? document = await _collection.Find(d => d.DomainId == id && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? _mapper.Map<User>(document) : null;
     }
 
     public async Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var documents = await _collection.Find(d => !d.IsDeleted)
+        List<UserMongo>? documents = await _collection.Find(d => !d.IsDeleted)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<User>>(documents);
     }
@@ -42,22 +45,22 @@ public class UserRepositoryMongo : IUserRepository
     {
         // Note: Converting domain expressions to MongoDB queries is complex
         // For now, we'll get all and filter in memory
-        var allDocuments = await _collection.Find(d => !d.IsDeleted)
+        List<UserMongo>? allDocuments = await _collection.Find(d => !d.IsDeleted)
             .ToListAsync(cancellationToken);
-        var allEntities = _mapper.Map<IEnumerable<User>>(allDocuments);
+        IEnumerable<User>? allEntities = _mapper.Map<IEnumerable<User>>(allDocuments);
         return allEntities.Where(predicate.Compile());
     }
 
     public async Task AddAsync(User entity, CancellationToken cancellationToken = default)
     {
-        var document = _mapper.Map<UserMongo>(entity);
+        UserMongo? document = _mapper.Map<UserMongo>(entity);
         await _collection.InsertOneAsync(document, cancellationToken: cancellationToken);
     }
 
     public async Task UpdateAsync(User entity)
     {
-        var document = _mapper.Map<UserMongo>(entity);
-        var filter = Builders<UserMongo>.Filter.Eq(d => d.DomainId, entity.Id);
+        UserMongo? document = _mapper.Map<UserMongo>(entity);
+        FilterDefinition<UserMongo>? filter = Builders<UserMongo>.Filter.Eq(d => d.DomainId, entity.Id);
         await _collection.ReplaceOneAsync(filter, document);
     }
 
@@ -68,7 +71,7 @@ public class UserRepositoryMongo : IUserRepository
 
     public async Task DeleteAsync(User entity)
     {
-        var filter = Builders<UserMongo>.Filter.Eq(d => d.DomainId, entity.Id);
+        FilterDefinition<UserMongo>? filter = Builders<UserMongo>.Filter.Eq(d => d.DomainId, entity.Id);
         await _collection.DeleteOneAsync(filter);
     }
 
@@ -86,14 +89,14 @@ public class UserRepositoryMongo : IUserRepository
 
     public async Task<User?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default)
     {
-        var document = await _collection.Find(d => d.Username == username && !d.IsDeleted)
+        UserMongo? document = await _collection.Find(d => d.Username == username && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? _mapper.Map<User>(document) : null;
     }
 
     public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        var document = await _collection.Find(d => d.Email == email && !d.IsDeleted)
+        UserMongo? document = await _collection.Find(d => d.Email == email && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? _mapper.Map<User>(document) : null;
     }
@@ -101,7 +104,7 @@ public class UserRepositoryMongo : IUserRepository
     public async Task<bool> IsUsernameTakenAsync(string username, long? excludeUserId = null,
         CancellationToken cancellationToken = default)
     {
-        var filter = Builders<UserMongo>.Filter.And(
+        FilterDefinition<UserMongo>? filter = Builders<UserMongo>.Filter.And(
             Builders<UserMongo>.Filter.Eq(d => d.Username, username),
             Builders<UserMongo>.Filter.Eq(d => d.IsDeleted, false)
         );
@@ -119,7 +122,7 @@ public class UserRepositoryMongo : IUserRepository
     public async Task<bool> IsEmailTakenAsync(string email, long? excludeUserId = null,
         CancellationToken cancellationToken = default)
     {
-        var filter = Builders<UserMongo>.Filter.And(
+        FilterDefinition<UserMongo>? filter = Builders<UserMongo>.Filter.And(
             Builders<UserMongo>.Filter.Eq(d => d.Email, email),
             Builders<UserMongo>.Filter.Eq(d => d.IsDeleted, false)
         );
@@ -136,14 +139,14 @@ public class UserRepositoryMongo : IUserRepository
 
     public async Task<User?> FindByUsernameAsync(string username, CancellationToken cancellationToken = default)
     {
-        var document = await _collection.Find(d => d.Username.ToLower() == username.ToLower() && !d.IsDeleted)
+        UserMongo? document = await _collection.Find(d => d.Username.ToLower() == username.ToLower() && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? _mapper.Map<User>(document) : null;
     }
 
     public async Task<User?> FindByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        var document = await _collection.Find(d => d.Email.ToLower() == email.ToLower() && !d.IsDeleted)
+        UserMongo? document = await _collection.Find(d => d.Email.ToLower() == email.ToLower() && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? _mapper.Map<User>(document) : null;
     }
@@ -151,7 +154,7 @@ public class UserRepositoryMongo : IUserRepository
     public async Task<User?> FindByIdentityAsync(string identity, CancellationToken cancellationToken = default)
     {
         var normalizedInput = identity.ToLower();
-        var document = await _collection.Find(d =>
+        UserMongo? document = await _collection.Find(d =>
                 (d.Username.ToLower() == normalizedInput || d.Email.ToLower() == normalizedInput) && !d.IsDeleted)
             .FirstOrDefaultAsync(cancellationToken);
         return document != null ? _mapper.Map<User>(document) : null;

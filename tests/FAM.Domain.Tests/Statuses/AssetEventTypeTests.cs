@@ -1,4 +1,5 @@
 using FAM.Domain.Statuses;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Statuses;
@@ -64,7 +65,7 @@ public class AssetEventTypeTests
     public void Create_WithDifferentCodes_ShouldCreateAssetEventType()
     {
         // Arrange
-        var testCases = new[]
+        (string, string)[] testCases = new[]
         {
             ("CREATED", "Asset Created"),
             ("APPROVED", "Asset Approved"),

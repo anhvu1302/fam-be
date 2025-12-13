@@ -1,7 +1,11 @@
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
+using FAM.Domain.Organizations;
+using FAM.Domain.Users;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Authorization.Roles.Commands.ReplaceUserRoles;
@@ -21,25 +25,25 @@ public sealed class ReplaceUserRolesCommandHandler : IRequestHandler<ReplaceUser
 
     public async Task Handle(ReplaceUserRolesCommand request, CancellationToken cancellationToken)
     {
-        var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
         if (user == null)
             throw new DomainException(ErrorCodes.USER_NOT_FOUND, "User not found");
 
-        var node = await _unitOfWork.OrgNodes.GetByIdAsync(request.NodeId, cancellationToken);
+        OrgNode? node = await _unitOfWork.OrgNodes.GetByIdAsync(request.NodeId, cancellationToken);
         if (node == null)
             throw new DomainException(ErrorCodes.NODE_NOT_FOUND, "Organization node not found");
 
         foreach (var roleId in request.RoleIds)
         {
-            var role = await _unitOfWork.Roles.GetByIdAsync(roleId, cancellationToken);
+            Role? role = await _unitOfWork.Roles.GetByIdAsync(roleId, cancellationToken);
             if (role == null)
                 throw new DomainException(ErrorCodes.ROLE_NOT_FOUND, $"Role {roleId} not found");
         }
 
-        var existingAssignments = await _unitOfWork.UserNodeRoles
+        IEnumerable<UserNodeRole> existingAssignments = await _unitOfWork.UserNodeRoles
             .FindAsync(unr => unr.UserId == request.UserId && unr.NodeId == request.NodeId, cancellationToken);
 
-        foreach (var assignment in existingAssignments) _unitOfWork.UserNodeRoles.Delete(assignment);
+        foreach (UserNodeRole assignment in existingAssignments) _unitOfWork.UserNodeRoles.Delete(assignment);
 
         foreach (var roleId in request.RoleIds)
         {

@@ -1,5 +1,6 @@
 using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
+
 using FluentAssertions;
 
 namespace FAM.Application.Tests.Auth;
@@ -13,7 +14,7 @@ public class UserPasswordResetTests
     public void SetPasswordResetToken_ShouldSetTokenAndExpiration()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var token = "test-reset-token-123";
         var expirationMinutes = 60;
 
@@ -33,7 +34,7 @@ public class UserPasswordResetTests
     public void IsPasswordResetTokenValid_ShouldReturnTrue_WhenTokenIsValidAndNotExpired()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var token = "valid-token";
         user.SetPasswordResetToken(token, 60);
 
@@ -48,7 +49,7 @@ public class UserPasswordResetTests
     public void IsPasswordResetTokenValid_ShouldReturnFalse_WhenTokenIsExpired()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var token = "expired-token";
         user.SetPasswordResetToken(token, -10); // Set expiration 10 minutes ago
 
@@ -63,7 +64,7 @@ public class UserPasswordResetTests
     public void IsPasswordResetTokenValid_ShouldReturnFalse_WhenTokenDoesNotMatch()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         user.SetPasswordResetToken("correct-token", 60);
 
         // Act
@@ -77,7 +78,7 @@ public class UserPasswordResetTests
     public void IsPasswordResetTokenValid_ShouldReturnFalse_WhenNoTokenIsSet()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
 
         // Act
         var isValid = user.IsPasswordResetTokenValid("any-token");
@@ -90,7 +91,7 @@ public class UserPasswordResetTests
     public void ClearPasswordResetToken_ShouldRemoveTokenAndExpiration()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         user.SetPasswordResetToken("some-token", 60);
 
         // Act
@@ -105,7 +106,7 @@ public class UserPasswordResetTests
     public void UpdatePassword_ShouldUpdatePasswordAndClearResetToken()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         user.SetPasswordResetToken("reset-token", 60);
 
         var oldPasswordHash = user.Password.Hash;
@@ -130,7 +131,7 @@ public class UserPasswordResetTests
     public void SetPasswordResetToken_ShouldSupportVariousExpirationTimes(int minutes)
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var token = $"token-{minutes}min";
 
         // Act
@@ -147,7 +148,7 @@ public class UserPasswordResetTests
     public void RecordLogin_ShouldUpdateLastLoginInfo()
     {
         // Arrange
-        var user = CreateTestUser();
+        User user = CreateTestUser();
         var ipAddress = "192.168.1.100";
 
         // Act

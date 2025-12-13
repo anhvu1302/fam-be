@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+
 using FAM.Domain.Common.Base;
 
 namespace FAM.Domain.Abstractions;

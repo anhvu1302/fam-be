@@ -1,4 +1,5 @@
 using FAM.Domain.Finance;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Finance;

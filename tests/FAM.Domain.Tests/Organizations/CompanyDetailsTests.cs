@@ -1,4 +1,5 @@
 using FAM.Domain.Organizations;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Organizations;

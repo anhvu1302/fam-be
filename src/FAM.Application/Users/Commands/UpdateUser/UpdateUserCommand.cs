@@ -1,4 +1,5 @@
 using FAM.Application.Common;
+
 using MediatR;
 
 namespace FAM.Application.Users.Commands.UpdateUser;

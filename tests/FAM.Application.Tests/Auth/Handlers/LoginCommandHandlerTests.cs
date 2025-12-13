@@ -1,13 +1,17 @@
 using FAM.Application.Auth.Login;
 using FAM.Application.Auth.Services;
+using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
 using FAM.Domain.ValueObjects;
+
 using FluentAssertions;
+
 using Microsoft.Extensions.Logging;
+
 using Moq;
 
 namespace FAM.Application.Tests.Auth.Handlers;
@@ -37,7 +41,7 @@ public class LoginCommandHandlerTests
 
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
         _mockUnitOfWork.Setup(x => x.UserDevices).Returns(_mockUserDeviceRepository.Object);
-        
+
         // Setup JWT service config properties
         _mockJwtService.Setup(x => x.AccessTokenExpiryMinutes).Returns(60);
         _mockJwtService.Setup(x => x.RefreshTokenExpiryDays).Returns(30);
@@ -117,7 +121,7 @@ public class LoginCommandHandlerTests
             .Returns("refresh_token");
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        LoginResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -304,7 +308,7 @@ public class LoginCommandHandlerTests
             .Returns("2fa_session_token");
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        LoginResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -383,7 +387,7 @@ public class LoginCommandHandlerTests
             .Returns("refresh_token");
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        LoginResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -391,7 +395,7 @@ public class LoginCommandHandlerTests
         capturedDevice.Should().NotBeNull();
 
         // With RememberMe, refresh token should expire in ~30 days
-        var expectedExpiry = DateTime.UtcNow.AddDays(30);
+        DateTime expectedExpiry = DateTime.UtcNow.AddDays(30);
         capturedDevice!.RefreshTokenExpiresAt.Should().BeCloseTo(expectedExpiry, TimeSpan.FromMinutes(1));
     }
 }

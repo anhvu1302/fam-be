@@ -1,4 +1,5 @@
 using FAM.Application.Auth.Shared;
+
 using MediatR;
 
 namespace FAM.Application.Auth.VerifyTwoFactor;

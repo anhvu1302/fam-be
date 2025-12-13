@@ -1,6 +1,10 @@
 using System.Text.Json;
+
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Auth.DisableTwoFactorWithBackup;
@@ -24,7 +28,7 @@ public sealed class DisableTwoFactorWithBackupCommandHandler : IRequestHandler<D
     public async Task<bool> Handle(DisableTwoFactorWithBackupCommand request, CancellationToken cancellationToken)
     {
         // Find user by username
-        var user = await _unitOfWork.Users.FindByUsernameAsync(request.Username, cancellationToken);
+        User? user = await _unitOfWork.Users.FindByUsernameAsync(request.Username, cancellationToken);
 
         if (user == null)
         {

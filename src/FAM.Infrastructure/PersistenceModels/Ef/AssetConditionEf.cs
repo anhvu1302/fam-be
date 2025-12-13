@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 using FAM.Infrastructure.PersistenceModels.Ef.Base;
 
 namespace FAM.Infrastructure.PersistenceModels.Ef;

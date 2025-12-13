@@ -1,4 +1,5 @@
 using FAM.Application.Common.Email;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -38,7 +39,7 @@ public sealed class EmailQueueProcessor : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
             try
             {
-                var message = await _emailQueue.DequeueAsync(stoppingToken);
+                EmailMessage? message = await _emailQueue.DequeueAsync(stoppingToken);
 
                 if (message == null)
                 {
@@ -72,7 +73,7 @@ public sealed class EmailQueueProcessor : BackgroundService
             "Processing email {EmailId} to {To}, Attempt: {Attempt}/{MaxRetries}",
             message.Id, message.To, message.RetryCount + 1, message.MaxRetries);
 
-        var result = await _emailProvider.SendAsync(message, cancellationToken);
+        EmailSendResult result = await _emailProvider.SendAsync(message, cancellationToken);
 
         if (result.Success)
         {
@@ -89,7 +90,7 @@ public sealed class EmailQueueProcessor : BackgroundService
             // Retry logic
             if (message.RetryCount < message.MaxRetries)
             {
-                var retryMessage = message with { RetryCount = message.RetryCount + 1 };
+                EmailMessage retryMessage = message with { RetryCount = message.RetryCount + 1 };
                 await _emailQueue.EnqueueAsync(retryMessage, cancellationToken);
 
                 _logger.LogInformation(

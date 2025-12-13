@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.ValueObjects;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.ValueObjects;
@@ -65,7 +66,7 @@ public class RatingTests
     public void Max_ShouldReturnFiveStars()
     {
         // Act
-        var maxRating = Rating.Max;
+        Rating maxRating = Rating.Max;
 
         // Assert
         maxRating.Value.Should().Be(5);
@@ -75,7 +76,7 @@ public class RatingTests
     public void Min_ShouldReturnOneStar()
     {
         // Act
-        var minRating = Rating.Min;
+        Rating minRating = Rating.Min;
 
         // Assert
         minRating.Value.Should().Be(1);
@@ -85,7 +86,7 @@ public class RatingTests
     public void Average_ShouldReturnThreeStars()
     {
         // Act
-        var averageRating = Rating.Average;
+        Rating averageRating = Rating.Average;
 
         // Assert
         averageRating.Value.Should().Be(3);
@@ -217,7 +218,7 @@ public class RatingTests
         var rating2 = Rating.Create(5);
 
         // Act
-        var result = rating1.AverageWith(rating2);
+        Rating result = rating1.AverageWith(rating2);
 
         // Assert
         result.Value.Should().Be(4);

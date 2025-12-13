@@ -67,7 +67,7 @@ public class EmailTemplateTests
         const string htmlBody = "<html></html>";
 
         // Act & Assert
-        var exception = Assert.Throws<DomainException>(() =>
+        DomainException exception = Assert.Throws<DomainException>(() =>
             EmailTemplate.Create(code, name, subject, htmlBody, EmailTemplateCategory.Authentication));
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_CODE_REQUIRED, exception.ErrorCode);
     }
@@ -82,7 +82,7 @@ public class EmailTemplateTests
         const string htmlBody = "<html></html>";
 
         // Act & Assert
-        var exception = Assert.Throws<DomainException>(() =>
+        DomainException exception = Assert.Throws<DomainException>(() =>
             EmailTemplate.Create(code, name, subject, htmlBody, EmailTemplateCategory.Authentication));
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_CODE_REQUIRED, exception.ErrorCode);
     }
@@ -97,7 +97,7 @@ public class EmailTemplateTests
         const string htmlBody = "<html></html>";
 
         // Act & Assert
-        var exception = Assert.Throws<DomainException>(() =>
+        DomainException exception = Assert.Throws<DomainException>(() =>
             EmailTemplate.Create(code, name, subject, htmlBody, EmailTemplateCategory.Authentication));
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_NAME_REQUIRED, exception.ErrorCode);
     }
@@ -112,7 +112,7 @@ public class EmailTemplateTests
         const string htmlBody = "<html></html>";
 
         // Act & Assert
-        var exception = Assert.Throws<DomainException>(() =>
+        DomainException exception = Assert.Throws<DomainException>(() =>
             EmailTemplate.Create(code, name, subject, htmlBody, EmailTemplateCategory.Authentication));
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_SUBJECT_REQUIRED, exception.ErrorCode);
     }
@@ -127,7 +127,7 @@ public class EmailTemplateTests
         const string htmlBody = "";
 
         // Act & Assert
-        var exception = Assert.Throws<DomainException>(() =>
+        DomainException exception = Assert.Throws<DomainException>(() =>
             EmailTemplate.Create(code, name, subject, htmlBody, EmailTemplateCategory.Authentication));
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_BODY_REQUIRED, exception.ErrorCode);
     }
@@ -208,7 +208,7 @@ public class EmailTemplateTests
             isSystem: true);
 
         // Act & Assert
-        var exception = Assert.Throws<DomainException>(() =>
+        DomainException exception = Assert.Throws<DomainException>(() =>
             template.Update("New Name", "Subject", "<html>Body</html>", EmailTemplateCategory.System));
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_SYSTEM_CANNOT_UPDATE, exception.ErrorCode);
     }
@@ -222,7 +222,7 @@ public class EmailTemplateTests
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
         // Act & Assert
-        var exception = Assert.Throws<DomainException>(() =>
+        DomainException exception = Assert.Throws<DomainException>(() =>
             template.Update("", "Subject", "<html>Body</html>", EmailTemplateCategory.Authentication));
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_NAME_REQUIRED, exception.ErrorCode);
     }
@@ -236,7 +236,7 @@ public class EmailTemplateTests
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
         // Act & Assert
-        var exception = Assert.Throws<DomainException>(() =>
+        DomainException exception = Assert.Throws<DomainException>(() =>
             template.Update("Name", "", "<html>Body</html>", EmailTemplateCategory.Authentication));
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_SUBJECT_REQUIRED, exception.ErrorCode);
     }
@@ -250,7 +250,7 @@ public class EmailTemplateTests
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
         // Act & Assert
-        var exception = Assert.Throws<DomainException>(() =>
+        DomainException exception = Assert.Throws<DomainException>(() =>
             template.Update("Name", "Subject", "", EmailTemplateCategory.Authentication));
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_BODY_REQUIRED, exception.ErrorCode);
     }
@@ -322,7 +322,7 @@ public class EmailTemplateTests
             isSystem: true);
 
         // Act & Assert
-        var exception = Assert.Throws<DomainException>(() => template.SoftDelete());
+        DomainException exception = Assert.Throws<DomainException>(() => template.SoftDelete());
         Assert.Equal(ErrorCodes.EMAIL_TEMPLATE_SYSTEM_CANNOT_DELETE, exception.ErrorCode);
     }
 

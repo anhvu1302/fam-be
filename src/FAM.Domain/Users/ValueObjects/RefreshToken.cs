@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+
 using FAM.Domain.Common.Base;
 
 namespace FAM.Domain.Users.ValueObjects;
@@ -35,7 +36,7 @@ public sealed class RefreshToken : ValueObject
     public static RefreshToken Generate(int expiryDays = 7)
     {
         var token = GenerateSecureToken();
-        var expiresAt = DateTime.UtcNow.AddDays(expiryDays);
+        DateTime expiresAt = DateTime.UtcNow.AddDays(expiryDays);
         return new RefreshToken(token, expiresAt);
     }
 

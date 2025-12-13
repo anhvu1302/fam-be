@@ -1,4 +1,5 @@
 using FAM.Domain.Users.Entities;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Users;

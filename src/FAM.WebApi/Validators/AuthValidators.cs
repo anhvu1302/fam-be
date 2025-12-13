@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.WebApi.Contracts.Auth;
+
 using FluentValidation;
 
 namespace FAM.WebApi.Validators;

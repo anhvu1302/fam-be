@@ -1,6 +1,7 @@
 using FAM.Application.Settings;
 using FAM.Application.Storage;
 using FAM.Domain.Common.Enums;
+
 using Microsoft.Extensions.Options;
 
 namespace FAM.Application.Tests.Storage;
@@ -22,7 +23,7 @@ public class FileValidatorTests
             AllowedDocumentExtensions = new[] { ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx" }
         };
 
-        var options = Options.Create(_settings);
+        IOptions<FileUploadSettings> options = Options.Create(_settings);
         _validator = new FileValidator(options);
     }
 
@@ -39,7 +40,7 @@ public class FileValidatorTests
     public void DetectFileType_ValidExtension_ReturnsCorrectType(string fileName, FileType expectedType)
     {
         // Act
-        var result = _validator.DetectFileType(fileName);
+        FileType? result = _validator.DetectFileType(fileName);
 
         // Assert
         Assert.NotNull(result);
@@ -55,7 +56,7 @@ public class FileValidatorTests
     public void DetectFileType_InvalidExtension_ReturnsNull(string fileName)
     {
         // Act
-        var result = _validator.DetectFileType(fileName);
+        FileType? result = _validator.DetectFileType(fileName);
 
         // Assert
         Assert.Null(result);
@@ -67,7 +68,7 @@ public class FileValidatorTests
     public void ValidateFile_ValidImageSize_ReturnsSuccess(string fileName, long fileSize)
     {
         // Act
-        var (isValid, errorMessage, fileType) = _validator.ValidateFile(fileName, fileSize);
+        (var isValid, var errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
 
         // Assert
         Assert.True(isValid);
@@ -83,7 +84,7 @@ public class FileValidatorTests
         var fileSize = 6 * 1024 * 1024; // 6 MB
 
         // Act
-        var (isValid, errorMessage, fileType) = _validator.ValidateFile(fileName, fileSize);
+        (var isValid, var errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
 
         // Assert
         Assert.False(isValid);
@@ -101,7 +102,7 @@ public class FileValidatorTests
         var fileSize = 1024;
 
         // Act
-        var (isValid, errorMessage, fileType) = _validator.ValidateFile(fileName, fileSize);
+        (var isValid, var errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
 
         // Assert
         Assert.False(isValid);
@@ -119,7 +120,7 @@ public class FileValidatorTests
         var fileSize = 0;
 
         // Act
-        var (isValid, errorMessage, fileType) = _validator.ValidateFile(fileName, fileSize);
+        (var isValid, var errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
 
         // Assert
         Assert.False(isValid);
@@ -135,7 +136,7 @@ public class FileValidatorTests
         var fileSize = -100;
 
         // Act
-        var (isValid, errorMessage, fileType) = _validator.ValidateFile(fileName, fileSize);
+        (var isValid, var errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
 
         // Assert
         Assert.False(isValid);

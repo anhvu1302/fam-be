@@ -1,8 +1,11 @@
 using System.Linq.Expressions;
+
 using AutoMapper;
+
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.PersistenceModels.Ef;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
@@ -23,34 +26,34 @@ public class RolePermissionRepositoryPostgreSql : IRolePermissionRepository
 
     public async Task<IEnumerable<RolePermission>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        var entities = await _context.RolePermissions.ToListAsync(cancellationToken);
+        List<RolePermissionEf> entities = await _context.RolePermissions.ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<RolePermission>>(entities);
     }
 
     public async Task<IEnumerable<RolePermission>> FindAsync(Expression<Func<RolePermission, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        var allEntities = await _context.RolePermissions.ToListAsync(cancellationToken);
-        var allRolePermissions = _mapper.Map<IEnumerable<RolePermission>>(allEntities);
+        List<RolePermissionEf> allEntities = await _context.RolePermissions.ToListAsync(cancellationToken);
+        IEnumerable<RolePermission>? allRolePermissions = _mapper.Map<IEnumerable<RolePermission>>(allEntities);
         return allRolePermissions.Where(predicate.Compile());
     }
 
     public async Task AddAsync(RolePermission entity, CancellationToken cancellationToken = default)
     {
-        var efEntity = _mapper.Map<RolePermissionEf>(entity);
+        RolePermissionEf? efEntity = _mapper.Map<RolePermissionEf>(entity);
         await _context.RolePermissions.AddAsync(efEntity, cancellationToken);
     }
 
     public void Delete(RolePermission entity)
     {
-        var efEntity = _mapper.Map<RolePermissionEf>(entity);
+        RolePermissionEf? efEntity = _mapper.Map<RolePermissionEf>(entity);
         _context.RolePermissions.Remove(efEntity);
     }
 
     public async Task<IEnumerable<RolePermission>> GetByRoleIdAsync(long roleId,
         CancellationToken cancellationToken = default)
     {
-        var entities = await _context.RolePermissions
+        List<RolePermissionEf> entities = await _context.RolePermissions
             .Where(rp => rp.RoleId == roleId)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<RolePermission>>(entities);
@@ -59,7 +62,7 @@ public class RolePermissionRepositoryPostgreSql : IRolePermissionRepository
     public async Task<IEnumerable<RolePermission>> GetByPermissionIdAsync(long permissionId,
         CancellationToken cancellationToken = default)
     {
-        var entities = await _context.RolePermissions
+        List<RolePermissionEf> entities = await _context.RolePermissions
             .Where(rp => rp.PermissionId == permissionId)
             .ToListAsync(cancellationToken);
         return _mapper.Map<IEnumerable<RolePermission>>(entities);
@@ -68,14 +71,14 @@ public class RolePermissionRepositoryPostgreSql : IRolePermissionRepository
     public async Task<RolePermission?> GetByRoleAndPermissionAsync(long roleId, long permissionId,
         CancellationToken cancellationToken = default)
     {
-        var entity = await _context.RolePermissions
+        RolePermissionEf? entity = await _context.RolePermissions
             .FirstOrDefaultAsync(rp => rp.RoleId == roleId && rp.PermissionId == permissionId, cancellationToken);
         return entity != null ? _mapper.Map<RolePermission>(entity) : null;
     }
 
     public async Task DeleteByRoleIdAsync(long roleId, CancellationToken cancellationToken = default)
     {
-        var entities = await _context.RolePermissions
+        List<RolePermissionEf> entities = await _context.RolePermissions
             .Where(rp => rp.RoleId == roleId)
             .ToListAsync(cancellationToken);
 

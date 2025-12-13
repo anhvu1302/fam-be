@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
+
 using FAM.Application.Auth.Services;
+
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
@@ -33,7 +35,7 @@ public class TokenBlacklistService : ITokenBlacklistService
             var cacheKey = $"{TokenBlacklistPrefix}{tokenHash}";
 
             // Calculate TTL - how long until token naturally expires
-            var ttl = expiryTime - DateTime.UtcNow;
+            TimeSpan ttl = expiryTime - DateTime.UtcNow;
             if (ttl <= TimeSpan.Zero)
             {
                 _logger.LogWarning("Attempted to blacklist an already expired token");
@@ -115,7 +117,7 @@ public class TokenBlacklistService : ITokenBlacklistService
         }
     }
 
-    public async Task BlacklistTokenByJtiAsync(string jti, DateTime expiryTime, 
+    public async Task BlacklistTokenByJtiAsync(string jti, DateTime expiryTime,
         CancellationToken cancellationToken = default)
     {
         try
@@ -123,7 +125,7 @@ public class TokenBlacklistService : ITokenBlacklistService
             var cacheKey = $"{TokenBlacklistPrefix}jti:{jti}";
 
             // Calculate TTL - how long until token naturally expires
-            var ttl = expiryTime - DateTime.UtcNow;
+            TimeSpan ttl = expiryTime - DateTime.UtcNow;
             if (ttl <= TimeSpan.Zero)
             {
                 _logger.LogWarning("Attempted to blacklist token by JTI with already expired time: {JTI}", jti);
@@ -138,7 +140,7 @@ public class TokenBlacklistService : ITokenBlacklistService
             // Store a simple marker - we just need to know it exists
             await _cache.SetStringAsync(cacheKey, "blacklisted", options, cancellationToken);
 
-            _logger.LogInformation("Token with JTI {JTI} blacklisted successfully, expires in {Minutes} minutes", 
+            _logger.LogInformation("Token with JTI {JTI} blacklisted successfully, expires in {Minutes} minutes",
                 jti, ttl.TotalMinutes);
         }
         catch (Exception ex)

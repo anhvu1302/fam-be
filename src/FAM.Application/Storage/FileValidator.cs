@@ -1,6 +1,7 @@
 using FAM.Application.Abstractions;
 using FAM.Application.Settings;
 using FAM.Domain.Common.Enums;
+
 using Microsoft.Extensions.Options;
 
 namespace FAM.Application.Storage;
@@ -41,7 +42,7 @@ public class FileValidator : IFileValidator
         if (fileSize <= 0) return (false, "File is empty or invalid", null);
 
         // Detect file type from extension
-        var fileType = DetectFileType(fileName);
+        FileType? fileType = DetectFileType(fileName);
 
         if (!fileType.HasValue)
         {

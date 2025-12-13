@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
+
 using FAM.Application.Querying.Validation;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Common.Helpers;
@@ -30,7 +32,7 @@ public static class QueryHelper
             var descending = trimmed.StartsWith('-');
             var fieldName = descending ? trimmed[1..] : trimmed;
 
-            if (!fieldMap.TryGet(fieldName, out var expression, out _))
+            if (!fieldMap.TryGet(fieldName, out LambdaExpression expression, out _))
                 continue;
 
             var typedExpression = (Expression<Func<T, object>>)expression;
@@ -70,7 +72,7 @@ public static class QueryHelper
         if (includes == null)
             return query;
 
-        foreach (var include in includes) query = query.Include(include);
+        foreach (Expression<Func<T, object>> include in includes) query = query.Include(include);
 
         return query;
     }
@@ -89,7 +91,7 @@ public static class QueryHelper
         var total = await query.LongCountAsync(cancellationToken);
 
         // Apply pagination and get items
-        var items = await query
+        List<T> items = await query
             .ApplyPagination(page, pageSize)
             .ToListAsync(cancellationToken);
 

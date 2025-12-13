@@ -2,8 +2,12 @@ using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Authorization;
 using FAM.Domain.Users;
+using FAM.Domain.Users.Entities;
+
 using MediatR;
+
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Application.Auth.Login;
@@ -38,14 +42,14 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
     public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var user = await _unitOfWork.Users.FindByIdentityAsync(request.Identity, cancellationToken);
+        User? user = await _unitOfWork.Users.FindByIdentityAsync(request.Identity, cancellationToken);
 
         if (user == null)
             throw new UnauthorizedAccessException("Invalid username/email or password");
 
         if (user.IsLockedOut())
         {
-            var lockoutEnd = user.LockoutEnd!.Value;
+            DateTime lockoutEnd = user.LockoutEnd!.Value;
             var minutesRemaining = (int)(lockoutEnd - DateTime.UtcNow).TotalMinutes + 1;
             throw new UnauthorizedAccessException($"Account is locked. Try again in {minutesRemaining} minutes");
         }
@@ -112,7 +116,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             };
         }
 
-        var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
+        SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
 
         // TODO: Load user roles from UserNodeRoles properly
         var roles = new List<string>();
@@ -130,16 +134,17 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             activeKey.KeyId,
             activeKey.PrivateKey,
             activeKey.Algorithm);
-        
+
         var accessTokenJti = _jwtService.GetJtiFromToken(accessToken);
-        
+
         // Calculate expiration times from config
-        var accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
+        DateTime accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
         var refreshToken = _jwtService.GenerateRefreshToken();
         // Use shorter expiry if RememberMe is false (7 days vs configured default)
-        var refreshTokenExpiresAt = DateTime.UtcNow.AddDays(request.RememberMe ? _jwtService.RefreshTokenExpiryDays : 7);
+        DateTime refreshTokenExpiresAt =
+            DateTime.UtcNow.AddDays(request.RememberMe ? _jwtService.RefreshTokenExpiryDays : 7);
 
-        var device = user.GetOrCreateDevice(
+        UserDevice device = user.GetOrCreateDevice(
             request.DeviceId,
             request.DeviceName ?? "Unknown Device",
             request.DeviceType ?? "browser",
@@ -153,10 +158,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
         user.RecordLogin(request.IpAddress);
 
-        var existingDevice = await _unitOfWork.UserDevices.GetByIdAsync(device.Id, cancellationToken);
+        UserDevice? existingDevice = await _unitOfWork.UserDevices.GetByIdAsync(device.Id, cancellationToken);
         if (existingDevice != null)
         {
-            existingDevice.UpdateTokens(refreshToken, refreshTokenExpiresAt, accessTokenJti ?? string.Empty, 
+            existingDevice.UpdateTokens(refreshToken, refreshTokenExpiresAt, accessTokenJti ?? string.Empty,
                 request.IpAddress, request.Location);
             _unitOfWork.UserDevices.Update(existingDevice);
         }
@@ -207,7 +212,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
     private async Task<string> GenerateTwoFactorSessionTokenAsync(long userId, CancellationToken cancellationToken)
     {
-        var activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
+        SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
 
         var roles = new List<string> { "2fa_session" };
         return _jwtService.GenerateAccessTokenWithRsa(

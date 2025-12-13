@@ -3,11 +3,15 @@ namespace FAM.WebApi.Services;
 /// <summary>
 /// Service that validates all external connections at application startup.
 /// If any connection fails, the application should not start.
+/// Validates connections based on configured providers (Database, Cache, Storage).
 /// </summary>
 public interface IConnectionValidator
 {
     /// <summary>
-    /// Validates all external connections (PostgreSQL, Redis, MinIO).
+    /// Validates all external connections based on configured providers.
+    /// - Database: PostgreSQL or MongoDB (based on DB_PROVIDER)
+    /// - Cache: Redis or InMemory (based on CACHE_PROVIDER)
+    /// - Storage: MinIO
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>Task that completes when all connections are validated.</returns>

@@ -1,6 +1,7 @@
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Organizations;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Entities.Authorization;
@@ -12,7 +13,7 @@ public class ResourceTests
     {
         // Arrange
         var type = "asset";
-        var node = CreateTestOrgNode();
+        OrgNode node = CreateTestOrgNode();
         var name = "Test Resource";
 
         // Act
@@ -32,7 +33,7 @@ public class ResourceTests
     {
         // Arrange
         var type = "";
-        var node = CreateTestOrgNode();
+        OrgNode node = CreateTestOrgNode();
         var name = "Test Resource";
 
         // Act
@@ -48,7 +49,7 @@ public class ResourceTests
     {
         // Arrange
         var type = "asset";
-        var node = CreateTestOrgNode();
+        OrgNode node = CreateTestOrgNode();
         var name = "";
 
         // Act
@@ -81,7 +82,7 @@ public class ResourceTests
         var newName = "";
 
         // Act
-        var act = () => resource.Update(newName);
+        Action act = () => resource.Update(newName);
 
         // Assert
         act.Should().Throw<DomainException>()

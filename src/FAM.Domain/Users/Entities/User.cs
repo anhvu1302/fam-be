@@ -281,7 +281,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
         string? ipAddress = null,
         string? location = null)
     {
-        var existingDevice = UserDevices.FirstOrDefault(d => d.DeviceId == deviceId);
+        UserDevice? existingDevice = UserDevices.FirstOrDefault(d => d.DeviceId == deviceId);
 
         if (existingDevice != null)
         {

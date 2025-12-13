@@ -1,4 +1,5 @@
 using System.Globalization;
+
 using FAM.Application.Querying.Ast;
 
 namespace FAM.Application.Querying.Parsing;
@@ -21,7 +22,7 @@ public sealed class PrattFilterParser : IFilterParser
         _tokens = tokenizer.Tokenize().ToList();
         _current = 0;
 
-        var result = ParseExpression(0);
+        FilterNode result = ParseExpression(0);
 
         if (!IsAtEnd())
             throw new FormatException($"Unexpected token '{CurrentToken.Value}' at position {CurrentToken.Position}");
@@ -31,7 +32,7 @@ public sealed class PrattFilterParser : IFilterParser
 
     private FilterNode ParseExpression(int precedence)
     {
-        var left = ParsePrefix();
+        FilterNode left = ParsePrefix();
 
         while (!IsAtEnd() && precedence < GetPrecedence(CurrentToken)) left = ParseInfix(left);
 
@@ -40,13 +41,13 @@ public sealed class PrattFilterParser : IFilterParser
 
     private FilterNode ParsePrefix()
     {
-        var token = CurrentToken;
+        FilterToken token = CurrentToken;
 
         // Parentheses
         if (token.Type == FilterTokenType.LeftParen)
         {
             Advance();
-            var expr = ParseExpression(0);
+            FilterNode expr = ParseExpression(0);
             Expect(FilterTokenType.RightParen, "Expected ')'");
             return new GroupNode(expr);
         }
@@ -55,7 +56,7 @@ public sealed class PrattFilterParser : IFilterParser
         if (token.Type == FilterTokenType.Operator && token.Value.ToLower() == "not")
         {
             Advance();
-            var operand = ParseExpression(GetPrecedence(token));
+            FilterNode operand = ParseExpression(GetPrecedence(token));
             return new UnaryNode(FilterOperator.Not, operand);
         }
 
@@ -98,7 +99,7 @@ public sealed class PrattFilterParser : IFilterParser
 
     private FilterNode ParseInfix(FilterNode left)
     {
-        var token = CurrentToken;
+        FilterToken token = CurrentToken;
 
         if (token.Type != FilterTokenType.Operator)
             throw new FormatException($"Expected operator, got '{token.Value}' at position {token.Position}");
@@ -108,16 +109,16 @@ public sealed class PrattFilterParser : IFilterParser
         // Binary logical operators: and, or
         if (op is "and" or "or")
         {
-            var filterOp = op == "and" ? FilterOperator.And : FilterOperator.Or;
+            FilterOperator filterOp = op == "and" ? FilterOperator.And : FilterOperator.Or;
             Advance();
-            var right = ParseExpression(GetPrecedence(token));
+            FilterNode right = ParseExpression(GetPrecedence(token));
             return new BinaryNode(filterOp, left, right);
         }
 
         // Binary comparison operators: ==, !=, >, >=, <, <=
         if (op is "==" or "!=" or ">" or ">=" or "<" or "<=")
         {
-            var filterOp = op switch
+            FilterOperator filterOp = op switch
             {
                 "==" => FilterOperator.Equal,
                 "!=" => FilterOperator.NotEqual,
@@ -128,7 +129,7 @@ public sealed class PrattFilterParser : IFilterParser
                 _ => throw new NotSupportedException()
             };
             Advance();
-            var right = ParseExpression(GetPrecedence(token) + 1);
+            FilterNode right = ParseExpression(GetPrecedence(token) + 1);
             return new BinaryNode(filterOp, left, right);
         }
 
@@ -142,7 +143,7 @@ public sealed class PrattFilterParser : IFilterParser
     {
         Advance();
 
-        var filterOp = op switch
+        FilterOperator filterOp = op switch
         {
             "@contains" => FilterOperator.Contains,
             "@ncontains" => FilterOperator.NotContains,

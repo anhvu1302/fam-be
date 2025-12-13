@@ -1,6 +1,8 @@
 using FAM.WebApi.Contracts.Common;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace FAM.WebApi.Middleware;
 
@@ -16,9 +18,9 @@ public class ValidationFilter : IAsyncActionFilter
         {
             var errors = new List<ApiError>();
 
-            foreach (var (key, value) in context.ModelState)
+            foreach ((var key, ModelStateEntry value) in context.ModelState)
                 if (value.Errors.Count > 0)
-                    foreach (var error in value.Errors)
+                    foreach (ModelError error in value.Errors)
                     {
                         // Extract error code from error message if it starts with [CODE]
                         // or use a generic validation error code

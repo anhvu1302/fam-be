@@ -1,12 +1,17 @@
 using FAM.Application.Auth.Services;
+using FAM.Application.Auth.Shared;
 using FAM.Application.Auth.VerifyTwoFactor;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
+
 using FluentAssertions;
+
 using Microsoft.Extensions.Logging;
+
 using Moq;
+
 using OtpNet;
 
 namespace FAM.Application.Tests.Auth.Handlers;
@@ -32,7 +37,7 @@ public class VerifyTwoFactorCommandHandlerTests
 
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
         _mockUnitOfWork.Setup(x => x.UserDevices).Returns(_mockUserDeviceRepository.Object);
-        
+
         // Setup JWT service config properties
         _mockJwtService.Setup(x => x.AccessTokenExpiryMinutes).Returns(60);
         _mockJwtService.Setup(x => x.RefreshTokenExpiryDays).Returns(30);
@@ -121,14 +126,15 @@ public class VerifyTwoFactorCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        VerifyTwoFactorResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
         result.AccessToken.Should().Be(accessToken);
         result.RefreshToken.Should().Be(refreshToken);
         result.AccessTokenExpiresAt.Should().BeCloseTo(DateTime.UtcNow.AddMinutes(60), TimeSpan.FromSeconds(5));
-        result.RefreshTokenExpiresAt.Should().BeCloseTo(DateTime.UtcNow.AddDays(7), TimeSpan.FromSeconds(5)); // RememberMe = false
+        result.RefreshTokenExpiresAt.Should()
+            .BeCloseTo(DateTime.UtcNow.AddDays(7), TimeSpan.FromSeconds(5)); // RememberMe = false
         result.TokenType.Should().Be("Bearer");
         result.User.Should().NotBeNull();
         result.User.Username.Should().Be("testuser");
@@ -160,7 +166,7 @@ public class VerifyTwoFactorCommandHandlerTests
         var validCode = totp.ComputeTotp();
 
         var deviceId = "device-123";
-        var existingDevice = user.GetOrCreateDevice(
+        UserDevice existingDevice = user.GetOrCreateDevice(
             deviceId,
             "Existing Device",
             "browser",
@@ -204,7 +210,7 @@ public class VerifyTwoFactorCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        VerifyTwoFactorResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -263,12 +269,12 @@ public class VerifyTwoFactorCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        VerifyTwoFactorResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
         // The refresh token should be set to expire in 30 days instead of 7
-        var addedDevice = user.UserDevices.FirstOrDefault(d => d.DeviceId == deviceId);
+        UserDevice? addedDevice = user.UserDevices.FirstOrDefault(d => d.DeviceId == deviceId);
         addedDevice.Should().NotBeNull();
         addedDevice!.RefreshTokenExpiresAt.Should().BeCloseTo(DateTime.UtcNow.AddDays(30), TimeSpan.FromMinutes(1));
     }

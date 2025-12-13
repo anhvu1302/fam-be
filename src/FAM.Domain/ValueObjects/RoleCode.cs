@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+
 using FAM.Domain.Common.Base;
 
 namespace FAM.Domain.ValueObjects;

@@ -1,4 +1,5 @@
 using System.Net.Mail;
+
 using FAM.Domain.Common.Base;
 
 namespace FAM.Domain.ValueObjects;

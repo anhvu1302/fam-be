@@ -1,4 +1,6 @@
 using FAM.Domain.Abstractions;
+using FAM.Domain.Users;
+
 using MediatR;
 
 namespace FAM.Application.Auth.Disable2FA;
@@ -15,7 +17,7 @@ public sealed class Disable2FACommandHandler : IRequestHandler<Disable2FACommand
     public async Task<bool> Handle(Disable2FACommand request, CancellationToken cancellationToken)
     {
         // Get user by ID
-        var user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
+        User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
         if (user == null) throw new UnauthorizedAccessException("User not found");
 
         // Verify password

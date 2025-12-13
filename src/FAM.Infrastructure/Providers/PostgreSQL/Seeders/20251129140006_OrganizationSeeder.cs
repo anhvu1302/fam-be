@@ -1,6 +1,7 @@
 using FAM.Domain.Organizations;
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.PersistenceModels.Ef;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -88,7 +89,7 @@ public class OrganizationSeeder : BaseDataSeeder
         await _dbContext.DepartmentDetails.AddRangeAsync(deptDetails, cancellationToken);
 
         // Create sub-departments for IT
-        var itDept = departments[0];
+        OrgNodeEf itDept = departments[0];
         var itSubDepts = new List<OrgNodeEf>
         {
             CreateDepartment("Software Development", itDept.Id),
@@ -109,7 +110,7 @@ public class OrganizationSeeder : BaseDataSeeder
         await _dbContext.DepartmentDetails.AddRangeAsync(itSubDeptDetails, cancellationToken);
 
         // Create sub-departments for Sales
-        var salesDept = departments[4];
+        OrgNodeEf salesDept = departments[4];
         var salesSubDepts = new List<OrgNodeEf>
         {
             CreateDepartment("Domestic Sales", salesDept.Id),

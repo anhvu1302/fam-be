@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+
 using FAM.Domain.Abstractions;
 
 namespace FAM.Domain.Assets.Specifications;
@@ -10,7 +11,7 @@ public class MaintenanceDueSpecification : Specification<Asset>
 {
     public override Expression<Func<Asset, bool>> ToExpression()
     {
-        var today = DateTime.UtcNow.Date;
+        DateTime today = DateTime.UtcNow.Date;
         return asset =>
             !asset.IsDeleted &&
             asset.NextMaintenanceDate.HasValue &&
@@ -25,7 +26,7 @@ public class MaintenanceOverdueSpecification : Specification<Asset>
 {
     public override Expression<Func<Asset, bool>> ToExpression()
     {
-        var today = DateTime.UtcNow.Date;
+        DateTime today = DateTime.UtcNow.Date;
         return asset =>
             !asset.IsDeleted &&
             asset.NextMaintenanceDate.HasValue &&
@@ -40,7 +41,7 @@ public class WarrantyExpiredSpecification : Specification<Asset>
 {
     public override Expression<Func<Asset, bool>> ToExpression()
     {
-        var today = DateTime.UtcNow;
+        DateTime today = DateTime.UtcNow;
         return asset =>
             !asset.IsDeleted &&
             asset.WarrantyUntil.HasValue &&
@@ -62,8 +63,8 @@ public class LicenseExpiringSoonSpecification : Specification<Asset>
 
     public override Expression<Func<Asset, bool>> ToExpression()
     {
-        var checkDate = DateTime.UtcNow.AddDays(_daysThreshold);
-        var today = DateTime.UtcNow;
+        DateTime checkDate = DateTime.UtcNow.AddDays(_daysThreshold);
+        DateTime today = DateTime.UtcNow;
 
         return asset =>
             !asset.IsDeleted &&
@@ -93,7 +94,7 @@ public class AuditDueSpecification : Specification<Asset>
 {
     public override Expression<Func<Asset, bool>> ToExpression()
     {
-        var today = DateTime.UtcNow.Date;
+        DateTime today = DateTime.UtcNow.Date;
         return asset =>
             !asset.IsDeleted &&
             asset.NextAuditDate.HasValue &&

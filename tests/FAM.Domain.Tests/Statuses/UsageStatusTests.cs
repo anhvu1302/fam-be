@@ -1,4 +1,5 @@
 using FAM.Domain.Statuses;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.Statuses;
@@ -64,7 +65,7 @@ public class UsageStatusTests
     public void Create_WithDifferentStatuses_ShouldCreateUsageStatus()
     {
         // Arrange
-        var testCases = new[]
+        (string, string)[] testCases = new[]
         {
             ("AVAILABLE", "Available"),
             ("IN_USE", "In Use"),

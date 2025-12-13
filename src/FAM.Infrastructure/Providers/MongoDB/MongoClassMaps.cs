@@ -1,4 +1,5 @@
 using FAM.Infrastructure.PersistenceModels.Mongo;
+
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
@@ -102,9 +103,9 @@ public static class MongoIndexes
     public static async Task CreateIndexesAsync(IMongoDatabase database)
     {
         // Companies collection indexes
-        var companiesCollection = database.GetCollection<CompanyMongo>("companies");
+        IMongoCollection<CompanyMongo>? companiesCollection = database.GetCollection<CompanyMongo>("companies");
 
-        var indexKeys = Builders<CompanyMongo>.IndexKeys;
+        IndexKeysDefinitionBuilder<CompanyMongo>? indexKeys = Builders<CompanyMongo>.IndexKeys;
         var indexOptions = new CreateIndexOptions { Unique = false };
 
         // Name index
@@ -114,7 +115,7 @@ public static class MongoIndexes
                 indexOptions));
 
         // TaxCode unique index (only for non-deleted documents)
-        var taxCodeIndex = Builders<CompanyMongo>.IndexKeys.Ascending(c => c.TaxCode);
+        IndexKeysDefinition<CompanyMongo>? taxCodeIndex = Builders<CompanyMongo>.IndexKeys.Ascending(c => c.TaxCode);
         var taxCodeOptions = new CreateIndexOptions
         {
             Unique = true
@@ -131,15 +132,15 @@ public static class MongoIndexes
                 new CreateIndexOptions { Unique = true }));
 
         // Users collection indexes
-        var usersCollection = database.GetCollection<UserMongo>("users");
+        IMongoCollection<UserMongo>? usersCollection = database.GetCollection<UserMongo>("users");
 
         // Username index
-        var usernameIndex = Builders<UserMongo>.IndexKeys.Ascending(u => u.Username);
+        IndexKeysDefinition<UserMongo>? usernameIndex = Builders<UserMongo>.IndexKeys.Ascending(u => u.Username);
         await usersCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<UserMongo>(usernameIndex, new CreateIndexOptions { Unique = true }));
 
         // Email index
-        var emailIndex = Builders<UserMongo>.IndexKeys.Ascending(u => u.Email);
+        IndexKeysDefinition<UserMongo>? emailIndex = Builders<UserMongo>.IndexKeys.Ascending(u => u.Email);
         await usersCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<UserMongo>(emailIndex, new CreateIndexOptions { Unique = true }));
 
@@ -150,95 +151,114 @@ public static class MongoIndexes
                 new CreateIndexOptions { Unique = true }));
 
         // Authorization collections indexes
-        var permissionsCollection = database.GetCollection<PermissionMongo>("permissions");
-        var permissionsIndex = Builders<PermissionMongo>.IndexKeys.Ascending(p => p.Resource).Ascending(p => p.Action);
+        IMongoCollection<PermissionMongo>? permissionsCollection =
+            database.GetCollection<PermissionMongo>("permissions");
+        IndexKeysDefinition<PermissionMongo>? permissionsIndex =
+            Builders<PermissionMongo>.IndexKeys.Ascending(p => p.Resource).Ascending(p => p.Action);
         await permissionsCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<PermissionMongo>(permissionsIndex, new CreateIndexOptions { Unique = true }));
 
-        var rolesCollection = database.GetCollection<RoleMongo>("roles");
-        var roleCodeIndex = Builders<RoleMongo>.IndexKeys.Ascending(r => r.Code);
+        IMongoCollection<RoleMongo>? rolesCollection = database.GetCollection<RoleMongo>("roles");
+        IndexKeysDefinition<RoleMongo>? roleCodeIndex = Builders<RoleMongo>.IndexKeys.Ascending(r => r.Code);
         await rolesCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<RoleMongo>(roleCodeIndex, new CreateIndexOptions { Unique = true }));
 
-        var roleRankIndex = Builders<RoleMongo>.IndexKeys.Ascending(r => r.Rank);
+        IndexKeysDefinition<RoleMongo>? roleRankIndex = Builders<RoleMongo>.IndexKeys.Ascending(r => r.Rank);
         await rolesCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<RoleMongo>(roleRankIndex));
 
-        var resourcesCollection = database.GetCollection<ResourceMongo>("resources");
-        var resourceIndex = Builders<ResourceMongo>.IndexKeys.Ascending(r => r.Type).Ascending(r => r.NodeId);
+        IMongoCollection<ResourceMongo>? resourcesCollection = database.GetCollection<ResourceMongo>("resources");
+        IndexKeysDefinition<ResourceMongo>? resourceIndex =
+            Builders<ResourceMongo>.IndexKeys.Ascending(r => r.Type).Ascending(r => r.NodeId);
         await resourcesCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<ResourceMongo>(resourceIndex));
 
-        var rolePermissionsCollection = database.GetCollection<RolePermissionMongo>("role_permissions");
-        var rolePermissionIndex = Builders<RolePermissionMongo>.IndexKeys.Ascending(rp => rp.RoleId)
+        IMongoCollection<RolePermissionMongo>? rolePermissionsCollection =
+            database.GetCollection<RolePermissionMongo>("role_permissions");
+        IndexKeysDefinition<RolePermissionMongo>? rolePermissionIndex = Builders<RolePermissionMongo>.IndexKeys
+            .Ascending(rp => rp.RoleId)
             .Ascending(rp => rp.PermissionId);
         await rolePermissionsCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<RolePermissionMongo>(rolePermissionIndex, new CreateIndexOptions { Unique = true }));
 
-        var userNodeRolesCollection = database.GetCollection<UserNodeRoleMongo>("user_node_roles");
-        var userNodeRoleIndex = Builders<UserNodeRoleMongo>.IndexKeys.Ascending(unr => unr.UserId)
+        IMongoCollection<UserNodeRoleMongo>? userNodeRolesCollection =
+            database.GetCollection<UserNodeRoleMongo>("user_node_roles");
+        IndexKeysDefinition<UserNodeRoleMongo>? userNodeRoleIndex = Builders<UserNodeRoleMongo>.IndexKeys
+            .Ascending(unr => unr.UserId)
             .Ascending(unr => unr.NodeId).Ascending(unr => unr.RoleId);
         await userNodeRolesCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<UserNodeRoleMongo>(userNodeRoleIndex, new CreateIndexOptions { Unique = true }));
 
         // Organizations collections indexes
-        var orgNodesCollection = database.GetCollection<OrgNodeMongo>("org_nodes");
-        var orgNodeParentIndex = Builders<OrgNodeMongo>.IndexKeys.Ascending(n => n.ParentId);
+        IMongoCollection<OrgNodeMongo>? orgNodesCollection = database.GetCollection<OrgNodeMongo>("org_nodes");
+        IndexKeysDefinition<OrgNodeMongo>? orgNodeParentIndex =
+            Builders<OrgNodeMongo>.IndexKeys.Ascending(n => n.ParentId);
         await orgNodesCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<OrgNodeMongo>(orgNodeParentIndex));
 
-        var orgNodeTypeIndex = Builders<OrgNodeMongo>.IndexKeys.Ascending(n => n.Type);
+        IndexKeysDefinition<OrgNodeMongo>? orgNodeTypeIndex = Builders<OrgNodeMongo>.IndexKeys.Ascending(n => n.Type);
         await orgNodesCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<OrgNodeMongo>(orgNodeTypeIndex));
 
-        var companyDetailsCollection = database.GetCollection<CompanyDetailsMongo>("company_details");
-        var companyNodeIndex = Builders<CompanyDetailsMongo>.IndexKeys.Ascending(cd => cd.NodeId);
+        IMongoCollection<CompanyDetailsMongo>? companyDetailsCollection =
+            database.GetCollection<CompanyDetailsMongo>("company_details");
+        IndexKeysDefinition<CompanyDetailsMongo>? companyNodeIndex =
+            Builders<CompanyDetailsMongo>.IndexKeys.Ascending(cd => cd.NodeId);
         await companyDetailsCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<CompanyDetailsMongo>(companyNodeIndex, new CreateIndexOptions { Unique = true }));
 
-        var companyTaxCodeIndex = Builders<CompanyDetailsMongo>.IndexKeys.Ascending(cd => cd.TaxCode);
+        IndexKeysDefinition<CompanyDetailsMongo>? companyTaxCodeIndex =
+            Builders<CompanyDetailsMongo>.IndexKeys.Ascending(cd => cd.TaxCode);
         await companyDetailsCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<CompanyDetailsMongo>(companyTaxCodeIndex));
 
-        var companyDomainIndex = Builders<CompanyDetailsMongo>.IndexKeys.Ascending(cd => cd.Domain);
+        IndexKeysDefinition<CompanyDetailsMongo>? companyDomainIndex =
+            Builders<CompanyDetailsMongo>.IndexKeys.Ascending(cd => cd.Domain);
         await companyDetailsCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<CompanyDetailsMongo>(companyDomainIndex));
 
-        var departmentDetailsCollection = database.GetCollection<DepartmentDetailsMongo>("department_details");
-        var departmentNodeIndex = Builders<DepartmentDetailsMongo>.IndexKeys.Ascending(dd => dd.NodeId);
+        IMongoCollection<DepartmentDetailsMongo>? departmentDetailsCollection =
+            database.GetCollection<DepartmentDetailsMongo>("department_details");
+        IndexKeysDefinition<DepartmentDetailsMongo>? departmentNodeIndex =
+            Builders<DepartmentDetailsMongo>.IndexKeys.Ascending(dd => dd.NodeId);
         await departmentDetailsCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<DepartmentDetailsMongo>(departmentNodeIndex,
                 new CreateIndexOptions { Unique = true }));
 
-        var departmentCostCenterIndex = Builders<DepartmentDetailsMongo>.IndexKeys.Ascending(dd => dd.CostCenter);
+        IndexKeysDefinition<DepartmentDetailsMongo>? departmentCostCenterIndex =
+            Builders<DepartmentDetailsMongo>.IndexKeys.Ascending(dd => dd.CostCenter);
         await departmentDetailsCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<DepartmentDetailsMongo>(departmentCostCenterIndex));
 
         // Suppliers collection indexes
-        var suppliersCollection = database.GetCollection<SupplierMongo>("suppliers");
+        IMongoCollection<SupplierMongo>? suppliersCollection = database.GetCollection<SupplierMongo>("suppliers");
 
         // Code unique index
-        var supplierCodeIndex = Builders<SupplierMongo>.IndexKeys.Ascending(s => s.Code);
+        IndexKeysDefinition<SupplierMongo>?
+            supplierCodeIndex = Builders<SupplierMongo>.IndexKeys.Ascending(s => s.Code);
         await suppliersCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<SupplierMongo>(supplierCodeIndex, new CreateIndexOptions { Unique = true }));
 
         // Name index
-        var supplierNameIndex = Builders<SupplierMongo>.IndexKeys.Text(s => s.Name);
+        IndexKeysDefinition<SupplierMongo>? supplierNameIndex = Builders<SupplierMongo>.IndexKeys.Text(s => s.Name);
         await suppliersCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<SupplierMongo>(supplierNameIndex));
 
         // ContactEmail unique index
-        var supplierEmailIndex = Builders<SupplierMongo>.IndexKeys.Ascending(s => s.ContactEmail);
+        IndexKeysDefinition<SupplierMongo>? supplierEmailIndex =
+            Builders<SupplierMongo>.IndexKeys.Ascending(s => s.ContactEmail);
         await suppliersCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<SupplierMongo>(supplierEmailIndex, new CreateIndexOptions { Unique = true }));
 
         // CountryId index
-        var supplierCountryIndex = Builders<SupplierMongo>.IndexKeys.Ascending(s => s.CountryId);
+        IndexKeysDefinition<SupplierMongo>? supplierCountryIndex =
+            Builders<SupplierMongo>.IndexKeys.Ascending(s => s.CountryId);
         await suppliersCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<SupplierMongo>(supplierCountryIndex));
 
         // IsActive index
-        var supplierActiveIndex = Builders<SupplierMongo>.IndexKeys.Ascending(s => s.IsActive);
+        IndexKeysDefinition<SupplierMongo>? supplierActiveIndex =
+            Builders<SupplierMongo>.IndexKeys.Ascending(s => s.IsActive);
         await suppliersCollection.Indexes.CreateOneAsync(
             new CreateIndexModel<SupplierMongo>(supplierActiveIndex));
 

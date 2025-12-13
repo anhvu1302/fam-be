@@ -1,4 +1,5 @@
 using FAM.Application.Authorization.Roles.Shared;
+
 using MediatR;
 
 namespace FAM.Application.Authorization.Roles.Queries.GetRoleById;

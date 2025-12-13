@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.ValueObjects;
+
 using FluentAssertions;
 
 namespace FAM.Domain.Tests.ValueObjects;
@@ -177,7 +178,7 @@ public class PasswordTests
         var password = Password.Create(oldPassword);
 
         // Act
-        var updatedPassword = password.Update(newPassword);
+        Password updatedPassword = password.Update(newPassword);
 
         // Assert
         updatedPassword.Should().NotBeNull();

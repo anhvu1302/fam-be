@@ -1,7 +1,10 @@
 using FAM.Application.Auth.Enable2FA;
+using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
+
 using FluentAssertions;
+
 using Moq;
 
 namespace FAM.Application.Tests.Auth.Handlers;
@@ -44,7 +47,7 @@ public class Enable2FACommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        Enable2FAResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -126,8 +129,8 @@ public class Enable2FACommandHandlerTests
         };
 
         // Act
-        var result1 = await _handler.Handle(command, CancellationToken.None);
-        var result2 = await _handler.Handle(command, CancellationToken.None);
+        Enable2FAResponse result1 = await _handler.Handle(command, CancellationToken.None);
+        Enable2FAResponse result2 = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - Each call should generate a different secret
         result1.Secret.Should().NotBe(result2.Secret);
