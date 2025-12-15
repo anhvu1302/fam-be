@@ -1,5 +1,5 @@
 # ==================== Stage 1: Build ====================
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /src
 
 # Copy csproj files individually to leverage Docker Cache
