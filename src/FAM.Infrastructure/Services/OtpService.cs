@@ -2,29 +2,29 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
+using FAM.Application.Abstractions;
 using FAM.Application.Common.Services;
 
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Infrastructure.Services;
 
 /// <summary>
-/// OTP service using distributed cache (Redis/In-Memory)
+/// OTP service using configurable cache provider (Redis/In-Memory)
 /// SECURED: OTP được bind với session token để tránh replay attacks
 /// </summary>
 public class OtpService : IOtpService
 {
-    private readonly IDistributedCache _cache;
+    private readonly ICacheProvider _cache;
     private readonly ILogger<OtpService> _logger;
-    private const string OtpKeyPrefix = "otp:";
-    private const string AttemptKeyPrefix = "otp_attempts:";
+    private const string OtpKeyPrefix = "fam:otp:";
+    private const string AttemptKeyPrefix = "fam:otp_attempts:";
     private const int MaxAttempts = 5;
 
-    public OtpService(IDistributedCache cache, ILogger<OtpService> logger)
+    public OtpService(ICacheProvider cache, ILogger<OtpService> logger)
     {
-        _cache = cache;
-        _logger = logger;
+        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<string> GenerateOtpAsync(long userId, string sessionToken, int expirationMinutes = 10,
@@ -47,16 +47,13 @@ public class OtpService : IOtpService
         };
 
         var serialized = JsonSerializer.Serialize(otpData);
-        var options = new DistributedCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(expirationMinutes)
-        };
+        var expiration = TimeSpan.FromMinutes(expirationMinutes);
 
-        await _cache.SetStringAsync(cacheKey, serialized, options, cancellationToken);
+        await _cache.SetAsync(cacheKey, serialized, expiration, cancellationToken);
 
         // Reset attempt counter
         var attemptKey = GenerateAttemptKey(userId, sessionToken);
-        await _cache.RemoveAsync(attemptKey, cancellationToken);
+        await _cache.DeleteAsync(attemptKey, cancellationToken);
 
         return otp;
     }
@@ -75,7 +72,7 @@ public class OtpService : IOtpService
             return false;
         }
 
-        var cached = await _cache.GetStringAsync(cacheKey, cancellationToken);
+        var cached = await _cache.GetAsync(cacheKey, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(cached))
         {
@@ -106,7 +103,7 @@ public class OtpService : IOtpService
             if (otpData.ExpiresAt < DateTime.UtcNow)
             {
                 _logger.LogWarning("OTP expired for user {UserId}", userId);
-                await _cache.RemoveAsync(cacheKey, cancellationToken);
+                await _cache.DeleteAsync(cacheKey, cancellationToken);
                 await IncrementAttemptsAsync(attemptKey, cancellationToken);
                 return false;
             }
@@ -116,8 +113,8 @@ public class OtpService : IOtpService
             if (isValid)
             {
                 // Clean up on success
-                await _cache.RemoveAsync(cacheKey, cancellationToken);
-                await _cache.RemoveAsync(attemptKey, cancellationToken);
+                await _cache.DeleteAsync(cacheKey, cancellationToken);
+                await _cache.DeleteAsync(attemptKey, cancellationToken);
             }
             else
             {
@@ -140,8 +137,8 @@ public class OtpService : IOtpService
         var cacheKey = GenerateSecureCacheKey(userId, sessionToken);
         var attemptKey = GenerateAttemptKey(userId, sessionToken);
 
-        await _cache.RemoveAsync(cacheKey, cancellationToken);
-        await _cache.RemoveAsync(attemptKey, cancellationToken);
+        await _cache.DeleteAsync(cacheKey, cancellationToken);
+        await _cache.DeleteAsync(attemptKey, cancellationToken);
     }
 
     #region Private Helper Methods
@@ -169,7 +166,7 @@ public class OtpService : IOtpService
 
     private async Task<int> GetAttemptsAsync(string attemptKey, CancellationToken cancellationToken)
     {
-        var cached = await _cache.GetStringAsync(attemptKey, cancellationToken);
+        var cached = await _cache.GetAsync(attemptKey, cancellationToken);
         if (string.IsNullOrWhiteSpace(cached))
             return 0;
 
@@ -184,12 +181,8 @@ public class OtpService : IOtpService
         var current = await GetAttemptsAsync(attemptKey, cancellationToken);
         var newCount = current + 1;
 
-        var options = new DistributedCacheEntryOptions
-        {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15) // Reset after 15 minutes
-        };
-
-        await _cache.SetStringAsync(attemptKey, newCount.ToString(), options, cancellationToken);
+        var expiration = TimeSpan.FromMinutes(15); // Reset after 15 minutes
+        await _cache.SetAsync(attemptKey, newCount.ToString(), expiration, cancellationToken);
 
         if (newCount >= MaxAttempts) _logger.LogWarning("User reached max OTP attempts: {Attempts}", newCount);
     }

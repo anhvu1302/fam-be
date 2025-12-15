@@ -11,6 +11,7 @@ using FAM.Application.Settings;
 using FAM.Application.Users.Commands.CreateUser;
 using FAM.Infrastructure;
 using FAM.Infrastructure.Auth;
+using FAM.Infrastructure.Providers.Cache;
 using FAM.Infrastructure.Providers.PostgreSQL;
 using FAM.Infrastructure.Providers.RateLimit;
 using FAM.Infrastructure.Services;
@@ -153,18 +154,11 @@ builder.Services.AddSingleton<IFilterParser, PrattFilterParser>();
 // Register JWT Service
 builder.Services.AddScoped<IJwtService, JwtService>();
 
-// Register In-Memory Cache (for 2FA sessions)
-builder.Services.AddMemoryCache();
-
-// Register 2FA Session Service (uses in-memory cache, can be replaced with Redis)
+// Register 2FA Session Service (uses configurable cache provider - Redis or In-Memory)
 builder.Services.AddScoped<ITwoFactorSessionService, TwoFactorSessionService>();
 
-// Register Redis Distributed Cache for OTP storage (from .env)
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = appConfig.RedisConnectionString;
-    options.InstanceName = appConfig.RedisInstanceName;
-});
+// Register Cache Provider (Redis for production, In-Memory for development)
+builder.Services.AddCacheProvider(builder.Configuration);
 
 // Register Email Services with Queue and Provider (Brevo/SMTP)
 builder.Services.AddEmailServices(builder.Configuration);

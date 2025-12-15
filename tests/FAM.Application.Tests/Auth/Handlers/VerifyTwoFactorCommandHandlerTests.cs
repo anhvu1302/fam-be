@@ -23,6 +23,7 @@ public class VerifyTwoFactorCommandHandlerTests
     private readonly Mock<IJwtService> _mockJwtService;
     private readonly Mock<ISigningKeyService> _mockSigningKeyService;
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    private readonly Mock<ITwoFactorSessionService> _mockTwoFactorSessionService;
     private readonly Mock<ILogger<VerifyTwoFactorCommandHandler>> _mockLogger;
     private readonly VerifyTwoFactorCommandHandler _handler;
 
@@ -42,11 +43,21 @@ public class VerifyTwoFactorCommandHandlerTests
         _mockJwtService.Setup(x => x.AccessTokenExpiryMinutes).Returns(60);
         _mockJwtService.Setup(x => x.RefreshTokenExpiryDays).Returns(30);
 
+        _mockTwoFactorSessionService = new Mock<ITwoFactorSessionService>();
+        // Setup 2FA session service to validate token
+        _mockTwoFactorSessionService
+            .Setup(x => x.ValidateAndGetUserIdAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1L); // Return user ID 1 for valid token
+        _mockTwoFactorSessionService
+            .Setup(x => x.RevokeSessionAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
         _handler = new VerifyTwoFactorCommandHandler(
             _mockUserRepository.Object,
             _mockUserDeviceRepository.Object,
             _mockJwtService.Object,
             _mockSigningKeyService.Object,
+            _mockTwoFactorSessionService.Object,
             _mockUnitOfWork.Object,
             _mockLogger.Object
         );

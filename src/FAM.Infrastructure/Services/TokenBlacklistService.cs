@@ -1,28 +1,28 @@
 using System.Security.Cryptography;
 using System.Text;
 
+using FAM.Application.Abstractions;
 using FAM.Application.Auth.Services;
 
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace FAM.Infrastructure.Services;
 
 /// <summary>
-/// Redis-based token blacklist service
+/// Token blacklist service using configurable cache provider (Redis/In-Memory)
 /// Stores invalidated tokens with TTL matching their natural expiration
 /// </summary>
 public class TokenBlacklistService : ITokenBlacklistService
 {
-    private readonly IDistributedCache _cache;
+    private readonly ICacheProvider _cache;
     private readonly ILogger<TokenBlacklistService> _logger;
-    private const string TokenBlacklistPrefix = "token_blacklist:";
-    private const string UserBlacklistPrefix = "user_blacklist:";
+    private const string TokenBlacklistPrefix = "fam:token_blacklist:";
+    private const string UserBlacklistPrefix = "fam:user_blacklist:";
 
-    public TokenBlacklistService(IDistributedCache cache, ILogger<TokenBlacklistService> logger)
+    public TokenBlacklistService(ICacheProvider cache, ILogger<TokenBlacklistService> logger)
     {
-        _cache = cache;
-        _logger = logger;
+        _cache = cache ?? throw new ArgumentNullException(nameof(cache));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task BlacklistTokenAsync(string token, DateTime expiryTime,
@@ -42,13 +42,8 @@ public class TokenBlacklistService : ITokenBlacklistService
                 return; // Token already expired, no need to blacklist
             }
 
-            var options = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = ttl
-            };
-
             // Store a simple marker - we just need to know it exists
-            await _cache.SetStringAsync(cacheKey, "blacklisted", options, cancellationToken);
+            await _cache.SetAsync(cacheKey, "blacklisted", ttl, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -64,7 +59,7 @@ public class TokenBlacklistService : ITokenBlacklistService
             var tokenHash = HashToken(token);
             var cacheKey = $"{TokenBlacklistPrefix}{tokenHash}";
 
-            var value = await _cache.GetStringAsync(cacheKey, cancellationToken);
+            var value = await _cache.GetAsync(cacheKey, cancellationToken);
             return !string.IsNullOrEmpty(value);
         }
         catch (Exception ex)
@@ -83,12 +78,8 @@ public class TokenBlacklistService : ITokenBlacklistService
 
             // Store for 24 hours - longer than typical access token lifetime
             // This will invalidate ALL tokens for this user
-            var options = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
-            };
-
-            await _cache.SetStringAsync(cacheKey, DateTime.UtcNow.ToString("O"), options, cancellationToken);
+            var expiration = TimeSpan.FromHours(24);
+            await _cache.SetAsync(cacheKey, DateTime.UtcNow.ToString("O"), expiration, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -102,7 +93,7 @@ public class TokenBlacklistService : ITokenBlacklistService
         try
         {
             var cacheKey = $"{UserBlacklistPrefix}{userId}";
-            var value = await _cache.GetStringAsync(cacheKey, cancellationToken);
+            var value = await _cache.GetAsync(cacheKey, cancellationToken);
             return !string.IsNullOrEmpty(value);
         }
         catch (Exception ex)
@@ -128,13 +119,8 @@ public class TokenBlacklistService : ITokenBlacklistService
                 return; // Token already expired, no need to blacklist
             }
 
-            var options = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = ttl
-            };
-
             // Store a simple marker - we just need to know it exists
-            await _cache.SetStringAsync(cacheKey, "blacklisted", options, cancellationToken);
+            await _cache.SetAsync(cacheKey, "blacklisted", ttl, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -148,7 +134,7 @@ public class TokenBlacklistService : ITokenBlacklistService
         try
         {
             var cacheKey = $"{TokenBlacklistPrefix}jti:{jti}";
-            var value = await _cache.GetStringAsync(cacheKey, cancellationToken);
+            var value = await _cache.GetAsync(cacheKey, cancellationToken);
             return !string.IsNullOrEmpty(value);
         }
         catch (Exception ex)

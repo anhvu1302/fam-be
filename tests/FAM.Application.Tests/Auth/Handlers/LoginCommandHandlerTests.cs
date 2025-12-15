@@ -25,6 +25,7 @@ public class LoginCommandHandlerTests
     private readonly Mock<ISigningKeyService> _mockSigningKeyService;
     private readonly Mock<IEmailService> _mockEmailService;
     private readonly Mock<IOtpService> _mockOtpService;
+    private readonly Mock<ITwoFactorSessionService> _mockTwoFactorSessionService;
     private readonly Mock<ILogger<LoginCommandHandler>> _mockLogger;
     private readonly LoginCommandHandler _handler;
 
@@ -46,10 +47,17 @@ public class LoginCommandHandlerTests
         _mockJwtService.Setup(x => x.AccessTokenExpiryMinutes).Returns(60);
         _mockJwtService.Setup(x => x.RefreshTokenExpiryDays).Returns(30);
 
+        _mockTwoFactorSessionService = new Mock<ITwoFactorSessionService>();
+        // Setup 2FA session service to return a token when creating session
+        _mockTwoFactorSessionService
+            .Setup(x => x.CreateSessionAsync(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("2fa_session_token");
+
         _handler = new LoginCommandHandler(
             _mockUnitOfWork.Object,
             _mockJwtService.Object,
             _mockSigningKeyService.Object,
+            _mockTwoFactorSessionService.Object,
             _mockEmailService.Object,
             _mockOtpService.Object,
             _mockLogger.Object);

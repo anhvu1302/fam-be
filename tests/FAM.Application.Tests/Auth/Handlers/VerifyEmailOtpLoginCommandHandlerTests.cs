@@ -25,6 +25,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
     private readonly Mock<IOtpService> _mockOtpService;
     private readonly Mock<ISigningKeyService> _mockSigningKeyService;
     private readonly Mock<IJwtService> _mockJwtService;
+    private readonly Mock<ITwoFactorSessionService> _mockTwoFactorSessionService;
     private readonly Mock<ILogger<VerifyEmailOtpLoginCommandHandler>> _mockLogger;
     private readonly VerifyEmailOtpLoginCommandHandler _handler;
 
@@ -39,11 +40,18 @@ public class VerifyEmailOtpLoginCommandHandlerTests
 
         _mockUnitOfWork.Setup(x => x.Users).Returns(_mockUserRepository.Object);
 
+        _mockTwoFactorSessionService = new Mock<ITwoFactorSessionService>();
+        // Setup 2FA session service to return token when creating session
+        _mockTwoFactorSessionService
+            .Setup(x => x.CreateSessionAsync(It.IsAny<long>(), It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("session_token");
+
         _handler = new VerifyEmailOtpLoginCommandHandler(
             _mockOtpService.Object,
             _mockUnitOfWork.Object,
             _mockSigningKeyService.Object,
             _mockJwtService.Object,
+            _mockTwoFactorSessionService.Object,
             _mockLogger.Object);
     }
 
