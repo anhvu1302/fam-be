@@ -153,6 +153,12 @@ builder.Services.AddSingleton<IFilterParser, PrattFilterParser>();
 // Register JWT Service
 builder.Services.AddScoped<IJwtService, JwtService>();
 
+// Register In-Memory Cache (for 2FA sessions)
+builder.Services.AddMemoryCache();
+
+// Register 2FA Session Service (uses in-memory cache, can be replaced with Redis)
+builder.Services.AddScoped<ITwoFactorSessionService, TwoFactorSessionService>();
+
 // Register Redis Distributed Cache for OTP storage (from .env)
 builder.Services.AddStackExchangeRedisCache(options =>
 {

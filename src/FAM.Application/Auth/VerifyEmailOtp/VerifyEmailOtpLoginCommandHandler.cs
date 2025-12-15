@@ -22,6 +22,7 @@ public class VerifyEmailOtpLoginCommandHandler
     private readonly IUnitOfWork _unitOfWork;
     private readonly ISigningKeyService _signingKeyService;
     private readonly IJwtService _jwtService;
+    private readonly ITwoFactorSessionService _twoFactorSessionService;
     private readonly ILogger<VerifyEmailOtpLoginCommandHandler> _logger;
 
     public VerifyEmailOtpLoginCommandHandler(
@@ -29,12 +30,14 @@ public class VerifyEmailOtpLoginCommandHandler
         IUnitOfWork unitOfWork,
         ISigningKeyService signingKeyService,
         IJwtService jwtService,
+        ITwoFactorSessionService twoFactorSessionService,
         ILogger<VerifyEmailOtpLoginCommandHandler> logger)
     {
         _otpService = otpService;
         _unitOfWork = unitOfWork;
         _signingKeyService = signingKeyService;
         _jwtService = jwtService;
+        _twoFactorSessionService = twoFactorSessionService;
         _logger = logger;
     }
 
@@ -116,17 +119,8 @@ public class VerifyEmailOtpLoginCommandHandler
 
     private async Task<string> GenerateTwoFactorSessionTokenAsync(long userId, CancellationToken cancellationToken)
     {
-        SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
-        var roles = new List<string> { "2fa_session" };
-
-        return _jwtService.GenerateAccessTokenWithRsa(
-            userId,
-            $"2fa_session_{userId}",
-            "",
-            roles,
-            activeKey.KeyId,
-            activeKey.PrivateKey,
-            activeKey.Algorithm);
+        // Use simple session token instead of JWT (no need for cryptographic signing for temporary tokens)
+        return await _twoFactorSessionService.CreateSessionAsync(userId, expirationMinutes: 10, cancellationToken);
     }
 
     private static UserInfoDto MapToUserInfoDto(User user)

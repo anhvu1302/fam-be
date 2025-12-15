@@ -19,6 +19,7 @@ public class
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
+    private readonly ITwoFactorSessionService _twoFactorSessionService;
     private readonly IEmailService _emailService;
     private readonly IOtpService _otpService;
     private readonly ILogger<SelectAuthenticationMethodCommandHandler> _logger;
@@ -26,12 +27,14 @@ public class
     public SelectAuthenticationMethodCommandHandler(
         IUnitOfWork unitOfWork,
         IJwtService jwtService,
+        ITwoFactorSessionService twoFactorSessionService,
         IEmailService emailService,
         IOtpService otpService,
         ILogger<SelectAuthenticationMethodCommandHandler> logger)
     {
         _unitOfWork = unitOfWork;
         _jwtService = jwtService;
+        _twoFactorSessionService = twoFactorSessionService;
         _emailService = emailService;
         _otpService = otpService;
         _logger = logger;
@@ -41,8 +44,8 @@ public class
         SelectAuthenticationMethodCommand request,
         CancellationToken cancellationToken)
     {
-        // Validate và extract userId từ 2FA session token
-        var userId = ValidateAndExtractUserId(request.TwoFactorSessionToken);
+        // Validate and extract userId từ 2FA session token
+        var userId = await ValidateAndExtractUserIdAsync(request.TwoFactorSessionToken, cancellationToken);
         if (userId == 0)
             throw new UnauthorizedAccessException("Invalid or expired 2FA session token");
 
@@ -95,19 +98,11 @@ public class
         return response;
     }
 
-    private long ValidateAndExtractUserId(string token)
+    private async Task<long> ValidateAndExtractUserIdAsync(string token, CancellationToken cancellationToken)
     {
-        try
-        {
-            // JWT middleware already validates token signature, just extract user ID
-            var userId = _jwtService.GetUserIdFromToken(token);
-            return userId;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Failed to extract user ID from 2FA session token");
-            return 0;
-        }
+        // Use the 2FA session service instead of JWT parsing
+        var userId = await _twoFactorSessionService.ValidateAndGetUserIdAsync(token, cancellationToken);
+        return userId;
     }
 
     private static string MaskEmail(string email)

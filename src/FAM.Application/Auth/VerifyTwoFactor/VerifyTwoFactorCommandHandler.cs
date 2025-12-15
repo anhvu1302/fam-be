@@ -22,6 +22,7 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
     private readonly IUserDeviceRepository _userDeviceRepository;
     private readonly IJwtService _jwtService;
     private readonly ISigningKeyService _signingKeyService;
+    private readonly ITwoFactorSessionService _twoFactorSessionService;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<VerifyTwoFactorCommandHandler> _logger;
 
@@ -30,6 +31,7 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
         IUserDeviceRepository userDeviceRepository,
         IJwtService jwtService,
         ISigningKeyService signingKeyService,
+        ITwoFactorSessionService twoFactorSessionService,
         IUnitOfWork unitOfWork,
         ILogger<VerifyTwoFactorCommandHandler> _logger)
     {
@@ -37,6 +39,7 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
         _userDeviceRepository = userDeviceRepository;
         _jwtService = jwtService;
         _signingKeyService = signingKeyService;
+        _twoFactorSessionService = twoFactorSessionService;
         _unitOfWork = unitOfWork;
         this._logger = _logger;
     }
@@ -44,7 +47,8 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
     public async Task<VerifyTwoFactorResponse> Handle(VerifyTwoFactorCommand request,
         CancellationToken cancellationToken)
     {
-        var userId = _jwtService.GetUserIdFromToken(request.TwoFactorSessionToken);
+        // Validate 2FA session token
+        var userId = await _twoFactorSessionService.ValidateAndGetUserIdAsync(request.TwoFactorSessionToken, cancellationToken);
         if (userId == 0)
             throw new UnauthorizedAccessException("Invalid or expired two-factor session token");
 
