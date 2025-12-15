@@ -41,7 +41,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public string? TwoFactorSecret { get; private set; }
     public string? TwoFactorBackupCodes { get; private set; } // JSON array of backup codes
     public DateTime? TwoFactorSetupDate { get; private set; }
-    
+
     // Pending 2FA Secret (for setup phase - before confirmation)
     public string? PendingTwoFactorSecret { get; private set; }
     public DateTime? PendingTwoFactorSecretExpiresAt { get; private set; } // TTL: 10 minutes
@@ -245,7 +245,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
 
     public bool IsPendingTwoFactorSecretValid(string secret)
     {
-        return PendingTwoFactorSecret == secret && 
+        return PendingTwoFactorSecret == secret &&
                PendingTwoFactorSecretExpiresAt > DateTime.UtcNow;
     }
 

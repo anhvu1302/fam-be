@@ -31,15 +31,13 @@ public sealed class RateLimiterStore : IRateLimiterStore
 
             // Get current count
             var countStr = await _cache.GetAsync(cacheKey, cancellationToken);
-            if (!int.TryParse(countStr, out var currentCount))
-            {
-                currentCount = 0;
-            }
+            if (!int.TryParse(countStr, out var currentCount)) currentCount = 0;
 
             // Check if limit exceeded
             if (currentCount >= permitLimit)
             {
-                _logger.LogDebug("Rate limit exceeded for key {Key}: {Current}/{Limit}", key, currentCount, permitLimit);
+                _logger.LogDebug("Rate limit exceeded for key {Key}: {Current}/{Limit}", key, currentCount,
+                    permitLimit);
                 return false;
             }
 
@@ -64,17 +62,14 @@ public sealed class RateLimiterStore : IRateLimiterStore
         {
             // Try to get count from multiple window sizes (sliding window approach)
             var count = 0;
-            var now = DateTimeOffset.UtcNow;
+            DateTimeOffset now = DateTimeOffset.UtcNow;
 
             // Check last 4 time windows (for potential sliding window support)
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
                 var windowKey = GetWindowKeyWithTimestamp(key, now.AddMinutes(-i));
                 var countStr = await _cache.GetAsync(windowKey, cancellationToken);
-                if (int.TryParse(countStr, out var windowCount))
-                {
-                    count += windowCount;
-                }
+                if (int.TryParse(countStr, out var windowCount)) count += windowCount;
             }
 
             return count;
@@ -115,10 +110,7 @@ public sealed class RateLimiterStore : IRateLimiterStore
 
             // Since ICacheProvider doesn't expose TTL directly, we'll use a separate TTL key
             var ttlStr = await _cache.GetAsync(GetTtlKey(cacheKey), cancellationToken);
-            if (int.TryParse(ttlStr, out var ttl))
-            {
-                return Math.Max(1, ttl);
-            }
+            if (int.TryParse(ttlStr, out var ttl)) return Math.Max(1, ttl);
 
             // Default to 60 seconds if TTL not found
             return 60;
@@ -148,10 +140,10 @@ public sealed class RateLimiterStore : IRateLimiterStore
 
     private static string GetWindowKey(string key, TimeSpan window)
     {
-        var now = DateTimeOffset.UtcNow;
+        DateTimeOffset now = DateTimeOffset.UtcNow;
         var totalSeconds = (long)now.TimeOfDay.TotalSeconds;
         var windowSeconds = (long)window.TotalSeconds;
-        var windowStart = totalSeconds - (totalSeconds % windowSeconds);
+        var windowStart = totalSeconds - totalSeconds % windowSeconds;
         return $"ratelimit:{key}:{windowStart}";
     }
 
@@ -159,9 +151,12 @@ public sealed class RateLimiterStore : IRateLimiterStore
     {
         var totalSeconds = (long)timestamp.TimeOfDay.TotalSeconds;
         var windowSeconds = 60L; // 1 minute
-        var windowStart = totalSeconds - (totalSeconds % windowSeconds);
+        var windowStart = totalSeconds - totalSeconds % windowSeconds;
         return $"ratelimit:{key}:{windowStart}";
     }
 
-    private static string GetTtlKey(string cacheKey) => $"{cacheKey}:ttl";
+    private static string GetTtlKey(string cacheKey)
+    {
+        return $"{cacheKey}:ttl";
+    }
 }

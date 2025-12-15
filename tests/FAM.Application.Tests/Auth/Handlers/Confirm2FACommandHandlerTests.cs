@@ -41,10 +41,10 @@ public class Confirm2FACommandHandlerTests
         // Generate a real secret and valid TOTP code
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
-        
+
         // Set pending 2FA secret (simulating Enable2FA call)
-        user.SetPendingTwoFactorSecret(base32Secret, expirationMinutes: 10);
-        
+        user.SetPendingTwoFactorSecret(base32Secret, 10);
+
         var totp = new Totp(secretKey);
         var validCode = totp.ComputeTotp();
 
@@ -91,10 +91,10 @@ public class Confirm2FACommandHandlerTests
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
-        
+
         // Set pending 2FA secret (simulating Enable2FA call)
-        user.SetPendingTwoFactorSecret(base32Secret, expirationMinutes: 10);
-        
+        user.SetPendingTwoFactorSecret(base32Secret, 10);
+
         var invalidCode = "000000"; // Invalid code
 
         _mockUserRepository
@@ -155,19 +155,19 @@ public class Confirm2FACommandHandlerTests
 
         var secretKey1 = KeyGeneration.GenerateRandomKey(32);
         var base32Secret1 = Base32Encoding.ToString(secretKey1);
-        
+
         // Set pending 2FA secret (simulating Enable2FA call)
-        user1.SetPendingTwoFactorSecret(base32Secret1, expirationMinutes: 10);
-        
+        user1.SetPendingTwoFactorSecret(base32Secret1, 10);
+
         var totp1 = new Totp(secretKey1);
         var validCode1 = totp1.ComputeTotp();
 
         var secretKey2 = KeyGeneration.GenerateRandomKey(32);
         var base32Secret2 = Base32Encoding.ToString(secretKey2);
-        
+
         // Set pending 2FA secret for user2 (simulating Enable2FA call)
-        user2.SetPendingTwoFactorSecret(base32Secret2, expirationMinutes: 10);
-        
+        user2.SetPendingTwoFactorSecret(base32Secret2, 10);
+
         var totp2 = new Totp(secretKey2);
         var validCode2 = totp2.ComputeTotp();
 
@@ -204,10 +204,10 @@ public class Confirm2FACommandHandlerTests
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
-        
+
         // Set pending 2FA secret (simulating Enable2FA call)
-        user.SetPendingTwoFactorSecret(base32Secret, expirationMinutes: 10);
-        
+        user.SetPendingTwoFactorSecret(base32Secret, 10);
+
         var totp = new Totp(secretKey);
         var validCode = totp.ComputeTotp();
 

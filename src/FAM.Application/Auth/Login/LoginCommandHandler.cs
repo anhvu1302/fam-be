@@ -212,6 +212,6 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
     private async Task<string> GenerateTwoFactorSessionTokenAsync(long userId, CancellationToken cancellationToken)
     {
         // Use simple session token instead of JWT (no need for cryptographic signing for temporary tokens)
-        return await _twoFactorSessionService.CreateSessionAsync(userId, expirationMinutes: 10, cancellationToken);
+        return await _twoFactorSessionService.CreateSessionAsync(userId, 10, cancellationToken);
     }
 }

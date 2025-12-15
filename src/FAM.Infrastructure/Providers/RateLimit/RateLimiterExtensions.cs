@@ -18,8 +18,8 @@ public static class RateLimiterExtensions
     {
         services.AddSingleton<IRateLimiterStore>(sp =>
         {
-            var cacheProvider = sp.GetRequiredService<ICacheProvider>();
-            var logger = sp.GetRequiredService<ILogger<RateLimiterStore>>();
+            ICacheProvider cacheProvider = sp.GetRequiredService<ICacheProvider>();
+            ILogger<RateLimiterStore> logger = sp.GetRequiredService<ILogger<RateLimiterStore>>();
             return new RateLimiterStore(cacheProvider, logger);
         });
 

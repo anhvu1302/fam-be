@@ -1,3 +1,5 @@
+using System.Reflection;
+
 using FAM.Application.Auth.Services;
 using FAM.Application.Users.Commands.DeleteSession;
 using FAM.Domain.Abstractions;
@@ -39,7 +41,7 @@ public class DeleteSessionCommandHandlerTests
 
         // Mock current device as trusted (created 4 days ago)
         var currentDevice = UserDevice.Create(userId, currentDeviceId, "Chrome", "desktop");
-        var createdAtField = typeof(UserDevice).GetProperty("CreatedAt");
+        PropertyInfo? createdAtField = typeof(UserDevice).GetProperty("CreatedAt");
         createdAtField?.SetValue(currentDevice, DateTime.UtcNow.AddDays(-4));
         currentDevice.MarkAsTrusted();
 
@@ -77,7 +79,7 @@ public class DeleteSessionCommandHandlerTests
 
         // Mock current device as trusted
         var currentDevice = UserDevice.Create(userId, currentDeviceId, "Chrome", "desktop");
-        var createdAtField = typeof(UserDevice).GetProperty("CreatedAt");
+        PropertyInfo? createdAtField = typeof(UserDevice).GetProperty("CreatedAt");
         createdAtField?.SetValue(currentDevice, DateTime.UtcNow.AddDays(-4));
         currentDevice.MarkAsTrusted();
 
@@ -107,7 +109,7 @@ public class DeleteSessionCommandHandlerTests
 
         // Mock current device as trusted
         var currentDevice = UserDevice.Create(userId, currentDeviceId, "Chrome", "desktop");
-        var createdAtField = typeof(UserDevice).GetProperty("CreatedAt");
+        PropertyInfo? createdAtField = typeof(UserDevice).GetProperty("CreatedAt");
         createdAtField?.SetValue(currentDevice, DateTime.UtcNow.AddDays(-4));
         currentDevice.MarkAsTrusted();
 

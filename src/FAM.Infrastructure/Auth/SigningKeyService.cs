@@ -127,7 +127,6 @@ public class SigningKeyService : ISigningKeyService
         await _repository.DeactivateAllExceptAsync(keyId, cancellationToken);
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
     }
 
     public async Task DeactivateKeyAsync(long keyId, CancellationToken cancellationToken = default)
@@ -138,7 +137,6 @@ public class SigningKeyService : ISigningKeyService
         key.Deactivate();
         _repository.Update(key);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
     }
 
     public async Task RevokeKeyAsync(long keyId, string? reason = null, CancellationToken cancellationToken = default)
@@ -214,7 +212,6 @@ public class SigningKeyService : ISigningKeyService
 
         _repository.Delete(key);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
     }
 
     public async Task<IReadOnlyList<SigningKeyResponse>> GetExpiringKeysAsync(

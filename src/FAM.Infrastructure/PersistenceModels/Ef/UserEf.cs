@@ -32,7 +32,7 @@ public class UserEf : BaseEntityEf
     public string? TwoFactorSecret { get; set; }
     public string? TwoFactorBackupCodes { get; set; }
     public DateTime? TwoFactorSetupDate { get; set; }
-    
+
     // Pending 2FA Secret (for setup phase - before confirmation)
     public string? PendingTwoFactorSecret { get; set; }
     public DateTime? PendingTwoFactorSecretExpiresAt { get; set; }

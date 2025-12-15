@@ -48,10 +48,7 @@ public class InitUploadSessionHandler : IRequestHandler<InitUploadSessionCommand
                 request.IdempotencyKey,
                 cancellationToken);
 
-            if (existingSession != null)
-            {
-                return await GenerateResponseFromSession(existingSession, cancellationToken);
-            }
+            if (existingSession != null) return await GenerateResponseFromSession(existingSession, cancellationToken);
         }
 
         // Validate file

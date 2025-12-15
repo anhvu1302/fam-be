@@ -29,7 +29,6 @@ using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.WebApi.Attributes;
 using FAM.WebApi.Configuration;
-using FAM.WebApi.Contracts.Auth;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.Users;
 
@@ -260,7 +259,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> LogoutAll([FromBody] LogoutAllRequest? request = null)
+    public async Task<ActionResult> LogoutAll([FromBody] WebApiContracts.LogoutAllRequest? request = null)
     {
         try
         {
@@ -323,10 +322,10 @@ public class AuthController : BaseApiController
     /// Get authentication methods for current user
     /// </summary>
     [HttpGet("authentication-methods")]
-    [Authorize]    
+    [Authorize]
     [ProducesResponseType(typeof(ApiSuccessResponse<AuthenticationMethodsResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]    
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<AuthenticationMethodsResponse>> GetAuthenticationMethods()
     {
         try
@@ -937,7 +936,7 @@ public class AuthController : BaseApiController
     {
         var userId = GetCurrentUserId();
         var currentDeviceId = GetDeviceId();
-        
+
         var command = new DeleteAllSessionsCommand(userId, currentDeviceId);
         await _mediator.Send(command);
 
@@ -1019,5 +1018,3 @@ public class AuthController : BaseApiController
 
     #endregion
 }
-
-

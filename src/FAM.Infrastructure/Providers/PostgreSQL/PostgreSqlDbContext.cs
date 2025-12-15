@@ -121,7 +121,7 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(u => u.Email).IsRequired().HasMaxLength(255);
             entity.Property(u => u.FullName).HasMaxLength(200);
             entity.Property(u => u.IsDeleted).HasDefaultValue(false);
-            
+
             // Pending 2FA fields configuration
             entity.Property(u => u.PendingTwoFactorSecret).HasMaxLength(128);
             entity.Property(u => u.PendingTwoFactorSecretExpiresAt);

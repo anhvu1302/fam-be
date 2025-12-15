@@ -34,14 +34,20 @@ public class UserMongo : BasicAuditedEntityMongo
     [BsonElement("twoFactorSecret")] public string? TwoFactorSecret { get; set; }
     [BsonElement("twoFactorBackupCodes")] public string? TwoFactorBackupCodes { get; set; }
     [BsonElement("twoFactorSetupDate")] public DateTime? TwoFactorSetupDate { get; set; }
-    
+
     // Pending 2FA Secret (for setup phase - before confirmation)
-    [BsonElement("pendingTwoFactorSecret")] public string? PendingTwoFactorSecret { get; set; }
-    [BsonElement("pendingTwoFactorSecretExpiresAt")] public DateTime? PendingTwoFactorSecretExpiresAt { get; set; }
+    [BsonElement("pendingTwoFactorSecret")]
+    public string? PendingTwoFactorSecret { get; set; }
+
+    [BsonElement("pendingTwoFactorSecretExpiresAt")]
+    public DateTime? PendingTwoFactorSecretExpiresAt { get; set; }
 
     // Password Reset
     [BsonElement("passwordResetToken")] public string? PasswordResetToken { get; set; }
-    [BsonElement("passwordResetTokenExpiresAt")] public DateTime? PasswordResetTokenExpiresAt { get; set; }
+
+    [BsonElement("passwordResetTokenExpiresAt")]
+    public DateTime? PasswordResetTokenExpiresAt { get; set; }
+
     [BsonElement("passwordChangedAt")] public DateTime? PasswordChangedAt { get; set; }
 
     // Account Status
@@ -59,7 +65,9 @@ public class UserMongo : BasicAuditedEntityMongo
     [BsonElement("preferredLanguage")] public string? PreferredLanguage { get; set; } = "en";
     [BsonElement("timeZone")] public string? TimeZone { get; set; } = "UTC";
     [BsonElement("receiveNotifications")] public bool ReceiveNotifications { get; set; } = true;
-    [BsonElement("receiveMarketingEmails")] public bool ReceiveMarketingEmails { get; set; }
+
+    [BsonElement("receiveMarketingEmails")]
+    public bool ReceiveMarketingEmails { get; set; }
 
     public UserMongo() : base()
     {

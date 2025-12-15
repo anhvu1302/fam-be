@@ -30,7 +30,6 @@ public class SendEmailVerificationOtpCommandHandler
         SendEmailVerificationOtpCommand request,
         CancellationToken cancellationToken)
     {
-
         // Generate 6-digit OTP
         var otp = GenerateOtp();
         var otpExpiry = TimeSpan.FromMinutes(10);

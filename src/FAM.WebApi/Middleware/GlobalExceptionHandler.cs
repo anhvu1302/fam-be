@@ -44,7 +44,6 @@ public class GlobalExceptionHandler : IExceptionHandler
 
         // Only log server errors (5xx), not client errors (4xx)
         if (statusCode >= 500)
-        {
             using (LogContext.PushProperty("ExceptionType", exception.GetType().Name))
             using (LogContext.PushProperty("StatusCode", statusCode))
             {
@@ -53,7 +52,6 @@ public class GlobalExceptionHandler : IExceptionHandler
                     "Server error: {ExceptionType} - {ExceptionMessage}\nStack Trace: {StackTrace}",
                     exception.GetType().Name, exception.Message, exception.StackTrace);
             }
-        }
 
         httpContext.Response.StatusCode = statusCode;
         httpContext.Response.ContentType = "application/json";

@@ -26,21 +26,18 @@ public class DeleteSessionCommandHandler : IRequestHandler<DeleteSessionCommand,
     public async Task<Unit> Handle(DeleteSessionCommand request, CancellationToken cancellationToken)
     {
         // SECURITY: Verify current device is trusted for at least 3 days before allowing deletion
-        UserDevice? currentDevice = await _userDeviceRepository.GetByDeviceIdAsync(request.CurrentDeviceId, cancellationToken);
+        UserDevice? currentDevice =
+            await _userDeviceRepository.GetByDeviceIdAsync(request.CurrentDeviceId, cancellationToken);
 
         if (currentDevice == null)
-        {
             throw new DomainException(
                 ErrorCodes.DEVICE_NOT_FOUND,
                 "Current device not found. Please log in again.");
-        }
 
         if (!currentDevice.IsTrustedForDuration(DomainRules.DeviceTrust.MinimumTrustDaysForSensitiveOperations))
-        {
             throw new DomainException(
                 ErrorCodes.DEVICE_NOT_TRUSTED_FOR_OPERATION,
                 $"Device must be trusted for at least {DomainRules.DeviceTrust.MinimumTrustDaysForSensitiveOperations} days to delete other sessions.");
-        }
 
         UserDevice? device = await _userDeviceRepository.GetByIdAsync(request.SessionId, cancellationToken);
 

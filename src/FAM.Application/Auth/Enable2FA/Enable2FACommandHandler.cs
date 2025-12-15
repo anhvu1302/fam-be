@@ -31,7 +31,7 @@ public sealed class Enable2FACommandHandler : IRequestHandler<Enable2FACommand, 
         var base32Secret = Base32Encoding.ToString(secretKey);
 
         // Store pending secret for confirmation phase (10 minute expiration)
-        user.SetPendingTwoFactorSecret(base32Secret, expirationMinutes: 10);
+        user.SetPendingTwoFactorSecret(base32Secret, 10);
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

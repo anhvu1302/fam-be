@@ -142,7 +142,6 @@ public class OtpService : IOtpService
 
         await _cache.RemoveAsync(cacheKey, cancellationToken);
         await _cache.RemoveAsync(attemptKey, cancellationToken);
-
     }
 
     #region Private Helper Methods

@@ -28,7 +28,6 @@ public sealed class QueuedEmailService : IEmailService
     public async Task SendOtpEmailAsync(string toEmail, string otpCode, string userName,
         CancellationToken cancellationToken = default)
     {
-
         EmailMessage message = _templateService.CreateOtpEmail(toEmail, userName, otpCode);
         await _emailQueue.EnqueueAsync(message, cancellationToken);
 
@@ -38,7 +37,6 @@ public sealed class QueuedEmailService : IEmailService
     public async Task SendPasswordResetEmailAsync(string toEmail, string resetToken, string userName, string resetUrl,
         int expiryMinutes, CancellationToken cancellationToken = default)
     {
-
         EmailMessage message =
             _templateService.CreatePasswordResetEmail(toEmail, userName, resetToken, resetUrl, expiryMinutes);
         await _emailQueue.EnqueueAsync(message, cancellationToken);
@@ -49,7 +47,6 @@ public sealed class QueuedEmailService : IEmailService
     public async Task SendPasswordChangedEmailAsync(string toEmail, string userName,
         CancellationToken cancellationToken = default)
     {
-
         EmailMessage message = _templateService.CreatePasswordChangedEmail(toEmail, userName);
         await _emailQueue.EnqueueAsync(message, cancellationToken);
 

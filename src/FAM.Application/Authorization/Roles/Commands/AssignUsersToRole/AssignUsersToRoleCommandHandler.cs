@@ -39,10 +39,7 @@ public sealed class AssignUsersToRoleCommandHandler : IRequestHandler<AssignUser
         var existingUserIds = existingAssignments.Select(unr => unr.UserId).ToHashSet();
         var newUserIds = request.UserIds.Where(uid => !existingUserIds.Contains(uid)).ToList();
 
-        if (!newUserIds.Any())
-        {
-            return 0;
-        }
+        if (!newUserIds.Any()) return 0;
 
         foreach (var userId in newUserIds)
         {

@@ -13,7 +13,8 @@ public interface ITwoFactorSessionService
     /// <param name="expirationMinutes">Token expiration time in minutes</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Session token string</returns>
-    Task<string> CreateSessionAsync(long userId, int expirationMinutes = 10, CancellationToken cancellationToken = default);
+    Task<string> CreateSessionAsync(long userId, int expirationMinutes = 10,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Validate and extract user ID from 2FA session token

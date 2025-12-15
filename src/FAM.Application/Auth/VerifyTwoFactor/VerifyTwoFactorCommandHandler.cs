@@ -48,7 +48,8 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
         CancellationToken cancellationToken)
     {
         // Validate 2FA session token
-        var userId = await _twoFactorSessionService.ValidateAndGetUserIdAsync(request.TwoFactorSessionToken, cancellationToken);
+        var userId =
+            await _twoFactorSessionService.ValidateAndGetUserIdAsync(request.TwoFactorSessionToken, cancellationToken);
         if (userId == 0)
             throw new UnauthorizedAccessException("Invalid or expired two-factor session token");
 

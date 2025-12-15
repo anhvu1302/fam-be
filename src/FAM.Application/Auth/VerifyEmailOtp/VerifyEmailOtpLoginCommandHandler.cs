@@ -45,7 +45,6 @@ public class VerifyEmailOtpLoginCommandHandler
         VerifyEmailOtpLoginCommand request,
         CancellationToken cancellationToken)
     {
-
         // Find user to get their ID for OTP verification
         User? user = await _unitOfWork.Users.FindByEmailAsync(request.Email, cancellationToken);
         if (user == null)
@@ -120,7 +119,7 @@ public class VerifyEmailOtpLoginCommandHandler
     private async Task<string> GenerateTwoFactorSessionTokenAsync(long userId, CancellationToken cancellationToken)
     {
         // Use simple session token instead of JWT (no need for cryptographic signing for temporary tokens)
-        return await _twoFactorSessionService.CreateSessionAsync(userId, expirationMinutes: 10, cancellationToken);
+        return await _twoFactorSessionService.CreateSessionAsync(userId, 10, cancellationToken);
     }
 
     private static UserInfoDto MapToUserInfoDto(User user)

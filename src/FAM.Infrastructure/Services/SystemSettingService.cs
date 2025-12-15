@@ -196,7 +196,6 @@ public class SystemSettingService : ISystemSettingService
 
         await _repository.BulkUpdateAsync(request.Settings, modifiedBy, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
     }
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
@@ -206,7 +205,6 @@ public class SystemSettingService : ISystemSettingService
 
         _repository.Delete(setting);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-
     }
 
     public async Task<string?> GetValueAsync(string key, CancellationToken cancellationToken = default)

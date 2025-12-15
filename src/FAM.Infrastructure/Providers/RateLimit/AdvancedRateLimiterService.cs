@@ -30,7 +30,7 @@ public sealed class AdvancedRateLimiterService
         TimeSpan? window = null,
         CancellationToken cancellationToken = default)
     {
-        var actualWindow = window ?? TimeSpan.FromHours(1);
+        TimeSpan actualWindow = window ?? TimeSpan.FromHours(1);
         var key = $"user:{userId}";
 
         var allowed = await _store.TryAcquireAsync(
@@ -66,7 +66,7 @@ public sealed class AdvancedRateLimiterService
         TimeSpan? window = null,
         CancellationToken cancellationToken = default)
     {
-        var actualWindow = window ?? TimeSpan.FromHours(24);
+        TimeSpan actualWindow = window ?? TimeSpan.FromHours(24);
         var key = $"endpoint:{endpoint}:user:{userId}";
 
         var allowed = await _store.TryAcquireAsync(
@@ -96,12 +96,12 @@ public sealed class AdvancedRateLimiterService
     /// </summary>
     public async ValueTask<RateLimitResult> CheckSensitiveOperationAsync(
         string identifier, // IP or user ID
-        string operation,  // "login", "otp_verify", "password_reset", etc.
+        string operation, // "login", "otp_verify", "password_reset", etc.
         int permitLimit = 5,
         TimeSpan? window = null,
         CancellationToken cancellationToken = default)
     {
-        var actualWindow = window ?? TimeSpan.FromMinutes(15);
+        TimeSpan actualWindow = window ?? TimeSpan.FromMinutes(15);
         var key = $"sensitive:{operation}:{identifier}";
 
         var allowed = await _store.TryAcquireAsync(
@@ -138,7 +138,7 @@ public sealed class AdvancedRateLimiterService
         TimeSpan? window = null,
         CancellationToken cancellationToken = default)
     {
-        var actualWindow = window ?? TimeSpan.FromHours(1);
+        TimeSpan actualWindow = window ?? TimeSpan.FromHours(1);
         var baseKey = $"cumulative:{identifier}";
 
         var allowed = await _store.TryAcquireAsync(
@@ -234,19 +234,25 @@ public sealed class RateLimitResult
     public int RemainingRequests { get; init; }
     public int RetryAfterSeconds { get; init; }
 
-    public static RateLimitResult Allowed(int remaining) => new()
+    public static RateLimitResult Allowed(int remaining)
     {
-        IsAllowed = true,
-        RemainingRequests = remaining,
-        RetryAfterSeconds = 0
-    };
+        return new RateLimitResult
+        {
+            IsAllowed = true,
+            RemainingRequests = remaining,
+            RetryAfterSeconds = 0
+        };
+    }
 
-    public static RateLimitResult Exceeded(int retryAfterSeconds) => new()
+    public static RateLimitResult Exceeded(int retryAfterSeconds)
     {
-        IsAllowed = false,
-        RemainingRequests = 0,
-        RetryAfterSeconds = retryAfterSeconds
-    };
+        return new RateLimitResult
+        {
+            IsAllowed = false,
+            RemainingRequests = 0,
+            RetryAfterSeconds = retryAfterSeconds
+        };
+    }
 }
 
 /// <summary>
@@ -260,5 +266,5 @@ public sealed class RateLimitUsage
     public int RetryAfterSeconds { get; init; }
     public bool IsExceeded { get; init; }
 
-    public double UsagePercentage => TotalLimit > 0 ? (CurrentCount * 100.0) / TotalLimit : 0;
+    public double UsagePercentage => TotalLimit > 0 ? CurrentCount * 100.0 / TotalLimit : 0;
 }

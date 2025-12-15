@@ -29,8 +29,10 @@ public class DomainToMongoProfile : Profile
             .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
             .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
             .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => src.Avatar))
-            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber != null ? src.PhoneNumber.Value : null))
-            .ForMember(dest => dest.PhoneCountryCode, opt => opt.MapFrom(src => src.PhoneNumber != null ? src.PhoneNumber.CountryCode : null))
+            .ForMember(dest => dest.PhoneNumber,
+                opt => opt.MapFrom(src => src.PhoneNumber != null ? src.PhoneNumber.Value : null))
+            .ForMember(dest => dest.PhoneCountryCode,
+                opt => opt.MapFrom(src => src.PhoneNumber != null ? src.PhoneNumber.CountryCode : null))
             .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOfBirth))
             .ForMember(dest => dest.Bio, opt => opt.MapFrom(src => src.Bio))
             .ForMember(dest => dest.TwoFactorEnabled, opt => opt.MapFrom(src => src.TwoFactorEnabled))
@@ -38,9 +40,11 @@ public class DomainToMongoProfile : Profile
             .ForMember(dest => dest.TwoFactorBackupCodes, opt => opt.MapFrom(src => src.TwoFactorBackupCodes))
             .ForMember(dest => dest.TwoFactorSetupDate, opt => opt.MapFrom(src => src.TwoFactorSetupDate))
             .ForMember(dest => dest.PendingTwoFactorSecret, opt => opt.MapFrom(src => src.PendingTwoFactorSecret))
-            .ForMember(dest => dest.PendingTwoFactorSecretExpiresAt, opt => opt.MapFrom(src => src.PendingTwoFactorSecretExpiresAt))
+            .ForMember(dest => dest.PendingTwoFactorSecretExpiresAt,
+                opt => opt.MapFrom(src => src.PendingTwoFactorSecretExpiresAt))
             .ForMember(dest => dest.PasswordResetToken, opt => opt.MapFrom(src => src.PasswordResetToken))
-            .ForMember(dest => dest.PasswordResetTokenExpiresAt, opt => opt.MapFrom(src => src.PasswordResetTokenExpiresAt))
+            .ForMember(dest => dest.PasswordResetTokenExpiresAt,
+                opt => opt.MapFrom(src => src.PasswordResetTokenExpiresAt))
             .ForMember(dest => dest.PasswordChangedAt, opt => opt.MapFrom(src => src.PasswordChangedAt))
             .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
             .ForMember(dest => dest.IsEmailVerified, opt => opt.MapFrom(src => src.IsEmailVerified))
@@ -81,9 +85,11 @@ public class DomainToMongoProfile : Profile
             .ForMember(dest => dest.TwoFactorBackupCodes, opt => opt.MapFrom(src => src.TwoFactorBackupCodes))
             .ForMember(dest => dest.TwoFactorSetupDate, opt => opt.MapFrom(src => src.TwoFactorSetupDate))
             .ForMember(dest => dest.PendingTwoFactorSecret, opt => opt.MapFrom(src => src.PendingTwoFactorSecret))
-            .ForMember(dest => dest.PendingTwoFactorSecretExpiresAt, opt => opt.MapFrom(src => src.PendingTwoFactorSecretExpiresAt))
+            .ForMember(dest => dest.PendingTwoFactorSecretExpiresAt,
+                opt => opt.MapFrom(src => src.PendingTwoFactorSecretExpiresAt))
             .ForMember(dest => dest.PasswordResetToken, opt => opt.MapFrom(src => src.PasswordResetToken))
-            .ForMember(dest => dest.PasswordResetTokenExpiresAt, opt => opt.MapFrom(src => src.PasswordResetTokenExpiresAt))
+            .ForMember(dest => dest.PasswordResetTokenExpiresAt,
+                opt => opt.MapFrom(src => src.PasswordResetTokenExpiresAt))
             .ForMember(dest => dest.PasswordChangedAt, opt => opt.MapFrom(src => src.PasswordChangedAt))
             .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
             .ForMember(dest => dest.IsEmailVerified, opt => opt.MapFrom(src => src.IsEmailVerified))

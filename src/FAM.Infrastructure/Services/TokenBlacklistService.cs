@@ -49,7 +49,6 @@ public class TokenBlacklistService : ITokenBlacklistService
 
             // Store a simple marker - we just need to know it exists
             await _cache.SetStringAsync(cacheKey, "blacklisted", options, cancellationToken);
-
         }
         catch (Exception ex)
         {
@@ -90,7 +89,6 @@ public class TokenBlacklistService : ITokenBlacklistService
             };
 
             await _cache.SetStringAsync(cacheKey, DateTime.UtcNow.ToString("O"), options, cancellationToken);
-
         }
         catch (Exception ex)
         {

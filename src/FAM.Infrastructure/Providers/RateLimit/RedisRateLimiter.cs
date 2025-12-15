@@ -10,7 +10,7 @@ namespace FAM.Infrastructure.Providers.RateLimit;
 /// Redis-backed distributed rate limiter
 /// Ensures rate limiting works consistently across multiple server instances
 /// </summary>
-public sealed class RedisRateLimiter : System.Threading.RateLimiting.RateLimiter
+public sealed class RedisRateLimiter : RateLimiter
 {
     private readonly IRateLimiterStore _store;
     private readonly string _partitionKey;
@@ -50,20 +50,18 @@ public sealed class RedisRateLimiter : System.Threading.RateLimiting.RateLimiter
         return new RedisRateLimitLease(false, TimeSpan.Zero);
     }
 
-    protected override async ValueTask<RateLimitLease> AcquireAsyncCore(int permitCount, CancellationToken cancellationToken)
+    protected override async ValueTask<RateLimitLease> AcquireAsyncCore(int permitCount,
+        CancellationToken cancellationToken)
     {
         try
         {
             var success = await _store.TryAcquireAsync(_partitionKey, _permitLimit, _window, cancellationToken);
-            
-            if (success)
-            {
-                return new RedisRateLimitLease(true, TimeSpan.Zero);
-            }
+
+            if (success) return new RedisRateLimitLease(true, TimeSpan.Zero);
 
             // Calculate retry after
             var remaining = await _store.GetRemainingAsync(_partitionKey, _permitLimit, cancellationToken);
-            var retryAfter = remaining <= 0 ? _window : TimeSpan.FromSeconds(1);
+            TimeSpan retryAfter = remaining <= 0 ? _window : TimeSpan.FromSeconds(1);
 
             return new RedisRateLimitLease(false, retryAfter);
         }
@@ -98,7 +96,7 @@ public sealed class RedisRateLimiter : System.Threading.RateLimiting.RateLimiter
 
         public override bool IsAcquired => _isAcquired;
 
-        public override IEnumerable<string> MetadataNames => 
+        public override IEnumerable<string> MetadataNames =>
             _isAcquired ? Array.Empty<string>() : new[] { MetadataName.RetryAfter.Name };
 
         public override bool TryGetMetadata(string metadataName, out object? metadata)

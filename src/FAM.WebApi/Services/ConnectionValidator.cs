@@ -1,5 +1,3 @@
-using System.Net;
-
 using Minio;
 using Minio.DataModel.Result;
 
@@ -246,10 +244,10 @@ public class ConnectionValidator : IConnectionValidator
             throw new InvalidOperationException("Redis health check ping failed");
 
         // Test basic GET/SET operations to ensure Redis is functional
-        string testKey = $"_health_check_{Guid.NewGuid()}";
-        string testValue = DateTime.UtcNow.ToString("O");
-        
-        bool setResult = await db.StringSetAsync(testKey, testValue, TimeSpan.FromSeconds(10));
+        var testKey = $"_health_check_{Guid.NewGuid()}";
+        var testValue = DateTime.UtcNow.ToString("O");
+
+        var setResult = await db.StringSetAsync(testKey, testValue, TimeSpan.FromSeconds(10));
         if (!setResult)
             throw new InvalidOperationException("Redis health check: SET operation failed");
 

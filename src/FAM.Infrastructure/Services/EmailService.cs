@@ -52,7 +52,6 @@ public class EmailService : IEmailService
     public async Task SendOtpEmailAsync(string toEmail, string otpCode, string userName,
         CancellationToken cancellationToken = default)
     {
-
         // Get template from database
         EmailTemplate? template = await _unitOfWork.EmailTemplates.GetByCodeAsync("OTP_EMAIL", cancellationToken);
         if (template == null)
@@ -80,7 +79,6 @@ public class EmailService : IEmailService
     public async Task SendPasswordResetEmailAsync(string toEmail, string resetToken, string userName, string resetUrl,
         int expiryMinutes, CancellationToken cancellationToken = default)
     {
-
         // Get template from database
         EmailTemplate? template = await _unitOfWork.EmailTemplates.GetByCodeAsync("PASSWORD_RESET", cancellationToken);
         if (template == null)
@@ -112,7 +110,6 @@ public class EmailService : IEmailService
     public async Task SendPasswordChangedEmailAsync(string toEmail, string userName,
         CancellationToken cancellationToken = default)
     {
-
         // Get template from database
         EmailTemplate? template =
             await _unitOfWork.EmailTemplates.GetByCodeAsync("PASSWORD_CHANGED", cancellationToken);
@@ -172,7 +169,6 @@ public class EmailService : IEmailService
             mailMessage.To.Add(toEmail);
 
             await smtpClient.SendMailAsync(mailMessage, cancellationToken);
-
         }
         catch (Exception ex)
         {

@@ -1,4 +1,5 @@
 using FAM.Application.Auth.Services;
+
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 
@@ -23,18 +24,20 @@ public class TwoFactorSessionService : ITwoFactorSessionService
     /// <summary>
     /// Create a temporary 2FA session token
     /// </summary>
-    public async Task<string> CreateSessionAsync(long userId, int expirationMinutes = 10, CancellationToken cancellationToken = default)
+    public async Task<string> CreateSessionAsync(long userId, int expirationMinutes = 10,
+        CancellationToken cancellationToken = default)
     {
         // Generate a random session token (simpler than JWT for single-use tokens)
         var token = Guid.NewGuid().ToString("N");
         var cacheKey = $"{CacheKeyPrefix}{token}";
 
         // Store in cache with expiration
-        var cacheOptions = new MemoryCacheEntryOptions()
+        MemoryCacheEntryOptions cacheOptions = new MemoryCacheEntryOptions()
             .SetAbsoluteExpiration(TimeSpan.FromMinutes(expirationMinutes));
 
         _cache.Set(cacheKey, userId, cacheOptions);
-        _logger.LogInformation("Created 2FA session token for user {UserId} with {ExpirationMinutes} minute expiration", userId, expirationMinutes);
+        _logger.LogInformation("Created 2FA session token for user {UserId} with {ExpirationMinutes} minute expiration",
+            userId, expirationMinutes);
 
         return await Task.FromResult(token);
     }

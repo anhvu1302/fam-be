@@ -30,7 +30,8 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
 
         // Security: Verify the secret matches the pending secret (from Enable2FA)
         if (!user.IsPendingTwoFactorSecretValid(request.Secret))
-            throw new InvalidOperationException("Invalid or expired 2FA secret. Please generate a new one by calling Enable2FA.");
+            throw new InvalidOperationException(
+                "Invalid or expired 2FA secret. Please generate a new one by calling Enable2FA.");
 
         // Verify the TOTP code with the provided secret
         var secretBytes = Base32Encoding.ToBytes(request.Secret);
