@@ -75,6 +75,22 @@ public sealed class IPAddress : ValueObject
         return Value == "127.0.0.1" || Value == "::1";
     }
 
+    public bool IsLocalOrPrivate()
+    {
+        return IsLoopback() || IsPrivate() || IsIPv6LinkLocal();
+    }
+
+    private bool IsIPv6LinkLocal()
+    {
+        if (Type != IPAddressType.IPv6)
+            return false;
+
+        if (System.Net.IPAddress.TryParse(Value, out System.Net.IPAddress? parsed))
+            return parsed.IsIPv6LinkLocal;
+
+        return false;
+    }
+
     protected override IEnumerable<object?> GetEqualityComponents()
     {
         yield return Value;

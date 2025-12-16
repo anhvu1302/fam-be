@@ -4,6 +4,7 @@ using System.Text.Json;
 
 using FAM.Application.Abstractions;
 using FAM.Application.Common.Services;
+using FAM.Infrastructure.Services.Dtos;
 
 using Microsoft.Extensions.Logging;
 
@@ -195,13 +196,4 @@ public class OtpService : IOtpService
     }
 
     #endregion
-
-    private class OtpData
-    {
-        public string Code { get; set; } = string.Empty;
-        public long UserId { get; set; }
-        public string SessionTokenHash { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
-        public DateTime ExpiresAt { get; set; }
-    }
 }
