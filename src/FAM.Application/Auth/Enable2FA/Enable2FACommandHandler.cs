@@ -22,10 +22,10 @@ public sealed class Enable2FACommandHandler : IRequestHandler<Enable2FACommand, 
     {
         // Get user by ID
         User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND, "User not found");
+        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
 
         // Verify password
-        if (!user.Password.Verify(request.Password)) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD, "Invalid password");
+        if (!user.Password.Verify(request.Password)) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD);
 
         // Generate new secret key (32 bytes = 256 bits for enhanced security)
         var secretKey = KeyGeneration.GenerateRandomKey(32);

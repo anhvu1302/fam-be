@@ -29,7 +29,7 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
         // Verify current password
         var isCurrentPasswordValid = user.Password.Verify(request.CurrentPassword);
 
-        if (!isCurrentPasswordValid) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_OLD_PASSWORD, "Current password is incorrect");
+        if (!isCurrentPasswordValid) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_OLD_PASSWORD);
 
         // Validate new password (Password.Create will throw if invalid)
         var newPassword = Password.Create(request.NewPassword);

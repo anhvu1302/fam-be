@@ -12,7 +12,7 @@ public static class ErrorMessages
 
         [ErrorCodes.AUTH_INVALID_CREDENTIALS] = "Username or email not found",
         [ErrorCodes.AUTH_INVALID_PASSWORD] = "Invalid password",
-        [ErrorCodes.AUTH_ACCOUNT_LOCKED] = "Your account has been locked. Try again in {0} minutes",
+        [ErrorCodes.AUTH_ACCOUNT_LOCKED] = "Your account has been locked. Please try again later",
         [ErrorCodes.AUTH_ACCOUNT_INACTIVE] = "Your account is not active. Please contact support",
         [ErrorCodes.AUTH_EMAIL_NOT_VERIFIED] = "Please verify your email address before logging in",
         [ErrorCodes.AUTH_INVALID_TOKEN] = "The token is invalid or has expired",

@@ -35,14 +35,14 @@ public sealed class DisableTwoFactorWithBackupCommandHandler : IRequestHandler<D
         {
             _logger.LogWarning("Disable 2FA with backup code failed: User not found for username: {Username}",
                 request.Username);
-            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS, "Username or email not found");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS);
         }
 
         // Verify password
         if (!user.Password.Verify(request.Password))
         {
             _logger.LogWarning("Disable 2FA with backup code failed: Invalid password for user: {UserId}", user.Id);
-            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD, "Invalid password");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD);
         }
 
         // Check if 2FA is enabled
@@ -85,7 +85,7 @@ public sealed class DisableTwoFactorWithBackupCommandHandler : IRequestHandler<D
         if (!codeFound)
         {
             _logger.LogWarning("Invalid backup code provided for user: {UserId}", user.Id);
-            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_BACKUP_CODE, "Invalid backup code");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_BACKUP_CODE);
         }
 
         // Remove the used backup code

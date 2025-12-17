@@ -19,10 +19,10 @@ public sealed class Disable2FACommandHandler : IRequestHandler<Disable2FACommand
     {
         // Get user by ID
         User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND, "User not found");
+        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
 
         // Verify password
-        if (!user.Password.Verify(request.Password)) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD, "Invalid password");
+        if (!user.Password.Verify(request.Password)) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD);
 
         // Disable 2FA
         user.DisableTwoFactor();

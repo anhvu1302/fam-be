@@ -107,6 +107,10 @@ public class AuthController : BaseApiController
 
             return OkResponse(response, "Login successful");
         }
+        catch (UnauthorizedException ex)
+        {
+            return UnauthorizedResponse(ex.Message, ex.ErrorCode);
+        }
         catch (UnauthorizedAccessException ex)
         {
             return UnauthorizedResponse(ex.Message, "INVALID_CREDENTIALS");
@@ -151,6 +155,10 @@ public class AuthController : BaseApiController
             VerifyTwoFactorResponse response = await _mediator.Send(command);
             return OkResponse(response, "2FA verification successful");
         }
+        catch (UnauthorizedException ex)
+        {
+            return UnauthorizedResponse(ex.Message, ex.ErrorCode);
+        }
         catch (UnauthorizedAccessException ex)
         {
             return UnauthorizedResponse(ex.Message, "INVALID_2FA_CODE");
@@ -190,6 +198,10 @@ public class AuthController : BaseApiController
 
             LoginResponse response = await _mediator.Send(command);
             return OkResponse(response, "Token refreshed successfully");
+        }
+        catch (UnauthorizedException ex)
+        {
+            return UnauthorizedResponse(ex.Message, ex.ErrorCode);
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -307,6 +319,10 @@ public class AuthController : BaseApiController
             await _mediator.Send(command);
             return OkResponse("Password changed successfully");
         }
+        catch (UnauthorizedException ex)
+        {
+            return UnauthorizedResponse(ex.Message, ex.ErrorCode);
+        }
         catch (UnauthorizedAccessException ex)
         {
             return UnauthorizedResponse(ex.Message, "INVALID_PASSWORD");
@@ -364,6 +380,10 @@ public class AuthController : BaseApiController
 
             SelectAuthenticationMethodResponse response = await _mediator.Send(command);
             return OkResponse(response, "Authentication method selected successfully");
+        }
+        catch (UnauthorizedException ex)
+        {
+            return UnauthorizedResponse(ex.Message, ex.ErrorCode);
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -450,6 +470,10 @@ public class AuthController : BaseApiController
 
             VerifyTwoFactorResponse response = await _mediator.Send(command);
             return OkResponse(response, "Recovery code verification successful");
+        }
+        catch (UnauthorizedException ex)
+        {
+            return UnauthorizedResponse(ex.Message, ex.ErrorCode);
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -572,6 +596,10 @@ public class AuthController : BaseApiController
             Enable2FAResponse response = await _mediator.Send(command);
             return OkResponse(response);
         }
+        catch (UnauthorizedException ex)
+        {
+            return UnauthorizedResponse(ex.Message, ex.ErrorCode);
+        }
         catch (UnauthorizedAccessException ex)
         {
             return UnauthorizedResponse(ex.Message, "INVALID_PASSWORD");
@@ -644,6 +672,10 @@ public class AuthController : BaseApiController
 
             await _mediator.Send(command);
             return OkResponse("2FA disabled successfully");
+        }
+        catch (UnauthorizedException ex)
+        {
+            return UnauthorizedResponse(ex.Message, ex.ErrorCode);
         }
         catch (UnauthorizedAccessException ex)
         {

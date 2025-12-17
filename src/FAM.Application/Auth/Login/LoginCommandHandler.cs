@@ -48,17 +48,15 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         User? user = await _unitOfWork.Users.FindByIdentityAsync(request.Identity, cancellationToken);
 
         if (user == null)
-            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS, "Username or email not found");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS, ErrorMessages.GetMessage(ErrorCodes.AUTH_INVALID_CREDENTIALS));
 
         if (user.IsLockedOut())
         {
-            DateTime lockoutEnd = user.LockoutEnd!.Value;
-            var minutesRemaining = (int)(lockoutEnd - DateTime.UtcNow).TotalMinutes + 1;
-            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_LOCKED, $"Account is locked. Try again in {minutesRemaining} minutes");
+            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_LOCKED, ErrorMessages.GetMessage(ErrorCodes.AUTH_ACCOUNT_LOCKED));
         }
 
         if (!user.IsActive)
-            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE, "Account is inactive");
+            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE, ErrorMessages.GetMessage(ErrorCodes.AUTH_ACCOUNT_INACTIVE));
 
         var isPasswordValid = user.Password.Verify(request.Password);
 
@@ -68,7 +66,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             _unitOfWork.Users.Update(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD, "Invalid password");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD, ErrorMessages.GetMessage(ErrorCodes.AUTH_INVALID_PASSWORD));
         }
 
         if (!user.IsEmailVerified)

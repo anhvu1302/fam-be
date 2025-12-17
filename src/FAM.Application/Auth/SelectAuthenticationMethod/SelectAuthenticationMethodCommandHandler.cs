@@ -47,11 +47,11 @@ public class
         // Validate and extract userId từ 2FA session token
         var userId = await ValidateAndExtractUserIdAsync(request.TwoFactorSessionToken, cancellationToken);
         if (userId == 0)
-            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_TOKEN, "Invalid or expired 2FA session token");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_TOKEN);
 
         User? user = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken);
         if (user == null)
-            throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND, "User not found");
+            throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
 
         var response = new SelectAuthenticationMethodResponse();
 

@@ -31,19 +31,19 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
         UserDevice? device =
             await _unitOfWork.UserDevices.FindByRefreshTokenAsync(request.RefreshToken, cancellationToken);
 
-        if (device == null) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_REFRESH_TOKEN, "Invalid refresh token");
+        if (device == null) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_REFRESH_TOKEN);
 
-        if (!device.IsRefreshTokenValid()) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_REFRESH_TOKEN, "Refresh token has expired");
+        if (!device.IsRefreshTokenValid()) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_REFRESH_TOKEN);
 
-        if (!device.IsActive) throw new UnauthorizedException(ErrorCodes.AUTH_UNAUTHORIZED, "Device is inactive");
+        if (!device.IsActive) throw new UnauthorizedException(ErrorCodes.AUTH_UNAUTHORIZED);
 
         User? user = await _unitOfWork.Users.GetByIdAsync(device.UserId, cancellationToken);
 
-        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND, "User not found");
+        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
 
-        if (!user.IsActive) throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE, "Account is inactive");
+        if (!user.IsActive) throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE);
 
-        if (user.IsLockedOut()) throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_LOCKED, "Account is locked");
+        if (user.IsLockedOut()) throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_LOCKED);
 
         SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
         var roles = new List<string>(); // TODO: Load user roles from UserNodeRoles
