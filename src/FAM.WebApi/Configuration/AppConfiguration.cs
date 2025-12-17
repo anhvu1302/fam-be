@@ -183,19 +183,4 @@ public class AppConfiguration
         if (!valid.Contains(provider, StringComparer.OrdinalIgnoreCase))
             throw new InvalidOperationException($"DB_PROVIDER must be 'PostgreSQL' or 'MongoDB'. Got: '{provider}'");
     }
-
-    public void LogConfiguration(ILogger logger)
-    {
-        logger.LogInformation("=== FAM Configuration ===");
-        logger.LogInformation("Environment: {Env}", Environment);
-        logger.LogInformation("Database: {Provider} @ {Host}:{Port}/{Db}",
-            DatabaseProvider, DbHost, DbPort, DbName);
-        logger.LogInformation("MinIO: {Endpoint}, Bucket: {Bucket}, SSL: {Ssl}",
-            MinioEndpoint, MinioBucketName, MinioUseSsl);
-        logger.LogInformation("Redis: {Host}:{Port}, Instance: {Instance}",
-            RedisHost, RedisPort, RedisInstanceName);
-        logger.LogInformation("JWT: Issuer={Issuer}, AccessToken={Min}min, RefreshToken={Days}days",
-            JwtIssuer, AccessTokenExpirationMinutes, RefreshTokenExpirationDays);
-        logger.LogInformation("=========================");
-    }
 }

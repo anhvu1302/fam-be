@@ -9,7 +9,7 @@ public interface IConnectionValidator
 {
     /// <summary>
     /// Validates all external connections based on configured providers.
-    /// - Database: PostgreSQL or MongoDB (based on DB_PROVIDER)
+    /// - Database: PostgreSQL
     /// - Cache: Redis or InMemory (based on CACHE_PROVIDER)
     /// - Storage: MinIO
     /// </summary>

@@ -15,7 +15,6 @@
         <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.0"/>
         <PackageReference Include="Minio" Version="7.0.0"/>
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4"/>
-        <PackageReference Include="MongoDB.Driver" Version="3.5.2"/>
         <PackageReference Include="StackExchange.Redis" Version="2.10.1"/>
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.15.0"/>
         <PackageReference Include="System.Threading.RateLimiting" Version="8.0.0"/>

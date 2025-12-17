@@ -1,9 +1,6 @@
 using Minio;
 using Minio.DataModel.Result;
 
-using MongoDB.Bson;
-using MongoDB.Driver;
-
 using Npgsql;
 
 using StackExchange.Redis;
@@ -12,7 +9,7 @@ namespace FAM.WebApi.Services;
 
 /// <summary>
 /// Validates all external connections at application startup based on configured providers.
-/// Ensures Database (PostgreSQL/MongoDB), Cache (Redis/InMemory), and Storage (MinIO) are accessible.
+/// Ensures Database (PostgreSQL), Cache (Redis/InMemory), and Storage (MinIO) are accessible.
 /// </summary>
 public class ConnectionValidator : IConnectionValidator
 {
@@ -27,19 +24,16 @@ public class ConnectionValidator : IConnectionValidator
 
     public async Task ValidateAllAsync(CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Starting connection validation based on configured providers...");
-
         var errors = new List<string>();
 
-        // Get configured providers
-        var dbProvider = Environment.GetEnvironmentVariable("DB_PROVIDER") ?? "PostgreSQL";
+        // Get configured providers - DB_PROVIDER is REQUIRED
+        var dbProvider = Environment.GetEnvironmentVariable("DB_PROVIDER");
         var cacheProvider = Environment.GetEnvironmentVariable("CACHE_PROVIDER") ?? "Redis";
 
         // Validate Database based on provider
         try
         {
             await ValidateDatabaseAsync(dbProvider, cancellationToken);
-            _logger.LogInformation("✓ Database ({Provider}) connection validated", dbProvider);
         }
         catch (Exception ex)
         {
@@ -52,7 +46,6 @@ public class ConnectionValidator : IConnectionValidator
         try
         {
             await ValidateCacheAsync(cacheProvider, cancellationToken);
-            _logger.LogInformation("✓ Cache ({Provider}) connection validated", cacheProvider);
         }
         catch (Exception ex)
         {
@@ -65,7 +58,6 @@ public class ConnectionValidator : IConnectionValidator
         try
         {
             await ValidateMinioAsync(cancellationToken);
-            _logger.LogInformation("✓ Storage (MinIO) connection validated");
         }
         catch (Exception ex)
         {
@@ -87,21 +79,21 @@ public class ConnectionValidator : IConnectionValidator
     /// <summary>
     /// Validates database connection based on configured provider
     /// </summary>
-    private async Task ValidateDatabaseAsync(string provider, CancellationToken cancellationToken)
+    private async Task ValidateDatabaseAsync(string? provider, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrEmpty(provider))
+            throw new InvalidOperationException(
+                "DB_PROVIDER environment variable is required. Valid value: 'PostgreSQL'");
+
         switch (provider.ToLowerInvariant())
         {
             case "postgresql":
                 await ValidatePostgreSqlAsync(cancellationToken);
                 break;
 
-            case "mongodb":
-                await ValidateMongoDbAsync(cancellationToken);
-                break;
-
             default:
                 throw new InvalidOperationException(
-                    $"Invalid DB_PROVIDER: '{provider}'. Valid values are: 'PostgreSQL', 'MongoDB'");
+                    $"Invalid DB_PROVIDER: '{provider}'. Valid value: 'PostgreSQL'");
         }
     }
 
@@ -133,9 +125,6 @@ public class ConnectionValidator : IConnectionValidator
     /// </summary>
     private async Task ValidatePostgreSqlAsync(CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Validating PostgreSQL connection...");
-
-        // Build connection string from environment variables
         var host = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
         var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
         var username = Environment.GetEnvironmentVariable("DB_USER");
@@ -158,48 +147,6 @@ public class ConnectionValidator : IConnectionValidator
 
         if (version == null)
             throw new InvalidOperationException("PostgreSQL health check query failed");
-
-        _logger.LogDebug("PostgreSQL version: {Version}", version.ToString()?.Split('\n')[0]);
-    }
-
-    /// <summary>
-    /// Validates MongoDB database connection
-    /// </summary>
-    private async Task ValidateMongoDbAsync(CancellationToken cancellationToken)
-    {
-        _logger.LogDebug("Validating MongoDB connection...");
-
-        var host = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
-        var port = Environment.GetEnvironmentVariable("DB_PORT") ?? "27017";
-        var username = Environment.GetEnvironmentVariable("DB_USER");
-        var password = Environment.GetEnvironmentVariable("DB_PASSWORD");
-        var database = Environment.GetEnvironmentVariable("DB_NAME");
-
-        if (string.IsNullOrEmpty(database))
-            throw new InvalidOperationException("MongoDB environment variable DB_NAME is required");
-
-        // Build connection string
-        string connectionString;
-        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
-        {
-            var escapedUser = Uri.EscapeDataString(username);
-            var escapedPassword = Uri.EscapeDataString(password);
-            connectionString =
-                $"mongodb://{escapedUser}:{escapedPassword}@{host}:{port}/?connectTimeoutMS=5000&serverSelectionTimeoutMS=5000";
-        }
-        else
-        {
-            connectionString = $"mongodb://{host}:{port}/?connectTimeoutMS=5000&serverSelectionTimeoutMS=5000";
-        }
-
-        var client = new MongoClient(connectionString);
-        IMongoDatabase? db = client.GetDatabase(database);
-
-        // Ping to verify connection
-        var pingCommand = new BsonDocument("ping", 1);
-        await db.RunCommandAsync<BsonDocument>(pingCommand, cancellationToken: cancellationToken);
-
-        _logger.LogDebug("MongoDB connection successful to database: {Database}", database);
     }
 
     /// <summary>
@@ -207,8 +154,6 @@ public class ConnectionValidator : IConnectionValidator
     /// </summary>
     private async Task ValidateRedisAsync(CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Validating Redis connection...");
-
         var host = Environment.GetEnvironmentVariable("REDIS_HOST");
         var portStr = Environment.GetEnvironmentVariable("REDIS_PORT");
         var password = Environment.GetEnvironmentVariable("REDIS_PASSWORD");
@@ -257,8 +202,6 @@ public class ConnectionValidator : IConnectionValidator
 
         await db.KeyDeleteAsync(testKey);
 
-        _logger.LogDebug("Redis connection validated successfully. Ping: {Ping}ms", pingResult.TotalMilliseconds);
-
         await redis.CloseAsync();
     }
 
@@ -267,8 +210,6 @@ public class ConnectionValidator : IConnectionValidator
     /// </summary>
     private async Task ValidateMinioAsync(CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Validating MinIO connection...");
-
         var host = Environment.GetEnvironmentVariable("MINIO_HOST");
         var portStr = Environment.GetEnvironmentVariable("MINIO_PORT");
         var accessKey = Environment.GetEnvironmentVariable("MINIO_ACCESS_KEY");
@@ -301,7 +242,5 @@ public class ConnectionValidator : IConnectionValidator
 
         if (buckets == null)
             throw new InvalidOperationException("MinIO health check failed: cannot list buckets");
-
-        _logger.LogDebug("MinIO connection successful. Buckets found: {Count}", buckets.Buckets.Count);
     }
 }

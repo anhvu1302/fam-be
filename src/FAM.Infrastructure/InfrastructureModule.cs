@@ -6,7 +6,6 @@ using FAM.Infrastructure.Auth;
 using FAM.Infrastructure.Common.Mapping;
 using FAM.Infrastructure.Common.Options;
 using FAM.Infrastructure.Common.Seeding;
-using FAM.Infrastructure.Providers.MongoDB;
 using FAM.Infrastructure.Providers.PostgreSQL;
 using FAM.Infrastructure.Services;
 
@@ -23,66 +22,40 @@ public static class InfrastructureModule
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        // Get database provider from environment or default to PostgreSQL
-        var providerStr = Environment.GetEnvironmentVariable("DB_PROVIDER") ?? "PostgreSQL";
+        // Get database provider - REQUIRED, no default
+        var providerStr = Environment.GetEnvironmentVariable("DB_PROVIDER");
+        if (string.IsNullOrEmpty(providerStr))
+            throw new InvalidOperationException(
+                "DB_PROVIDER environment variable is required. Valid value: 'PostgreSQL'");
 
         // Validate provider
         if (!Enum.TryParse<DatabaseProvider>(providerStr, true, out DatabaseProvider provider))
             throw new InvalidOperationException(
-                $"Invalid DB_PROVIDER value: '{providerStr}'. Valid values are: 'PostgreSQL', 'MongoDB'");
+                $"Invalid DB_PROVIDER value: '{providerStr}'. Valid value: 'PostgreSQL'");
 
-        // Get shared database connection parameters
+        // Get database connection parameters
         var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
-        var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ??
-                     (provider == DatabaseProvider.MongoDB ? "27017" : "5432");
+        var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
         var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "fam_db";
         var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "";
         var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "";
 
-        // Build connection strings based on provider
-        var postgresConnection = "";
-        var mongoConnection = "";
-
+        // Build connection string based on provider
+        string connectionString;
         switch (provider)
         {
             case DatabaseProvider.PostgreSQL:
-                // Only build PostgreSQL connection string
-                postgresConnection =
-                    $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
+                connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
                 break;
 
-            case DatabaseProvider.MongoDB:
-                // Only build MongoDB connection string
-                // Format: mongodb://[username:password@]host[:port]/[database]
-                var escapedUser = !string.IsNullOrEmpty(dbUser) ? Uri.EscapeDataString(dbUser) : "";
-                var escapedPassword = !string.IsNullOrEmpty(dbPassword) ? Uri.EscapeDataString(dbPassword) : "";
-
-                if (!string.IsNullOrEmpty(escapedUser) && !string.IsNullOrEmpty(escapedPassword))
-                    mongoConnection = $"mongodb://{escapedUser}:{escapedPassword}@{dbHost}:{dbPort}";
-                else
-                    mongoConnection = $"mongodb://{dbHost}:{dbPort}";
-                break;
+            default:
+                throw new InvalidOperationException($"Unsupported database provider: {provider}");
         }
-
-        var databaseOptions = new DatabaseOptions
-        {
-            Provider = provider,
-            PostgreSql = new PostgreSqlOptions
-            {
-                ConnectionString = postgresConnection
-            },
-            MongoDb = new MongoDbOptions
-            {
-                ConnectionString = mongoConnection,
-                DatabaseName = dbName
-            }
-        };
 
         // Register AutoMapper with specific profiles (Domain <-> Persistence layer mappings)
         services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<DomainToEfProfile>();
-            cfg.AddProfile<DomainToMongoProfile>();
         });
 
         // Register Data Seeder Orchestrator
@@ -113,20 +86,8 @@ public static class InfrastructureModule
         // Register Signing Key Service
         services.AddScoped<ISigningKeyService, SigningKeyService>();
 
-        // Register only the selected database provider
-        switch (provider)
-        {
-            case DatabaseProvider.PostgreSQL:
-                services.AddPostgreSql(databaseOptions.PostgreSql);
-                break;
-
-            case DatabaseProvider.MongoDB:
-                services.AddMongoDb(databaseOptions.MongoDb);
-                break;
-
-            default:
-                throw new InvalidOperationException($"Unsupported database provider: {provider}");
-        }
+        // Register PostgreSQL database provider
+        services.AddPostgreSql(connectionString);
 
         return services;
     }

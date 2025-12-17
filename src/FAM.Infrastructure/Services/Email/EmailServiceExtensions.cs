@@ -85,7 +85,6 @@ public static class EmailServiceExtensions
             {
                 ICacheProvider cache = sp.GetRequiredService<ICacheProvider>();
                 ILogger<CacheEmailQueue> logger = sp.GetRequiredService<ILogger<CacheEmailQueue>>();
-                logger.LogInformation("Using cache-backed email queue");
                 return new CacheEmailQueue(cache, logger);
             }
             catch (Exception ex)

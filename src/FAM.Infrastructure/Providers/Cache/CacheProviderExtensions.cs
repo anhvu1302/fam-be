@@ -112,7 +112,6 @@ public static class CacheProviderExtensions
                 configOptions.Password = redisPassword;
 
             var connection = ConnectionMultiplexer.Connect(configOptions);
-            logger.LogInformation("Connected to Redis cache at {Host}:{Port}", redisHost, redisPort);
 
             return new RedisCacheProvider(connection, logger);
         }
@@ -149,7 +148,6 @@ public static class CacheProviderExtensions
                 configOptions.Password = password;
 
             var connection = ConnectionMultiplexer.Connect(configOptions);
-            logger.LogInformation("Connected to Redis cache at {Host}:{Port}", host, port);
 
             return new RedisCacheProvider(connection, logger);
         });

@@ -15,6 +15,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL;
 /// </summary>
 public static class ServiceCollectionExtensions
 {
+    public static IServiceCollection AddPostgreSql(this IServiceCollection services, string connectionString)
+    {
+        var options = new PostgreSqlOptions { ConnectionString = connectionString };
+        return AddPostgreSql(services, options);
+    }
+
     public static IServiceCollection AddPostgreSql(this IServiceCollection services, PostgreSqlOptions options)
     {
         // Register DbContext

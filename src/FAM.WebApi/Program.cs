@@ -392,9 +392,7 @@ builder.Services.Configure<MinioSettings>(options =>
 
 WebApplication app = builder.Build();
 
-// Log configuration on startup
 Log.Information("FAM Web API started in {Environment} environment", environment);
-appConfig.LogConfiguration(app.Services.GetRequiredService<ILogger<Program>>());
 
 // Validate all external connections before starting
 try
@@ -403,7 +401,6 @@ try
     using IServiceScope validatorScope = app.Services.CreateScope();
     IConnectionValidator validator = validatorScope.ServiceProvider.GetRequiredService<IConnectionValidator>();
     await validator.ValidateAllAsync();
-    Log.Information("✅ All connections validated successfully");
 }
 catch (Exception ex)
 {
