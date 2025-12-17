@@ -20,7 +20,8 @@ public class UnitOfWorkPostgreSql : IUnitOfWork
         IResourceRepository resourceRepository,
         IOrgNodeRepository orgNodeRepository,
         ISigningKeyRepository signingKeyRepository,
-        IEmailTemplateRepository emailTemplateRepository)
+        IEmailTemplateRepository emailTemplateRepository,
+        ISystemSettingRepository systemSettingRepository)
     {
         _context = context;
         Users = userRepository;
@@ -33,6 +34,7 @@ public class UnitOfWorkPostgreSql : IUnitOfWork
         OrgNodes = orgNodeRepository;
         SigningKeys = signingKeyRepository;
         EmailTemplates = emailTemplateRepository;
+        SystemSettings = systemSettingRepository;
     }
 
     // User repositories
@@ -52,6 +54,7 @@ public class UnitOfWorkPostgreSql : IUnitOfWork
     // System repositories
     public ISigningKeyRepository SigningKeys { get; }
     public IEmailTemplateRepository EmailTemplates { get; }
+    public ISystemSettingRepository SystemSettings { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

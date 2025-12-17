@@ -1,4 +1,4 @@
-namespace FAM.Application.Auth.Services;
+namespace FAM.Domain.Abstractions;
 
 /// <summary>
 /// Service for managing blacklisted JWT tokens

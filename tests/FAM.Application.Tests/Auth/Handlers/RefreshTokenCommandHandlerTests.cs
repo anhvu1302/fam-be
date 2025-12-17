@@ -1,5 +1,4 @@
 using FAM.Application.Auth.RefreshToken;
-using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;

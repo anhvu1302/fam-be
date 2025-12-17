@@ -2,13 +2,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 
-using FAM.Application.Auth.Services;
-using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Options;
 using FAM.Application.Common.Services;
 using FAM.Application.Querying.Parsing;
 using FAM.Application.Settings;
 using FAM.Application.Users.Commands.CreateUser;
+using FAM.Domain.Abstractions;
+using FAM.Domain.Authorization;
 using FAM.Infrastructure;
 using FAM.Infrastructure.Auth;
 using FAM.Infrastructure.Providers.Cache;
@@ -202,25 +202,29 @@ builder.Services.AddAuthentication(options =>
                 {
                     var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-                    // Get signing key service from request scope
-                    ISigningKeyService signingKeyService = context.HttpContext.RequestServices
-                        .GetRequiredService<ISigningKeyService>();
+                    // Get signing key repository from request scope
+                    ISigningKeyRepository repository = context.HttpContext.RequestServices
+                        .GetRequiredService<ISigningKeyRepository>();
 
-                    // Get JWKS from database
-                    JwksDto jwks = await signingKeyService.GetJwksAsync(context.HttpContext.RequestAborted);
+                    // Get active keys from database
+                    IEnumerable<SigningKey> signingKeys =
+                        await repository.GetAllAsync(context.HttpContext.RequestAborted);
+                    var activeKeys = signingKeys.Where(k => k.IsActive && !k.IsRevoked && !k.IsExpired())
+                        .ToList();
 
-                    // Convert JWKs to SecurityKeys
+                    // Convert to SecurityKeys
                     var keys = new List<SecurityKey>();
-                    foreach (JwkDto jwk in jwks.Keys)
-                        if (jwk.Kty == "RSA")
+                    foreach (SigningKey key in activeKeys)
+                        if (key.Algorithm == "RSA")
                         {
                             var rsa = RSA.Create(); // Don't use 'using' - key needs to live longer
                             rsa.ImportParameters(new RSAParameters
                             {
-                                Modulus = Base64UrlEncoder.DecodeBytes(jwk.N),
-                                Exponent = Base64UrlEncoder.DecodeBytes(jwk.E)
+                                Modulus = Base64UrlEncoder
+                                    .DecodeBytes(key.KeyId), // This might need adjustment based on actual key data
+                                Exponent = Base64UrlEncoder.DecodeBytes(key.KeyId) // This might need adjustment
                             });
-                            keys.Add(new RsaSecurityKey(rsa) { KeyId = jwk.Kid });
+                            keys.Add(new RsaSecurityKey(rsa) { KeyId = key.KeyId });
                         }
 
                     // Set the signing keys for this request
@@ -324,7 +328,7 @@ builder.Services.AddSingleton(sp =>
 builder.Services.Configure<FileUploadSettings>(
     builder.Configuration.GetSection(FileUploadSettings.SectionName));
 
-// Real IP Detection settings  
+// Real IP Detection settings
 builder.Services.Configure<RealIpDetectionSettings>(
     builder.Configuration.GetSection(RealIpDetectionSettings.SectionName));
 

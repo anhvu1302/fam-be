@@ -1,6 +1,5 @@
 using System.Reflection;
 
-using FAM.Application.Auth.Services;
 using FAM.Application.Users.Commands.DeleteSession;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;

@@ -180,7 +180,7 @@ public class RolesController : BaseApiController
     /// </remarks>
     /// <param name="id">Role ID to update</param>
     /// <param name="request">UpdateRoleRequest with role details to update</param>
-    /// <response code="200">Success - Returns {success: true, message: "Role updated successfully"}</response>
+    /// <response code="200">Success - Returns {success: true, result: RoleWithPermissionsDto, message: "Role updated successfully"}</response>
     /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Invalid role data", code: "INVALID_ROLE_DATA"}]}</response>
     /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
     /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Role with ID {id} not found", code: "ROLE_NOT_FOUND"}]}</response>

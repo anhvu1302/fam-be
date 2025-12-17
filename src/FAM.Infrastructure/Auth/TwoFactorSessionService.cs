@@ -1,5 +1,5 @@
 using FAM.Application.Abstractions;
-using FAM.Application.Auth.Services;
+using FAM.Domain.Abstractions;
 
 using Microsoft.Extensions.Logging;
 

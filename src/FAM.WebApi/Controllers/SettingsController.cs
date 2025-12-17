@@ -1,6 +1,15 @@
-using FAM.Application.Settings.DTOs;
-using FAM.Application.Settings.Services;
+using FAM.Application.Querying;
+using FAM.Application.Settings.Commands.CreateSystemSetting;
+using FAM.Application.Settings.Commands.DeleteSystemSetting;
+using FAM.Application.Settings.Commands.UpdateSystemSetting;
+using FAM.Application.Settings.Queries.GetPublicSettings;
+using FAM.Application.Settings.Queries.GetSystemSettingById;
+using FAM.Application.Settings.Queries.GetSystemSettings;
+using FAM.Application.Settings.Shared;
 using FAM.Domain.Common.Base;
+using FAM.WebApi.Contracts.Common;
+
+using MediatR;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,126 +23,48 @@ namespace FAM.WebApi.Controllers;
 [Route("api/settings")]
 public class SettingsController : BaseApiController
 {
-    private readonly ISystemSettingService _settingService;
+    private readonly IMediator _mediator;
     private readonly ILogger<SettingsController> _logger;
 
-    public SettingsController(ISystemSettingService settingService, ILogger<SettingsController> logger)
+    public SettingsController(IMediator mediator, ILogger<SettingsController> logger)
     {
-        _settingService = settingService;
+        _mediator = mediator;
         _logger = logger;
     }
 
     #region Public Endpoints
 
     /// <summary>
-    /// Get all public settings (for FE caching)
-    /// No pagination - returns all visible, non-sensitive settings
+    /// Get all public settings - returns all visible, non-sensitive settings
     /// </summary>
     [HttpGet("public")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(IEnumerable<PublicSettingResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<PublicSettingResponse>>> GetPublicSettings(
+    [ProducesResponseType(typeof(ApiSuccessResponse<List<PublicSettingDto>>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<PublicSettingDto>>> GetPublicSettings(
         CancellationToken cancellationToken = default)
     {
-        IEnumerable<PublicSettingResponse> settings = await _settingService.GetAllPublicAsync(cancellationToken);
+        var query = new GetPublicSettingsQuery();
+        List<PublicSettingDto> settings = await _mediator.Send(query, cancellationToken);
         return OkResponse(settings);
-    }
-
-    /// <summary>
-    /// Get all public settings grouped by category (for FE caching)
-    /// </summary>
-    [HttpGet("public/grouped")]
-    [AllowAnonymous]
-    [ProducesResponseType(typeof(IEnumerable<PublicSettingsGroupResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<PublicSettingsGroupResponse>>> GetPublicSettingsGrouped(
-        CancellationToken cancellationToken = default)
-    {
-        IEnumerable<PublicSettingsGroupResponse> settings =
-            await _settingService.GetPublicGroupedAsync(cancellationToken);
-        return OkResponse(settings);
-    }
-
-    /// <summary>
-    /// Get a specific public setting by key
-    /// </summary>
-    [HttpGet("public/{key}")]
-    [AllowAnonymous]
-    [ProducesResponseType(typeof(PublicSettingResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<PublicSettingResponse>> GetPublicSettingByKey(string key,
-        CancellationToken cancellationToken = default)
-    {
-        var value = await _settingService.GetValueAsync(key, cancellationToken);
-        if (value == null)
-        {
-            SystemSettingResponse? setting = await _settingService.GetByKeyAsync(key, cancellationToken);
-            if (setting == null)
-                throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", key);
-        }
-
-        SystemSettingResponse? result = await _settingService.GetByKeyAsync(key, cancellationToken);
-        return OkResponse(new PublicSettingResponse(
-            result!.Key,
-            result.IsSensitive ? null : result.EffectiveValue,
-            result.DataType,
-            result.Group));
     }
 
     #endregion
 
-    #region Admin Endpoints
+    #region Admin CRUD Endpoints
 
     /// <summary>
-    /// Get all settings (admin only)
-    /// No pagination - for admin caching
+    /// Get paginated list of settings (admin only)
     /// </summary>
     [HttpGet]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    [ProducesResponseType(typeof(IEnumerable<SystemSettingResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<SystemSettingResponse>>> GetAllSettings(
+    [ProducesResponseType(typeof(PageResult<SystemSettingDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PageResult<SystemSettingDto>>> GetSettings(
+        [FromQuery] QueryRequest queryRequest,
         CancellationToken cancellationToken = default)
     {
-        IEnumerable<SystemSettingResponse> settings = await _settingService.GetAllAsync(cancellationToken);
-        return OkResponse(settings);
-    }
-
-    /// <summary>
-    /// Get all settings grouped by category (admin only)
-    /// </summary>
-    [HttpGet("grouped")]
-    [Authorize(Roles = "Admin,SuperAdmin")]
-    [ProducesResponseType(typeof(IEnumerable<SettingsGroupResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<SettingsGroupResponse>>> GetSettingsGrouped(
-        CancellationToken cancellationToken = default)
-    {
-        IEnumerable<SettingsGroupResponse> settings = await _settingService.GetGroupedAsync(cancellationToken);
-        return OkResponse(settings);
-    }
-
-    /// <summary>
-    /// Get all setting groups
-    /// </summary>
-    [HttpGet("groups")]
-    [Authorize(Roles = "Admin,SuperAdmin")]
-    [ProducesResponseType(typeof(IEnumerable<string>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<string>>> GetGroups(CancellationToken cancellationToken = default)
-    {
-        IEnumerable<string> groups = await _settingService.GetGroupsAsync(cancellationToken);
-        return OkResponse(groups);
-    }
-
-    /// <summary>
-    /// Get settings by group
-    /// </summary>
-    [HttpGet("group/{group}")]
-    [Authorize(Roles = "Admin,SuperAdmin")]
-    [ProducesResponseType(typeof(IEnumerable<SystemSettingResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<SystemSettingResponse>>> GetSettingsByGroup(
-        string group,
-        CancellationToken cancellationToken = default)
-    {
-        IEnumerable<SystemSettingResponse> settings = await _settingService.GetByGroupAsync(group, cancellationToken);
-        return OkResponse(settings);
+        var query = new GetSystemSettingsQuery(queryRequest);
+        PageResult<SystemSettingDto> result = await _mediator.Send(query, cancellationToken);
+        return OkResponse(result);
     }
 
     /// <summary>
@@ -141,30 +72,15 @@ public class SettingsController : BaseApiController
     /// </summary>
     [HttpGet("{id:long}")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    [ProducesResponseType(typeof(SystemSettingResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(SystemSettingDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<SystemSettingResponse>> GetSettingById(long id,
+    public async Task<ActionResult<SystemSettingDto>> GetSettingById(long id,
         CancellationToken cancellationToken = default)
     {
-        SystemSettingResponse? setting = await _settingService.GetByIdAsync(id, cancellationToken);
+        var query = new GetSystemSettingByIdQuery(id);
+        SystemSettingDto? setting = await _mediator.Send(query, cancellationToken);
         if (setting == null)
             throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", id);
-        return OkResponse(setting);
-    }
-
-    /// <summary>
-    /// Get a specific setting by key
-    /// </summary>
-    [HttpGet("key/{key}")]
-    [Authorize(Roles = "Admin,SuperAdmin")]
-    [ProducesResponseType(typeof(SystemSettingResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<SystemSettingResponse>> GetSettingByKey(string key,
-        CancellationToken cancellationToken = default)
-    {
-        SystemSettingResponse? setting = await _settingService.GetByKeyAsync(key, cancellationToken);
-        if (setting == null)
-            throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", key);
         return OkResponse(setting);
     }
 
@@ -173,14 +89,14 @@ public class SettingsController : BaseApiController
     /// </summary>
     [HttpPost]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    [ProducesResponseType(typeof(SystemSettingResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(long), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<SystemSettingResponse>> CreateSetting(
-        [FromBody] CreateSystemSettingRequest request,
+    public async Task<ActionResult<long>> CreateSetting(
+        [FromBody] CreateSystemSettingCommand command,
         CancellationToken cancellationToken = default)
     {
-        SystemSettingResponse setting = await _settingService.CreateAsync(request, cancellationToken);
-        return CreatedAtAction(nameof(GetSettingById), new { id = setting.Id }, setting);
+        var id = await _mediator.Send(command, cancellationToken);
+        return CreatedAtAction(nameof(GetSettingById), new { id }, id);
     }
 
     /// <summary>
@@ -188,49 +104,16 @@ public class SettingsController : BaseApiController
     /// </summary>
     [HttpPut("{id:long}")]
     [Authorize(Roles = "Admin,SuperAdmin")]
-    [ProducesResponseType(typeof(SystemSettingResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<SystemSettingResponse>> UpdateSetting(
-        long id,
-        [FromBody] UpdateSystemSettingRequest request,
-        CancellationToken cancellationToken = default)
-    {
-        SystemSettingResponse setting = await _settingService.UpdateAsync(id, request, cancellationToken);
-        return OkResponse(setting);
-    }
-
-    /// <summary>
-    /// Update setting value by key
-    /// </summary>
-    [HttpPatch("key/{key}/value")]
-    [Authorize(Roles = "Admin,SuperAdmin")]
-    [ProducesResponseType(typeof(SystemSettingResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<SystemSettingResponse>> UpdateSettingValue(
-        string key,
-        [FromBody] UpdateSettingValueRequest request,
-        CancellationToken cancellationToken = default)
-    {
-        var userId = GetCurrentUserId();
-        SystemSettingResponse setting = await _settingService.UpdateValueAsync(key, request, userId, cancellationToken);
-        return OkResponse(setting);
-    }
-
-    /// <summary>
-    /// Bulk update settings
-    /// </summary>
-    [HttpPatch("bulk")]
-    [Authorize(Roles = "Admin,SuperAdmin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> BulkUpdateSettings(
-        [FromBody] BulkUpdateSettingsRequest request,
+    public async Task<IActionResult> UpdateSetting(
+        long id,
+        [FromBody] UpdateSystemSettingCommand command,
         CancellationToken cancellationToken = default)
     {
-        var userId = GetCurrentUserId();
-        await _settingService.BulkUpdateAsync(request, userId, cancellationToken);
+        UpdateSystemSettingCommand updateCommand = command with { Id = id };
+        await _mediator.Send(updateCommand, cancellationToken);
         return NoContent();
     }
 
@@ -243,7 +126,8 @@ public class SettingsController : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteSetting(long id, CancellationToken cancellationToken = default)
     {
-        await _settingService.DeleteAsync(id, cancellationToken);
+        var command = new DeleteSystemSettingCommand(id);
+        await _mediator.Send(command, cancellationToken);
         return NoContent();
     }
 

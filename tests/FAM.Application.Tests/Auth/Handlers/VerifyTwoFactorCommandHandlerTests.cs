@@ -1,4 +1,3 @@
-using FAM.Application.Auth.Services;
 using FAM.Application.Auth.Shared;
 using FAM.Application.Auth.VerifyTwoFactor;
 using FAM.Domain.Abstractions;
@@ -192,6 +191,9 @@ public class VerifyTwoFactorCommandHandlerTests
 
         var mockSigningKey = SigningKey.Create("test-kid", "test-public-key", "test-private-key", "RS256");
 
+        _mockTwoFactorSessionService
+            .Setup(x => x.ValidateAndGetUserIdAsync(twoFactorSessionToken, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user.Id);
         _mockJwtService.Setup(x => x.GetUserIdFromToken(twoFactorSessionToken)).Returns(user.Id);
         _mockUserRepository.Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>())).ReturnsAsync(user);
 
@@ -254,6 +256,9 @@ public class VerifyTwoFactorCommandHandlerTests
 
         var mockSigningKey = SigningKey.Create("test-kid", "test-public-key", "test-private-key", "RS256");
 
+        _mockTwoFactorSessionService
+            .Setup(x => x.ValidateAndGetUserIdAsync(twoFactorSessionToken, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user.Id);
         _mockJwtService.Setup(x => x.GetUserIdFromToken(twoFactorSessionToken)).Returns(user.Id);
         _mockUserRepository.Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>())).ReturnsAsync(user);
 

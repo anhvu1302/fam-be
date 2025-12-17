@@ -1,5 +1,4 @@
 using FAM.Application.Auth.Logout;
-using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;

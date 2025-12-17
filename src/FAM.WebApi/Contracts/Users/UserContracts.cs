@@ -1,3 +1,6 @@
+using FAM.Application.Users.Commands.CreateUser;
+using FAM.Application.Users.Commands.UpdateUser;
+
 namespace FAM.WebApi.Contracts.Users;
 
 /// <summary>
@@ -35,3 +38,50 @@ public sealed record UpdateUserRequest(
 public sealed record UpdateAvatarRequest(
     string UploadId
 );
+
+#region Mapper Extension Methods
+
+/// <summary>
+/// Extension methods for mapping User requests to commands/queries
+/// </summary>
+public static class UserContractMappers
+{
+    /// <summary>
+    /// Convert CreateUserRequest to CreateUserCommand
+    /// </summary>
+    public static CreateUserCommand ToCommand(this CreateUserRequest request)
+    {
+        return new CreateUserCommand(
+            request.Username,
+            request.Email,
+            request.Password,
+            request.FirstName,
+            request.LastName,
+            request.PhoneNumber
+        );
+    }
+
+    /// <summary>
+    /// Convert UpdateUserRequest to UpdateUserCommand
+    /// </summary>
+    public static UpdateUserCommand ToCommand(this UpdateUserRequest request, long id)
+    {
+        return new UpdateUserCommand(
+            id,
+            request.Username,
+            request.Email,
+            null, // Password should be updated separately with proper verification
+            request.FirstName,
+            request.LastName,
+            request.PhoneNumber,
+            request.Bio,
+            request.DateOfBirth,
+            request.PreferredLanguage,
+            request.TimeZone,
+            request.ReceiveNotifications,
+            request.ReceiveMarketingEmails
+        );
+    }
+}
+
+#endregion

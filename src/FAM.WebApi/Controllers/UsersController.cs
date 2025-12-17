@@ -7,12 +7,13 @@ using FAM.Application.Users.Commands;
 using FAM.Application.Users.Commands.CreateUser;
 using FAM.Application.Users.Commands.DeleteUser;
 using FAM.Application.Users.Commands.UpdateUser;
+using FAM.Application.Users.Queries.GetUserById;
+using FAM.Application.Users.Queries.GetUsers;
 using FAM.Application.Users.Shared;
 using FAM.Domain.Common.Base;
 using FAM.WebApi.Contracts.Authorization;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.Users;
-using FAM.WebApi.Mappers;
 
 using MediatR;
 
@@ -53,7 +54,7 @@ public class UsersController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUsers([FromQuery] PaginationQueryParameters parameters)
     {
-        var query = parameters.ToGetUsersQuery(_pagination);
+        var query = new GetUsersQuery(parameters.ToQueryRequest());
         PageResult<UserDto> result = await _mediator.Send(query);
 
         // Apply field selection if requested
@@ -83,7 +84,7 @@ public class UsersController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUserById(long id, [FromQuery] string? include = null)
     {
-        var query = id.ToGetUserByIdQuery(include);
+        var query = new GetUserByIdQuery(id, include);
         UserDto? result = await _mediator.Send(query);
 
         if (result == null)
@@ -204,10 +205,18 @@ public class UsersController : BaseApiController
     /// Update user avatar using upload session pattern
     /// Step 2 after client has uploaded file to presigned URL
     /// </summary>
+    /// <remarks>
+    /// Updates user avatar after file has been uploaded to presigned URL. Completes the two-step upload process.
+    /// </remarks>
+    /// <param name="id">User ID</param>
+    /// <param name="request">UpdateAvatarRequest with uploadId from InitUploadSession</param>
+    /// <response code="200">Success - Returns {success: true, result: UpdateAvatarResponse}</response>
+    /// <response code="400">Bad request - Returns {success: false, errors: [{message: string, code: string}]}</response>
+    /// <response code="404">User not found - Returns {success: false, errors: [{message: string, code: string}]}</response>
     [HttpPut("{id:long}/avatar")]
-    [ProducesResponseType(typeof(UpdateAvatarResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<UpdateAvatarResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAvatar(long id, [FromBody] UpdateAvatarRequest request)
     {
         var command = new UpdateAvatarCommand
@@ -225,12 +234,21 @@ public class UsersController : BaseApiController
     /// Uploads file to storage, then updates user avatar atomically
     /// If DB update fails, uploaded file is automatically cleaned up
     /// </summary>
+    /// <remarks>
+    /// Single-step avatar upload. File is uploaded directly to storage and user record is updated in one atomic transaction.
+    /// Maximum file size: 10 MB
+    /// </remarks>
+    /// <param name="id">User ID</param>
+    /// <param name="file">Image file (jpg, png, gif, webp)</param>
+    /// <response code="200">Success - Returns {success: true, result: UploadAvatarDirectResponse}</response>
+    /// <response code="400">Bad request - Returns {success: false, errors: [{message: string, code: string}]}</response>
+    /// <response code="404">User not found - Returns {success: false, errors: [{message: string, code: string}]}</response>
     [HttpPost("{id:long}/avatar/upload")]
     [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB max for avatars
     [RequestFormLimits(MultipartBodyLengthLimit = 10 * 1024 * 1024)]
-    [ProducesResponseType(typeof(UploadAvatarDirectResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<UploadAvatarDirectResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UploadAvatarDirect(long id, IFormFile file)
     {
         if (file == null || file.Length == 0)
@@ -253,10 +271,18 @@ public class UsersController : BaseApiController
     /// Replace all roles for a user at a node (Batch Replace)
     /// Used when editing a user and selecting roles
     /// </summary>
+    /// <remarks>
+    /// Replaces all roles for a user at a specific node. This is a batch operation that removes all existing roles and assigns new ones atomically.
+    /// </remarks>
+    /// <param name="id">User ID</param>
+    /// <param name="request">ReplaceUserRolesRequest with nodeId and roleIds</param>
+    /// <response code="200">Success - Returns {success: true, result: {message: "Successfully updated roles for user {id}"}}</response>
+    /// <response code="400">Bad request - Returns {success: false, errors: [{message: string, code: string}]}</response>
+    /// <response code="404">User not found - Returns {success: false, errors: [{message: string, code: string}]}</response>
     [HttpPut("{id:long}/roles")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<dynamic>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> ReplaceUserRoles(long id, [FromBody] ReplaceUserRolesRequest request)
     {
         var currentUserId = GetCurrentUserId();

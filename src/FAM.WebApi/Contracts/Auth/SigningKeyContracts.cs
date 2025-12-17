@@ -1,4 +1,8 @@
-namespace FAM.Application.Auth.Shared;
+using FAM.Domain.Authorization;
+
+namespace FAM.WebApi.Contracts.Auth;
+
+#region Response Records
 
 /// <summary>
 /// JSON Web Key representation
@@ -37,17 +41,6 @@ public class JwkDto
 }
 
 /// <summary>
-/// JSON Web Key Set
-/// </summary>
-public class JwksDto
-{
-    /// <summary>
-    /// Array of JWK keys
-    /// </summary>
-    public List<JwkDto> Keys { get; set; } = new();
-}
-
-/// <summary>
 /// Response for signing key details (admin)
 /// </summary>
 public class SigningKeyResponse
@@ -68,6 +61,10 @@ public class SigningKeyResponse
     public bool CanSign { get; set; }
     public bool CanVerify { get; set; }
 }
+
+#endregion
+
+#region Request Records
 
 /// <summary>
 /// Request to generate a new signing key
@@ -101,6 +98,42 @@ public class GenerateSigningKeyRequest
 }
 
 /// <summary>
+/// Request to rotate signing keys
+/// </summary>
+public class RotateKeyRequest
+{
+    /// <summary>
+    /// Algorithm (RS256, RS384, RS512)
+    /// </summary>
+    public string Algorithm { get; set; } = "RS256";
+
+    /// <summary>
+    /// Key size in bits (2048, 3072, 4096)
+    /// </summary>
+    public int KeySize { get; set; } = 2048;
+
+    /// <summary>
+    /// When the key expires (optional)
+    /// </summary>
+    public DateTime? ExpiresAt { get; set; }
+
+    /// <summary>
+    /// Description/notes
+    /// </summary>
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Revoke all old keys
+    /// </summary>
+    public bool RevokeOldKey { get; set; } = true;
+
+    /// <summary>
+    /// Reason for revocation
+    /// </summary>
+    public string? RevocationReason { get; set; }
+}
+
+/// <summary>
 /// Request to revoke a signing key
 /// </summary>
 public class RevokeSigningKeyRequest
@@ -111,38 +144,47 @@ public class RevokeSigningKeyRequest
     public string? Reason { get; set; }
 }
 
+#endregion
+
+#region Mapper Extension Methods
+
 /// <summary>
-/// Request to rotate keys (generate new and deactivate old)
+/// Extension methods for mapping SigningKey domain entities to contracts
 /// </summary>
-public class RotateKeyRequest
+public static class SigningKeyContractMappers
 {
     /// <summary>
-    /// Algorithm for new key
+    /// Convert SigningKey entity to SigningKeyResponse contract
     /// </summary>
-    public string Algorithm { get; set; } = "RS256";
+    public static SigningKeyResponse ToSigningKeyResponse(this SigningKey key)
+    {
+        return new SigningKeyResponse
+        {
+            Id = key.Id,
+            KeyId = key.KeyId,
+            Algorithm = key.Algorithm,
+            KeySize = key.KeySize,
+            IsActive = key.IsActive,
+            IsRevoked = key.IsRevoked,
+            RevokedAt = key.RevokedAt,
+            RevocationReason = key.RevocationReason,
+            ExpiresAt = key.ExpiresAt,
+            LastUsedAt = key.LastUsedAt,
+            Description = key.Description,
+            CreatedAt = key.CreatedAt,
+            IsExpired = key.IsExpired(),
+            CanSign = !key.IsRevoked && !key.IsExpired() && key.IsActive,
+            CanVerify = !key.IsRevoked && !key.IsExpired()
+        };
+    }
 
     /// <summary>
-    /// Key size for new key
+    /// Convert collection of SigningKey entities to SigningKeyResponse contracts
     /// </summary>
-    public int KeySize { get; set; } = 2048;
-
-    /// <summary>
-    /// Expiry for new key
-    /// </summary>
-    public DateTime? ExpiresAt { get; set; }
-
-    /// <summary>
-    /// Description for new key
-    /// </summary>
-    public string? Description { get; set; }
-
-    /// <summary>
-    /// Whether to revoke the old key (vs just deactivate)
-    /// </summary>
-    public bool RevokeOldKey { get; set; } = false;
-
-    /// <summary>
-    /// Reason for revoking old key
-    /// </summary>
-    public string? RevocationReason { get; set; }
+    public static IEnumerable<SigningKeyResponse> ToSigningKeyResponses(this IEnumerable<SigningKey> keys)
+    {
+        return keys.Select(k => k.ToSigningKeyResponse());
+    }
 }
+
+#endregion

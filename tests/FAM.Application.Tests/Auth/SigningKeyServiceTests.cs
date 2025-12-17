@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Security.Cryptography;
 
-using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
@@ -38,76 +37,6 @@ public class SigningKeyServiceTests
             _mockUnitOfWork.Object,
             _mockLogger.Object);
     }
-
-    #region GetJwksAsync Tests
-
-    [Fact]
-    public async Task GetJwksAsync_WithActiveKeys_ShouldReturnJwks()
-    {
-        // Arrange
-        var keys = new List<SigningKey>
-        {
-            CreateTestSigningKey("key1"),
-            CreateTestSigningKey("key2")
-        };
-
-        _mockRepository
-            .Setup(r => r.GetAllActiveKeysAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(keys);
-
-        // Act
-        JwksDto result = await _service.GetJwksAsync();
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Keys.Should().HaveCount(2);
-        result.Keys.Should().AllSatisfy(k =>
-        {
-            k.Kty.Should().Be("RSA");
-            k.Use.Should().Be("sig");
-            k.Alg.Should().Be("RS256");
-            k.N.Should().NotBeNullOrEmpty();
-            k.E.Should().NotBeNullOrEmpty();
-        });
-    }
-
-    [Fact]
-    public async Task GetJwksAsync_WithNoActiveKeys_ShouldReturnEmptyJwks()
-    {
-        // Arrange
-        _mockRepository
-            .Setup(r => r.GetAllActiveKeysAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<SigningKey>());
-
-        // Act
-        JwksDto result = await _service.GetJwksAsync();
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Keys.Should().BeEmpty();
-    }
-
-    [Fact]
-    public async Task GetJwksAsync_WithRevokedKey_ShouldExcludeRevokedKey()
-    {
-        // Arrange
-        SigningKey activeKey = CreateTestSigningKey("active_key");
-        SigningKey revokedKey = CreateTestSigningKey("revoked_key");
-        revokedKey.Revoke("Test");
-
-        _mockRepository
-            .Setup(r => r.GetAllActiveKeysAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<SigningKey> { activeKey, revokedKey });
-
-        // Act
-        JwksDto result = await _service.GetJwksAsync();
-
-        // Assert
-        result.Keys.Should().HaveCount(1);
-        result.Keys[0].Kid.Should().Be("active_key");
-    }
-
-    #endregion
 
     #region GetOrCreateActiveKeyAsync Tests
 
@@ -515,7 +444,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync(keys);
 
         // Act
-        IReadOnlyList<SigningKeyResponse> result = await _service.GetAllKeysAsync();
+        IReadOnlyList<SigningKey> result = await _service.GetAllKeysAsync();
 
         // Assert
         result.Should().HaveCount(3);
@@ -542,7 +471,7 @@ public class SigningKeyServiceTests
             .ReturnsAsync(new List<SigningKey> { expiringKey });
 
         // Act
-        IReadOnlyList<SigningKeyResponse> result = await _service.GetExpiringKeysAsync(TimeSpan.FromDays(7));
+        IReadOnlyList<SigningKey> result = await _service.GetExpiringKeysAsync(TimeSpan.FromDays(7));
 
         // Assert
         result.Should().HaveCount(1);

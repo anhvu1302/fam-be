@@ -21,7 +21,7 @@ public class UnitOfWorkMongo : IUnitOfWork
         UserDevices = userDeviceRepository;
         SigningKeys = signingKeyRepository;
 
-        // MongoDB not used for authorization/email templates - these are null/not implemented
+        // MongoDB not used for authorization/email templates/system settings - these are null/not implemented
         Roles = null!;
         Permissions = null!;
         RolePermissions = null!;
@@ -29,6 +29,7 @@ public class UnitOfWorkMongo : IUnitOfWork
         Resources = null!;
         OrgNodes = null!;
         EmailTemplates = null!;
+        SystemSettings = null!;
     }
 
     public IUserRepository Users { get; }
@@ -47,6 +48,9 @@ public class UnitOfWorkMongo : IUnitOfWork
 
     // Email repositories - not implemented for MongoDB
     public IEmailTemplateRepository EmailTemplates { get; }
+
+    // System Settings - not implemented for MongoDB
+    public ISystemSettingRepository SystemSettings { get; }
 
     public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

@@ -1,4 +1,3 @@
-using FAM.Application.Auth.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Users.Entities;

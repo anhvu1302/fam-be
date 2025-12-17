@@ -1,13 +1,10 @@
 using System.Security.Cryptography;
 
-using FAM.Application.Auth.Services;
-using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
 
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 
 namespace FAM.Infrastructure.Auth;
 
@@ -28,25 +25,6 @@ public class SigningKeyService : ISigningKeyService
         _repository = repository;
         _unitOfWork = unitOfWork;
         _logger = logger;
-    }
-
-    public async Task<JwksDto> GetJwksAsync(CancellationToken cancellationToken = default)
-    {
-        IReadOnlyList<SigningKey> keys = await _repository.GetAllActiveKeysAsync(cancellationToken);
-        var jwks = new JwksDto();
-
-        foreach (SigningKey key in keys.Where(k => k.CanVerify()))
-            try
-            {
-                JwkDto jwk = ConvertToJwk(key);
-                jwks.Keys.Add(jwk);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to convert key {KeyId} to JWK", key.KeyId);
-            }
-
-        return jwks;
     }
 
     public async Task<SigningKey> GetOrCreateActiveKeyAsync(CancellationToken cancellationToken = default)
@@ -186,16 +164,15 @@ public class SigningKeyService : ISigningKeyService
         return newKey;
     }
 
-    public async Task<IReadOnlyList<SigningKeyResponse>> GetAllKeysAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<SigningKey>> GetAllKeysAsync(CancellationToken cancellationToken = default)
     {
         IEnumerable<SigningKey> keys = await _repository.GetAllAsync(cancellationToken);
-        return keys.Select(MapToResponse).ToList();
+        return keys.ToList();
     }
 
-    public async Task<SigningKeyResponse?> GetKeyByIdAsync(long id, CancellationToken cancellationToken = default)
+    public async Task<SigningKey?> GetKeyByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        SigningKey? key = await _repository.GetByIdAsync(id, cancellationToken);
-        return key != null ? MapToResponse(key) : null;
+        return await _repository.GetByIdAsync(id, cancellationToken);
     }
 
     public async Task<SigningKey?> GetKeyByKeyIdAsync(string keyId, CancellationToken cancellationToken = default)
@@ -214,13 +191,11 @@ public class SigningKeyService : ISigningKeyService
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<SigningKeyResponse>> GetExpiringKeysAsync(
+    public async Task<IReadOnlyList<SigningKey>> GetExpiringKeysAsync(
         TimeSpan withinTimeSpan,
         CancellationToken cancellationToken = default)
     {
-        IReadOnlyList<SigningKey>
-            keys = await _repository.GetKeysExpiringWithinAsync(withinTimeSpan, cancellationToken);
-        return keys.Select(MapToResponse).ToList();
+        return await _repository.GetKeysExpiringWithinAsync(withinTimeSpan, cancellationToken);
     }
 
     #region Helper Methods
@@ -233,45 +208,6 @@ public class SigningKeyService : ISigningKeyService
         RandomNumberGenerator.Fill(randomBytes);
         var randomPart = Convert.ToHexString(randomBytes).ToLowerInvariant();
         return $"key_{timestamp}_{randomPart}";
-    }
-
-    private static JwkDto ConvertToJwk(SigningKey key)
-    {
-        using var rsa = RSA.Create();
-        rsa.ImportFromPem(key.PublicKey);
-        RSAParameters parameters = rsa.ExportParameters(false);
-
-        return new JwkDto
-        {
-            Kty = "RSA",
-            Use = "sig",
-            Kid = key.KeyId,
-            Alg = key.Algorithm,
-            N = Base64UrlEncoder.Encode(parameters.Modulus!),
-            E = Base64UrlEncoder.Encode(parameters.Exponent!)
-        };
-    }
-
-    private static SigningKeyResponse MapToResponse(SigningKey key)
-    {
-        return new SigningKeyResponse
-        {
-            Id = key.Id,
-            KeyId = key.KeyId,
-            Algorithm = key.Algorithm,
-            KeySize = key.KeySize,
-            IsActive = key.IsActive,
-            IsRevoked = key.IsRevoked,
-            RevokedAt = key.RevokedAt,
-            RevocationReason = key.RevocationReason,
-            ExpiresAt = key.ExpiresAt,
-            LastUsedAt = key.LastUsedAt,
-            Description = key.Description,
-            CreatedAt = key.CreatedAt,
-            IsExpired = key.IsExpired(),
-            CanSign = key.CanSign(),
-            CanVerify = key.CanVerify()
-        };
     }
 
     #endregion

@@ -1,4 +1,4 @@
-namespace FAM.Application.Auth.Services;
+namespace FAM.Domain.Abstractions;
 
 /// <summary>
 /// Service for JWT token operations using RSA asymmetric signing

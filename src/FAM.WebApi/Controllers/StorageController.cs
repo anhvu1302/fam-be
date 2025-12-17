@@ -373,7 +373,7 @@ public class StorageController : BaseApiController
     /// Example: POST /api/storage/multipart/abort
     /// </remarks>
     /// <param name="request">CompleteMultipartUploadRequest with uploadId and fileName</param>
-    /// <response code="200">Success - Returns {success: true, message: "Upload aborted successfully"}</response>
+    /// <response code="200">Success - Returns {success: true, message: "Upload aborted successfully", result: object}</response>
     /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Unable to determine file type from file name", code: "FILE_TYPE_DETECTION_FAILED"}]}</response>
     /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
     /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "An error occurred while aborting the upload", code: "MULTIPART_ABORT_ERROR"}]}</response>

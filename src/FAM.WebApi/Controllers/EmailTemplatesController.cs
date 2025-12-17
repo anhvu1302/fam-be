@@ -253,7 +253,7 @@ public class EmailTemplatesController : BaseApiController
     /// </remarks>
     /// <param name="id">Email template ID to update</param>
     /// <param name="request">UpdateEmailTemplateRequest with template details to update</param>
-    /// <response code="200">Success - Returns {success: true, message: "Email template updated successfully"}</response>
+    /// <response code="200">Success - Returns {success: true, result: EmailTemplateResponse, message: "Email template updated successfully"}</response>
     /// <response code="400">Bad Request - Returns {success: false, errors: [{message: "Invalid template data", code: "INVALID_TEMPLATE_DATA"}]}</response>
     /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
     /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Email template with ID {id} not found", code: "TEMPLATE_NOT_FOUND"}]}</response>
@@ -326,7 +326,7 @@ public class EmailTemplatesController : BaseApiController
     /// Example: POST /api/email-templates/1/activate
     /// </remarks>
     /// <param name="id">Email template ID to activate</param>
-    /// <response code="200">Success - Returns {success: true, message: "Email template activated successfully"}</response>
+    /// <response code="200">Success - Returns {success: true, result: EmailTemplateResponse, message: "Email template activated successfully"}</response>
     /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
     /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Email template with ID {id} not found", code: "TEMPLATE_NOT_FOUND"}]}</response>
     /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
@@ -353,7 +353,7 @@ public class EmailTemplatesController : BaseApiController
     /// Example: POST /api/email-templates/1/deactivate
     /// </remarks>
     /// <param name="id">Email template ID to deactivate</param>
-    /// <response code="200">Success - Returns {success: true, message: "Email template deactivated successfully"}</response>
+    /// <response code="200">Success - Returns {success: true, result: EmailTemplateResponse, message: "Email template deactivated successfully"}</response>
     /// <response code="401">Unauthorized - Returns {success: false, errors: [{message: "User not authenticated", code: "UNAUTHORIZED"}]}</response>
     /// <response code="404">Not Found - Returns {success: false, errors: [{message: "Email template with ID {id} not found", code: "TEMPLATE_NOT_FOUND"}]}</response>
     /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "Internal server error", code: "INTERNAL_ERROR"}]}</response>
