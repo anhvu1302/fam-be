@@ -3,6 +3,7 @@ using System.Text.Json;
 
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 
 using MediatR;
@@ -26,7 +27,7 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
     {
         // Get user by ID
         User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user == null) throw new UnauthorizedAccessException("User not found");
+        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND, "User not found");
 
         // Security: Verify the secret matches the pending secret (from Enable2FA)
         if (!user.IsPendingTwoFactorSecretValid(request.Secret))

@@ -1,6 +1,7 @@
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
 
@@ -30,19 +31,19 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
         UserDevice? device =
             await _unitOfWork.UserDevices.FindByRefreshTokenAsync(request.RefreshToken, cancellationToken);
 
-        if (device == null) throw new UnauthorizedAccessException("Invalid refresh token");
+        if (device == null) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_REFRESH_TOKEN, "Invalid refresh token");
 
-        if (!device.IsRefreshTokenValid()) throw new UnauthorizedAccessException("Refresh token has expired");
+        if (!device.IsRefreshTokenValid()) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_REFRESH_TOKEN, "Refresh token has expired");
 
-        if (!device.IsActive) throw new UnauthorizedAccessException("Device is inactive");
+        if (!device.IsActive) throw new UnauthorizedException(ErrorCodes.AUTH_UNAUTHORIZED, "Device is inactive");
 
         User? user = await _unitOfWork.Users.GetByIdAsync(device.UserId, cancellationToken);
 
-        if (user == null) throw new UnauthorizedAccessException("User not found");
+        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND, "User not found");
 
-        if (!user.IsActive) throw new UnauthorizedAccessException("Account is inactive");
+        if (!user.IsActive) throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE, "Account is inactive");
 
-        if (user.IsLockedOut()) throw new UnauthorizedAccessException("Account is locked");
+        if (user.IsLockedOut()) throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_LOCKED, "Account is locked");
 
         SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
         var roles = new List<string>(); // TODO: Load user roles from UserNodeRoles

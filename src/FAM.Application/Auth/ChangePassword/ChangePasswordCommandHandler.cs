@@ -1,4 +1,5 @@
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
 
@@ -28,7 +29,7 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
         // Verify current password
         var isCurrentPasswordValid = user.Password.Verify(request.CurrentPassword);
 
-        if (!isCurrentPasswordValid) throw new UnauthorizedAccessException("Current password is incorrect");
+        if (!isCurrentPasswordValid) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_OLD_PASSWORD, "Current password is incorrect");
 
         // Validate new password (Password.Create will throw if invalid)
         var newPassword = Password.Create(request.NewPassword);

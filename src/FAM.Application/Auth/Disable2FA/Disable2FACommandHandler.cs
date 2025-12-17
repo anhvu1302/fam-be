@@ -1,4 +1,5 @@
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 
 using MediatR;
@@ -18,10 +19,10 @@ public sealed class Disable2FACommandHandler : IRequestHandler<Disable2FACommand
     {
         // Get user by ID
         User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user == null) throw new UnauthorizedAccessException("User not found");
+        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND, "User not found");
 
         // Verify password
-        if (!user.Password.Verify(request.Password)) throw new UnauthorizedAccessException("Invalid password");
+        if (!user.Password.Verify(request.Password)) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD, "Invalid password");
 
         // Disable 2FA
         user.DisableTwoFactor();

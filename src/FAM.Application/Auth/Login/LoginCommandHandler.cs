@@ -2,6 +2,7 @@ using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
 
@@ -47,17 +48,17 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         User? user = await _unitOfWork.Users.FindByIdentityAsync(request.Identity, cancellationToken);
 
         if (user == null)
-            throw new UnauthorizedAccessException("Invalid username/email or password");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS, "Username or email not found");
 
         if (user.IsLockedOut())
         {
             DateTime lockoutEnd = user.LockoutEnd!.Value;
             var minutesRemaining = (int)(lockoutEnd - DateTime.UtcNow).TotalMinutes + 1;
-            throw new UnauthorizedAccessException($"Account is locked. Try again in {minutesRemaining} minutes");
+            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_LOCKED, $"Account is locked. Try again in {minutesRemaining} minutes");
         }
 
         if (!user.IsActive)
-            throw new UnauthorizedAccessException("Account is inactive");
+            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE, "Account is inactive");
 
         var isPasswordValid = user.Password.Verify(request.Password);
 
@@ -67,7 +68,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             _unitOfWork.Users.Update(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            throw new UnauthorizedAccessException("Invalid username/email or password");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD, "Invalid password");
         }
 
         if (!user.IsEmailVerified)

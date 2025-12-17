@@ -1,6 +1,7 @@
 using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 
 using MediatR;
@@ -46,11 +47,11 @@ public class
         // Validate and extract userId từ 2FA session token
         var userId = await ValidateAndExtractUserIdAsync(request.TwoFactorSessionToken, cancellationToken);
         if (userId == 0)
-            throw new UnauthorizedAccessException("Invalid or expired 2FA session token");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_TOKEN, "Invalid or expired 2FA session token");
 
         User? user = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken);
         if (user == null)
-            throw new UnauthorizedAccessException("User not found");
+            throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND, "User not found");
 
         var response = new SelectAuthenticationMethodResponse();
 

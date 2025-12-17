@@ -1,6 +1,7 @@
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
 
@@ -50,18 +51,18 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
         var userId =
             await _twoFactorSessionService.ValidateAndGetUserIdAsync(request.TwoFactorSessionToken, cancellationToken);
         if (userId == 0)
-            throw new UnauthorizedAccessException("Invalid or expired two-factor session token");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_TOKEN, "Invalid or expired two-factor session token");
 
         User? user = await _userRepository.GetByIdAsync(userId, cancellationToken);
-        if (user == null) throw new UnauthorizedAccessException("User not found");
+        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND, "User not found");
 
         if (!user.TwoFactorEnabled || string.IsNullOrEmpty(user.TwoFactorSecret))
-            throw new UnauthorizedAccessException("Two-factor authentication is not enabled for this user");
+            throw new UnauthorizedException(ErrorCodes.AUTH_2FA_REQUIRED, "Two-factor authentication is not enabled for this user");
 
         if (!VerifyTwoFactorCode(user.TwoFactorSecret, request.TwoFactorCode))
         {
             _logger.LogWarning("Invalid 2FA code provided for user {UserId}", userId);
-            throw new UnauthorizedAccessException("Invalid two-factor code");
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_2FA_CODE, "Invalid two-factor code");
         }
 
         UserDevice device = user.GetOrCreateDevice(

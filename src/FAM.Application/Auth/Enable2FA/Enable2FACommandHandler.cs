@@ -1,5 +1,6 @@
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 
 using MediatR;
@@ -21,10 +22,10 @@ public sealed class Enable2FACommandHandler : IRequestHandler<Enable2FACommand, 
     {
         // Get user by ID
         User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user == null) throw new UnauthorizedAccessException("User not found");
+        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND, "User not found");
 
         // Verify password
-        if (!user.Password.Verify(request.Password)) throw new UnauthorizedAccessException("Invalid password");
+        if (!user.Password.Verify(request.Password)) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD, "Invalid password");
 
         // Generate new secret key (32 bytes = 256 bits for enhanced security)
         var secretKey = KeyGeneration.GenerateRandomKey(32);

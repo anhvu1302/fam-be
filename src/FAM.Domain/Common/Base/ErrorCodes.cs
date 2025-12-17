@@ -8,8 +8,11 @@ public static class ErrorCodes
 {
     #region Authentication (AUTH_xxx)
 
-    /// <summary>Invalid credentials provided</summary>
+    /// <summary>Invalid credentials provided (username/email not found)</summary>
     public const string AUTH_INVALID_CREDENTIALS = "AUTH_INVALID_CREDENTIALS";
+
+    /// <summary>Invalid password</summary>
+    public const string AUTH_INVALID_PASSWORD = "AUTH_INVALID_PASSWORD";
 
     /// <summary>User account is locked</summary>
     public const string AUTH_ACCOUNT_LOCKED = "AUTH_ACCOUNT_LOCKED";
@@ -31,6 +34,9 @@ public static class ErrorCodes
 
     /// <summary>Two-factor code is invalid</summary>
     public const string AUTH_INVALID_2FA_CODE = "AUTH_INVALID_2FA_CODE";
+
+    /// <summary>Backup code is invalid</summary>
+    public const string AUTH_INVALID_BACKUP_CODE = "AUTH_INVALID_BACKUP_CODE";
 
     /// <summary>Session expired</summary>
     public const string AUTH_SESSION_EXPIRED = "AUTH_SESSION_EXPIRED";

@@ -10,14 +10,16 @@ public static class ErrorMessages
     {
         #region Authentication
 
-        [ErrorCodes.AUTH_INVALID_CREDENTIALS] = "Invalid username or password",
-        [ErrorCodes.AUTH_ACCOUNT_LOCKED] = "Your account has been locked. Please contact support",
+        [ErrorCodes.AUTH_INVALID_CREDENTIALS] = "Username or email not found",
+        [ErrorCodes.AUTH_INVALID_PASSWORD] = "Invalid password",
+        [ErrorCodes.AUTH_ACCOUNT_LOCKED] = "Your account has been locked. Try again in {0} minutes",
         [ErrorCodes.AUTH_ACCOUNT_INACTIVE] = "Your account is not active. Please contact support",
         [ErrorCodes.AUTH_EMAIL_NOT_VERIFIED] = "Please verify your email address before logging in",
         [ErrorCodes.AUTH_INVALID_TOKEN] = "The token is invalid or has expired",
         [ErrorCodes.AUTH_INVALID_REFRESH_TOKEN] = "The refresh token is invalid or has expired. Please log in again",
         [ErrorCodes.AUTH_2FA_REQUIRED] = "Two-factor authentication is required",
         [ErrorCodes.AUTH_INVALID_2FA_CODE] = "The two-factor authentication code is invalid",
+        [ErrorCodes.AUTH_INVALID_BACKUP_CODE] = "The backup code is invalid",
         [ErrorCodes.AUTH_SESSION_EXPIRED] = "Your session has expired. Please log in again",
         [ErrorCodes.AUTH_UNAUTHORIZED] = "You are not authorized to access this resource",
         [ErrorCodes.AUTH_FORBIDDEN] = "You do not have permission to perform this action",
