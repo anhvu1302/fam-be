@@ -356,4 +356,13 @@ public static class ErrorMessages
         var template = GetMessage(errorCode);
         return args.Length > 0 ? string.Format(template, args) : template;
     }
+
+    /// <summary>
+    /// Get all error codes with their default English messages.
+    /// Returns a dictionary where key is the error code and value is the message.
+    /// </summary>
+    public static IReadOnlyDictionary<string, string> GetAllErrorCodes()
+    {
+        return Messages;
+    }
 }
