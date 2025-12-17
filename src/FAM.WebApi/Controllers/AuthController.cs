@@ -29,6 +29,7 @@ using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Base;
 using FAM.WebApi.Attributes;
 using FAM.WebApi.Configuration;
+using FAM.WebApi.Contracts.Auth;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.Users;
 
@@ -81,7 +82,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<LoginResponse>> Login([FromBody] WebApiContracts.LoginRequest request)
+    public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
     {
         try
         {
@@ -129,7 +130,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<VerifyTwoFactorResponse>> VerifyTwoFactor(
-        [FromBody] WebApiContracts.VerifyTwoFactorRequest request)
+        [FromBody] VerifyTwoFactorRequest request)
     {
         try
         {
@@ -178,7 +179,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] WebApiContracts.RefreshTokenRequest request)
+    public async Task<ActionResult<LoginResponse>> RefreshToken([FromBody] RefreshTokenRequest request)
     {
         try
         {
@@ -259,7 +260,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiSuccessResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> LogoutAll([FromBody] WebApiContracts.LogoutAllRequest? request = null)
+    public async Task<ActionResult> LogoutAll([FromBody] LogoutAllRequest? request = null)
     {
         try
         {
@@ -290,7 +291,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> ChangePassword([FromBody] WebApiContracts.ChangePasswordRequest request)
+    public async Task<ActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
         try
         {
@@ -353,7 +354,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<SelectAuthenticationMethodResponse>> SelectAuthenticationMethod(
-        [FromBody] WebApiContracts.SelectAuthenticationMethodRequest request)
+        [FromBody] SelectAuthenticationMethodRequest request)
     {
         try
         {
@@ -396,7 +397,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> VerifyEmailOtp([FromBody] WebApiContracts.VerifyEmailOtpRequest request)
+    public async Task<ActionResult> VerifyEmailOtp([FromBody] VerifyEmailOtpRequest request)
     {
         try
         {
@@ -429,7 +430,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> VerifyRecoveryCode([FromBody] WebApiContracts.VerifyRecoveryCodeRequest request)
+    public async Task<ActionResult> VerifyRecoveryCode([FromBody] VerifyRecoveryCodeRequest request)
     {
         try
         {
@@ -472,7 +473,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ForgotPasswordResponse>> ForgotPassword(
-        [FromBody] WebApiContracts.ForgotPasswordRequest request)
+        [FromBody] ForgotPasswordRequest request)
     {
         try
         {
@@ -497,7 +498,7 @@ public class AuthController : BaseApiController
     [HttpPost("verify-reset-token")]
     [AllowAnonymous]
     public async Task<ActionResult<VerifyResetTokenResponse>> VerifyResetToken(
-        [FromBody] WebApiContracts.VerifyResetTokenRequest request)
+        [FromBody] VerifyResetTokenRequest request)
     {
         try
         {
@@ -526,7 +527,7 @@ public class AuthController : BaseApiController
     [HttpPost("reset-password")]
     [AllowAnonymous]
     public async Task<ActionResult<ResetPasswordResponse>> ResetPassword(
-        [FromBody] WebApiContracts.ResetPasswordRequest request)
+        [FromBody] ResetPasswordRequest request)
     {
         try
         {
@@ -558,7 +559,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<Enable2FAResponse>> Enable2FA([FromBody] WebApiContracts.Enable2FARequest request)
+    public async Task<ActionResult<Enable2FAResponse>> Enable2FA([FromBody] Enable2FARequest request)
     {
         try
         {
@@ -592,7 +593,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<Confirm2FAResponse>> Confirm2FA([FromBody] WebApiContracts.Confirm2FARequest request)
+    public async Task<ActionResult<Confirm2FAResponse>> Confirm2FA([FromBody] Confirm2FARequest request)
     {
         try
         {
@@ -631,7 +632,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> Disable2FA([FromBody] WebApiContracts.Disable2FARequest request)
+    public async Task<ActionResult> Disable2FA([FromBody] Disable2FARequest request)
     {
         try
         {
@@ -667,7 +668,7 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DisableTwoFactorWithBackup(
-        [FromBody] WebApiContracts.DisableTwoFactorWithBackupRequest request)
+        [FromBody] DisableTwoFactorWithBackupRequest request)
     {
         try
         {

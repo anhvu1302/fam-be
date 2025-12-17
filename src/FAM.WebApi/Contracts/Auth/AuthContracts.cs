@@ -1,4 +1,7 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace FAM.WebApi.Contracts.Auth;
 
@@ -8,6 +11,7 @@ namespace FAM.WebApi.Contracts.Auth;
 /// Login request - Validated by LoginRequestValidator using DomainRules
 /// Supports login with either username or email
 /// </summary>
+[SwaggerSchema(Required = new[] { "identity", "password" })]
 public sealed record LoginRequest(
     string Identity,
     string Password,
@@ -17,6 +21,7 @@ public sealed record LoginRequest(
 /// <summary>
 /// Verify 2FA request - Validated by VerifyTwoFactorRequestValidator
 /// </summary>
+[SwaggerSchema(Required = new[] { "twoFactorCode", "twoFactorSessionToken" })]
 public sealed record VerifyTwoFactorRequest(
     string TwoFactorCode,
     string TwoFactorSessionToken,
@@ -26,6 +31,7 @@ public sealed record VerifyTwoFactorRequest(
 /// <summary>
 /// Refresh token request - Validated by RefreshTokenRequestValidator
 /// </summary>
+[SwaggerSchema(Required = new[] { "refreshToken" })]
 public sealed record RefreshTokenRequest(
     string RefreshToken,
     string? DeviceId = null
@@ -41,6 +47,7 @@ public sealed record LogoutAllRequest(
 /// <summary>
 /// Change password request - Validated by ChangePasswordRequestValidator using DomainRules
 /// </summary>
+[SwaggerSchema(Required = new[] { "currentPassword", "newPassword" })]
 public sealed record ChangePasswordRequest(
     string CurrentPassword,
     string NewPassword,
@@ -50,6 +57,7 @@ public sealed record ChangePasswordRequest(
 /// <summary>
 /// Enable 2FA request - Validated by Enable2FARequestValidator
 /// </summary>
+[SwaggerSchema(Required = new[] { "password" })]
 public sealed record Enable2FARequest(
     string Password
 );
@@ -57,6 +65,7 @@ public sealed record Enable2FARequest(
 /// <summary>
 /// Confirm 2FA request - Validated by Confirm2FARequestValidator
 /// </summary>
+[SwaggerSchema(Required = new[] { "secret", "code" })]
 public sealed record Confirm2FARequest(
     string Secret,
     string Code
@@ -65,6 +74,7 @@ public sealed record Confirm2FARequest(
 /// <summary>
 /// Disable 2FA request - Validated by Disable2FARequestValidator
 /// </summary>
+[SwaggerSchema(Required = new[] { "password" })]
 public sealed record Disable2FARequest(
     string Password
 );
@@ -72,6 +82,7 @@ public sealed record Disable2FARequest(
 /// <summary>
 /// Disable 2FA with backup code request - Validated by DisableTwoFactorWithBackupRequestValidator
 /// </summary>
+[SwaggerSchema(Required = new[] { "username", "password", "backupCode" })]
 public sealed record DisableTwoFactorWithBackupRequest(
     string Username,
     string Password,
@@ -81,6 +92,7 @@ public sealed record DisableTwoFactorWithBackupRequest(
 /// <summary>
 /// Select authentication method request - Validated by SelectAuthenticationMethodRequestValidator
 /// </summary>
+[SwaggerSchema(Required = new[] { "twoFactorSessionToken", "selectedMethod" })]
 public sealed record SelectAuthenticationMethodRequest(
     string TwoFactorSessionToken,
     string SelectedMethod
@@ -90,16 +102,16 @@ public sealed record SelectAuthenticationMethodRequest(
 /// Verify email OTP request - Validated by VerifyEmailOtpRequestValidator
 /// Used during login flow when email needs verification
 /// </summary>
+[SwaggerSchema(Required = new[] { "email", "emailOtp" })]
 public sealed record VerifyEmailOtpRequest(
-    [property: Required(ErrorMessage = "Email is required")]
     string Email,
-    [property: Required(ErrorMessage = "OTP code is required")]
     string EmailOtp
 );
 
 /// <summary>
 /// Verify recovery code request - Validated by VerifyRecoveryCodeRequestValidator
 /// </summary>
+[SwaggerSchema(Required = new[] { "twoFactorSessionToken", "recoveryCode" })]
 public sealed record VerifyRecoveryCodeRequest(
     string TwoFactorSessionToken,
     string RecoveryCode,
@@ -109,6 +121,7 @@ public sealed record VerifyRecoveryCodeRequest(
 /// <summary>
 /// Forgot password request - Validated by ForgotPasswordRequestValidator using DomainRules
 /// </summary>
+[SwaggerSchema(Required = new[] { "email" })]
 public sealed record ForgotPasswordRequest(
     string Email
 );
@@ -116,6 +129,7 @@ public sealed record ForgotPasswordRequest(
 /// <summary>
 /// Reset password request - Validated by ResetPasswordRequestValidator using DomainRules
 /// </summary>
+[SwaggerSchema(Required = new[] { "email", "resetToken", "newPassword", "confirmPassword" })]
 public sealed record ResetPasswordRequest(
     string Email,
     string ResetToken,
@@ -126,6 +140,7 @@ public sealed record ResetPasswordRequest(
 /// <summary>
 /// Verify reset token request - Validated by VerifyResetTokenRequestValidator
 /// </summary>
+[SwaggerSchema(Required = new[] { "email", "resetToken" })]
 public sealed record VerifyResetTokenRequest(
     string Email,
     string ResetToken

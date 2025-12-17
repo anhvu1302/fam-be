@@ -1,11 +1,13 @@
 using FAM.Application.Users.Commands.CreateUser;
 using FAM.Application.Users.Commands.UpdateUser;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace FAM.WebApi.Contracts.Users;
 
 /// <summary>
 /// Request to create a new user - Validated by CreateUserRequestValidator
 /// </summary>
+[SwaggerSchema(Required = new[] { "username", "email", "password" })]
 public sealed record CreateUserRequest(
     string Username,
     string Email,
@@ -35,6 +37,7 @@ public sealed record UpdateUserRequest(
 /// <summary>
 /// Request to update user avatar - Validated by UpdateAvatarRequestValidator
 /// </summary>
+[SwaggerSchema(Required = new[] { "uploadId" })]
 public sealed record UpdateAvatarRequest(
     string UploadId
 );

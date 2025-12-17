@@ -1,8 +1,11 @@
 namespace FAM.WebApi.Contracts.Storage;
 
+using Swashbuckle.AspNetCore.Annotations;
+
 /// <summary>
 /// Request to initiate multipart upload
 /// </summary>
+[SwaggerSchema(Required = new[] { "fileName", "contentType", "totalSize" })]
 public record InitiateMultipartUploadRequest
 {
     /// <summary>
@@ -24,6 +27,7 @@ public record InitiateMultipartUploadRequest
 /// <summary>
 /// Request to upload a part in multipart upload
 /// </summary>
+[SwaggerSchema(Required = new[] { "uploadId", "partNumber", "fileName" })]
 public record UploadPartRequest
 {
     /// <summary>
@@ -45,6 +49,7 @@ public record UploadPartRequest
 /// <summary>
 /// Request to complete multipart upload
 /// </summary>
+[SwaggerSchema(Required = new[] { "uploadId", "fileName", "parts" })]
 public record CompleteMultipartUploadRequest
 {
     /// <summary>
@@ -66,6 +71,7 @@ public record CompleteMultipartUploadRequest
 /// <summary>
 /// Request to get presigned URL
 /// </summary>
+[SwaggerSchema(Required = new[] { "filePath" })]
 public record GetPresignedUrlRequest
 {
     /// <summary>
@@ -82,6 +88,7 @@ public record GetPresignedUrlRequest
 /// <summary>
 /// Request to initialize upload session
 /// </summary>
+[SwaggerSchema(Required = new[] { "fileName", "contentType", "fileSize" })]
 public class InitUploadSessionRequest
 {
     public required string FileName { get; set; }
@@ -93,6 +100,7 @@ public class InitUploadSessionRequest
 /// <summary>
 /// Request to finalize upload and link to entity
 /// </summary>
+[SwaggerSchema(Required = new[] { "uploadId", "entityType" })]
 public class FinalizeUploadRequest
 {
     public required string UploadId { get; set; }

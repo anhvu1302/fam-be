@@ -117,6 +117,12 @@ builder.Services.AddSwaggerGen(c =>
     // Enable annotations
     c.EnableAnnotations();
 
+    // Support non-nullable reference types for proper required field detection in .NET 9
+    c.SupportNonNullableReferenceTypes();
+
+    c.UseAllOfForInheritance();
+    c.UseAllOfToExtendReferenceSchemas();
+
     // Add JWT authentication to Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {

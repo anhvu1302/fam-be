@@ -1,5 +1,7 @@
 using FAM.WebApi.Contracts.Common;
 
+using FluentValidation;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -12,8 +14,47 @@ namespace FAM.WebApi.Middleware;
 /// </summary>
 public class ValidationFilter : IAsyncActionFilter
 {
+    private readonly IServiceProvider _serviceProvider;
+
+    public ValidationFilter(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        // Run FluentValidation manually for each action parameter
+        foreach (var parameter in context.ActionDescriptor.Parameters)
+        {
+            if (context.ActionArguments.TryGetValue(parameter.Name, out var argumentValue) && argumentValue != null)
+            {
+                var argumentType = argumentValue.GetType();
+
+                // Try to get a validator for this type
+                var validatorType = typeof(IValidator<>).MakeGenericType(argumentType);
+                var validator = _serviceProvider.GetService(validatorType) as IValidator;
+
+                if (validator != null)
+                {
+                    // Create validation context
+                    var validationContext = new ValidationContext<object>(argumentValue);
+
+                    // Validate
+                    var validationResult = await validator.ValidateAsync(validationContext);
+
+                    if (!validationResult.IsValid)
+                    {
+                        // Add errors to ModelState
+                        foreach (var error in validationResult.Errors)
+                        {
+                            context.ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Now check ModelState
         if (!context.ModelState.IsValid)
         {
             var errors = new List<ApiError>();
