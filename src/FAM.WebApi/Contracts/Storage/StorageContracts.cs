@@ -1,6 +1,6 @@
-namespace FAM.WebApi.Contracts.Storage;
-
 using Swashbuckle.AspNetCore.Annotations;
+
+namespace FAM.WebApi.Contracts.Storage;
 
 /// <summary>
 /// Request to initiate multipart upload

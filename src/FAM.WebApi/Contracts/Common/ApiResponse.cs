@@ -1,8 +1,11 @@
+using Swashbuckle.AspNetCore.Annotations;
+
 namespace FAM.WebApi.Contracts.Common;
 
 /// <summary>
 /// Standard API response wrapper for successful responses
 /// </summary>
+[SwaggerSchema(Required = new[] { "success" })]
 public sealed record ApiSuccessResponse<TResult>(
     bool Success,
     string? Message,
@@ -23,6 +26,7 @@ public sealed record ApiSuccessResponse<TResult>(
 /// <summary>
 /// Standard API response wrapper for error responses
 /// </summary>
+[SwaggerSchema(Required = new[] { "success", "errors" })]
 public sealed record ApiErrorResponse(
     bool Success,
     List<ApiError> Errors
@@ -73,6 +77,7 @@ public sealed record ApiErrorResponse(
 /// <summary>
 /// Error detail with message and i18n code
 /// </summary>
+[SwaggerSchema(Required = new[] { "message", "code" })]
 public sealed record ApiError(
     string Message,
     string Code
@@ -81,6 +86,7 @@ public sealed record ApiError(
 /// <summary>
 /// Paged response wrapper
 /// </summary>
+[SwaggerSchema(Required = new[] { "success", "data", "pagination" })]
 public sealed record ApiPagedResponse<TItem>(
     bool Success,
     string? Message,
@@ -100,6 +106,7 @@ public sealed record ApiPagedResponse<TItem>(
 /// <summary>
 /// Pagination metadata
 /// </summary>
+[SwaggerSchema(Required = new[] { "page", "pageSize", "total", "totalPages", "hasNextPage" })]
 public sealed record PaginationMeta(
     int Page,
     int PageSize,

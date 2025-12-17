@@ -1,5 +1,6 @@
 using FAM.Application.Users.Commands.CreateUser;
 using FAM.Application.Users.Commands.UpdateUser;
+
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace FAM.WebApi.Contracts.Users;

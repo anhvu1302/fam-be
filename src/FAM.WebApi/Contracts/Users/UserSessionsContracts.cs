@@ -1,6 +1,6 @@
-namespace FAM.WebApi.Contracts.Users;
-
 using Swashbuckle.AspNetCore.Annotations;
+
+namespace FAM.WebApi.Contracts.Users;
 
 /// <summary>
 /// Request to update user theme preferences

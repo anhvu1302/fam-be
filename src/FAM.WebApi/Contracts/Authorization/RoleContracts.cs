@@ -1,6 +1,6 @@
-namespace FAM.WebApi.Contracts.Authorization;
-
 using Swashbuckle.AspNetCore.Annotations;
+
+namespace FAM.WebApi.Contracts.Authorization;
 
 #region Request Contracts
 

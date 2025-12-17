@@ -45,7 +45,8 @@ public static class InfrastructureModule
         switch (provider)
         {
             case DatabaseProvider.PostgreSQL:
-                connectionString = $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
+                connectionString =
+                    $"Host={dbHost};Port={dbPort};Database={dbName};Username={dbUser};Password={dbPassword}";
                 break;
 
             default:
@@ -53,10 +54,7 @@ public static class InfrastructureModule
         }
 
         // Register AutoMapper with specific profiles (Domain <-> Persistence layer mappings)
-        services.AddAutoMapper(cfg =>
-        {
-            cfg.AddProfile<DomainToEfProfile>();
-        });
+        services.AddAutoMapper(cfg => { cfg.AddProfile<DomainToEfProfile>(); });
 
         // Register Data Seeder Orchestrator
         services.AddScoped<DataSeederOrchestrator>();
