@@ -1,6 +1,7 @@
 using FAM.Application.Auth.Enable2FA;
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 
 using FluentAssertions;
@@ -82,7 +83,7 @@ public class Enable2FACommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
     }
 
@@ -103,7 +104,7 @@ public class Enable2FACommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
     }
 

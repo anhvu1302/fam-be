@@ -20,7 +20,7 @@ public class AssetCategory : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     public string? LongDescription { get; private set; }
 
     // Hierarchy
-    public int? ParentId { get; private set; }
+    public long? ParentId { get; private set; }
     public int Level { get; private set; }
     public string? Path { get; private set; } // Full hierarchical path
 
@@ -93,7 +93,6 @@ public class AssetCategory : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     public AssetCategory? Parent { get; set; }
     public ICollection<AssetCategory> Children { get; set; } = new List<AssetCategory>();
     public ICollection<Model> Models { get; set; } = new List<Model>();
-    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
 
     private AssetCategory()
     {

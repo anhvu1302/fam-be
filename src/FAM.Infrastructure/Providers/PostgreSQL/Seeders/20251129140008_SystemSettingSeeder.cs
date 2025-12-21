@@ -1,5 +1,5 @@
+using FAM.Domain.Common.Entities;
 using FAM.Infrastructure.Common.Seeding;
-using FAM.Infrastructure.PersistenceModels.Ef;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -36,7 +36,7 @@ public class SystemSettingSeeder : BaseDataSeeder
 
         LogInfo("Seeding initial system settings...");
 
-        var settings = new List<SystemSettingEf>
+        var settings = new List<SystemSetting>
         {
             // General settings
             CreateSetting("app.general.siteName", "Site Name", "FAM - Fixed Asset Management", group: "general",
@@ -99,7 +99,7 @@ public class SystemSettingSeeder : BaseDataSeeder
         LogInfo($"Created {settings.Count} system settings");
     }
 
-    private static SystemSettingEf CreateSetting(
+    private static SystemSetting CreateSetting(
         string key,
         string displayName,
         string? value = null,
@@ -115,23 +115,16 @@ public class SystemSettingSeeder : BaseDataSeeder
         string? validationRules = null,
         string? options = null)
     {
-        return new SystemSettingEf
-        {
-            Key = key,
-            DisplayName = displayName,
-            Value = value,
-            DefaultValue = defaultValue ?? value,
-            DataType = dataType,
-            Group = group,
-            Description = description,
-            SortOrder = sortOrder,
-            IsRequired = isRequired,
-            IsSensitive = isSensitive,
-            IsVisible = isVisible,
-            IsEditable = isEditable,
-            ValidationRules = validationRules,
-            Options = options,
-            CreatedAt = DateTime.UtcNow
-        };
+        return SystemSetting.Create(
+            key: key,
+            displayName: displayName,
+            value: value,
+            defaultValue: defaultValue ?? value,
+            dataType: (SettingDataType)dataType,
+            group: group,
+            description: description,
+            sortOrder: sortOrder,
+            isRequired: isRequired,
+            isSensitive: isSensitive);
     }
 }

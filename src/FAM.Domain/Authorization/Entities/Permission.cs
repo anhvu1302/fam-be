@@ -21,18 +21,34 @@ public class Permission : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
     public DateTime? DeletedAt { get; set; }
     public long? DeletedById { get; set; }
 
-    // Navigation properties
+    // Navigation properties (ignored by EF)
     public User? CreatedBy { get; set; }
     public User? UpdatedBy { get; set; }
     public User? DeletedBy { get; set; }
 
-    public ResourceType Resource { get; private set; } = null!;
-    public ResourceAction Action { get; private set; } = null!;
+    // Backing fields for EF Core mapping
+    private string _resource = string.Empty;
+    private string _action = string.Empty;
+
+    // Domain properties with Value Objects
+    public ResourceType Resource
+    {
+        get => ResourceType.Create(_resource);
+        private set => _resource = value.Value;
+    }
+
+    public ResourceAction Action
+    {
+        get => ResourceAction.Create(_action);
+        private set => _action = value.Value;
+    }
+
     public string? Description { get; private set; }
 
     // Navigation properties
     public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
 
+    // Private constructor for EF Core
     private Permission()
     {
     }

@@ -7,7 +7,12 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class SerialNumber : ValueObject
 {
-    public string Value { get; private set; }
+    public string Value { get; private set; } = null!;
+
+    // Constructor for EF Core
+    private SerialNumber()
+    {
+    }
 
     private SerialNumber(string value)
     {

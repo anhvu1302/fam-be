@@ -1,9 +1,27 @@
 using System.Reflection;
 
+using FAM.Domain.Assets;
+using FAM.Domain.Authorization;
+using FAM.Domain.Categories;
+using FAM.Domain.Common;
+using FAM.Domain.Common.Entities;
+using FAM.Domain.Conditions;
+using FAM.Domain.EmailTemplates;
+using FAM.Domain.Finance;
+using FAM.Domain.Geography;
+using FAM.Domain.Locations;
+using FAM.Domain.Manufacturers;
+using FAM.Domain.Models;
+using FAM.Domain.Organizations;
+using FAM.Domain.Statuses;
 using FAM.Domain.Storage;
+using FAM.Domain.Suppliers;
+using FAM.Domain.Types;
+using FAM.Domain.Users;
+using FAM.Domain.Users.Entities;
+using FAM.Domain.ValueObjects;
 using FAM.Infrastructure.Common.Extensions;
 using FAM.Infrastructure.Common.Options;
-using FAM.Infrastructure.PersistenceModels.Ef;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -22,62 +40,62 @@ public class PostgreSqlDbContext : DbContext
         _options = options;
     }
 
-    public DbSet<UserEf> Users { get; set; }
-    public DbSet<UserDeviceEf> UserDevices { get; set; }
-    public DbSet<UserThemeEf> UserThemes { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<UserDevice> UserDevices { get; set; }
+    public DbSet<UserTheme> UserThemes { get; set; }
 
-    // Authorization entities
-    public DbSet<PermissionEf> Permissions { get; set; }
-    public DbSet<RoleEf> Roles { get; set; }
-    public DbSet<ResourceEf> Resources { get; set; }
-    public DbSet<RolePermissionEf> RolePermissions { get; set; }
-    public DbSet<UserNodeRoleEf> UserNodeRoles { get; set; }
+    // Authorization entities - Using Domain entities directly (Pragmatic Architecture)
+    public DbSet<Permission> Permissions { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<Resource> Resources { get; set; }
+    public DbSet<RolePermission> RolePermissions { get; set; }
+    public DbSet<UserNodeRole> UserNodeRoles { get; set; }
 
     // Organizations entities
-    public DbSet<OrgNodeEf> OrgNodes { get; set; }
-    public DbSet<CompanyDetailsEf> CompanyDetails { get; set; }
-    public DbSet<DepartmentDetailsEf> DepartmentDetails { get; set; }
+    public DbSet<OrgNode> OrgNodes { get; set; }
+    public DbSet<CompanyDetails> CompanyDetails { get; set; }
+    public DbSet<DepartmentDetails> DepartmentDetails { get; set; }
 
     // Asset entities
-    public DbSet<AssetEf> Assets { get; set; }
-    public DbSet<AssetEventEf> AssetEvents { get; set; }
-    public DbSet<AssignmentEf> Assignments { get; set; }
-    public DbSet<AttachmentEf> Attachments { get; set; }
-    public DbSet<FinanceEntryEf> FinanceEntries { get; set; }
+    public DbSet<Asset> Assets { get; set; }
+    public DbSet<AssetEvent> AssetEvents { get; set; }
+    public DbSet<Assignment> Assignments { get; set; }
+    public DbSet<Attachment> Attachments { get; set; }
+    public DbSet<FinanceEntry> FinanceEntries { get; set; }
 
     // Categories & Types
-    public DbSet<AssetCategoryEf> AssetCategories { get; set; }
-    public DbSet<AssetTypeEf> AssetTypes { get; set; }
+    public DbSet<AssetCategory> AssetCategories { get; set; }
+    public DbSet<AssetType> AssetTypes { get; set; }
 
     // Status entities
-    public DbSet<UsageStatusEf> UsageStatuses { get; set; }
-    public DbSet<LifecycleStatusEf> LifecycleStatuses { get; set; }
-    public DbSet<AssetEventTypeEf> AssetEventTypes { get; set; }
-    public DbSet<AssetConditionEf> AssetConditions { get; set; }
+    public DbSet<UsageStatus> UsageStatuses { get; set; }
+    public DbSet<LifecycleStatus> LifecycleStatuses { get; set; }
+    public DbSet<AssetEventType> AssetEventTypes { get; set; }
+    public DbSet<AssetCondition> AssetConditions { get; set; }
 
     // Storage entities
     public DbSet<UploadSession> UploadSessions { get; set; }
 
     // Geography & Location
-    public DbSet<CountryEf> Countries { get; set; }
-    public DbSet<LocationEf> Locations { get; set; }
+    public DbSet<Country> Countries { get; set; }
+    public DbSet<Location> Locations { get; set; }
 
     // Manufacturers & Models
-    public DbSet<ManufacturerEf> Manufacturers { get; set; }
-    public DbSet<ModelEf> Models { get; set; }
+    public DbSet<Manufacturer> Manufacturers { get; set; }
+    public DbSet<Model> Models { get; set; }
 
     // Suppliers
-    public DbSet<SupplierEf> Suppliers { get; set; }
+    public DbSet<Supplier> Suppliers { get; set; }
 
     // Security
-    public DbSet<SigningKeyEf> SigningKeys { get; set; }
+    public DbSet<SigningKey> SigningKeys { get; set; }
 
     // UI & Configuration
-    public DbSet<MenuItemEf> MenuItems { get; set; }
-    public DbSet<SystemSettingEf> SystemSettings { get; set; }
+    public DbSet<MenuItem> MenuItems { get; set; }
+    public DbSet<SystemSetting> SystemSettings { get; set; }
 
     // Email
-    public DbSet<EmailTemplateEf> EmailTemplates { get; set; }
+    public DbSet<EmailTemplate> EmailTemplates { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -103,7 +121,7 @@ public class PostgreSqlDbContext : DbContext
         {
             // Ignore CreatedBy, UpdatedBy, DeletedBy navigation properties
             IEnumerable<PropertyInfo> auditNavProperties = entityType.ClrType.GetProperties()
-                .Where(p => p.PropertyType == typeof(UserEf) &&
+                .Where(p => p.PropertyType == typeof(User) &&
                             (p.Name == "CreatedBy" || p.Name == "UpdatedBy" || p.Name == "DeletedBy"));
 
             foreach (PropertyInfo navProperty in auditNavProperties)
@@ -114,11 +132,37 @@ public class PostgreSqlDbContext : DbContext
         ModelBuilderExtensions.ApplySnakeCaseNamingConvention(modelBuilder);
 
         // User configuration
-        modelBuilder.Entity<UserEf>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(u => u.Id);
-            entity.Property(u => u.Username).IsRequired().HasMaxLength(50);
-            entity.Property(u => u.Email).IsRequired().HasMaxLength(255);
+            
+            // Value object conversions
+            entity.Property(u => u.Username)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasConversion(
+                    v => v.Value,
+                    v => Username.Create(v));
+            
+            entity.Property(u => u.Email)
+                .IsRequired()
+                .HasMaxLength(255)
+                .HasConversion(
+                    v => v.Value,
+                    v => Email.Create(v));
+            
+            entity.OwnsOne(u => u.Password, password =>
+            {
+                password.Property(p => p.Hash).HasColumnName("password_hash").IsRequired();
+                password.Property(p => p.Salt).HasColumnName("password_salt").IsRequired();
+            });
+            
+            entity.Property(u => u.PhoneNumber)
+                .HasMaxLength(20)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? PhoneNumber.Create(v, null) : null);
+            
             entity.Property(u => u.FullName).HasMaxLength(200);
             entity.Property(u => u.IsDeleted).HasDefaultValue(false);
 
@@ -136,7 +180,7 @@ public class PostgreSqlDbContext : DbContext
         });
 
         // UserDevice configuration
-        modelBuilder.Entity<UserDeviceEf>(entity =>
+        modelBuilder.Entity<UserDevice>(entity =>
         {
             entity.HasKey(ud => ud.Id);
 
@@ -149,10 +193,17 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(ud => ud.DeviceName).IsRequired().HasMaxLength(200);
             entity.Property(ud => ud.DeviceType).IsRequired().HasMaxLength(50);
             entity.Property(ud => ud.UserAgent).HasMaxLength(500);
-            entity.Property(ud => ud.IpAddress).HasMaxLength(45); // IPv6 max length
             entity.Property(ud => ud.Location).HasMaxLength(255);
             entity.Property(ud => ud.Browser).HasMaxLength(100);
             entity.Property(ud => ud.OperatingSystem).HasMaxLength(100);
+            
+            // Value object conversion for IPAddress
+            entity.Property(ud => ud.IpAddress)
+                .HasMaxLength(45)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? IPAddress.Create(v) : null);
+            
             entity.Property(ud => ud.RefreshToken).HasMaxLength(500);
             entity.Property(ud => ud.ActiveAccessTokenJti).HasMaxLength(255);
             entity.Property(ud => ud.IsActive).HasDefaultValue(true);
@@ -179,7 +230,7 @@ public class PostgreSqlDbContext : DbContext
         });
 
         // UserTheme configuration
-        modelBuilder.Entity<UserThemeEf>(entity =>
+        modelBuilder.Entity<UserTheme>(entity =>
         {
             entity.HasKey(ut => ut.Id);
 
@@ -209,22 +260,65 @@ public class PostgreSqlDbContext : DbContext
         });
 
         // Authorization configurations
-        modelBuilder.Entity<PermissionEf>(entity =>
+        // Permission - Using Domain entity directly with Fluent API
+        modelBuilder.Entity<Permission>(entity =>
         {
+            entity.ToTable("permissions");
+            
             entity.HasKey(p => p.Id);
-            entity.Property(p => p.Resource).IsRequired().HasMaxLength(100);
-            entity.Property(p => p.Action).IsRequired().HasMaxLength(100);
-            entity.Property(p => p.IsDeleted).HasDefaultValue(false);
+            
+            // Map backing fields to columns
+            entity.Property<string>("_resource")
+                .HasColumnName("resource")
+                .IsRequired()
+                .HasMaxLength(100);
+                
+            entity.Property<string>("_action")
+                .HasColumnName("action")
+                .IsRequired()
+                .HasMaxLength(100);
+            
+            entity.Property(p => p.Description)
+                .HasColumnName("description");
+                
+            // Audit fields
+            entity.Property(p => p.CreatedAt).HasColumnName("created_at");
+            entity.Property(p => p.CreatedById).HasColumnName("created_by_id");
+            entity.Property(p => p.UpdatedAt).HasColumnName("updated_at");
+            entity.Property(p => p.UpdatedById).HasColumnName("updated_by_id");
+            entity.Property(p => p.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
+            entity.Property(p => p.DeletedAt).HasColumnName("deleted_at");
+            entity.Property(p => p.DeletedById).HasColumnName("deleted_by_id");
+
+            // Ignore navigation properties for audit
+            entity.Ignore(p => p.CreatedBy);
+            entity.Ignore(p => p.UpdatedBy);
+            entity.Ignore(p => p.DeletedBy);
+            
+            // Ignore computed properties
+            entity.Ignore(p => p.Resource);
+            entity.Ignore(p => p.Action);
 
             entity.HasQueryFilter(p => !p.IsDeleted);
-            entity.HasIndex(p => new { p.Resource, p.Action }).IsUnique().HasFilter("is_deleted = false")
+            
+            entity.HasIndex("_resource", "_action")
+                .IsUnique()
+                .HasFilter("is_deleted = false")
                 .HasDatabaseName("ix_permissions_resource_action");
         });
 
-        modelBuilder.Entity<RoleEf>(entity =>
+        modelBuilder.Entity<Role>(entity =>
         {
             entity.HasKey(r => r.Id);
-            entity.Property(r => r.Code).IsRequired().HasMaxLength(50);
+            
+            // Value object conversion
+            entity.Property(r => r.Code)
+                .IsRequired()
+                .HasMaxLength(50)
+                .HasConversion(
+                    v => v.Value,
+                    v => RoleCode.Create(v));
+            
             entity.Property(r => r.Name).IsRequired().HasMaxLength(100);
             entity.Property(r => r.Rank).IsRequired();
             entity.Property(r => r.IsDeleted).HasDefaultValue(false);
@@ -234,10 +328,18 @@ public class PostgreSqlDbContext : DbContext
             entity.HasIndex(r => r.Rank).HasDatabaseName("ix_roles_rank");
         });
 
-        modelBuilder.Entity<ResourceEf>(entity =>
+        modelBuilder.Entity<Resource>(entity =>
         {
             entity.HasKey(r => r.Id);
-            entity.Property(r => r.Type).IsRequired().HasMaxLength(100);
+            
+            // Value object conversion
+            entity.Property(r => r.Type)
+                .IsRequired()
+                .HasMaxLength(100)
+                .HasConversion(
+                    v => v.Value,
+                    v => ResourceType.Create(v));
+            
             entity.Property(r => r.NodeId).IsRequired();
             entity.Property(r => r.Name).IsRequired().HasMaxLength(200);
             entity.Property(r => r.IsDeleted).HasDefaultValue(false);
@@ -253,59 +355,59 @@ public class PostgreSqlDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<RolePermissionEf>(entity =>
+        modelBuilder.Entity<RolePermission>(entity =>
         {
             // Composite key
             entity.HasKey(rp => new { rp.RoleId, rp.PermissionId });
 
-            entity.Property(rp => rp.RoleId).IsRequired();
-            entity.Property(rp => rp.PermissionId).IsRequired();
+            entity.Property("RoleId").IsRequired();
+            entity.Property("PermissionId").IsRequired();
 
             // Relationships
             entity.HasOne(rp => rp.Role)
                 .WithMany(r => r.RolePermissions)
-                .HasForeignKey(rp => rp.RoleId)
+                .HasForeignKey("RoleId")
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(rp => rp.Permission)
                 .WithMany(p => p.RolePermissions)
-                .HasForeignKey(rp => rp.PermissionId)
+                .HasForeignKey("PermissionId")
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<UserNodeRoleEf>(entity =>
+        modelBuilder.Entity<UserNodeRole>(entity =>
         {
             // Composite key
             entity.HasKey(unr => new { unr.UserId, unr.NodeId, unr.RoleId });
 
-            entity.Property(unr => unr.UserId).IsRequired();
-            entity.Property(unr => unr.NodeId).IsRequired();
-            entity.Property(unr => unr.RoleId).IsRequired();
+            entity.Property("UserId").IsRequired();
+            entity.Property("NodeId").IsRequired();
+            entity.Property("RoleId").IsRequired();
 
             // Indexes for query performance
-            entity.HasIndex(unr => unr.UserId).HasDatabaseName("ix_user_node_roles_user_id");
-            entity.HasIndex(unr => unr.NodeId).HasDatabaseName("ix_user_node_roles_node_id");
-            entity.HasIndex(unr => unr.RoleId).HasDatabaseName("ix_user_node_roles_role_id");
+            entity.HasIndex("UserId").HasDatabaseName("ix_user_node_roles_user_id");
+            entity.HasIndex("NodeId").HasDatabaseName("ix_user_node_roles_node_id");
+            entity.HasIndex("RoleId").HasDatabaseName("ix_user_node_roles_role_id");
 
             // Relationships
             entity.HasOne(unr => unr.User)
                 .WithMany(u => u.UserNodeRoles)
-                .HasForeignKey(unr => unr.UserId)
+                .HasForeignKey("UserId")
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(unr => unr.Node)
                 .WithMany(n => n.UserNodeRoles)
-                .HasForeignKey(unr => unr.NodeId)
+                .HasForeignKey("NodeId")
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasOne(unr => unr.Role)
                 .WithMany(r => r.UserNodeRoles)
-                .HasForeignKey(unr => unr.RoleId)
+                .HasForeignKey("RoleId")
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Organizations configurations
-        modelBuilder.Entity<OrgNodeEf>(entity =>
+        modelBuilder.Entity<OrgNode>(entity =>
         {
             entity.HasKey(n => n.Id);
             entity.Property(n => n.Type).IsRequired();
@@ -323,13 +425,36 @@ public class PostgreSqlDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<CompanyDetailsEf>(entity =>
+        modelBuilder.Entity<CompanyDetails>(entity =>
         {
             entity.HasKey(cd => cd.Id);
             entity.Property(cd => cd.NodeId).IsRequired();
-            entity.Property(cd => cd.TaxCode).HasMaxLength(20);
-            entity.Property(cd => cd.Domain).HasMaxLength(255);
-            entity.Property(cd => cd.Address).HasMaxLength(500);
+            
+            // Value object conversions
+            entity.Property(cd => cd.TaxCode)
+                .HasMaxLength(20)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? TaxCode.Create(v) : null);
+            
+            entity.Property(cd => cd.Domain)
+                .HasMaxLength(255)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? DomainName.Create(v) : null);
+            
+            // Owned entity for Address
+            entity.OwnsOne(cd => cd.Address, address =>
+            {
+                address.Property(a => a.Street).HasColumnName("address_street").HasMaxLength(255);
+                address.Property(a => a.City).HasColumnName("address_city").HasMaxLength(100);
+                address.Property(a => a.Ward).HasColumnName("address_ward").HasMaxLength(100);
+                address.Property(a => a.District).HasColumnName("address_district").HasMaxLength(100);
+                address.Property(a => a.Province).HasColumnName("address_province").HasMaxLength(100);
+                address.Property(a => a.CountryCode).HasColumnName("address_country_code").HasMaxLength(10);
+                address.Property(a => a.PostalCode).HasColumnName("address_postal_code").HasMaxLength(20);
+            });
+            
             entity.Property(cd => cd.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(cd => !cd.IsDeleted);
@@ -343,15 +468,22 @@ public class PostgreSqlDbContext : DbContext
             // Relationship
             entity.HasOne(cd => cd.Node)
                 .WithOne(n => n.CompanyDetails)
-                .HasForeignKey<CompanyDetailsEf>(cd => cd.NodeId)
+                .HasForeignKey<CompanyDetails>(cd => cd.NodeId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        modelBuilder.Entity<DepartmentDetailsEf>(entity =>
+        modelBuilder.Entity<DepartmentDetails>(entity =>
         {
             entity.HasKey(dd => dd.Id);
             entity.Property(dd => dd.NodeId).IsRequired();
-            entity.Property(dd => dd.CostCenter).HasMaxLength(30);
+            
+            // Value object conversion
+            entity.Property(dd => dd.CostCenter)
+                .HasMaxLength(30)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? CostCenter.Create(v) : null);
+            
             entity.Property(dd => dd.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(dd => !dd.IsDeleted);
@@ -363,17 +495,29 @@ public class PostgreSqlDbContext : DbContext
             // Relationship
             entity.HasOne(dd => dd.Node)
                 .WithOne(n => n.DepartmentDetails)
-                .HasForeignKey<DepartmentDetailsEf>(dd => dd.NodeId)
+                .HasForeignKey<DepartmentDetails>(dd => dd.NodeId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
         // Asset configurations
-        modelBuilder.Entity<AssetEf>(entity =>
+        modelBuilder.Entity<Asset>(entity =>
         {
             entity.HasKey(a => a.Id);
             entity.Property(a => a.Name).IsRequired().HasMaxLength(500);
-            entity.Property(a => a.SerialNo).HasMaxLength(100);
-            entity.Property(a => a.AssetTag).HasMaxLength(50);
+            
+            // Value object conversions
+            entity.Property(a => a.SerialNo)
+                .HasMaxLength(100)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? SerialNumber.Create(v) : null);
+            
+            entity.Property(a => a.AssetTag)
+                .HasMaxLength(50)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? AssetTag.Create(v) : null);
+            
             entity.Property(a => a.Barcode).HasMaxLength(100);
             entity.Property(a => a.QRCode).HasMaxLength(500);
             entity.Property(a => a.RFIDTag).HasMaxLength(100);
@@ -381,6 +525,20 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(a => a.InvoiceNo).HasMaxLength(50);
             entity.Property(a => a.LocationCode).HasMaxLength(50);
             entity.Property(a => a.Notes).HasMaxLength(2000);
+            
+            // IT/Software Specific - Value object conversions
+            entity.Property(a => a.IPAddress)
+                .HasMaxLength(45)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? IPAddress.Create(v) : null);
+            
+            entity.Property(a => a.MACAddress)
+                .HasMaxLength(17)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? MACAddress.Create(v) : null);
+            
             entity.Property(a => a.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(a => !a.IsDeleted);
@@ -405,39 +563,29 @@ public class PostgreSqlDbContext : DbContext
             entity.HasIndex(a => a.LocationId).HasDatabaseName("ix_assets_location_id");
             entity.HasIndex(a => a.CountryId).HasDatabaseName("ix_assets_country_id");
             entity.HasIndex(a => a.OwnerId).HasDatabaseName("ix_assets_owner_id");
-            entity.HasIndex(a => a.UsageStatusId).HasDatabaseName("ix_assets_usage_status_id");
-            entity.HasIndex(a => a.LifecycleStatusId).HasDatabaseName("ix_assets_lifecycle_status_id");
             entity.HasIndex(a => a.SupplierId).HasDatabaseName("ix_assets_supplier_id");
 
             // Relationships
             entity.HasOne(a => a.Company).WithMany().HasForeignKey(a => a.CompanyId).OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(a => a.AssetType).WithMany(at => at.Assets).HasForeignKey(a => a.AssetTypeId)
+            entity.HasOne(a => a.AssetType).WithMany().HasForeignKey(a => a.AssetTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(a => a.Category).WithMany(c => c.Assets).HasForeignKey(a => a.CategoryId)
+            entity.HasOne(a => a.Category).WithMany().HasForeignKey(a => a.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
             entity.HasOne(a => a.Model).WithMany(m => m.Assets).HasForeignKey(a => a.ModelId)
                 .OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(a => a.Manufacturer).WithMany(m => m.Assets).HasForeignKey(a => a.ManufacturerId)
+            entity.HasOne(a => a.Manufacturer).WithMany().HasForeignKey(a => a.ManufacturerId)
                 .OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(a => a.Condition).WithMany(c => c.Assets).HasForeignKey(a => a.ConditionId)
+            entity.HasOne(a => a.Condition).WithMany().HasForeignKey(a => a.ConditionId)
                 .OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(a => a.Location).WithMany(l => l.Assets).HasForeignKey(a => a.LocationId)
+            entity.HasOne(a => a.Location).WithMany().HasForeignKey(a => a.LocationId)
                 .OnDelete(DeleteBehavior.Restrict);
             entity.HasOne(a => a.Country).WithMany().HasForeignKey(a => a.CountryId).OnDelete(DeleteBehavior.Restrict);
             entity.HasOne(a => a.Owner).WithMany().HasForeignKey(a => a.OwnerId).OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(a => a.UsageStatus).WithMany(us => us.Assets).HasForeignKey(a => a.UsageStatusId)
-                .OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(a => a.LifecycleStatus).WithMany(ls => ls.Assets).HasForeignKey(a => a.LifecycleStatusId)
-                .OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(a => a.Supplier).WithMany(s => s.Assets).HasForeignKey(a => a.SupplierId)
-                .OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(a => a.CreatedBy).WithMany().HasForeignKey(a => a.CreatedById)
-                .OnDelete(DeleteBehavior.Restrict);
-            entity.HasOne(a => a.UpdatedBy).WithMany().HasForeignKey(a => a.UpdatedById)
+            entity.HasOne(a => a.Supplier).WithMany().HasForeignKey(a => a.SupplierId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<AssetEventEf>(entity =>
+        modelBuilder.Entity<AssetEvent>(entity =>
         {
             entity.HasKey(ae => ae.Id);
             entity.Property(ae => ae.EventCode).IsRequired().HasMaxLength(50);
@@ -450,19 +598,16 @@ public class PostgreSqlDbContext : DbContext
 
             // Indexes
             entity.HasIndex(ae => ae.AssetId).HasDatabaseName("ix_asset_events_asset_id");
-            entity.HasIndex(ae => ae.EventTypeId).HasDatabaseName("ix_asset_events_event_type_id");
             entity.HasIndex(ae => ae.ActorId).HasDatabaseName("ix_asset_events_actor_id");
             entity.HasIndex(ae => ae.At).HasDatabaseName("ix_asset_events_at");
 
             // Relationships
             entity.HasOne(ae => ae.Asset).WithMany(a => a.AssetEvents).HasForeignKey(ae => ae.AssetId)
                 .OnDelete(DeleteBehavior.Cascade);
-            entity.HasOne(ae => ae.EventType).WithMany(aet => aet.AssetEvents).HasForeignKey(ae => ae.EventTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
             entity.HasOne(ae => ae.Actor).WithMany().HasForeignKey(ae => ae.ActorId).OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<AssignmentEf>(entity =>
+        modelBuilder.Entity<Assignment>(entity =>
         {
             entity.HasKey(a => a.Id);
             entity.Property(a => a.AssigneeType).IsRequired().HasMaxLength(50);
@@ -484,7 +629,7 @@ public class PostgreSqlDbContext : DbContext
             entity.HasOne(a => a.ByUser).WithMany().HasForeignKey(a => a.ByUserId).OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<AttachmentEf>(entity =>
+        modelBuilder.Entity<Attachment>(entity =>
         {
             entity.HasKey(att => att.Id);
             entity.Property(att => att.FileName).HasMaxLength(255);
@@ -505,7 +650,7 @@ public class PostgreSqlDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<FinanceEntryEf>(entity =>
+        modelBuilder.Entity<FinanceEntry>(entity =>
         {
             entity.HasKey(fe => fe.Id);
             entity.Property(fe => fe.EntryType).IsRequired().HasMaxLength(50);
@@ -526,7 +671,7 @@ public class PostgreSqlDbContext : DbContext
         });
 
         // Categories & Types configurations
-        modelBuilder.Entity<AssetCategoryEf>(entity =>
+        modelBuilder.Entity<AssetCategory>(entity =>
         {
             entity.HasKey(ac => ac.Id);
             entity.Property(ac => ac.Name).IsRequired().HasMaxLength(200);
@@ -548,7 +693,14 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(ac => ac.Aliases).HasColumnType("text");
             entity.Property(ac => ac.InternalNotes).HasColumnType("text");
             entity.Property(ac => ac.IconName).HasMaxLength(100);
-            entity.Property(ac => ac.IconUrl).HasMaxLength(500);
+            
+            // Value object conversion
+            entity.Property(ac => ac.IconUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
             entity.Property(ac => ac.Color).HasMaxLength(20);
             entity.Property(ac => ac.IsDeleted).HasDefaultValue(false);
 
@@ -569,7 +721,7 @@ public class PostgreSqlDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<AssetTypeEf>(entity =>
+        modelBuilder.Entity<AssetType>(entity =>
         {
             entity.HasKey(at => at.Id);
             entity.Property(at => at.Code).IsRequired().HasMaxLength(20);
@@ -602,7 +754,14 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(at => at.InternalNotes).HasColumnType("text");
             entity.Property(at => at.ProcurementNotes).HasColumnType("text");
             entity.Property(at => at.IconName).HasMaxLength(100);
-            entity.Property(at => at.IconUrl).HasMaxLength(500);
+            
+            // Value object conversion
+            entity.Property(at => at.IconUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
             entity.Property(at => at.Color).HasMaxLength(20);
             entity.Property(at => at.IsDeleted).HasDefaultValue(false);
 
@@ -624,7 +783,7 @@ public class PostgreSqlDbContext : DbContext
         });
 
         // Status configurations
-        modelBuilder.Entity<UsageStatusEf>(entity =>
+        modelBuilder.Entity<UsageStatus>(entity =>
         {
             entity.HasKey(us => us.Id);
             entity.Property(us => us.Code).IsRequired().HasMaxLength(20);
@@ -638,7 +797,7 @@ public class PostgreSqlDbContext : DbContext
                 .HasDatabaseName("ix_usage_statuses_code");
         });
 
-        modelBuilder.Entity<LifecycleStatusEf>(entity =>
+        modelBuilder.Entity<LifecycleStatus>(entity =>
         {
             entity.HasKey(ls => ls.Id);
             entity.Property(ls => ls.Code).IsRequired().HasMaxLength(20);
@@ -652,7 +811,7 @@ public class PostgreSqlDbContext : DbContext
                 .HasDatabaseName("ix_lifecycle_statuses_code");
         });
 
-        modelBuilder.Entity<AssetEventTypeEf>(entity =>
+        modelBuilder.Entity<AssetEventType>(entity =>
         {
             entity.HasKey(aet => aet.Id);
             entity.Property(aet => aet.Code).IsRequired().HasMaxLength(20);
@@ -666,7 +825,7 @@ public class PostgreSqlDbContext : DbContext
                 .HasDatabaseName("ix_asset_event_types_code");
         });
 
-        modelBuilder.Entity<AssetConditionEf>(entity =>
+        modelBuilder.Entity<AssetCondition>(entity =>
         {
             entity.HasKey(ac => ac.Id);
             entity.Property(ac => ac.Name).IsRequired().HasMaxLength(100);
@@ -679,33 +838,39 @@ public class PostgreSqlDbContext : DbContext
         });
 
         // Geography & Location configurations
-        modelBuilder.Entity<CountryEf>(entity =>
+        modelBuilder.Entity<Country>(entity =>
         {
             entity.HasKey(c => c.Id);
+            
+            // Value object conversion
+            entity.Property(c => c.Code)
+                .IsRequired()
+                .HasMaxLength(2)
+                .HasConversion(
+                    v => v.Value,
+                    v => CountryCode.Create(v));
+            
             entity.Property(c => c.Name).IsRequired().HasMaxLength(100);
-            entity.Property(c => c.Code).IsRequired().HasMaxLength(3);
-            entity.Property(c => c.Alpha3Code).HasMaxLength(3);
+            entity.Property(c => c.Iso3Code).HasMaxLength(3);
             entity.Property(c => c.NumericCode).HasMaxLength(3);
             entity.Property(c => c.Capital).HasMaxLength(100);
             entity.Property(c => c.Region).HasMaxLength(50);
             entity.Property(c => c.SubRegion).HasMaxLength(50);
             entity.Property(c => c.CurrencyCode).HasMaxLength(3);
             entity.Property(c => c.CurrencyName).HasMaxLength(50);
-            entity.Property(c => c.CallingCode).HasMaxLength(10);
-            entity.Property(c => c.TopLevelDomain).HasMaxLength(5);
+            entity.Property(c => c.PhoneCode).HasMaxLength(10);
+            entity.Property(c => c.TLD).HasMaxLength(5);
             entity.Property(c => c.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(c => !c.IsDeleted);
 
             // Indexes
-            entity.HasIndex(c => c.Code).IsUnique().HasFilter("is_deleted = false")
-                .HasDatabaseName("ix_countries_code");
-            entity.HasIndex(c => c.Alpha3Code).IsUnique().HasFilter("is_deleted = false AND alpha3_code IS NOT NULL")
-                .HasDatabaseName("ix_countries_alpha3_code");
+            entity.HasIndex(c => c.Iso3Code).IsUnique().HasFilter("is_deleted = false AND iso3_code IS NOT NULL")
+                .HasDatabaseName("ix_countries_iso3_code");
             entity.HasIndex(c => c.Name).HasDatabaseName("ix_countries_name");
         });
 
-        modelBuilder.Entity<LocationEf>(entity =>
+        modelBuilder.Entity<Location>(entity =>
         {
             entity.HasKey(l => l.Id);
             entity.Property(l => l.Name).IsRequired().HasMaxLength(200);
@@ -738,31 +903,62 @@ public class PostgreSqlDbContext : DbContext
         });
 
         // Manufacturers & Models configurations
-        modelBuilder.Entity<ManufacturerEf>(entity =>
+        modelBuilder.Entity<Manufacturer>(entity =>
         {
             entity.HasKey(m => m.Id);
             entity.Property(m => m.Name).IsRequired().HasMaxLength(200);
-            entity.Property(m => m.Code).HasMaxLength(50);
             entity.Property(m => m.Description).HasMaxLength(1000);
-            entity.Property(m => m.Website).HasMaxLength(500);
-            entity.Property(m => m.LogoUrl).HasMaxLength(500);
             entity.Property(m => m.HeadquartersAddress).HasMaxLength(500);
-            entity.Property(m => m.ContactEmail).HasMaxLength(255);
-            entity.Property(m => m.ContactPhone).HasMaxLength(50);
+            entity.Property(m => m.Email).HasMaxLength(255);
+            entity.Property(m => m.Phone).HasMaxLength(50);
             entity.Property(m => m.TaxId).HasMaxLength(50);
             entity.Property(m => m.RegistrationNumber).HasMaxLength(50);
-            entity.Property(m => m.Industry).HasMaxLength(100);
+            entity.Property(m => m.IndustryType).HasMaxLength(100);
             entity.Property(m => m.Certifications).HasColumnType("text");
-            entity.Property(m => m.WarrantyTerms).HasColumnType("text");
-            entity.Property(m => m.SupportContact).HasMaxLength(500);
-            entity.Property(m => m.Notes).HasColumnType("text");
+            entity.Property(m => m.WarrantyPolicy).HasColumnType("text");
+            
+            // Value object conversions for URLs
+            entity.Property(m => m.LogoUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(m => m.Website)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(m => m.SupportWebsite)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(m => m.LinkedInUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(m => m.FacebookUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(m => m.SLADocumentUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
             entity.Property(m => m.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(m => !m.IsDeleted);
 
             // Indexes
-            entity.HasIndex(m => m.Code).IsUnique().HasFilter("is_deleted = false AND code IS NOT NULL")
-                .HasDatabaseName("ix_manufacturers_code");
             entity.HasIndex(m => m.Name).HasDatabaseName("ix_manufacturers_name");
             entity.HasIndex(m => m.CountryId).HasDatabaseName("ix_manufacturers_country_id");
             entity.HasIndex(m => m.IsActive).HasDatabaseName("ix_manufacturers_is_active");
@@ -771,7 +967,7 @@ public class PostgreSqlDbContext : DbContext
             entity.HasOne(m => m.Country).WithMany().HasForeignKey(m => m.CountryId).OnDelete(DeleteBehavior.Restrict);
         });
 
-        modelBuilder.Entity<ModelEf>(entity =>
+        modelBuilder.Entity<Model>(entity =>
         {
             entity.HasKey(m => m.Id);
             entity.Property(m => m.Name).IsRequired().HasMaxLength(300);
@@ -796,7 +992,58 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(m => m.PowerRequirements).HasMaxLength(200);
             entity.Property(m => m.EnergyRating).HasMaxLength(50);
             entity.Property(m => m.WarrantyType).HasMaxLength(100);
-            entity.Property(m => m.Currency).HasMaxLength(3);
+            entity.Property(m => m.MSRPCurrency).HasMaxLength(3);
+            entity.Property(m => m.CostCurrency).HasMaxLength(3);
+            
+            // Value object conversions for URLs
+            entity.Property(m => m.SupportDocumentUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(m => m.UserManualUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(m => m.QuickStartGuideUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(m => m.ImageUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(m => m.ThumbnailUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(m => m.ProductPageUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(m => m.DatasheetUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(m => m.VideoUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
             entity.Property(m => m.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(m => !m.IsDeleted);
@@ -822,35 +1069,195 @@ public class PostgreSqlDbContext : DbContext
         });
 
         // Suppliers configuration
-        modelBuilder.Entity<SupplierEf>(entity =>
+        modelBuilder.Entity<Supplier>(entity =>
         {
             entity.HasKey(s => s.Id);
             entity.Property(s => s.Name).IsRequired().HasMaxLength(200);
-            entity.Property(s => s.Code).HasMaxLength(50);
+            entity.Property(s => s.SupplierCode).HasMaxLength(50);
             entity.Property(s => s.Description).HasMaxLength(1000);
-            entity.Property(s => s.Website).HasMaxLength(500);
-            entity.Property(s => s.LogoUrl).HasMaxLength(500);
             entity.Property(s => s.Address).HasMaxLength(500);
-            entity.Property(s => s.ContactEmail).HasMaxLength(255);
-            entity.Property(s => s.ContactPhone).HasMaxLength(50);
-            entity.Property(s => s.TaxId).HasMaxLength(50);
+            entity.Property(s => s.TaxCode).HasMaxLength(50);
+            entity.Property(s => s.VATNumber).HasMaxLength(50);
             entity.Property(s => s.RegistrationNumber).HasMaxLength(50);
-            entity.Property(s => s.Industry).HasMaxLength(100);
+            entity.Property(s => s.IndustryType).HasMaxLength(100);
             entity.Property(s => s.PaymentTerms).HasMaxLength(200);
             entity.Property(s => s.ContractStartDate).HasColumnType("date");
             entity.Property(s => s.ContractEndDate).HasColumnType("date");
-            entity.Property(s => s.Notes).HasColumnType("text");
+            
+            // Value object conversions
+            entity.Property(s => s.PostalCode)
+                .HasMaxLength(20)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? PostalCode.Create(v) : null);
+            
+            entity.Property(s => s.Website)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(s => s.Email)
+                .HasMaxLength(255)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Email.Create(v) : null);
+            
+            entity.Property(s => s.Phone)
+                .HasMaxLength(20)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? PhoneNumber.Create(v, null) : null);
+            
+            entity.Property(s => s.Fax)
+                .HasMaxLength(20)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? PhoneNumber.Create(v, null) : null);
+            
+            entity.Property(s => s.MobilePhone)
+                .HasMaxLength(20)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? PhoneNumber.Create(v, null) : null);
+            
+            entity.Property(s => s.ContactPersonEmail)
+                .HasMaxLength(255)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Email.Create(v) : null);
+            
+            entity.Property(s => s.ContactPersonPhone)
+                .HasMaxLength(20)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? PhoneNumber.Create(v, null) : null);
+            
+            entity.Property(s => s.AccountManagerEmail)
+                .HasMaxLength(255)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Email.Create(v) : null);
+            
+            entity.Property(s => s.AccountManagerPhone)
+                .HasMaxLength(20)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? PhoneNumber.Create(v, null) : null);
+            
+            // Money value objects - stored as complex owned entities
+            entity.OwnsOne(s => s.AnnualRevenue, money =>
+            {
+                money.Property(m => m.Amount).HasColumnName("annual_revenue_amount");
+                money.Property(m => m.Currency).HasColumnName("annual_revenue_currency").HasMaxLength(3);
+            });
+            
+            entity.OwnsOne(s => s.CreditLimit, money =>
+            {
+                money.Property(m => m.Amount).HasColumnName("credit_limit_amount");
+                money.Property(m => m.Currency).HasColumnName("credit_limit_currency").HasMaxLength(3);
+            });
+            
+            entity.Property(s => s.DiscountRate)
+                .HasConversion(
+                    v => v != null ? v.Value : (decimal?)null,
+                    v => v != null ? Percentage.Create(v.Value) : null);
+            
+            entity.Property(s => s.ContractDocumentUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.OwnsOne(s => s.MinimumOrderValue, money =>
+            {
+                money.Property(m => m.Amount).HasColumnName("minimum_order_value_amount");
+                money.Property(m => m.Currency).HasColumnName("minimum_order_value_currency").HasMaxLength(3);
+            });
+            
+            entity.Property(s => s.SupportEmail)
+                .HasMaxLength(255)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Email.Create(v) : null);
+            
+            entity.Property(s => s.SupportPhone)
+                .HasMaxLength(20)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? PhoneNumber.Create(v, null) : null);
+            
+            entity.Property(s => s.SLADocumentUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.OwnsOne(s => s.InsuranceCoverage, money =>
+            {
+                money.Property(m => m.Amount).HasColumnName("insurance_coverage_amount");
+                money.Property(m => m.Currency).HasColumnName("insurance_coverage_currency").HasMaxLength(3);
+            });
+            
+            entity.OwnsOne(s => s.TotalSpent, money =>
+            {
+                money.Property(m => m.Amount).HasColumnName("total_spent_amount");
+                money.Property(m => m.Currency).HasColumnName("total_spent_currency").HasMaxLength(3);
+            });
+            
+            entity.OwnsOne(s => s.AverageOrderValue, money =>
+            {
+                money.Property(m => m.Amount).HasColumnName("average_order_value_amount");
+                money.Property(m => m.Currency).HasColumnName("average_order_value_currency").HasMaxLength(3);
+            });
+            
+            entity.Property(s => s.W9FormUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(s => s.CertificateOfInsuranceUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            entity.Property(s => s.BusinessLicenseUrl)
+                .HasMaxLength(500)
+                .HasConversion(
+                    v => v != null ? v.Value : null,
+                    v => v != null ? Url.Create(v) : null);
+            
+            // Rating conversions
+            entity.Property(s => s.QualityRating)
+                .HasConversion(
+                    v => v != null ? (int?)v.Value : null,
+                    v => v != null ? Rating.Create(v.Value) : null);
+            
+            entity.Property(s => s.DeliveryRating)
+                .HasConversion(
+                    v => v != null ? (int?)v.Value : null,
+                    v => v != null ? Rating.Create(v.Value) : null);
+            
+            entity.Property(s => s.ServiceRating)
+                .HasConversion(
+                    v => v != null ? (int?)v.Value : null,
+                    v => v != null ? Rating.Create(v.Value) : null);
+            
+            entity.Property(s => s.PriceRating)
+                .HasConversion(
+                    v => v != null ? (int?)v.Value : null,
+                    v => v != null ? Rating.Create(v.Value) : null);
+            
             entity.Property(s => s.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(s => !s.IsDeleted);
 
             // Indexes
-            entity.HasIndex(s => s.Code).IsUnique().HasFilter("is_deleted = false AND code IS NOT NULL")
-                .HasDatabaseName("ix_suppliers_code");
+            entity.HasIndex(s => s.SupplierCode).IsUnique().HasFilter("is_deleted = false AND supplier_code IS NOT NULL")
+                .HasDatabaseName("ix_suppliers_supplier_code");
             entity.HasIndex(s => s.Name).HasDatabaseName("ix_suppliers_name");
-            entity.HasIndex(s => s.ContactEmail).IsUnique()
-                .HasFilter("is_deleted = false AND contact_email IS NOT NULL")
-                .HasDatabaseName("ix_suppliers_contact_email");
             entity.HasIndex(s => s.CountryId).HasDatabaseName("ix_suppliers_country_id");
             entity.HasIndex(s => s.IsActive).HasDatabaseName("ix_suppliers_is_active");
 
@@ -859,7 +1266,7 @@ public class PostgreSqlDbContext : DbContext
         });
 
         // SigningKey configuration (for JWKS)
-        modelBuilder.Entity<SigningKeyEf>(entity =>
+        modelBuilder.Entity<SigningKey>(entity =>
         {
             entity.HasKey(sk => sk.Id);
             entity.Property(sk => sk.KeyId).IsRequired().HasMaxLength(100);
@@ -886,7 +1293,7 @@ public class PostgreSqlDbContext : DbContext
         });
 
         // MenuItem configuration
-        modelBuilder.Entity<MenuItemEf>(entity =>
+        modelBuilder.Entity<MenuItem>(entity =>
         {
             entity.HasKey(m => m.Id);
             entity.Property(m => m.Code).IsRequired().HasMaxLength(100);
@@ -921,7 +1328,7 @@ public class PostgreSqlDbContext : DbContext
         });
 
         // SystemSetting configuration
-        modelBuilder.Entity<SystemSettingEf>(entity =>
+        modelBuilder.Entity<SystemSetting>(entity =>
         {
             entity.HasKey(s => s.Id);
             entity.Property(s => s.Key).IsRequired().HasMaxLength(200);
@@ -942,7 +1349,7 @@ public class PostgreSqlDbContext : DbContext
         });
 
         // EmailTemplate configuration
-        modelBuilder.Entity<EmailTemplateEf>(entity =>
+        modelBuilder.Entity<EmailTemplate>(entity =>
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Code).IsRequired().HasMaxLength(100);

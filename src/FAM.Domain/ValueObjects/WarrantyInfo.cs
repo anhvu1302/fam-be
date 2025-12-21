@@ -7,11 +7,16 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class WarrantyInfo : ValueObject
 {
-    public DateTime? StartDate { get; }
-    public DateTime? EndDate { get; }
-    public int? DurationMonths { get; }
-    public string? Terms { get; }
-    public string? Provider { get; }
+    public DateTime? StartDate { get; private set; }
+    public DateTime? EndDate { get; private set; }
+    public int? DurationMonths { get; private set; }
+    public string? Terms { get; private set; }
+    public string? Provider { get; private set; }
+
+    // Constructor for EF Core
+    private WarrantyInfo()
+    {
+    }
 
     private WarrantyInfo(
         DateTime? startDate,

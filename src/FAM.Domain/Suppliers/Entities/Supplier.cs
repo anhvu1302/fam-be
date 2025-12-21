@@ -14,7 +14,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     IHasDeleter
 {
     // Basic Information
-    public int? CompanyId { get; private set; }
+    public long? CompanyId { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public string? LegalName { get; private set; }
     public string? ShortName { get; private set; }
@@ -29,7 +29,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public string? GLN { get; private set; } // Global Location Number
 
     // Location
-    public int? CountryId { get; private set; }
+    public long? CountryId { get; private set; }
     public string? Address { get; private set; }
     public string? City { get; private set; }
     public string? State { get; private set; }
@@ -164,7 +164,6 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     // Statistics
     public int? TotalOrders { get; private set; }
     public Money? TotalSpent { get; private set; }
-    public string? TotalSpentCurrency { get; private set; }
     public Money? AverageOrderValue { get; private set; }
 
     // Documents & Attachments
@@ -190,7 +189,6 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
 
     // public Companies.Company? Company { get; set; }
     public Country? Country { get; set; }
-    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
 
     private Supplier()
     {

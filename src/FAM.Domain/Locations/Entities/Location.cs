@@ -30,13 +30,13 @@ public class Location : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public User? DeletedBy { get; set; }
 
     public string Name { get; private set; } = string.Empty;
-    public int? CompanyId { get; private set; }
+    public long? CompanyId { get; private set; }
     public string? Code { get; private set; }
-    public int? ParentId { get; private set; }
+    public long? ParentId { get; private set; }
     public string? Type { get; private set; }
     public string? FullPath { get; private set; }
     public string? PathIds { get; private set; }
-    public int? CountryId { get; private set; }
+    public long? CountryId { get; private set; }
     public string? Description { get; private set; }
 
     // Navigation properties

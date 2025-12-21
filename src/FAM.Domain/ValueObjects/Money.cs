@@ -7,8 +7,13 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class Money : ValueObject
 {
-    public decimal Amount { get; }
-    public string Currency { get; }
+    public decimal Amount { get; private set; }
+    public string Currency { get; private set; } = null!;
+
+    // Constructor for EF Core
+    private Money()
+    {
+    }
 
     private Money(decimal amount, string currency)
     {

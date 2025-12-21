@@ -3,6 +3,7 @@ using FAM.Application.Auth.Shared;
 using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
 using FAM.Domain.ValueObjects;
@@ -164,8 +165,8 @@ public class LoginCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<UnauthorizedAccessException>()
-            .WithMessage("Invalid username/email or password");
+        await act.Should().ThrowAsync<UnauthorizedException>()
+            .WithMessage("Username or email not found");
 
         _mockUserRepository.Verify(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -202,8 +203,8 @@ public class LoginCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<UnauthorizedAccessException>()
-            .WithMessage("Invalid username/email or password");
+        await act.Should().ThrowAsync<UnauthorizedException>()
+            .WithMessage("Invalid password");
 
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once); // Failed login recorded
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -233,8 +234,8 @@ public class LoginCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<UnauthorizedAccessException>()
-            .WithMessage("Account is inactive");
+        await act.Should().ThrowAsync<UnauthorizedException>()
+            .WithMessage("Your account is not active. Please contact support");
     }
 
     [Fact]
@@ -267,7 +268,7 @@ public class LoginCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+        await act.Should().ThrowAsync<UnauthorizedException>()
             .WithMessage("*locked*");
     }
 

@@ -32,7 +32,7 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
     public string? DUNSNumber { get; private set; } // Dun & Bradstreet number
 
     // Location
-    public int? CountryId { get; private set; }
+    public long? CountryId { get; private set; }
     public string? HeadquartersAddress { get; private set; }
     public string? City { get; private set; }
     public string? State { get; private set; }
@@ -109,8 +109,7 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
     public User? DeletedBy { get; set; }
     public Country? Country { get; set; }
     public ICollection<Model> Models { get; set; } = new List<Model>();
-    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
-
+    
     private Manufacturer()
     {
     }

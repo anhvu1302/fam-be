@@ -1,5 +1,5 @@
+using FAM.Domain.Geography;
 using FAM.Infrastructure.Common.Seeding;
-using FAM.Infrastructure.PersistenceModels.Ef;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -35,7 +35,7 @@ public class CountrySeeder : BaseDataSeeder
 
         LogInfo("Seeding countries...");
 
-        var countries = new List<CountryEf>
+        var countries = new List<Country>
         {
             CreateCountry("AF", "AFG", "004", "Afghanistan", "Afghanistan", "Islamic Republic of Afghanistan",
                 "Asia", "Southern Asia", "Asia", 33.9391m, 67.7100m,
@@ -1029,7 +1029,7 @@ public class CountrySeeder : BaseDataSeeder
         LogInfo($"Created {countries.Count} countries");
     }
 
-    private static CountryEf CreateCountry(
+    private static Country CreateCountry(
         string code,
         string alpha3,
         string numeric,
@@ -1058,36 +1058,15 @@ public class CountrySeeder : BaseDataSeeder
         bool isUnMember = true,
         bool isIndependent = true)
     {
-        return new CountryEf
-        {
-            Code = code,
-            Alpha3Code = alpha3,
-            NumericCode = numeric,
-            Name = name,
-            NativeName = nativeName,
-            OfficialName = officialName,
-            Region = region,
-            SubRegion = subRegion,
-            Continent = continent,
-            Latitude = lat,
-            Longitude = lng,
-            CallingCode = callingCode,
-            TopLevelDomain = tld,
-            CurrencyCode = currencyCode,
-            CurrencyName = currencyName,
-            CurrencySymbol = currencySymbol,
-            PrimaryLanguage = primaryLanguage,
-            Languages = languages,
-            Capital = capital,
-            Nationality = nationality,
-            TimeZones = timeZones,
-            Flag = flag,
-            Population = population,
-            Area = area,
-            IsActive = true,
-            IsEUMember = isEuMember,
-            IsUNMember = isUnMember,
-            IsIndependent = isIndependent
-        };
+        var country = Country.Create(code, name, alpha3, numeric);
+        country.UpdateBasicInfo(name, nativeName, officialName);
+        country.UpdateRegionalInfo(region, subRegion, continent, lat, lng);
+        country.UpdateCommunication(callingCode, tld);
+        country.UpdateCurrency(currencyCode, currencyName, currencySymbol);
+        country.UpdateLanguage(primaryLanguage, languages);
+        country.UpdateAdministrative(capital, nationality, timeZones);
+        country.UpdateStatus(true, isEuMember, isUnMember, isIndependent);
+        country.UpdateAdditionalInfo(flag, null, population, area);
+        return country;
     }
 }

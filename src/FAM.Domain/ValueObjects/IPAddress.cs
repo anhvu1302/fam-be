@@ -9,8 +9,13 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class IPAddress : ValueObject
 {
-    public string Value { get; }
-    public IPAddressType Type { get; }
+    public string Value { get; private set; } = null!;
+    public IPAddressType Type { get; private set; }
+
+    // Constructor for EF Core
+    private IPAddress()
+    {
+    }
 
     private IPAddress(string value, IPAddressType type)
     {

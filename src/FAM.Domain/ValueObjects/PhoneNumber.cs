@@ -7,8 +7,13 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class PhoneNumber : ValueObject
 {
-    public string Value { get; }
-    public string? CountryCode { get; }
+    public string Value { get; private set; } = null!;
+    public string? CountryCode { get; private set; }
+
+    // Constructor for EF Core
+    private PhoneNumber()
+    {
+    }
 
     private PhoneNumber(string value, string? countryCode = null)
     {

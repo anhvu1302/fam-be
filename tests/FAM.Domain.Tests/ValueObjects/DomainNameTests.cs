@@ -96,7 +96,7 @@ public class DomainNameTests
         var domainName = DomainName.Create("example.com");
 
         // Act
-        string value = domainName;
+        string value = domainName!;
 
         // Assert
         value.Should().Be("example.com");

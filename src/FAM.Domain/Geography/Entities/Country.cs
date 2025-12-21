@@ -77,11 +77,11 @@ public class Country : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
     public User? CreatedBy { get; set; }
     public User? UpdatedBy { get; set; }
     public User? DeletedBy { get; set; }
-    public ICollection<Location> Locations { get; set; } = new List<Location>();
-    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
-    public ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
-    public ICollection<Manufacturer> Manufacturers { get; set; } = new List<Manufacturer>();
 
+    /// <summary>
+    /// Locations within this country (part of Country aggregate)
+    /// </summary>
+    public ICollection<Location> Locations { get; set; } = new List<Location>();
     private Country()
     {
     }

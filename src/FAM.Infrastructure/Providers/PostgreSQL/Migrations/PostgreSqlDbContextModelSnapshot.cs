@@ -17,12 +17,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("FAM.Domain.Storage.UploadSession", b =>
+            modelBuilder.Entity("FAM.Domain.Assets.Asset", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -31,14 +31,454 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("Checksum")
+                    b.Property<string>("AccountingCode")
                         .HasColumnType("text")
-                        .HasColumnName("checksum");
+                        .HasColumnName("accounting_code");
 
-                    b.Property<string>("ContentType")
+                    b.Property<decimal?>("AccumulatedDepreciation")
+                        .HasColumnType("numeric")
+                        .HasColumnName("accumulated_depreciation");
+
+                    b.Property<string>("AssetTag")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<long?>("AssetTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("asset_type_id");
+
+                    b.Property<string>("Barcode")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("barcode");
+
+                    b.Property<string>("CampaignCode")
+                        .HasColumnType("text")
+                        .HasColumnName("campaign_code");
+
+                    b.Property<long?>("CategoryId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("category_id");
+
+                    b.Property<string>("Color")
+                        .HasColumnType("text")
+                        .HasColumnName("color");
+
+                    b.Property<long?>("CompanyId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("company_id");
+
+                    b.Property<string>("ComplianceStatus")
+                        .HasColumnType("text")
+                        .HasColumnName("compliance_status");
+
+                    b.Property<long?>("ConditionId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("condition_id");
+
+                    b.Property<string>("CostCenter")
+                        .HasColumnType("text")
+                        .HasColumnName("cost_center");
+
+                    b.Property<long?>("CountryId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("country_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<decimal?>("CurrentBookValue")
+                        .HasColumnType("numeric")
+                        .HasColumnName("current_book_value");
+
+                    b.Property<string>("DataClassification")
+                        .HasColumnType("text")
+                        .HasColumnName("data_classification");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<long?>("DepartmentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("department_id");
+
+                    b.Property<string>("DepreciationMethod")
+                        .HasColumnType("text")
+                        .HasColumnName("depreciation_method");
+
+                    b.Property<string>("Dimensions")
+                        .HasColumnType("text")
+                        .HasColumnName("dimensions");
+
+                    b.Property<string>("DisposalMethod")
+                        .HasColumnType("text")
+                        .HasColumnName("disposal_method");
+
+                    b.Property<DateTime?>("EndOfLifeDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("end_of_life_date");
+
+                    b.Property<string>("EnergyRating")
+                        .HasColumnType("text")
+                        .HasColumnName("energy_rating");
+
+                    b.Property<int?>("EstimatedRemainingLifeMonths")
+                        .HasColumnType("integer")
+                        .HasColumnName("estimated_remaining_life_months");
+
+                    b.Property<string>("FundingSource")
+                        .HasColumnType("text")
+                        .HasColumnName("funding_source");
+
+                    b.Property<string>("GLAccount")
+                        .HasColumnType("text")
+                        .HasColumnName("glaccount");
+
+                    b.Property<string>("Hostname")
+                        .HasColumnType("text")
+                        .HasColumnName("hostname");
+
+                    b.Property<string>("IPAddress")
+                        .HasMaxLength(45)
+                        .HasColumnType("character varying(45)");
+
+                    b.Property<DateTime?>("InServiceDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("in_service_date");
+
+                    b.Property<DateTime?>("InsuranceExpiryDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("insurance_expiry_date");
+
+                    b.Property<string>("InsurancePolicyNo")
+                        .HasColumnType("text")
+                        .HasColumnName("insurance_policy_no");
+
+                    b.Property<decimal?>("InsuredValue")
+                        .HasColumnType("numeric")
+                        .HasColumnName("insured_value");
+
+                    b.Property<string>("InternalNotes")
+                        .HasColumnType("text")
+                        .HasColumnName("internal_notes");
+
+                    b.Property<string>("InvoiceNo")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("invoice_no");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsEnvironmentallyFriendly")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_environmentally_friendly");
+
+                    b.Property<DateTime?>("LastAuditDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_audit_date");
+
+                    b.Property<DateTime?>("LastDepreciationDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_depreciation_date");
+
+                    b.Property<DateTime?>("LastMaintenanceDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_maintenance_date");
+
+                    b.Property<int?>("LicenseCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("license_count");
+
+                    b.Property<DateTime?>("LicenseExpiryDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("license_expiry_date");
+
+                    b.Property<string>("LicenseKey")
+                        .HasColumnType("text")
+                        .HasColumnName("license_key");
+
+                    b.Property<string>("LifecycleCode")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("content_type");
+                        .HasColumnName("lifecycle_code");
+
+                    b.Property<long?>("LifecycleStatusId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("lifecycle_status_id");
+
+                    b.Property<string>("LocationCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("location_code");
+
+                    b.Property<long?>("LocationId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("location_id");
+
+                    b.Property<long?>("LocationId1")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("MACAddress")
+                        .HasMaxLength(17)
+                        .HasColumnType("character varying(17)");
+
+                    b.Property<string>("MaintenanceContractNo")
+                        .HasColumnType("text")
+                        .HasColumnName("maintenance_contract_no");
+
+                    b.Property<int?>("MaintenanceIntervalDays")
+                        .HasColumnType("integer")
+                        .HasColumnName("maintenance_interval_days");
+
+                    b.Property<long?>("ManufacturerId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("manufacturer_id");
+
+                    b.Property<string>("Material")
+                        .HasColumnType("text")
+                        .HasColumnName("material");
+
+                    b.Property<long?>("ModelId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("model_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("name");
+
+                    b.Property<DateTime?>("NextAuditDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("next_audit_date");
+
+                    b.Property<DateTime?>("NextMaintenanceDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("next_maintenance_date");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("notes");
+
+                    b.Property<string>("OperatingSystem")
+                        .HasColumnType("text")
+                        .HasColumnName("operating_system");
+
+                    b.Property<long?>("OwnerId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("owner_id");
+
+                    b.Property<decimal?>("PowerConsumption")
+                        .HasColumnType("numeric")
+                        .HasColumnName("power_consumption");
+
+                    b.Property<string>("ProjectCode")
+                        .HasColumnType("text")
+                        .HasColumnName("project_code");
+
+                    b.Property<decimal?>("PurchaseCost")
+                        .HasColumnType("numeric")
+                        .HasColumnName("purchase_cost");
+
+                    b.Property<DateTime?>("PurchaseDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("purchase_date");
+
+                    b.Property<string>("PurchaseOrderNo")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("purchase_order_no");
+
+                    b.Property<string>("QRCode")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("qrcode");
+
+                    b.Property<string>("RFIDTag")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("rfidtag");
+
+                    b.Property<decimal?>("ReplacementCost")
+                        .HasColumnType("numeric")
+                        .HasColumnName("replacement_cost");
+
+                    b.Property<bool>("RequiresBackgroundCheck")
+                        .HasColumnType("boolean")
+                        .HasColumnName("requires_background_check");
+
+                    b.Property<decimal?>("ResidualValue")
+                        .HasColumnType("numeric")
+                        .HasColumnName("residual_value");
+
+                    b.Property<string>("RiskLevel")
+                        .HasColumnType("text")
+                        .HasColumnName("risk_level");
+
+                    b.Property<string>("SecurityClassification")
+                        .HasColumnType("text")
+                        .HasColumnName("security_classification");
+
+                    b.Property<string>("SerialNo")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("ServiceLevel")
+                        .HasColumnType("text")
+                        .HasColumnName("service_level");
+
+                    b.Property<string>("SoftwareVersion")
+                        .HasColumnType("text")
+                        .HasColumnName("software_version");
+
+                    b.Property<long?>("SupplierId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("supplier_id");
+
+                    b.Property<DateTime?>("SupportExpiryDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("support_expiry_date");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.Property<string>("UsageCode")
+                        .HasColumnType("text")
+                        .HasColumnName("usage_code");
+
+                    b.Property<long?>("UsageStatusId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("usage_status_id");
+
+                    b.Property<int?>("UsefulLifeMonths")
+                        .HasColumnType("integer")
+                        .HasColumnName("useful_life_months");
+
+                    b.Property<int?>("WarrantyMonths")
+                        .HasColumnType("integer")
+                        .HasColumnName("warranty_months");
+
+                    b.Property<string>("WarrantyTerms")
+                        .HasColumnType("text")
+                        .HasColumnName("warranty_terms");
+
+                    b.Property<DateTime?>("WarrantyUntil")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("warranty_until");
+
+                    b.Property<decimal?>("Weight")
+                        .HasColumnType("numeric")
+                        .HasColumnName("weight");
+
+                    b.HasKey("Id")
+                        .HasName("pk_assets");
+
+                    b.HasIndex("AssetTag")
+                        .IsUnique()
+                        .HasDatabaseName("ix_assets_asset_tag")
+                        .HasFilter("is_deleted = false AND asset_tag IS NOT NULL");
+
+                    b.HasIndex("AssetTypeId")
+                        .HasDatabaseName("ix_assets_asset_type_id");
+
+                    b.HasIndex("Barcode")
+                        .IsUnique()
+                        .HasDatabaseName("ix_assets_barcode")
+                        .HasFilter("is_deleted = false AND barcode IS NOT NULL");
+
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("ix_assets_category_id");
+
+                    b.HasIndex("CompanyId")
+                        .HasDatabaseName("ix_assets_company_id");
+
+                    b.HasIndex("ConditionId")
+                        .HasDatabaseName("ix_assets_condition_id");
+
+                    b.HasIndex("CountryId")
+                        .HasDatabaseName("ix_assets_country_id");
+
+                    b.HasIndex("LifecycleStatusId")
+                        .HasDatabaseName("ix_assets_lifecycle_status_id");
+
+                    b.HasIndex("LocationId")
+                        .HasDatabaseName("ix_assets_location_id");
+
+                    b.HasIndex("LocationId1");
+
+                    b.HasIndex("ManufacturerId")
+                        .HasDatabaseName("ix_assets_manufacturer_id");
+
+                    b.HasIndex("ModelId")
+                        .HasDatabaseName("ix_assets_model_id");
+
+                    b.HasIndex("OwnerId")
+                        .HasDatabaseName("ix_assets_owner_id");
+
+                    b.HasIndex("QRCode")
+                        .IsUnique()
+                        .HasDatabaseName("ix_assets_qr_code")
+                        .HasFilter("is_deleted = false AND qrcode IS NOT NULL");
+
+                    b.HasIndex("RFIDTag")
+                        .IsUnique()
+                        .HasDatabaseName("ix_assets_rfid_tag")
+                        .HasFilter("is_deleted = false AND rfidtag IS NOT NULL");
+
+                    b.HasIndex("SerialNo")
+                        .IsUnique()
+                        .HasDatabaseName("ix_assets_serial_no")
+                        .HasFilter("is_deleted = false AND serial_no IS NOT NULL");
+
+                    b.HasIndex("SupplierId")
+                        .HasDatabaseName("ix_assets_supplier_id");
+
+                    b.HasIndex("UsageStatusId")
+                        .HasDatabaseName("ix_assets_usage_status_id");
+
+                    b.ToTable("assets");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Assets.AssetEvent", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("ActorId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("actor_id");
+
+                    b.Property<long>("AssetId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("asset_id");
+
+                    b.Property<DateTime>("At")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("at");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -52,72 +492,632 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
-                    b.Property<int?>("EntityId")
-                        .HasColumnType("integer")
-                        .HasColumnName("entity_id");
-
-                    b.Property<string>("EntityType")
-                        .HasColumnType("text")
-                        .HasColumnName("entity_type");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("file_name");
-
-                    b.Property<long>("FileSize")
+                    b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("file_size");
+                        .HasColumnName("deleted_by_id");
 
-                    b.Property<int>("FileType")
-                        .HasColumnType("integer")
-                        .HasColumnName("file_type");
+                    b.Property<string>("EventCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("event_code");
 
-                    b.Property<string>("FinalKey")
-                        .HasColumnType("text")
-                        .HasColumnName("final_key");
+                    b.Property<long>("EventTypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("event_type_id");
 
-                    b.Property<string>("IdempotencyKey")
-                        .HasColumnType("text")
-                        .HasColumnName("idempotency_key");
+                    b.Property<string>("FromLifecycleCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("from_lifecycle_code");
 
                     b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
+                        .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("status");
+                    b.Property<string>("Note")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("note");
 
-                    b.Property<string>("TempKey")
-                        .IsRequired()
+                    b.Property<string>("Payload")
                         .HasColumnType("text")
-                        .HasColumnName("temp_key");
+                        .HasColumnName("payload");
+
+                    b.Property<string>("ToLifecycleCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("to_lifecycle_code");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<string>("UploadId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("upload_id");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("user_id");
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_upload_sessions");
+                        .HasName("pk_asset_events");
 
-                    b.ToTable("upload_sessions");
+                    b.HasIndex("ActorId")
+                        .HasDatabaseName("ix_asset_events_actor_id");
+
+                    b.HasIndex("AssetId")
+                        .HasDatabaseName("ix_asset_events_asset_id");
+
+                    b.HasIndex("At")
+                        .HasDatabaseName("ix_asset_events_at");
+
+                    b.HasIndex("EventTypeId")
+                        .HasDatabaseName("ix_asset_events_event_type_id");
+
+                    b.ToTable("asset_events");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetCategoryEf", b =>
+            modelBuilder.Entity("FAM.Domain.Assets.Assignment", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AssetId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("asset_id");
+
+                    b.Property<DateTime>("AssignedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("assigned_at");
+
+                    b.Property<long>("AssigneeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("assignee_id");
+
+                    b.Property<string>("AssigneeType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("assignee_type");
+
+                    b.Property<long?>("ByUserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("by_user_id");
+
+                    b.Property<string>("Comments")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("comments");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime?>("ReleasedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("released_at");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_assignments");
+
+                    b.HasIndex("AssetId")
+                        .HasDatabaseName("ix_assignments_asset_id");
+
+                    b.HasIndex("AssignedAt")
+                        .HasDatabaseName("ix_assignments_assigned_at");
+
+                    b.HasIndex("AssigneeId")
+                        .HasDatabaseName("ix_assignments_assignee_id");
+
+                    b.HasIndex("ByUserId")
+                        .HasDatabaseName("ix_assignments_by_user_id");
+
+                    b.HasIndex("ReleasedAt")
+                        .HasDatabaseName("ix_assignments_released_at");
+
+                    b.ToTable("assignments");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Assets.Attachment", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("AssetId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("asset_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("file_name");
+
+                    b.Property<string>("FileUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("file_url");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("uploaded_at");
+
+                    b.Property<long?>("UploadedBy")
+                        .HasColumnType("bigint")
+                        .HasColumnName("uploaded_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_attachments");
+
+                    b.HasIndex("AssetId")
+                        .HasDatabaseName("ix_attachments_asset_id");
+
+                    b.HasIndex("UploadedAt")
+                        .HasDatabaseName("ix_attachments_uploaded_at");
+
+                    b.HasIndex("UploadedBy")
+                        .HasDatabaseName("ix_attachments_uploaded_by");
+
+                    b.ToTable("attachments");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Authorization.Permission", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.Property<string>("_action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("action");
+
+                    b.Property<string>("_resource")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("resource");
+
+                    b.HasKey("Id")
+                        .HasName("pk_permissions");
+
+                    b.HasIndex("_resource", "_action")
+                        .IsUnique()
+                        .HasDatabaseName("ix_permissions_resource_action")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("permissions", (string)null);
+                });
+
+            modelBuilder.Entity("FAM.Domain.Authorization.Resource", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<long>("NodeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("node_id");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_resources");
+
+                    b.HasIndex("NodeId")
+                        .HasDatabaseName("ix_resources_node_id");
+
+                    b.HasIndex("Type", "NodeId")
+                        .HasDatabaseName("ix_resources_type_node");
+
+                    b.ToTable("resources");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Authorization.Role", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsSystemRole")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_system_role");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<int>("Rank")
+                        .HasColumnType("integer")
+                        .HasColumnName("rank");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_roles");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_roles_code")
+                        .HasFilter("is_deleted = false");
+
+                    b.HasIndex("Rank")
+                        .HasDatabaseName("ix_roles_rank");
+
+                    b.ToTable("roles");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Authorization.RolePermission", b =>
+                {
+                    b.Property<long>("RoleId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("role_id");
+
+                    b.Property<long>("PermissionId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("permission_id");
+
+                    b.Property<long?>("GrantedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("granted_by_id");
+
+                    b.HasKey("RoleId", "PermissionId");
+
+                    b.HasIndex("PermissionId")
+                        .HasDatabaseName("ix_role_permissions_permission_id");
+
+                    b.ToTable("role_permissions");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Authorization.SigningKey", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Algorithm")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("algorithm");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsRevoked")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_revoked");
+
+                    b.Property<string>("KeyId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("key_id");
+
+                    b.Property<int>("KeySize")
+                        .HasColumnType("integer")
+                        .HasColumnName("key_size");
+
+                    b.Property<string>("KeyType")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("key_type");
+
+                    b.Property<DateTime?>("LastUsedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_used_at");
+
+                    b.Property<string>("PrivateKey")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("private_key");
+
+                    b.Property<string>("PublicKey")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("public_key");
+
+                    b.Property<string>("RevocationReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("revocation_reason");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("revoked_at");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.Property<string>("Use")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("use");
+
+                    b.HasKey("Id")
+                        .HasName("pk_signing_keys");
+
+                    b.HasIndex("ExpiresAt")
+                        .HasDatabaseName("ix_signing_keys_expires_at");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_signing_keys_is_active");
+
+                    b.HasIndex("IsRevoked")
+                        .HasDatabaseName("ix_signing_keys_is_revoked");
+
+                    b.HasIndex("KeyId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_signing_keys_key_id")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("signing_keys");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Authorization.UserNodeRole", b =>
+                {
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.Property<long>("NodeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("node_id");
+
+                    b.Property<long>("RoleId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("role_id");
+
+                    b.Property<long?>("AssignedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("assigned_by_id");
+
+                    b.Property<DateTime?>("EndAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("end_at");
+
+                    b.Property<DateTime?>("StartAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("start_at");
+
+                    b.HasKey("UserId", "NodeId", "RoleId");
+
+                    b.HasIndex("NodeId")
+                        .HasDatabaseName("ix_user_node_roles_node_id");
+
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("ix_user_node_roles_role_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_user_node_roles_user_id");
+
+                    b.ToTable("user_node_roles");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Categories.AssetCategory", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -217,8 +1217,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     b.Property<string>("IconUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("icon_url");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("Industry")
                         .HasMaxLength(100)
@@ -261,7 +1260,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnName("long_description");
 
                     b.Property<decimal?>("MinimumCapitalizationValue")
-                        .HasColumnType("decimal(18,2)")
+                        .HasColumnType("numeric")
                         .HasColumnName("minimum_capitalization_value");
 
                     b.Property<string>("Name")
@@ -309,7 +1308,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnName("tags");
 
                     b.Property<decimal?>("TotalValue")
-                        .HasColumnType("decimal(18,2)")
+                        .HasColumnType("numeric")
                         .HasColumnName("total_value");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -348,7 +1347,286 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.ToTable("asset_categories");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetConditionEf", b =>
+            modelBuilder.Entity("FAM.Domain.Common.Entities.MenuItem", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Badge")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("badge");
+
+                    b.Property<string>("BadgeVariant")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("badge_variant");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<string>("CssClass")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("css_class");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("ExternalUrl")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("external_url");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("icon");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_enabled");
+
+                    b.Property<bool>("IsVisible")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_visible");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("integer")
+                        .HasColumnName("level");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("text")
+                        .HasColumnName("metadata");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<bool>("OpenInNewTab")
+                        .HasColumnType("boolean")
+                        .HasColumnName("open_in_new_tab");
+
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("parent_id");
+
+                    b.Property<string>("RequiredPermission")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("required_permission");
+
+                    b.Property<string>("RequiredRoles")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("required_roles");
+
+                    b.Property<string>("Route")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("route");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_menu_items");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_menu_items_code")
+                        .HasFilter("is_deleted = false");
+
+                    b.HasIndex("IsVisible")
+                        .HasDatabaseName("ix_menu_items_is_visible");
+
+                    b.HasIndex("ParentId")
+                        .HasDatabaseName("ix_menu_items_parent_id");
+
+                    b.HasIndex("SortOrder")
+                        .HasDatabaseName("ix_menu_items_sort_order");
+
+                    b.ToTable("menu_items");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Common.Entities.SystemSetting", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<int>("DataType")
+                        .HasColumnType("integer")
+                        .HasColumnName("data_type");
+
+                    b.Property<string>("DefaultValue")
+                        .HasColumnType("text")
+                        .HasColumnName("default_value");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("display_name");
+
+                    b.Property<string>("Group")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("group");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsEditable")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_editable");
+
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_required");
+
+                    b.Property<bool>("IsSensitive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_sensitive");
+
+                    b.Property<bool>("IsVisible")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_visible");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("key");
+
+                    b.Property<long?>("LastModifiedBy")
+                        .HasColumnType("bigint")
+                        .HasColumnName("last_modified_by");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("text")
+                        .HasColumnName("metadata");
+
+                    b.Property<string>("Options")
+                        .HasColumnType("text")
+                        .HasColumnName("options");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.Property<string>("ValidationRules")
+                        .HasColumnType("text")
+                        .HasColumnName("validation_rules");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text")
+                        .HasColumnName("value");
+
+                    b.HasKey("Id")
+                        .HasName("pk_system_settings");
+
+                    b.HasIndex("Group")
+                        .HasDatabaseName("ix_system_settings_group");
+
+                    b.HasIndex("IsVisible")
+                        .HasDatabaseName("ix_system_settings_is_visible");
+
+                    b.HasIndex("Key")
+                        .IsUnique()
+                        .HasDatabaseName("ix_system_settings_key")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("system_settings");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Conditions.AssetCondition", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -409,7 +1687,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.ToTable("asset_conditions");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetEf", b =>
+            modelBuilder.Entity("FAM.Domain.EmailTemplates.EmailTemplate", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -418,58 +1696,516 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("AccountingCode")
+                    b.Property<string>("AvailablePlaceholders")
                         .HasColumnType("text")
-                        .HasColumnName("accounting_code");
+                        .HasColumnName("available_placeholders");
 
-                    b.Property<decimal?>("AccumulatedDepreciation")
-                        .HasColumnType("numeric")
-                        .HasColumnName("accumulated_depreciation");
+                    b.Property<int>("Category")
+                        .HasColumnType("integer")
+                        .HasColumnName("category");
 
-                    b.Property<string>("AssetTag")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("asset_tag");
-
-                    b.Property<long?>("AssetTypeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("asset_type_id");
-
-                    b.Property<string>("Barcode")
+                    b.Property<string>("Code")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("barcode");
+                        .HasColumnName("code");
 
-                    b.Property<string>("CampaignCode")
-                        .HasColumnType("text")
-                        .HasColumnName("campaign_code");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
 
-                    b.Property<long?>("CategoryId")
+                    b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("category_id");
+                        .HasColumnName("created_by_id");
 
-                    b.Property<string>("Color")
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("HtmlBody")
+                        .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("color");
+                        .HasColumnName("html_body");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsSystem")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_system");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("PlainTextBody")
+                        .HasColumnType("text")
+                        .HasColumnName("plain_text_body");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("subject");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_email_templates");
+
+                    b.HasIndex("Category")
+                        .HasDatabaseName("ix_email_templates_category");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_email_templates_code")
+                        .HasFilter("is_deleted = false");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_email_templates_is_active");
+
+                    b.HasIndex("IsSystem")
+                        .HasDatabaseName("ix_email_templates_is_system");
+
+                    b.ToTable("email_templates");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Finance.FinanceEntry", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric")
+                        .HasColumnName("amount");
+
+                    b.Property<long>("AssetId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("asset_id");
+
+                    b.Property<decimal?>("BookValueAfter")
+                        .HasColumnType("numeric")
+                        .HasColumnName("book_value_after");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<long?>("CreatorId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("creator_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("EntryType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("entry_type");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime>("Period")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("period");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_finance_entries");
+
+                    b.HasIndex("AssetId")
+                        .HasDatabaseName("ix_finance_entries_asset_id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("CreatorId")
+                        .HasDatabaseName("ix_finance_entries_creator_id");
+
+                    b.HasIndex("EntryType")
+                        .HasDatabaseName("ix_finance_entries_entry_type");
+
+                    b.HasIndex("Period")
+                        .HasDatabaseName("ix_finance_entries_period");
+
+                    b.ToTable("finance_entries");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Geography.Country", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal?>("Area")
+                        .HasColumnType("numeric")
+                        .HasColumnName("area");
+
+                    b.Property<string>("Capital")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("capital");
+
+                    b.Property<string>("CoatOfArms")
+                        .HasColumnType("text")
+                        .HasColumnName("coat_of_arms");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
+
+                    b.Property<string>("Continent")
+                        .HasColumnType("text")
+                        .HasColumnName("continent");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<string>("CurrencyCode")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("currency_code");
+
+                    b.Property<string>("CurrencyName")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("currency_name");
+
+                    b.Property<string>("CurrencySymbol")
+                        .HasColumnType("text")
+                        .HasColumnName("currency_symbol");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("Flag")
+                        .HasColumnType("text")
+                        .HasColumnName("flag");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsEUMember")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_eumember");
+
+                    b.Property<bool>("IsIndependent")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_independent");
+
+                    b.Property<bool>("IsUNMember")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_unmember");
+
+                    b.Property<string>("Iso3Code")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("iso3_code");
+
+                    b.Property<string>("Languages")
+                        .HasColumnType("text")
+                        .HasColumnName("languages");
+
+                    b.Property<decimal?>("Latitude")
+                        .HasColumnType("numeric")
+                        .HasColumnName("latitude");
+
+                    b.Property<decimal?>("Longitude")
+                        .HasColumnType("numeric")
+                        .HasColumnName("longitude");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("Nationality")
+                        .HasColumnType("text")
+                        .HasColumnName("nationality");
+
+                    b.Property<string>("NativeName")
+                        .HasColumnType("text")
+                        .HasColumnName("native_name");
+
+                    b.Property<string>("NumericCode")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("numeric_code");
+
+                    b.Property<string>("OfficialName")
+                        .HasColumnType("text")
+                        .HasColumnName("official_name");
+
+                    b.Property<string>("PhoneCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("phone_code");
+
+                    b.Property<long?>("Population")
+                        .HasColumnType("bigint")
+                        .HasColumnName("population");
+
+                    b.Property<string>("PrimaryLanguage")
+                        .HasColumnType("text")
+                        .HasColumnName("primary_language");
+
+                    b.Property<string>("Region")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("region");
+
+                    b.Property<string>("SubRegion")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("sub_region");
+
+                    b.Property<string>("TLD")
+                        .HasMaxLength(5)
+                        .HasColumnType("character varying(5)")
+                        .HasColumnName("tld");
+
+                    b.Property<string>("TimeZones")
+                        .HasColumnType("text")
+                        .HasColumnName("time_zones");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_countries");
+
+                    b.HasIndex("Iso3Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_countries_iso3_code")
+                        .HasFilter("is_deleted = false AND iso3_code IS NOT NULL");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_countries_name");
+
+                    b.ToTable("countries");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Locations.Location", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("code");
 
                     b.Property<long?>("CompanyId")
                         .HasColumnType("bigint")
                         .HasColumnName("company_id");
 
-                    b.Property<string>("ComplianceStatus")
-                        .HasColumnType("text")
-                        .HasColumnName("compliance_status");
-
-                    b.Property<long?>("ConditionId")
+                    b.Property<long?>("CountryId")
                         .HasColumnType("bigint")
-                        .HasColumnName("condition_id");
+                        .HasColumnName("country_id");
 
-                    b.Property<string>("CostCenter")
-                        .HasColumnType("text")
-                        .HasColumnName("cost_center");
-
-                    b.Property<long?>("CountryEfId")
+                    b.Property<long?>("CountryId1")
                         .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("FullPath")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("full_path");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("parent_id");
+
+                    b.Property<string>("PathIds")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("path_ids");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_locations");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_locations_code")
+                        .HasFilter("is_deleted = false AND code IS NOT NULL");
+
+                    b.HasIndex("CompanyId")
+                        .HasDatabaseName("ix_locations_company_id");
+
+                    b.HasIndex("CountryId")
+                        .HasDatabaseName("ix_locations_country_id");
+
+                    b.HasIndex("CountryId1");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_locations_name");
+
+                    b.HasIndex("ParentId")
+                        .HasDatabaseName("ix_locations_parent_id");
+
+                    b.ToTable("locations");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Manufacturers.Manufacturer", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("AccountManager")
+                        .HasColumnType("text")
+                        .HasColumnName("account_manager");
+
+                    b.Property<decimal?>("AnnualRevenue")
+                        .HasColumnType("numeric")
+                        .HasColumnName("annual_revenue");
+
+                    b.Property<string>("BrandName")
+                        .HasColumnType("text")
+                        .HasColumnName("brand_name");
+
+                    b.Property<string>("BusinessType")
+                        .HasColumnType("text")
+                        .HasColumnName("business_type");
+
+                    b.Property<string>("Certifications")
+                        .HasColumnType("text")
+                        .HasColumnName("certifications");
+
+                    b.Property<string>("City")
+                        .HasColumnType("text")
+                        .HasColumnName("city");
 
                     b.Property<long?>("CountryId")
                         .HasColumnType("bigint")
@@ -483,21 +2219,9 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("created_by_id");
 
-                    b.Property<decimal?>("CurrentBookValue")
-                        .HasColumnType("numeric")
-                        .HasColumnName("current_book_value");
-
-                    b.Property<decimal?>("CurrentValue")
-                        .HasColumnType("numeric")
-                        .HasColumnName("current_value");
-
-                    b.Property<string>("CustomFields")
+                    b.Property<string>("DUNSNumber")
                         .HasColumnType("text")
-                        .HasColumnName("custom_fields");
-
-                    b.Property<string>("DataClassification")
-                        .HasColumnType("text")
-                        .HasColumnName("data_classification");
+                        .HasColumnName("dunsnumber");
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
@@ -507,74 +2231,69 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("deleted_by_id");
 
-                    b.Property<int?>("DepartmentId")
-                        .HasColumnType("integer")
-                        .HasColumnName("department_id");
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("description");
 
-                    b.Property<string>("DepreciationMethod")
-                        .HasColumnType("text")
-                        .HasColumnName("depreciation_method");
-
-                    b.Property<string>("Dimensions")
-                        .HasColumnType("text")
-                        .HasColumnName("dimensions");
-
-                    b.Property<string>("DisposalMethod")
-                        .HasColumnType("text")
-                        .HasColumnName("disposal_method");
-
-                    b.Property<DateTime?>("EndOfLifeDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("end_of_life_date");
-
-                    b.Property<string>("EnergyRating")
-                        .HasColumnType("text")
-                        .HasColumnName("energy_rating");
-
-                    b.Property<int?>("EstimatedRemainingLifeMonths")
-                        .HasColumnType("integer")
-                        .HasColumnName("estimated_remaining_life_months");
-
-                    b.Property<string>("FundingSource")
-                        .HasColumnType("text")
-                        .HasColumnName("funding_source");
-
-                    b.Property<string>("GLAccount")
-                        .HasColumnType("text")
-                        .HasColumnName("glaccount");
-
-                    b.Property<string>("Hostname")
-                        .HasColumnType("text")
-                        .HasColumnName("hostname");
-
-                    b.Property<string>("IPAddress")
-                        .HasColumnType("text")
-                        .HasColumnName("ipaddress");
-
-                    b.Property<DateTime?>("InServiceDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("in_service_date");
-
-                    b.Property<DateTime?>("InsuranceExpiryDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("insurance_expiry_date");
-
-                    b.Property<string>("InsurancePolicyNo")
-                        .HasColumnType("text")
-                        .HasColumnName("insurance_policy_no");
-
-                    b.Property<decimal?>("InsuredValue")
+                    b.Property<decimal?>("DiscountRate")
                         .HasColumnType("numeric")
-                        .HasColumnName("insured_value");
+                        .HasColumnName("discount_rate");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("email");
+
+                    b.Property<int?>("EmployeeCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("employee_count");
+
+                    b.Property<string>("FacebookUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Fax")
+                        .HasColumnType("text")
+                        .HasColumnName("fax");
+
+                    b.Property<DateTime?>("FoundedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("founded_date");
+
+                    b.Property<string>("HeadquartersAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("headquarters_address");
+
+                    b.Property<string>("ISO14001Certified")
+                        .HasColumnType("text")
+                        .HasColumnName("iso14001_certified");
+
+                    b.Property<string>("ISO27001Certified")
+                        .HasColumnType("text")
+                        .HasColumnName("iso27001_certified");
+
+                    b.Property<string>("ISO9001Certified")
+                        .HasColumnType("text")
+                        .HasColumnName("iso9001_certified");
+
+                    b.Property<string>("IndustryType")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("industry_type");
 
                     b.Property<string>("InternalNotes")
                         .HasColumnType("text")
                         .HasColumnName("internal_notes");
 
-                    b.Property<string>("InvoiceNo")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("invoice_no");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_approved");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -582,173 +2301,122 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
-                    b.Property<bool>("IsEnvironmentallyFriendly")
+                    b.Property<bool>("IsPreferred")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_environmentally_friendly");
+                        .HasColumnName("is_preferred");
 
-                    b.Property<DateTime?>("LastAuditDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_audit_date");
-
-                    b.Property<DateTime?>("LastDepreciationDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_depreciation_date");
-
-                    b.Property<DateTime?>("LastMaintenanceDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_maintenance_date");
-
-                    b.Property<int?>("LicenseCount")
-                        .HasColumnType("integer")
-                        .HasColumnName("license_count");
-
-                    b.Property<DateTime?>("LicenseExpiryDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("license_expiry_date");
-
-                    b.Property<string>("LicenseKey")
+                    b.Property<string>("LeadTime")
                         .HasColumnType("text")
-                        .HasColumnName("license_key");
+                        .HasColumnName("lead_time");
 
-                    b.Property<long?>("LifecycleStatusId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("lifecycle_status_id");
-
-                    b.Property<string>("LocationCode")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("location_code");
-
-                    b.Property<long?>("LocationId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("location_id");
-
-                    b.Property<string>("MACAddress")
+                    b.Property<string>("LegalName")
                         .HasColumnType("text")
-                        .HasColumnName("macaddress");
+                        .HasColumnName("legal_name");
 
-                    b.Property<string>("MaintenanceContractNo")
+                    b.Property<string>("LinkedInUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("LogoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("MinimumOrderQuantity")
                         .HasColumnType("text")
-                        .HasColumnName("maintenance_contract_no");
-
-                    b.Property<int?>("MaintenanceIntervalDays")
-                        .HasColumnType("integer")
-                        .HasColumnName("maintenance_interval_days");
-
-                    b.Property<long?>("ManufacturerId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("manufacturer_id");
-
-                    b.Property<string>("Material")
-                        .HasColumnType("text")
-                        .HasColumnName("material");
-
-                    b.Property<long?>("ModelId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("model_id");
+                        .HasColumnName("minimum_order_quantity");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
                         .HasColumnName("name");
 
-                    b.Property<decimal?>("NetBookValue")
-                        .HasColumnType("numeric")
-                        .HasColumnName("net_book_value");
-
-                    b.Property<DateTime?>("NextAuditDate")
+                    b.Property<DateTime?>("PartnerSince")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("next_audit_date");
+                        .HasColumnName("partner_since");
 
-                    b.Property<DateTime?>("NextMaintenanceDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("next_maintenance_date");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasColumnName("notes");
-
-                    b.Property<string>("OperatingSystem")
+                    b.Property<string>("PaymentTerms")
                         .HasColumnType("text")
-                        .HasColumnName("operating_system");
+                        .HasColumnName("payment_terms");
 
-                    b.Property<long?>("OwnerId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("owner_id");
-
-                    b.Property<decimal?>("PowerConsumption")
-                        .HasColumnType("numeric")
-                        .HasColumnName("power_consumption");
-
-                    b.Property<string>("ProjectCode")
-                        .HasColumnType("text")
-                        .HasColumnName("project_code");
-
-                    b.Property<decimal?>("PurchaseCost")
-                        .HasColumnType("numeric")
-                        .HasColumnName("purchase_cost");
-
-                    b.Property<DateTime?>("PurchaseDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("purchase_date");
-
-                    b.Property<string>("PurchaseOrderNo")
+                    b.Property<string>("Phone")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("purchase_order_no");
+                        .HasColumnName("phone");
 
-                    b.Property<string>("QRCode")
+                    b.Property<string>("PostalCode")
+                        .HasColumnType("text")
+                        .HasColumnName("postal_code");
+
+                    b.Property<string>("PreferredCurrency")
+                        .HasColumnType("text")
+                        .HasColumnName("preferred_currency");
+
+                    b.Property<decimal?>("PriceRating")
+                        .HasColumnType("numeric")
+                        .HasColumnName("price_rating");
+
+                    b.Property<decimal?>("QualityRating")
+                        .HasColumnType("numeric")
+                        .HasColumnName("quality_rating");
+
+                    b.Property<string>("RegistrationNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("registration_number");
+
+                    b.Property<string>("RevenueCurrency")
+                        .HasColumnType("text")
+                        .HasColumnName("revenue_currency");
+
+                    b.Property<string>("SLADocumentUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("qrcode");
+                        .HasColumnType("character varying(500)");
 
-                    b.Property<string>("RFIDTag")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("rfidtag");
-
-                    b.Property<decimal?>("ReplacementCost")
+                    b.Property<decimal?>("ServiceRating")
                         .HasColumnType("numeric")
-                        .HasColumnName("replacement_cost");
+                        .HasColumnName("service_rating");
 
-                    b.Property<bool>("RequiresBackgroundCheck")
-                        .HasColumnType("boolean")
-                        .HasColumnName("requires_background_check");
-
-                    b.Property<decimal?>("ResidualValue")
-                        .HasColumnType("numeric")
-                        .HasColumnName("residual_value");
-
-                    b.Property<string>("RiskLevel")
+                    b.Property<string>("ShortName")
                         .HasColumnType("text")
-                        .HasColumnName("risk_level");
+                        .HasColumnName("short_name");
 
-                    b.Property<string>("SecurityClassification")
+                    b.Property<int?>("StandardWarrantyMonths")
+                        .HasColumnType("integer")
+                        .HasColumnName("standard_warranty_months");
+
+                    b.Property<string>("State")
                         .HasColumnType("text")
-                        .HasColumnName("security_classification");
+                        .HasColumnName("state");
 
-                    b.Property<string>("SerialNo")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("serial_no");
-
-                    b.Property<string>("ServiceLevel")
+                    b.Property<string>("SupportEmail")
                         .HasColumnType("text")
-                        .HasColumnName("service_level");
+                        .HasColumnName("support_email");
 
-                    b.Property<string>("SoftwareVersion")
+                    b.Property<string>("SupportHours")
                         .HasColumnType("text")
-                        .HasColumnName("software_version");
+                        .HasColumnName("support_hours");
 
-                    b.Property<long?>("SupplierId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("supplier_id");
+                    b.Property<string>("SupportPhone")
+                        .HasColumnType("text")
+                        .HasColumnName("support_phone");
 
-                    b.Property<DateTime?>("SupportExpiryDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("support_expiry_date");
+                    b.Property<string>("SupportWebsite")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Tagline")
+                        .HasColumnType("text")
+                        .HasColumnName("tagline");
+
+                    b.Property<string>("TaxId")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("tax_id");
+
+                    b.Property<string>("TwitterHandle")
+                        .HasColumnType("text")
+                        .HasColumnName("twitter_handle");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -758,104 +2426,34 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("updated_by_id");
 
-                    b.Property<long?>("UsageStatusId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("usage_status_id");
-
-                    b.Property<int?>("UsefulLifeMonths")
-                        .HasColumnType("integer")
-                        .HasColumnName("useful_life_months");
-
-                    b.Property<int?>("WarrantyMonths")
-                        .HasColumnType("integer")
-                        .HasColumnName("warranty_months");
-
-                    b.Property<string>("WarrantyTerms")
+                    b.Property<string>("VATNumber")
                         .HasColumnType("text")
-                        .HasColumnName("warranty_terms");
+                        .HasColumnName("vatnumber");
 
-                    b.Property<DateTime?>("WarrantyUntil")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("warranty_until");
+                    b.Property<string>("WarrantyPolicy")
+                        .HasColumnType("text")
+                        .HasColumnName("warranty_policy");
 
-                    b.Property<decimal?>("Weight")
-                        .HasColumnType("numeric")
-                        .HasColumnName("weight");
+                    b.Property<string>("Website")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.HasKey("Id")
-                        .HasName("pk_assets");
-
-                    b.HasIndex("AssetTag")
-                        .IsUnique()
-                        .HasDatabaseName("ix_assets_asset_tag")
-                        .HasFilter("is_deleted = false AND asset_tag IS NOT NULL");
-
-                    b.HasIndex("AssetTypeId")
-                        .HasDatabaseName("ix_assets_asset_type_id");
-
-                    b.HasIndex("Barcode")
-                        .IsUnique()
-                        .HasDatabaseName("ix_assets_barcode")
-                        .HasFilter("is_deleted = false AND barcode IS NOT NULL");
-
-                    b.HasIndex("CategoryId")
-                        .HasDatabaseName("ix_assets_category_id");
-
-                    b.HasIndex("CompanyId")
-                        .HasDatabaseName("ix_assets_company_id");
-
-                    b.HasIndex("ConditionId")
-                        .HasDatabaseName("ix_assets_condition_id");
-
-                    b.HasIndex("CountryEfId");
+                        .HasName("pk_manufacturers");
 
                     b.HasIndex("CountryId")
-                        .HasDatabaseName("ix_assets_country_id");
+                        .HasDatabaseName("ix_manufacturers_country_id");
 
-                    b.HasIndex("CreatedById");
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_manufacturers_is_active");
 
-                    b.HasIndex("LifecycleStatusId")
-                        .HasDatabaseName("ix_assets_lifecycle_status_id");
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_manufacturers_name");
 
-                    b.HasIndex("LocationId")
-                        .HasDatabaseName("ix_assets_location_id");
-
-                    b.HasIndex("ManufacturerId")
-                        .HasDatabaseName("ix_assets_manufacturer_id");
-
-                    b.HasIndex("ModelId")
-                        .HasDatabaseName("ix_assets_model_id");
-
-                    b.HasIndex("OwnerId")
-                        .HasDatabaseName("ix_assets_owner_id");
-
-                    b.HasIndex("QRCode")
-                        .IsUnique()
-                        .HasDatabaseName("ix_assets_qr_code")
-                        .HasFilter("is_deleted = false AND qrcode IS NOT NULL");
-
-                    b.HasIndex("RFIDTag")
-                        .IsUnique()
-                        .HasDatabaseName("ix_assets_rfid_tag")
-                        .HasFilter("is_deleted = false AND rfidtag IS NOT NULL");
-
-                    b.HasIndex("SerialNo")
-                        .IsUnique()
-                        .HasDatabaseName("ix_assets_serial_no")
-                        .HasFilter("is_deleted = false AND serial_no IS NOT NULL");
-
-                    b.HasIndex("SupplierId")
-                        .HasDatabaseName("ix_assets_supplier_id");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.HasIndex("UsageStatusId")
-                        .HasDatabaseName("ix_assets_usage_status_id");
-
-                    b.ToTable("assets");
+                    b.ToTable("manufacturers");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetEventEf", b =>
+            modelBuilder.Entity("FAM.Domain.Models.Model", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -864,17 +2462,547 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("ActorId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("actor_id");
+                    b.Property<string>("AvailabilityStatus")
+                        .HasColumnType("text")
+                        .HasColumnName("availability_status");
 
-                    b.Property<long>("AssetId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("asset_id");
+                    b.Property<decimal?>("AverageCost")
+                        .HasColumnType("numeric")
+                        .HasColumnName("average_cost");
 
-                    b.Property<DateTime>("At")
+                    b.Property<long?>("CategoryId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("category_id");
+
+                    b.Property<string>("Certifications")
+                        .HasColumnType("text")
+                        .HasColumnName("certifications");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("color");
+
+                    b.Property<string>("CompatibleModels")
+                        .HasColumnType("text")
+                        .HasColumnName("compatible_models");
+
+                    b.Property<string>("ComplianceStandards")
+                        .HasColumnType("text")
+                        .HasColumnName("compliance_standards");
+
+                    b.Property<string>("Connectivity")
+                        .HasColumnType("text")
+                        .HasColumnName("connectivity");
+
+                    b.Property<string>("CostCurrency")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("cost_currency");
+
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("at");
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<int?>("CurrentStock")
+                        .HasColumnType("integer")
+                        .HasColumnName("current_stock");
+
+                    b.Property<string>("DatasheetUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("DepreciationMethod")
+                        .HasColumnType("text")
+                        .HasColumnName("depreciation_method");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("DimensionUnit")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)")
+                        .HasColumnName("dimension_unit");
+
+                    b.Property<string>("Dimensions")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("dimensions");
+
+                    b.Property<DateTime?>("DiscontinuedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("discontinued_date");
+
+                    b.Property<string>("Display")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("display");
+
+                    b.Property<string>("EnergyRating")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("energy_rating");
+
+                    b.Property<string>("Generation")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("generation");
+
+                    b.Property<string>("Graphics")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("graphics");
+
+                    b.Property<string>("Humidity")
+                        .HasColumnType("text")
+                        .HasColumnName("humidity");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("IncludedAccessories")
+                        .HasColumnType("text")
+                        .HasColumnName("included_accessories");
+
+                    b.Property<string>("InternalNotes")
+                        .HasColumnType("text")
+                        .HasColumnName("internal_notes");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_available");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsDepreciable")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_depreciable");
+
+                    b.Property<bool>("IsEPEATCertified")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_epeatcertified");
+
+                    b.Property<bool>("IsEnergyStarCertified")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_energy_star_certified");
+
+                    b.Property<bool>("IsRoHSCompliant")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_ro_hscompliant");
+
+                    b.Property<bool>("IsTangible")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_tangible");
+
+                    b.Property<string>("Keywords")
+                        .HasColumnType("text")
+                        .HasColumnName("keywords");
+
+                    b.Property<DateTime?>("LastOrderDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_order_date");
+
+                    b.Property<int?>("LicenseDurationMonths")
+                        .HasColumnType("integer")
+                        .HasColumnName("license_duration_months");
+
+                    b.Property<string>("LicenseType")
+                        .HasColumnType("text")
+                        .HasColumnName("license_type");
+
+                    b.Property<string>("LifecycleStatus")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("lifecycle_status");
+
+                    b.Property<decimal?>("MSRP")
+                        .HasColumnType("numeric")
+                        .HasColumnName("msrp");
+
+                    b.Property<string>("MSRPCurrency")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("msrpcurrency");
+
+                    b.Property<long?>("ManufacturerId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("manufacturer_id");
+
+                    b.Property<string>("Material")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("material");
+
+                    b.Property<int?>("MaxInstallations")
+                        .HasColumnType("integer")
+                        .HasColumnName("max_installations");
+
+                    b.Property<string>("Memory")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("memory");
+
+                    b.Property<string>("ModelNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("model_number");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NetworkInterfaces")
+                        .HasColumnType("text")
+                        .HasColumnName("network_interfaces");
+
+                    b.Property<string>("OperatingSystem")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("operating_system");
+
+                    b.Property<string>("OperatingTemperature")
+                        .HasColumnType("text")
+                        .HasColumnName("operating_temperature");
+
+                    b.Property<string>("OptionalAccessories")
+                        .HasColumnType("text")
+                        .HasColumnName("optional_accessories");
+
+                    b.Property<string>("PartNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("part_number");
+
+                    b.Property<string>("Ports")
+                        .HasColumnType("text")
+                        .HasColumnName("ports");
+
+                    b.Property<decimal?>("PowerConsumption")
+                        .HasColumnType("numeric")
+                        .HasColumnName("power_consumption");
+
+                    b.Property<string>("PowerRequirements")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("power_requirements");
+
+                    b.Property<string>("Processor")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("processor");
+
+                    b.Property<string>("ProcurementNotes")
+                        .HasColumnType("text")
+                        .HasColumnName("procurement_notes");
+
+                    b.Property<string>("ProductFamily")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("product_family");
+
+                    b.Property<string>("ProductPageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("QuickStartGuideUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("ReleaseDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("release_date");
+
+                    b.Property<int?>("ReorderLevel")
+                        .HasColumnType("integer")
+                        .HasColumnName("reorder_level");
+
+                    b.Property<string>("RequiredAccessories")
+                        .HasColumnType("text")
+                        .HasColumnName("required_accessories");
+
+                    b.Property<bool>("RequiresActivation")
+                        .HasColumnType("boolean")
+                        .HasColumnName("requires_activation");
+
+                    b.Property<bool>("RequiresLicense")
+                        .HasColumnType("boolean")
+                        .HasColumnName("requires_license");
+
+                    b.Property<bool>("RequiresMaintenance")
+                        .HasColumnType("boolean")
+                        .HasColumnName("requires_maintenance");
+
+                    b.Property<decimal?>("ResidualValuePercentage")
+                        .HasColumnType("numeric")
+                        .HasColumnName("residual_value_percentage");
+
+                    b.Property<string>("SKU")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("sku");
+
+                    b.Property<string>("Series")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("series");
+
+                    b.Property<int?>("StandardWarrantyMonths")
+                        .HasColumnType("integer")
+                        .HasColumnName("standard_warranty_months");
+
+                    b.Property<string>("Storage")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("storage");
+
+                    b.Property<string>("SupportDocumentUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("text")
+                        .HasColumnName("tags");
+
+                    b.Property<string>("TechnicalSpecs")
+                        .HasColumnType("text")
+                        .HasColumnName("technical_specs");
+
+                    b.Property<string>("ThumbnailUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<long?>("TypeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("type_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.Property<int?>("UsefulLifeMonths")
+                        .HasColumnType("integer")
+                        .HasColumnName("useful_life_months");
+
+                    b.Property<string>("UserManualUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("VideoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("WarrantyType")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("warranty_type");
+
+                    b.Property<decimal?>("Weight")
+                        .HasColumnType("numeric")
+                        .HasColumnName("weight");
+
+                    b.Property<string>("WeightUnit")
+                        .HasColumnType("text")
+                        .HasColumnName("weight_unit");
+
+                    b.HasKey("Id")
+                        .HasName("pk_models");
+
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("ix_models_category_id");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_models_is_active");
+
+                    b.HasIndex("ManufacturerId")
+                        .HasDatabaseName("ix_models_manufacturer_id");
+
+                    b.HasIndex("ModelNumber")
+                        .IsUnique()
+                        .HasDatabaseName("ix_models_model_number")
+                        .HasFilter("is_deleted = false AND model_number IS NOT NULL");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_models_name");
+
+                    b.HasIndex("SKU")
+                        .IsUnique()
+                        .HasDatabaseName("ix_models_sku")
+                        .HasFilter("is_deleted = false AND sku IS NOT NULL");
+
+                    b.HasIndex("TypeId")
+                        .HasDatabaseName("ix_models_type_id");
+
+                    b.ToTable("models");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Organizations.CompanyDetails", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("Domain")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<DateTime?>("EstablishedOn")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("established_on");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<long>("NodeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("node_id");
+
+                    b.Property<string>("TaxCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_company_details");
+
+                    b.HasIndex("Domain")
+                        .IsUnique()
+                        .HasDatabaseName("ix_company_details_domain")
+                        .HasFilter("is_deleted = false AND domain IS NOT NULL");
+
+                    b.HasIndex("NodeId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_company_details_node_id")
+                        .HasFilter("is_deleted = false");
+
+                    b.HasIndex("TaxCode")
+                        .IsUnique()
+                        .HasDatabaseName("ix_company_details_tax_code")
+                        .HasFilter("is_deleted = false AND tax_code IS NOT NULL");
+
+                    b.ToTable("company_details");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Organizations.DepartmentDetails", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal?>("BudgetYear")
+                        .HasColumnType("numeric")
+                        .HasColumnName("budget_year");
+
+                    b.Property<string>("CostCenter")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int?>("Headcount")
+                        .HasColumnType("integer")
+                        .HasColumnName("headcount");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<long>("NodeId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("node_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("Id")
+                        .HasName("pk_department_details");
+
+                    b.HasIndex("CostCenter")
+                        .IsUnique()
+                        .HasDatabaseName("ix_department_details_cost_center")
+                        .HasFilter("is_deleted = false AND cost_center IS NOT NULL");
+
+                    b.HasIndex("NodeId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_department_details_node_id")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("department_details");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Organizations.OrgNode", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -892,40 +3020,25 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("deleted_by_id");
 
-                    b.Property<string>("EventCode")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("event_code");
-
-                    b.Property<long?>("EventTypeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("event_type_id");
-
-                    b.Property<string>("FromLifecycleCode")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("from_lifecycle_code");
-
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("is_deleted");
 
-                    b.Property<string>("Note")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("note");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
 
-                    b.Property<string>("Payload")
-                        .HasColumnType("text")
-                        .HasColumnName("payload");
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("parent_id");
 
-                    b.Property<string>("ToLifecycleCode")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("to_lifecycle_code");
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("type");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -936,24 +3049,18 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnName("updated_by_id");
 
                     b.HasKey("Id")
-                        .HasName("pk_asset_events");
+                        .HasName("pk_org_nodes");
 
-                    b.HasIndex("ActorId")
-                        .HasDatabaseName("ix_asset_events_actor_id");
+                    b.HasIndex("ParentId")
+                        .HasDatabaseName("ix_org_nodes_parent_id");
 
-                    b.HasIndex("AssetId")
-                        .HasDatabaseName("ix_asset_events_asset_id");
+                    b.HasIndex("Type")
+                        .HasDatabaseName("ix_org_nodes_type");
 
-                    b.HasIndex("At")
-                        .HasDatabaseName("ix_asset_events_at");
-
-                    b.HasIndex("EventTypeId")
-                        .HasDatabaseName("ix_asset_events_event_type_id");
-
-                    b.ToTable("asset_events");
+                    b.ToTable("org_nodes");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetEventTypeEf", b =>
+            modelBuilder.Entity("FAM.Domain.Statuses.AssetEventType", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -1029,7 +3136,754 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.ToTable("asset_event_types");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetTypeEf", b =>
+            modelBuilder.Entity("FAM.Domain.Statuses.LifecycleStatus", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("code");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("color");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<int?>("OrderNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("order_no");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_lifecycle_statuses");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_lifecycle_statuses_code")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("lifecycle_statuses");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Statuses.UsageStatus", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("code");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("color");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<int?>("OrderNo")
+                        .HasColumnType("integer")
+                        .HasColumnName("order_no");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_usage_statuses");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_usage_statuses_code")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("usage_statuses");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Storage.UploadSession", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Checksum")
+                        .HasColumnType("text")
+                        .HasColumnName("checksum");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<int?>("EntityId")
+                        .HasColumnType("integer")
+                        .HasColumnName("entity_id");
+
+                    b.Property<string>("EntityType")
+                        .HasColumnType("text")
+                        .HasColumnName("entity_type");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("file_name");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint")
+                        .HasColumnName("file_size");
+
+                    b.Property<int>("FileType")
+                        .HasColumnType("integer")
+                        .HasColumnName("file_type");
+
+                    b.Property<string>("FinalKey")
+                        .HasColumnType("text")
+                        .HasColumnName("final_key");
+
+                    b.Property<string>("IdempotencyKey")
+                        .HasColumnType("text")
+                        .HasColumnName("idempotency_key");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("status");
+
+                    b.Property<string>("TempKey")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("temp_key");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UploadId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("upload_id");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_upload_sessions");
+
+                    b.ToTable("upload_sessions");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Suppliers.Supplier", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("AccountManagerEmail")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("AccountManagerName")
+                        .HasColumnType("text")
+                        .HasColumnName("account_manager_name");
+
+                    b.Property<string>("AccountManagerPhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("address");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasColumnType("text")
+                        .HasColumnName("approved_by");
+
+                    b.Property<DateTime?>("ApprovedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("approved_date");
+
+                    b.Property<bool>("AutoRenew")
+                        .HasColumnType("boolean")
+                        .HasColumnName("auto_renew");
+
+                    b.Property<string>("BankAccountNumber")
+                        .HasColumnType("text")
+                        .HasColumnName("bank_account_number");
+
+                    b.Property<string>("BankName")
+                        .HasColumnType("text")
+                        .HasColumnName("bank_name");
+
+                    b.Property<string>("BankRoutingNumber")
+                        .HasColumnType("text")
+                        .HasColumnName("bank_routing_number");
+
+                    b.Property<string>("BondingInformation")
+                        .HasColumnType("text")
+                        .HasColumnName("bonding_information");
+
+                    b.Property<string>("BusinessLicenseUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("BusinessType")
+                        .HasColumnType("text")
+                        .HasColumnName("business_type");
+
+                    b.Property<string>("CertificateOfInsuranceUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Certifications")
+                        .HasColumnType("text")
+                        .HasColumnName("certifications");
+
+                    b.Property<string>("City")
+                        .HasColumnType("text")
+                        .HasColumnName("city");
+
+                    b.Property<long?>("CompanyId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("company_id");
+
+                    b.Property<string>("ContactPersonEmail")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("ContactPersonName")
+                        .HasColumnType("text")
+                        .HasColumnName("contact_person_name");
+
+                    b.Property<string>("ContactPersonPhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("ContactPersonTitle")
+                        .HasColumnType("text")
+                        .HasColumnName("contact_person_title");
+
+                    b.Property<string>("ContractDocumentUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("ContractEndDate")
+                        .HasColumnType("date")
+                        .HasColumnName("contract_end_date");
+
+                    b.Property<string>("ContractNumber")
+                        .HasColumnType("text")
+                        .HasColumnName("contract_number");
+
+                    b.Property<DateTime?>("ContractStartDate")
+                        .HasColumnType("date")
+                        .HasColumnName("contract_start_date");
+
+                    b.Property<long?>("CountryId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("country_id");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<string>("Currency")
+                        .HasColumnType("text")
+                        .HasColumnName("currency");
+
+                    b.Property<string>("DUNSNumber")
+                        .HasColumnType("text")
+                        .HasColumnName("dunsnumber");
+
+                    b.Property<int?>("DefectRate")
+                        .HasColumnType("integer")
+                        .HasColumnName("defect_rate");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DeletedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("deleted_by_id");
+
+                    b.Property<int?>("DeliveryRating")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasColumnName("description");
+
+                    b.Property<decimal?>("DiscountRate")
+                        .HasColumnType("numeric");
+
+                    b.Property<bool>("DropShipCapable")
+                        .HasColumnType("boolean")
+                        .HasColumnName("drop_ship_capable");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<int?>("EmployeeCount")
+                        .HasColumnType("integer")
+                        .HasColumnName("employee_count");
+
+                    b.Property<DateTime?>("EstablishedDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("established_date");
+
+                    b.Property<string>("Fax")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("GLN")
+                        .HasColumnType("text")
+                        .HasColumnName("gln");
+
+                    b.Property<string>("IBAN")
+                        .HasColumnType("text")
+                        .HasColumnName("iban");
+
+                    b.Property<string>("ISO14001Certified")
+                        .HasColumnType("text")
+                        .HasColumnName("iso14001_certified");
+
+                    b.Property<string>("ISO9001Certified")
+                        .HasColumnType("text")
+                        .HasColumnName("iso9001_certified");
+
+                    b.Property<string>("IndustryType")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("industry_type");
+
+                    b.Property<DateTime?>("InsuranceExpiryDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("insurance_expiry_date");
+
+                    b.Property<string>("InsurancePolicyNumber")
+                        .HasColumnType("text")
+                        .HasColumnName("insurance_policy_number");
+
+                    b.Property<string>("InsuranceProvider")
+                        .HasColumnType("text")
+                        .HasColumnName("insurance_provider");
+
+                    b.Property<string>("InternalNotes")
+                        .HasColumnType("text")
+                        .HasColumnName("internal_notes");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_approved");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsEnvironmentallyCertified")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_environmentally_certified");
+
+                    b.Property<bool>("IsMBE")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_mbe");
+
+                    b.Property<bool>("IsMinorityOwned")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_minority_owned");
+
+                    b.Property<bool>("IsPreferred")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_preferred");
+
+                    b.Property<bool>("IsSDVOSB")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_sdvosb");
+
+                    b.Property<bool>("IsSmallBusiness")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_small_business");
+
+                    b.Property<bool>("IsVeteranOwned")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_veteran_owned");
+
+                    b.Property<bool>("IsWBE")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_wbe");
+
+                    b.Property<bool>("IsWomanOwned")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_woman_owned");
+
+                    b.Property<DateTime?>("LastOrderDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_order_date");
+
+                    b.Property<DateTime?>("LastReviewDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_review_date");
+
+                    b.Property<int?>("LeadTimeDays")
+                        .HasColumnType("integer")
+                        .HasColumnName("lead_time_days");
+
+                    b.Property<string>("LegalName")
+                        .HasColumnType("text")
+                        .HasColumnName("legal_name");
+
+                    b.Property<string>("MinimumOrderCurrency")
+                        .HasColumnType("text")
+                        .HasColumnName("minimum_order_currency");
+
+                    b.Property<string>("MobilePhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<int?>("OnTimeDeliveryPercentage")
+                        .HasColumnType("integer")
+                        .HasColumnName("on_time_delivery_percentage");
+
+                    b.Property<string>("OurAccountManager")
+                        .HasColumnType("text")
+                        .HasColumnName("our_account_manager");
+
+                    b.Property<DateTime?>("PartnerSince")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("partner_since");
+
+                    b.Property<string>("PaymentMethods")
+                        .HasColumnType("text")
+                        .HasColumnName("payment_methods");
+
+                    b.Property<string>("PaymentTerms")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("payment_terms");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("PostalCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int?>("PriceRating")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProcurementNotes")
+                        .HasColumnType("text")
+                        .HasColumnName("procurement_notes");
+
+                    b.Property<string>("ProductCategories")
+                        .HasColumnType("text")
+                        .HasColumnName("product_categories");
+
+                    b.Property<bool>("Provides24x7Support")
+                        .HasColumnType("boolean")
+                        .HasColumnName("provides24x7_support");
+
+                    b.Property<int?>("QualityRating")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("References")
+                        .HasColumnType("text")
+                        .HasColumnName("references");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("text")
+                        .HasColumnName("region");
+
+                    b.Property<string>("RegistrationNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("registration_number");
+
+                    b.Property<bool>("RequiresBackgroundCheck")
+                        .HasColumnType("boolean")
+                        .HasColumnName("requires_background_check");
+
+                    b.Property<bool>("RequiresInsurance")
+                        .HasColumnType("boolean")
+                        .HasColumnName("requires_insurance");
+
+                    b.Property<string>("RevenueCurrency")
+                        .HasColumnType("text")
+                        .HasColumnName("revenue_currency");
+
+                    b.Property<string>("RiskFactors")
+                        .HasColumnType("text")
+                        .HasColumnName("risk_factors");
+
+                    b.Property<string>("RiskLevel")
+                        .HasColumnType("text")
+                        .HasColumnName("risk_level");
+
+                    b.Property<string>("SLADocumentUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ServiceCategories")
+                        .HasColumnType("text")
+                        .HasColumnName("service_categories");
+
+                    b.Property<int?>("ServiceRating")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ShippingMethods")
+                        .HasColumnType("text")
+                        .HasColumnName("shipping_methods");
+
+                    b.Property<string>("ShippingTerms")
+                        .HasColumnType("text")
+                        .HasColumnName("shipping_terms");
+
+                    b.Property<string>("ShortName")
+                        .HasColumnType("text")
+                        .HasColumnName("short_name");
+
+                    b.Property<string>("Specialization")
+                        .HasColumnType("text")
+                        .HasColumnName("specialization");
+
+                    b.Property<string>("State")
+                        .HasColumnType("text")
+                        .HasColumnName("state");
+
+                    b.Property<string>("SupplierCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("supplier_code");
+
+                    b.Property<string>("SupplierStatus")
+                        .HasColumnType("text")
+                        .HasColumnName("supplier_status");
+
+                    b.Property<string>("SupplierType")
+                        .HasColumnType("text")
+                        .HasColumnName("supplier_type");
+
+                    b.Property<string>("SupportEmail")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("SupportHours")
+                        .HasColumnType("text")
+                        .HasColumnName("support_hours");
+
+                    b.Property<string>("SupportPhone")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("SustainabilityRating")
+                        .HasColumnType("text")
+                        .HasColumnName("sustainability_rating");
+
+                    b.Property<string>("SwiftCode")
+                        .HasColumnType("text")
+                        .HasColumnName("swift_code");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("text")
+                        .HasColumnName("tags");
+
+                    b.Property<string>("TaxCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("tax_code");
+
+                    b.Property<bool>("TaxExempt")
+                        .HasColumnType("boolean")
+                        .HasColumnName("tax_exempt");
+
+                    b.Property<string>("TaxExemptCertificate")
+                        .HasColumnType("text")
+                        .HasColumnName("tax_exempt_certificate");
+
+                    b.Property<int?>("TotalOrders")
+                        .HasColumnType("integer")
+                        .HasColumnName("total_orders");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long?>("UpdatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("updated_by_id");
+
+                    b.Property<string>("VATNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("vatnumber");
+
+                    b.Property<string>("W9FormUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("WarehouseLocations")
+                        .HasColumnType("text")
+                        .HasColumnName("warehouse_locations");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Id")
+                        .HasName("pk_suppliers");
+
+                    b.HasIndex("CountryId")
+                        .HasDatabaseName("ix_suppliers_country_id");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_suppliers_is_active");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_suppliers_name");
+
+                    b.HasIndex("SupplierCode")
+                        .IsUnique()
+                        .HasDatabaseName("ix_suppliers_supplier_code")
+                        .HasFilter("is_deleted = false AND supplier_code IS NOT NULL");
+
+                    b.ToTable("suppliers");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Types.AssetType", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -1184,8 +4038,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     b.Property<string>("IconUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("icon_url");
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("InternalNotes")
                         .HasColumnType("text")
@@ -1239,7 +4092,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnName("long_description");
 
                     b.Property<decimal?>("MinimumCapitalizationValue")
-                        .HasColumnType("decimal(18,2)")
+                        .HasColumnType("numeric")
                         .HasColumnName("minimum_capitalization_value");
 
                     b.Property<string>("Name")
@@ -1323,7 +4176,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnName("tags");
 
                     b.Property<decimal?>("TotalValue")
-                        .HasColumnType("decimal(18,2)")
+                        .HasColumnType("numeric")
                         .HasColumnName("total_value");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -1367,2987 +4220,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.ToTable("asset_types");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssignmentEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("AssetId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("asset_id");
-
-                    b.Property<DateTime>("AssignedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("assigned_at");
-
-                    b.Property<long>("AssigneeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("assignee_id");
-
-                    b.Property<string>("AssigneeType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("assignee_type");
-
-                    b.Property<long?>("ByUserId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("by_user_id");
-
-                    b.Property<string>("Comments")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("comments");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<DateTime?>("ReleasedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("released_at");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_asset_assignments");
-
-                    b.HasIndex("AssetId")
-                        .HasDatabaseName("ix_assignments_asset_id");
-
-                    b.HasIndex("AssignedAt")
-                        .HasDatabaseName("ix_assignments_assigned_at");
-
-                    b.HasIndex("AssigneeId")
-                        .HasDatabaseName("ix_assignments_assignee_id");
-
-                    b.HasIndex("ByUserId")
-                        .HasDatabaseName("ix_assignments_by_user_id");
-
-                    b.HasIndex("ReleasedAt")
-                        .HasDatabaseName("ix_assignments_released_at");
-
-                    b.ToTable("asset_assignments");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AttachmentEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long?>("AssetId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("asset_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("file_name");
-
-                    b.Property<string>("FileUrl")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("file_url");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.Property<DateTime>("UploadedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("uploaded_at");
-
-                    b.Property<long?>("UploadedBy")
-                        .HasColumnType("bigint")
-                        .HasColumnName("uploaded_by");
-
-                    b.HasKey("Id")
-                        .HasName("pk_asset_attachments");
-
-                    b.HasIndex("AssetId")
-                        .HasDatabaseName("ix_attachments_asset_id");
-
-                    b.HasIndex("UploadedAt")
-                        .HasDatabaseName("ix_attachments_uploaded_at");
-
-                    b.HasIndex("UploadedBy")
-                        .HasDatabaseName("ix_attachments_uploaded_by");
-
-                    b.ToTable("asset_attachments");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.CompanyDetailsEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("address");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("Domain")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("domain");
-
-                    b.Property<DateTime?>("EstablishedOn")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("established_on");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<long>("NodeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("node_id");
-
-                    b.Property<string>("TaxCode")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("tax_code");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_company_details");
-
-                    b.HasIndex("Domain")
-                        .IsUnique()
-                        .HasDatabaseName("ix_company_details_domain")
-                        .HasFilter("is_deleted = false AND domain IS NOT NULL");
-
-                    b.HasIndex("NodeId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_company_details_node_id")
-                        .HasFilter("is_deleted = false");
-
-                    b.HasIndex("TaxCode")
-                        .IsUnique()
-                        .HasDatabaseName("ix_company_details_tax_code")
-                        .HasFilter("is_deleted = false AND tax_code IS NOT NULL");
-
-                    b.ToTable("company_details");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.CountryEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Alpha3Code")
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)")
-                        .HasColumnName("alpha3_code");
-
-                    b.Property<decimal?>("Area")
-                        .HasColumnType("numeric")
-                        .HasColumnName("area");
-
-                    b.Property<string>("CallingCode")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("calling_code");
-
-                    b.Property<string>("Capital")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("capital");
-
-                    b.Property<string>("CoatOfArms")
-                        .HasColumnType("text")
-                        .HasColumnName("coat_of_arms");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)")
-                        .HasColumnName("code");
-
-                    b.Property<string>("Continent")
-                        .HasColumnType("text")
-                        .HasColumnName("continent");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<string>("CurrencyCode")
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)")
-                        .HasColumnName("currency_code");
-
-                    b.Property<string>("CurrencyName")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("currency_name");
-
-                    b.Property<string>("CurrencySymbol")
-                        .HasColumnType("text")
-                        .HasColumnName("currency_symbol");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("Flag")
-                        .HasColumnType("text")
-                        .HasColumnName("flag");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<bool>("IsEUMember")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_eumember");
-
-                    b.Property<bool>("IsIndependent")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_independent");
-
-                    b.Property<bool>("IsUNMember")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_unmember");
-
-                    b.Property<string>("Languages")
-                        .HasColumnType("text")
-                        .HasColumnName("languages");
-
-                    b.Property<decimal?>("Latitude")
-                        .HasColumnType("numeric")
-                        .HasColumnName("latitude");
-
-                    b.Property<decimal?>("Longitude")
-                        .HasColumnType("numeric")
-                        .HasColumnName("longitude");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Nationality")
-                        .HasColumnType("text")
-                        .HasColumnName("nationality");
-
-                    b.Property<string>("NativeName")
-                        .HasColumnType("text")
-                        .HasColumnName("native_name");
-
-                    b.Property<string>("NumericCode")
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)")
-                        .HasColumnName("numeric_code");
-
-                    b.Property<string>("OfficialName")
-                        .HasColumnType("text")
-                        .HasColumnName("official_name");
-
-                    b.Property<long?>("Population")
-                        .HasColumnType("bigint")
-                        .HasColumnName("population");
-
-                    b.Property<string>("PrimaryLanguage")
-                        .HasColumnType("text")
-                        .HasColumnName("primary_language");
-
-                    b.Property<string>("Region")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("region");
-
-                    b.Property<string>("SubRegion")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("sub_region");
-
-                    b.Property<string>("TimeZones")
-                        .HasColumnType("text")
-                        .HasColumnName("time_zones");
-
-                    b.Property<string>("TopLevelDomain")
-                        .HasMaxLength(5)
-                        .HasColumnType("character varying(5)")
-                        .HasColumnName("top_level_domain");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_countries");
-
-                    b.HasIndex("Alpha3Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_countries_alpha3_code")
-                        .HasFilter("is_deleted = false AND alpha3_code IS NOT NULL");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_countries_code")
-                        .HasFilter("is_deleted = false");
-
-                    b.HasIndex("Name")
-                        .HasDatabaseName("ix_countries_name");
-
-                    b.ToTable("countries");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.DepartmentDetailsEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<decimal?>("BudgetYear")
-                        .HasColumnType("numeric")
-                        .HasColumnName("budget_year");
-
-                    b.Property<string>("CostCenter")
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)")
-                        .HasColumnName("cost_center");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<int?>("Headcount")
-                        .HasColumnType("integer")
-                        .HasColumnName("headcount");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<long>("NodeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("node_id");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_department_details");
-
-                    b.HasIndex("CostCenter")
-                        .IsUnique()
-                        .HasDatabaseName("ix_department_details_cost_center")
-                        .HasFilter("is_deleted = false AND cost_center IS NOT NULL");
-
-                    b.HasIndex("NodeId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_department_details_node_id")
-                        .HasFilter("is_deleted = false");
-
-                    b.ToTable("department_details");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.EmailTemplateEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("AvailablePlaceholders")
-                        .HasColumnType("text")
-                        .HasColumnName("available_placeholders");
-
-                    b.Property<int>("Category")
-                        .HasColumnType("integer")
-                        .HasColumnName("category");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("code");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("description");
-
-                    b.Property<string>("HtmlBody")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("html_body");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_active");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<bool>("IsSystem")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_system");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("PlainTextBody")
-                        .HasColumnType("text")
-                        .HasColumnName("plain_text_body");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("subject");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_email_templates");
-
-                    b.HasIndex("Category")
-                        .HasDatabaseName("ix_email_templates_category");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_email_templates_code")
-                        .HasFilter("is_deleted = false");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("ix_email_templates_is_active");
-
-                    b.HasIndex("IsSystem")
-                        .HasDatabaseName("ix_email_templates_is_system");
-
-                    b.ToTable("email_templates");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.FinanceEntryEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric")
-                        .HasColumnName("amount");
-
-                    b.Property<long>("AssetId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("asset_id");
-
-                    b.Property<decimal?>("BookValueAfter")
-                        .HasColumnType("numeric")
-                        .HasColumnName("book_value_after");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("EntryType")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("entry_type");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<DateTime>("Period")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("period");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_finance_entries");
-
-                    b.HasIndex("AssetId")
-                        .HasDatabaseName("ix_finance_entries_asset_id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("EntryType")
-                        .HasDatabaseName("ix_finance_entries_entry_type");
-
-                    b.HasIndex("Period")
-                        .HasDatabaseName("ix_finance_entries_period");
-
-                    b.ToTable("finance_entries");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.LifecycleStatusEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("code");
-
-                    b.Property<string>("Color")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("color");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
-                    b.Property<int?>("OrderNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("order_no");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_lifecycle_statuses");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_lifecycle_statuses_code")
-                        .HasFilter("is_deleted = false");
-
-                    b.ToTable("lifecycle_statuses");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.LocationEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("code");
-
-                    b.Property<long?>("CompanyId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("company_id");
-
-                    b.Property<long?>("CountryEfId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("CountryId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("country_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
-
-                    b.Property<string>("FullPath")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("full_path");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<long?>("ParentId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("parent_id");
-
-                    b.Property<string>("PathIds")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("path_ids");
-
-                    b.Property<string>("Type")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("type");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_locations");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_locations_code")
-                        .HasFilter("is_deleted = false AND code IS NOT NULL");
-
-                    b.HasIndex("CompanyId")
-                        .HasDatabaseName("ix_locations_company_id");
-
-                    b.HasIndex("CountryEfId");
-
-                    b.HasIndex("CountryId")
-                        .HasDatabaseName("ix_locations_country_id");
-
-                    b.HasIndex("Name")
-                        .HasDatabaseName("ix_locations_name");
-
-                    b.HasIndex("ParentId")
-                        .HasDatabaseName("ix_locations_parent_id");
-
-                    b.ToTable("locations");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.ManufacturerEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("AccountManager")
-                        .HasColumnType("text")
-                        .HasColumnName("account_manager");
-
-                    b.Property<decimal?>("AnnualRevenue")
-                        .HasColumnType("numeric")
-                        .HasColumnName("annual_revenue");
-
-                    b.Property<string>("BrandName")
-                        .HasColumnType("text")
-                        .HasColumnName("brand_name");
-
-                    b.Property<string>("BusinessType")
-                        .HasColumnType("text")
-                        .HasColumnName("business_type");
-
-                    b.Property<string>("Certifications")
-                        .HasColumnType("text")
-                        .HasColumnName("certifications");
-
-                    b.Property<string>("City")
-                        .HasColumnType("text")
-                        .HasColumnName("city");
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("code");
-
-                    b.Property<string>("ContactEmail")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("contact_email");
-
-                    b.Property<string>("ContactPhone")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("contact_phone");
-
-                    b.Property<long?>("CountryEfId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("CountryId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("country_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<string>("DUNSNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("dunsnumber");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("description");
-
-                    b.Property<decimal?>("DiscountRate")
-                        .HasColumnType("numeric")
-                        .HasColumnName("discount_rate");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("text")
-                        .HasColumnName("email");
-
-                    b.Property<int?>("EmployeeCount")
-                        .HasColumnType("integer")
-                        .HasColumnName("employee_count");
-
-                    b.Property<string>("FacebookUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("facebook_url");
-
-                    b.Property<string>("Fax")
-                        .HasColumnType("text")
-                        .HasColumnName("fax");
-
-                    b.Property<DateTime?>("FoundedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("founded_date");
-
-                    b.Property<string>("HeadquartersAddress")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("headquarters_address");
-
-                    b.Property<string>("ISO14001Certified")
-                        .HasColumnType("text")
-                        .HasColumnName("iso14001_certified");
-
-                    b.Property<string>("ISO27001Certified")
-                        .HasColumnType("text")
-                        .HasColumnName("iso27001_certified");
-
-                    b.Property<string>("ISO9001Certified")
-                        .HasColumnType("text")
-                        .HasColumnName("iso9001_certified");
-
-                    b.Property<string>("Industry")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("industry");
-
-                    b.Property<string>("IndustryType")
-                        .HasColumnType("text")
-                        .HasColumnName("industry_type");
-
-                    b.Property<string>("InternalNotes")
-                        .HasColumnType("text")
-                        .HasColumnName("internal_notes");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_approved");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<bool>("IsPreferred")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_preferred");
-
-                    b.Property<string>("LeadTime")
-                        .HasColumnType("text")
-                        .HasColumnName("lead_time");
-
-                    b.Property<string>("LegalName")
-                        .HasColumnType("text")
-                        .HasColumnName("legal_name");
-
-                    b.Property<string>("LinkedInUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("linked_in_url");
-
-                    b.Property<string>("LogoUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("logo_url");
-
-                    b.Property<string>("MinimumOrderQuantity")
-                        .HasColumnType("text")
-                        .HasColumnName("minimum_order_quantity");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text")
-                        .HasColumnName("notes");
-
-                    b.Property<DateTime?>("PartnerSince")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("partner_since");
-
-                    b.Property<string>("PaymentTerms")
-                        .HasColumnType("text")
-                        .HasColumnName("payment_terms");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("text")
-                        .HasColumnName("phone");
-
-                    b.Property<string>("PostalCode")
-                        .HasColumnType("text")
-                        .HasColumnName("postal_code");
-
-                    b.Property<string>("PreferredCurrency")
-                        .HasColumnType("text")
-                        .HasColumnName("preferred_currency");
-
-                    b.Property<decimal?>("PriceRating")
-                        .HasColumnType("numeric")
-                        .HasColumnName("price_rating");
-
-                    b.Property<decimal?>("QualityRating")
-                        .HasColumnType("numeric")
-                        .HasColumnName("quality_rating");
-
-                    b.Property<string>("RegistrationNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("registration_number");
-
-                    b.Property<string>("RevenueCurrency")
-                        .HasColumnType("text")
-                        .HasColumnName("revenue_currency");
-
-                    b.Property<string>("SLADocumentUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("sladocument_url");
-
-                    b.Property<decimal?>("ServiceRating")
-                        .HasColumnType("numeric")
-                        .HasColumnName("service_rating");
-
-                    b.Property<string>("ShortName")
-                        .HasColumnType("text")
-                        .HasColumnName("short_name");
-
-                    b.Property<int?>("StandardWarrantyMonths")
-                        .HasColumnType("integer")
-                        .HasColumnName("standard_warranty_months");
-
-                    b.Property<string>("State")
-                        .HasColumnType("text")
-                        .HasColumnName("state");
-
-                    b.Property<string>("SupportContact")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("support_contact");
-
-                    b.Property<string>("SupportEmail")
-                        .HasColumnType("text")
-                        .HasColumnName("support_email");
-
-                    b.Property<string>("SupportHours")
-                        .HasColumnType("text")
-                        .HasColumnName("support_hours");
-
-                    b.Property<string>("SupportPhone")
-                        .HasColumnType("text")
-                        .HasColumnName("support_phone");
-
-                    b.Property<string>("SupportWebsite")
-                        .HasColumnType("text")
-                        .HasColumnName("support_website");
-
-                    b.Property<string>("Tagline")
-                        .HasColumnType("text")
-                        .HasColumnName("tagline");
-
-                    b.Property<string>("TaxId")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("tax_id");
-
-                    b.Property<string>("TwitterHandle")
-                        .HasColumnType("text")
-                        .HasColumnName("twitter_handle");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.Property<string>("VATNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("vatnumber");
-
-                    b.Property<string>("WarrantyPolicy")
-                        .HasColumnType("text")
-                        .HasColumnName("warranty_policy");
-
-                    b.Property<string>("WarrantyTerms")
-                        .HasColumnType("text")
-                        .HasColumnName("warranty_terms");
-
-                    b.Property<string>("Website")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("website");
-
-                    b.HasKey("Id")
-                        .HasName("pk_manufacturers");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_manufacturers_code")
-                        .HasFilter("is_deleted = false AND code IS NOT NULL");
-
-                    b.HasIndex("CountryEfId");
-
-                    b.HasIndex("CountryId")
-                        .HasDatabaseName("ix_manufacturers_country_id");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("ix_manufacturers_is_active");
-
-                    b.HasIndex("Name")
-                        .HasDatabaseName("ix_manufacturers_name");
-
-                    b.ToTable("manufacturers");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.MenuItemEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Badge")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("badge");
-
-                    b.Property<string>("BadgeVariant")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("badge_variant");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("code");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<string>("CssClass")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("css_class");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
-
-                    b.Property<string>("ExternalUrl")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("external_url");
-
-                    b.Property<string>("Icon")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("icon");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<bool>("IsEnabled")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_enabled");
-
-                    b.Property<bool>("IsVisible")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_visible");
-
-                    b.Property<int>("Level")
-                        .HasColumnType("integer")
-                        .HasColumnName("level");
-
-                    b.Property<string>("Metadata")
-                        .HasColumnType("text")
-                        .HasColumnName("metadata");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<bool>("OpenInNewTab")
-                        .HasColumnType("boolean")
-                        .HasColumnName("open_in_new_tab");
-
-                    b.Property<long?>("ParentId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("parent_id");
-
-                    b.Property<string>("RequiredPermission")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("required_permission");
-
-                    b.Property<string>("RequiredRoles")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("required_roles");
-
-                    b.Property<string>("Route")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("route");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("integer")
-                        .HasColumnName("sort_order");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_menu_items");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_menu_items_code")
-                        .HasFilter("is_deleted = false");
-
-                    b.HasIndex("IsVisible")
-                        .HasDatabaseName("ix_menu_items_is_visible");
-
-                    b.HasIndex("ParentId")
-                        .HasDatabaseName("ix_menu_items_parent_id");
-
-                    b.HasIndex("SortOrder")
-                        .HasDatabaseName("ix_menu_items_sort_order");
-
-                    b.ToTable("menu_items");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.ModelEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("AvailabilityStatus")
-                        .HasColumnType("text")
-                        .HasColumnName("availability_status");
-
-                    b.Property<decimal?>("AverageCost")
-                        .HasColumnType("numeric")
-                        .HasColumnName("average_cost");
-
-                    b.Property<long?>("CategoryId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("category_id");
-
-                    b.Property<string>("Certifications")
-                        .HasColumnType("text")
-                        .HasColumnName("certifications");
-
-                    b.Property<string>("Color")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("color");
-
-                    b.Property<string>("CompatibleModels")
-                        .HasColumnType("text")
-                        .HasColumnName("compatible_models");
-
-                    b.Property<string>("ComplianceStandards")
-                        .HasColumnType("text")
-                        .HasColumnName("compliance_standards");
-
-                    b.Property<string>("Connectivity")
-                        .HasColumnType("text")
-                        .HasColumnName("connectivity");
-
-                    b.Property<string>("CostCurrency")
-                        .HasColumnType("text")
-                        .HasColumnName("cost_currency");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<string>("Currency")
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)")
-                        .HasColumnName("currency");
-
-                    b.Property<int?>("CurrentStock")
-                        .HasColumnType("integer")
-                        .HasColumnName("current_stock");
-
-                    b.Property<string>("DatasheetUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("datasheet_url");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("DepreciationMethod")
-                        .HasColumnType("text")
-                        .HasColumnName("depreciation_method");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("description");
-
-                    b.Property<string>("DimensionUnit")
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("dimension_unit");
-
-                    b.Property<string>("Dimensions")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("dimensions");
-
-                    b.Property<DateTime?>("DiscontinuedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("discontinued_date");
-
-                    b.Property<string>("Display")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("display");
-
-                    b.Property<string>("EnergyRating")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("energy_rating");
-
-                    b.Property<string>("Generation")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("generation");
-
-                    b.Property<string>("Graphics")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("graphics");
-
-                    b.Property<string>("Humidity")
-                        .HasColumnType("text")
-                        .HasColumnName("humidity");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("image_url");
-
-                    b.Property<string>("IncludedAccessories")
-                        .HasColumnType("text")
-                        .HasColumnName("included_accessories");
-
-                    b.Property<string>("InternalNotes")
-                        .HasColumnType("text")
-                        .HasColumnName("internal_notes");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_available");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<bool>("IsDepreciable")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_depreciable");
-
-                    b.Property<bool>("IsEPEATCertified")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_epeatcertified");
-
-                    b.Property<bool>("IsEnergyStarCertified")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_energy_star_certified");
-
-                    b.Property<bool>("IsRoHSCompliant")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_ro_hscompliant");
-
-                    b.Property<bool>("IsTangible")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_tangible");
-
-                    b.Property<string>("Keywords")
-                        .HasColumnType("text")
-                        .HasColumnName("keywords");
-
-                    b.Property<DateTime?>("LastOrderDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_order_date");
-
-                    b.Property<int?>("LicenseDurationMonths")
-                        .HasColumnType("integer")
-                        .HasColumnName("license_duration_months");
-
-                    b.Property<string>("LicenseType")
-                        .HasColumnType("text")
-                        .HasColumnName("license_type");
-
-                    b.Property<string>("LifecycleStatus")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("lifecycle_status");
-
-                    b.Property<decimal?>("MSRP")
-                        .HasColumnType("numeric")
-                        .HasColumnName("msrp");
-
-                    b.Property<string>("MSRPCurrency")
-                        .HasColumnType("text")
-                        .HasColumnName("msrpcurrency");
-
-                    b.Property<long?>("ManufacturerId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("manufacturer_id");
-
-                    b.Property<string>("Material")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("material");
-
-                    b.Property<int?>("MaxInstallations")
-                        .HasColumnType("integer")
-                        .HasColumnName("max_installations");
-
-                    b.Property<string>("Memory")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("memory");
-
-                    b.Property<string>("ModelNumber")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("model_number");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("NetworkInterfaces")
-                        .HasColumnType("text")
-                        .HasColumnName("network_interfaces");
-
-                    b.Property<string>("OperatingSystem")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("operating_system");
-
-                    b.Property<string>("OperatingTemperature")
-                        .HasColumnType("text")
-                        .HasColumnName("operating_temperature");
-
-                    b.Property<string>("OptionalAccessories")
-                        .HasColumnType("text")
-                        .HasColumnName("optional_accessories");
-
-                    b.Property<string>("PartNumber")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("part_number");
-
-                    b.Property<string>("Ports")
-                        .HasColumnType("text")
-                        .HasColumnName("ports");
-
-                    b.Property<decimal?>("PowerConsumption")
-                        .HasColumnType("numeric")
-                        .HasColumnName("power_consumption");
-
-                    b.Property<string>("PowerRequirements")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("power_requirements");
-
-                    b.Property<string>("Processor")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("processor");
-
-                    b.Property<string>("ProcurementNotes")
-                        .HasColumnType("text")
-                        .HasColumnName("procurement_notes");
-
-                    b.Property<string>("ProductFamily")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("product_family");
-
-                    b.Property<string>("ProductPageUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("product_page_url");
-
-                    b.Property<string>("QuickStartGuideUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("quick_start_guide_url");
-
-                    b.Property<DateTime?>("ReleaseDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("release_date");
-
-                    b.Property<int?>("ReorderLevel")
-                        .HasColumnType("integer")
-                        .HasColumnName("reorder_level");
-
-                    b.Property<string>("RequiredAccessories")
-                        .HasColumnType("text")
-                        .HasColumnName("required_accessories");
-
-                    b.Property<bool>("RequiresActivation")
-                        .HasColumnType("boolean")
-                        .HasColumnName("requires_activation");
-
-                    b.Property<bool>("RequiresLicense")
-                        .HasColumnType("boolean")
-                        .HasColumnName("requires_license");
-
-                    b.Property<bool>("RequiresMaintenance")
-                        .HasColumnType("boolean")
-                        .HasColumnName("requires_maintenance");
-
-                    b.Property<decimal?>("ResidualValuePercentage")
-                        .HasColumnType("numeric")
-                        .HasColumnName("residual_value_percentage");
-
-                    b.Property<string>("SKU")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("sku");
-
-                    b.Property<string>("Series")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("series");
-
-                    b.Property<int?>("StandardWarrantyMonths")
-                        .HasColumnType("integer")
-                        .HasColumnName("standard_warranty_months");
-
-                    b.Property<string>("Storage")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("storage");
-
-                    b.Property<string>("SupportDocumentUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("support_document_url");
-
-                    b.Property<string>("Tags")
-                        .HasColumnType("text")
-                        .HasColumnName("tags");
-
-                    b.Property<string>("TechnicalSpecs")
-                        .HasColumnType("text")
-                        .HasColumnName("technical_specs");
-
-                    b.Property<string>("ThumbnailUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("thumbnail_url");
-
-                    b.Property<long?>("TypeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("type_id");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.Property<int?>("UsefulLifeMonths")
-                        .HasColumnType("integer")
-                        .HasColumnName("useful_life_months");
-
-                    b.Property<string>("UserManualUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("user_manual_url");
-
-                    b.Property<string>("VideoUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("video_url");
-
-                    b.Property<string>("WarrantyType")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("warranty_type");
-
-                    b.Property<decimal?>("Weight")
-                        .HasColumnType("numeric")
-                        .HasColumnName("weight");
-
-                    b.Property<string>("WeightUnit")
-                        .HasColumnType("text")
-                        .HasColumnName("weight_unit");
-
-                    b.HasKey("Id")
-                        .HasName("pk_models");
-
-                    b.HasIndex("CategoryId")
-                        .HasDatabaseName("ix_models_category_id");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("ix_models_is_active");
-
-                    b.HasIndex("ManufacturerId")
-                        .HasDatabaseName("ix_models_manufacturer_id");
-
-                    b.HasIndex("ModelNumber")
-                        .IsUnique()
-                        .HasDatabaseName("ix_models_model_number")
-                        .HasFilter("is_deleted = false AND model_number IS NOT NULL");
-
-                    b.HasIndex("Name")
-                        .HasDatabaseName("ix_models_name");
-
-                    b.HasIndex("SKU")
-                        .IsUnique()
-                        .HasDatabaseName("ix_models_sku")
-                        .HasFilter("is_deleted = false AND sku IS NOT NULL");
-
-                    b.HasIndex("TypeId")
-                        .HasDatabaseName("ix_models_type_id");
-
-                    b.ToTable("models");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.OrgNodeEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<long?>("ParentId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("parent_id");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer")
-                        .HasColumnName("type");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_org_nodes");
-
-                    b.HasIndex("ParentId")
-                        .HasDatabaseName("ix_org_nodes_parent_id");
-
-                    b.HasIndex("Type")
-                        .HasDatabaseName("ix_org_nodes_type");
-
-                    b.ToTable("org_nodes");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.PermissionEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Action")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("action");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("Resource")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("resource");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_permissions");
-
-                    b.HasIndex("Resource", "Action")
-                        .IsUnique()
-                        .HasDatabaseName("ix_permissions_resource_action")
-                        .HasFilter("is_deleted = false");
-
-                    b.ToTable("permissions");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.ResourceEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<long>("NodeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("node_id");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("type");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_resources");
-
-                    b.HasIndex("NodeId")
-                        .HasDatabaseName("ix_resources_node_id");
-
-                    b.HasIndex("Type", "NodeId")
-                        .HasDatabaseName("ix_resources_type_node");
-
-                    b.ToTable("resources");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.RoleEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("code");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<bool>("IsSystemRole")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_system_role");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
-                    b.Property<int>("Rank")
-                        .HasColumnType("integer")
-                        .HasColumnName("rank");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_roles");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_roles_code")
-                        .HasFilter("is_deleted = false");
-
-                    b.HasIndex("Rank")
-                        .HasDatabaseName("ix_roles_rank");
-
-                    b.ToTable("roles");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.RolePermissionEf", b =>
-                {
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("role_id");
-
-                    b.Property<long>("PermissionId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("permission_id");
-
-                    b.Property<long?>("GrantedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("granted_by_id");
-
-                    b.HasKey("RoleId", "PermissionId");
-
-                    b.HasIndex("PermissionId")
-                        .HasDatabaseName("ix_role_permissions_permission_id");
-
-                    b.ToTable("role_permissions");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.SigningKeyEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Algorithm")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("algorithm");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
-
-                    b.Property<DateTime?>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_active");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<bool>("IsRevoked")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_revoked");
-
-                    b.Property<string>("KeyId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("key_id");
-
-                    b.Property<int>("KeySize")
-                        .HasColumnType("integer")
-                        .HasColumnName("key_size");
-
-                    b.Property<string>("KeyType")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("key_type");
-
-                    b.Property<DateTime?>("LastUsedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_used_at");
-
-                    b.Property<string>("PrivateKey")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("private_key");
-
-                    b.Property<string>("PublicKey")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("public_key");
-
-                    b.Property<string>("RevocationReason")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("revocation_reason");
-
-                    b.Property<DateTime?>("RevokedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("revoked_at");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.Property<string>("Use")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)")
-                        .HasColumnName("use");
-
-                    b.HasKey("Id")
-                        .HasName("pk_signing_keys");
-
-                    b.HasIndex("ExpiresAt")
-                        .HasDatabaseName("ix_signing_keys_expires_at");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("ix_signing_keys_is_active");
-
-                    b.HasIndex("IsRevoked")
-                        .HasDatabaseName("ix_signing_keys_is_revoked");
-
-                    b.HasIndex("KeyId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_signing_keys_key_id")
-                        .HasFilter("is_deleted = false");
-
-                    b.ToTable("signing_keys");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.SupplierEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("AccountManagerEmail")
-                        .HasColumnType("text")
-                        .HasColumnName("account_manager_email");
-
-                    b.Property<string>("AccountManagerName")
-                        .HasColumnType("text")
-                        .HasColumnName("account_manager_name");
-
-                    b.Property<string>("AccountManagerPhone")
-                        .HasColumnType("text")
-                        .HasColumnName("account_manager_phone");
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("address");
-
-                    b.Property<decimal?>("AnnualRevenue")
-                        .HasColumnType("numeric")
-                        .HasColumnName("annual_revenue");
-
-                    b.Property<string>("ApprovedBy")
-                        .HasColumnType("text")
-                        .HasColumnName("approved_by");
-
-                    b.Property<DateTime?>("ApprovedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("approved_date");
-
-                    b.Property<bool>("AutoRenew")
-                        .HasColumnType("boolean")
-                        .HasColumnName("auto_renew");
-
-                    b.Property<decimal?>("AverageOrderValue")
-                        .HasColumnType("numeric")
-                        .HasColumnName("average_order_value");
-
-                    b.Property<string>("BankAccountNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("bank_account_number");
-
-                    b.Property<string>("BankName")
-                        .HasColumnType("text")
-                        .HasColumnName("bank_name");
-
-                    b.Property<string>("BankRoutingNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("bank_routing_number");
-
-                    b.Property<string>("BondingInformation")
-                        .HasColumnType("text")
-                        .HasColumnName("bonding_information");
-
-                    b.Property<string>("BusinessLicenseUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("business_license_url");
-
-                    b.Property<string>("BusinessType")
-                        .HasColumnType("text")
-                        .HasColumnName("business_type");
-
-                    b.Property<string>("CertificateOfInsuranceUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("certificate_of_insurance_url");
-
-                    b.Property<string>("Certifications")
-                        .HasColumnType("text")
-                        .HasColumnName("certifications");
-
-                    b.Property<string>("City")
-                        .HasColumnType("text")
-                        .HasColumnName("city");
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("code");
-
-                    b.Property<long?>("CompanyId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("company_id");
-
-                    b.Property<string>("ContactEmail")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("contact_email");
-
-                    b.Property<string>("ContactPersonEmail")
-                        .HasColumnType("text")
-                        .HasColumnName("contact_person_email");
-
-                    b.Property<string>("ContactPersonName")
-                        .HasColumnType("text")
-                        .HasColumnName("contact_person_name");
-
-                    b.Property<string>("ContactPersonPhone")
-                        .HasColumnType("text")
-                        .HasColumnName("contact_person_phone");
-
-                    b.Property<string>("ContactPersonTitle")
-                        .HasColumnType("text")
-                        .HasColumnName("contact_person_title");
-
-                    b.Property<string>("ContactPhone")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("contact_phone");
-
-                    b.Property<string>("ContractDocumentUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("contract_document_url");
-
-                    b.Property<DateTime?>("ContractEndDate")
-                        .HasColumnType("date")
-                        .HasColumnName("contract_end_date");
-
-                    b.Property<string>("ContractNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("contract_number");
-
-                    b.Property<DateTime?>("ContractStartDate")
-                        .HasColumnType("date")
-                        .HasColumnName("contract_start_date");
-
-                    b.Property<long?>("CountryEfId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("CountryId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("country_id");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<decimal?>("CreditLimit")
-                        .HasColumnType("numeric")
-                        .HasColumnName("credit_limit");
-
-                    b.Property<string>("Currency")
-                        .HasColumnType("text")
-                        .HasColumnName("currency");
-
-                    b.Property<string>("DUNSNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("dunsnumber");
-
-                    b.Property<int?>("DefectRate")
-                        .HasColumnType("integer")
-                        .HasColumnName("defect_rate");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<int?>("DeliveryRating")
-                        .HasColumnType("integer")
-                        .HasColumnName("delivery_rating");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)")
-                        .HasColumnName("description");
-
-                    b.Property<decimal?>("DiscountRate")
-                        .HasColumnType("numeric")
-                        .HasColumnName("discount_rate");
-
-                    b.Property<bool>("DropShipCapable")
-                        .HasColumnType("boolean")
-                        .HasColumnName("drop_ship_capable");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("text")
-                        .HasColumnName("email");
-
-                    b.Property<int?>("EmployeeCount")
-                        .HasColumnType("integer")
-                        .HasColumnName("employee_count");
-
-                    b.Property<DateTime?>("EstablishedDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("established_date");
-
-                    b.Property<string>("Fax")
-                        .HasColumnType("text")
-                        .HasColumnName("fax");
-
-                    b.Property<string>("GLN")
-                        .HasColumnType("text")
-                        .HasColumnName("gln");
-
-                    b.Property<string>("IBAN")
-                        .HasColumnType("text")
-                        .HasColumnName("iban");
-
-                    b.Property<string>("ISO14001Certified")
-                        .HasColumnType("text")
-                        .HasColumnName("iso14001_certified");
-
-                    b.Property<string>("ISO9001Certified")
-                        .HasColumnType("text")
-                        .HasColumnName("iso9001_certified");
-
-                    b.Property<string>("Industry")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("industry");
-
-                    b.Property<string>("IndustryType")
-                        .HasColumnType("text")
-                        .HasColumnName("industry_type");
-
-                    b.Property<decimal?>("InsuranceCoverage")
-                        .HasColumnType("numeric")
-                        .HasColumnName("insurance_coverage");
-
-                    b.Property<DateTime?>("InsuranceExpiryDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("insurance_expiry_date");
-
-                    b.Property<string>("InsurancePolicyNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("insurance_policy_number");
-
-                    b.Property<string>("InsuranceProvider")
-                        .HasColumnType("text")
-                        .HasColumnName("insurance_provider");
-
-                    b.Property<string>("InternalNotes")
-                        .HasColumnType("text")
-                        .HasColumnName("internal_notes");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_active");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_approved");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<bool>("IsEnvironmentallyCertified")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_environmentally_certified");
-
-                    b.Property<bool>("IsMBE")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_mbe");
-
-                    b.Property<bool>("IsMinorityOwned")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_minority_owned");
-
-                    b.Property<bool>("IsPreferred")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_preferred");
-
-                    b.Property<bool>("IsSDVOSB")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_sdvosb");
-
-                    b.Property<bool>("IsSmallBusiness")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_small_business");
-
-                    b.Property<bool>("IsVeteranOwned")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_veteran_owned");
-
-                    b.Property<bool>("IsWBE")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_wbe");
-
-                    b.Property<bool>("IsWomanOwned")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_woman_owned");
-
-                    b.Property<DateTime?>("LastOrderDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_order_date");
-
-                    b.Property<DateTime?>("LastReviewDate")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_review_date");
-
-                    b.Property<int?>("LeadTimeDays")
-                        .HasColumnType("integer")
-                        .HasColumnName("lead_time_days");
-
-                    b.Property<string>("LegalName")
-                        .HasColumnType("text")
-                        .HasColumnName("legal_name");
-
-                    b.Property<string>("LogoUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("logo_url");
-
-                    b.Property<string>("MinimumOrderCurrency")
-                        .HasColumnType("text")
-                        .HasColumnName("minimum_order_currency");
-
-                    b.Property<decimal?>("MinimumOrderValue")
-                        .HasColumnType("numeric")
-                        .HasColumnName("minimum_order_value");
-
-                    b.Property<string>("MobilePhone")
-                        .HasColumnType("text")
-                        .HasColumnName("mobile_phone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text")
-                        .HasColumnName("notes");
-
-                    b.Property<int?>("OnTimeDeliveryPercentage")
-                        .HasColumnType("integer")
-                        .HasColumnName("on_time_delivery_percentage");
-
-                    b.Property<string>("OurAccountManager")
-                        .HasColumnType("text")
-                        .HasColumnName("our_account_manager");
-
-                    b.Property<DateTime?>("PartnerSince")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("partner_since");
-
-                    b.Property<string>("PaymentMethods")
-                        .HasColumnType("text")
-                        .HasColumnName("payment_methods");
-
-                    b.Property<string>("PaymentTerms")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("payment_terms");
-
-                    b.Property<string>("Phone")
-                        .HasColumnType("text")
-                        .HasColumnName("phone");
-
-                    b.Property<string>("PostalCode")
-                        .HasColumnType("text")
-                        .HasColumnName("postal_code");
-
-                    b.Property<int?>("PriceRating")
-                        .HasColumnType("integer")
-                        .HasColumnName("price_rating");
-
-                    b.Property<string>("ProcurementNotes")
-                        .HasColumnType("text")
-                        .HasColumnName("procurement_notes");
-
-                    b.Property<string>("ProductCategories")
-                        .HasColumnType("text")
-                        .HasColumnName("product_categories");
-
-                    b.Property<bool>("Provides24x7Support")
-                        .HasColumnType("boolean")
-                        .HasColumnName("provides24x7_support");
-
-                    b.Property<int?>("QualityRating")
-                        .HasColumnType("integer")
-                        .HasColumnName("quality_rating");
-
-                    b.Property<string>("References")
-                        .HasColumnType("text")
-                        .HasColumnName("references");
-
-                    b.Property<string>("Region")
-                        .HasColumnType("text")
-                        .HasColumnName("region");
-
-                    b.Property<string>("RegistrationNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("registration_number");
-
-                    b.Property<bool>("RequiresBackgroundCheck")
-                        .HasColumnType("boolean")
-                        .HasColumnName("requires_background_check");
-
-                    b.Property<bool>("RequiresInsurance")
-                        .HasColumnType("boolean")
-                        .HasColumnName("requires_insurance");
-
-                    b.Property<string>("RevenueCurrency")
-                        .HasColumnType("text")
-                        .HasColumnName("revenue_currency");
-
-                    b.Property<string>("RiskFactors")
-                        .HasColumnType("text")
-                        .HasColumnName("risk_factors");
-
-                    b.Property<string>("RiskLevel")
-                        .HasColumnType("text")
-                        .HasColumnName("risk_level");
-
-                    b.Property<string>("SLADocumentUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("sladocument_url");
-
-                    b.Property<string>("ServiceCategories")
-                        .HasColumnType("text")
-                        .HasColumnName("service_categories");
-
-                    b.Property<int?>("ServiceRating")
-                        .HasColumnType("integer")
-                        .HasColumnName("service_rating");
-
-                    b.Property<string>("ShippingMethods")
-                        .HasColumnType("text")
-                        .HasColumnName("shipping_methods");
-
-                    b.Property<string>("ShippingTerms")
-                        .HasColumnType("text")
-                        .HasColumnName("shipping_terms");
-
-                    b.Property<string>("ShortName")
-                        .HasColumnType("text")
-                        .HasColumnName("short_name");
-
-                    b.Property<string>("Specialization")
-                        .HasColumnType("text")
-                        .HasColumnName("specialization");
-
-                    b.Property<string>("State")
-                        .HasColumnType("text")
-                        .HasColumnName("state");
-
-                    b.Property<string>("SupplierCode")
-                        .HasColumnType("text")
-                        .HasColumnName("supplier_code");
-
-                    b.Property<string>("SupplierStatus")
-                        .HasColumnType("text")
-                        .HasColumnName("supplier_status");
-
-                    b.Property<string>("SupplierType")
-                        .HasColumnType("text")
-                        .HasColumnName("supplier_type");
-
-                    b.Property<string>("SupportEmail")
-                        .HasColumnType("text")
-                        .HasColumnName("support_email");
-
-                    b.Property<string>("SupportHours")
-                        .HasColumnType("text")
-                        .HasColumnName("support_hours");
-
-                    b.Property<string>("SupportPhone")
-                        .HasColumnType("text")
-                        .HasColumnName("support_phone");
-
-                    b.Property<string>("SustainabilityRating")
-                        .HasColumnType("text")
-                        .HasColumnName("sustainability_rating");
-
-                    b.Property<string>("SwiftCode")
-                        .HasColumnType("text")
-                        .HasColumnName("swift_code");
-
-                    b.Property<string>("Tags")
-                        .HasColumnType("text")
-                        .HasColumnName("tags");
-
-                    b.Property<string>("TaxCode")
-                        .HasColumnType("text")
-                        .HasColumnName("tax_code");
-
-                    b.Property<bool>("TaxExempt")
-                        .HasColumnType("boolean")
-                        .HasColumnName("tax_exempt");
-
-                    b.Property<string>("TaxExemptCertificate")
-                        .HasColumnType("text")
-                        .HasColumnName("tax_exempt_certificate");
-
-                    b.Property<string>("TaxId")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("tax_id");
-
-                    b.Property<int?>("TotalOrders")
-                        .HasColumnType("integer")
-                        .HasColumnName("total_orders");
-
-                    b.Property<decimal?>("TotalSpent")
-                        .HasColumnType("numeric")
-                        .HasColumnName("total_spent");
-
-                    b.Property<string>("TotalSpentCurrency")
-                        .HasColumnType("text")
-                        .HasColumnName("total_spent_currency");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.Property<string>("VATNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("vatnumber");
-
-                    b.Property<string>("W9FormUrl")
-                        .HasColumnType("text")
-                        .HasColumnName("w9_form_url");
-
-                    b.Property<string>("WarehouseLocations")
-                        .HasColumnType("text")
-                        .HasColumnName("warehouse_locations");
-
-                    b.Property<string>("Website")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("website");
-
-                    b.HasKey("Id")
-                        .HasName("pk_suppliers");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_suppliers_code")
-                        .HasFilter("is_deleted = false AND code IS NOT NULL");
-
-                    b.HasIndex("CompanyId")
-                        .HasDatabaseName("ix_suppliers_company_id");
-
-                    b.HasIndex("ContactEmail")
-                        .IsUnique()
-                        .HasDatabaseName("ix_suppliers_contact_email")
-                        .HasFilter("is_deleted = false AND contact_email IS NOT NULL");
-
-                    b.HasIndex("CountryEfId");
-
-                    b.HasIndex("CountryId")
-                        .HasDatabaseName("ix_suppliers_country_id");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("ix_suppliers_is_active");
-
-                    b.HasIndex("Name")
-                        .HasDatabaseName("ix_suppliers_name");
-
-                    b.ToTable("suppliers");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.SystemSettingEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<int>("DataType")
-                        .HasColumnType("integer")
-                        .HasColumnName("data_type");
-
-                    b.Property<string>("DefaultValue")
-                        .HasColumnType("text")
-                        .HasColumnName("default_value");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("display_name");
-
-                    b.Property<string>("Group")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("group");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<bool>("IsEditable")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_editable");
-
-                    b.Property<bool>("IsRequired")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_required");
-
-                    b.Property<bool>("IsSensitive")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_sensitive");
-
-                    b.Property<bool>("IsVisible")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_visible");
-
-                    b.Property<string>("Key")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("key");
-
-                    b.Property<long?>("LastModifiedBy")
-                        .HasColumnType("bigint")
-                        .HasColumnName("last_modified_by");
-
-                    b.Property<string>("Metadata")
-                        .HasColumnType("text")
-                        .HasColumnName("metadata");
-
-                    b.Property<string>("Options")
-                        .HasColumnType("text")
-                        .HasColumnName("options");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("integer")
-                        .HasColumnName("sort_order");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.Property<string>("ValidationRules")
-                        .HasColumnType("text")
-                        .HasColumnName("validation_rules");
-
-                    b.Property<string>("Value")
-                        .HasColumnType("text")
-                        .HasColumnName("value");
-
-                    b.HasKey("Id")
-                        .HasName("pk_system_settings");
-
-                    b.HasIndex("Group")
-                        .HasDatabaseName("ix_system_settings_group");
-
-                    b.HasIndex("IsVisible")
-                        .HasDatabaseName("ix_system_settings_is_visible");
-
-                    b.HasIndex("Key")
-                        .IsUnique()
-                        .HasDatabaseName("ix_system_settings_key")
-                        .HasFilter("is_deleted = false");
-
-                    b.ToTable("system_settings");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UsageStatusEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("code");
-
-                    b.Property<string>("Color")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("color");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
-
-                    b.Property<int?>("OrderNo")
-                        .HasColumnType("integer")
-                        .HasColumnName("order_no");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_usage_statuses");
-
-                    b.HasIndex("Code")
-                        .IsUnique()
-                        .HasDatabaseName("ix_usage_statuses_code")
-                        .HasFilter("is_deleted = false");
-
-                    b.ToTable("usage_statuses");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserDeviceEf", b =>
+            modelBuilder.Entity("FAM.Domain.Users.Entities.UserDevice", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -4377,10 +4250,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
                     b.Property<string>("DeviceId")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -4401,8 +4270,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     b.Property<string>("IpAddress")
                         .HasMaxLength(45)
-                        .HasColumnType("character varying(45)")
-                        .HasColumnName("ip_address");
+                        .HasColumnType("character varying(45)");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -4453,10 +4321,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
                     b.Property<string>("UserAgent")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
@@ -4489,7 +4353,91 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.ToTable("user_devices");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserEf", b =>
+            modelBuilder.Entity("FAM.Domain.Users.Entities.UserTheme", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("BorderRadius")
+                        .HasColumnType("integer")
+                        .HasColumnName("border_radius");
+
+                    b.Property<bool>("CompactMode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("compact_mode");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<long?>("CreatedById")
+                        .HasColumnType("bigint")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<bool>("DarkTheme")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("dark_theme");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("PinNavbar")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("pin_navbar");
+
+                    b.Property<string>("PrimaryColor")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("primary_color");
+
+                    b.Property<string>("Theme")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("theme");
+
+                    b.Property<decimal>("Transparency")
+                        .HasPrecision(3, 2)
+                        .HasColumnType("numeric(3,2)")
+                        .HasColumnName("transparency");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_themes");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_user_themes_user_id")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("user_themes");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Users.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -4522,15 +4470,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
 
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("email");
+                        .HasColumnType("character varying(255)");
 
                     b.Property<DateTime?>("EmailVerifiedAt")
                         .HasColumnType("timestamp with time zone")
@@ -4587,11 +4530,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("password_changed_at");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("password_hash");
-
                     b.Property<string>("PasswordResetToken")
                         .HasColumnType("text")
                         .HasColumnName("password_reset_token");
@@ -4599,11 +4537,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<DateTime?>("PasswordResetTokenExpiresAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("password_reset_token_expires_at");
-
-                    b.Property<string>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("password_salt");
 
                     b.Property<string>("PendingTwoFactorSecret")
                         .HasMaxLength(128)
@@ -4614,13 +4547,9 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("pending_two_factor_secret_expires_at");
 
-                    b.Property<string>("PhoneCountryCode")
-                        .HasColumnType("text")
-                        .HasColumnName("phone_country_code");
-
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("text")
-                        .HasColumnName("phone_number");
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<DateTime?>("PhoneVerifiedAt")
                         .HasColumnType("timestamp with time zone")
@@ -4662,15 +4591,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("username");
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id")
                         .HasName("pk_users");
@@ -4688,235 +4612,80 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.ToTable("users");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserNodeRoleEf", b =>
+            modelBuilder.Entity("FAM.Domain.Assets.Asset", b =>
                 {
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("user_id");
-
-                    b.Property<long>("NodeId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("node_id");
-
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("role_id");
-
-                    b.Property<long?>("AssignedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("assigned_by_id");
-
-                    b.Property<DateTime?>("EndAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("end_at");
-
-                    b.Property<DateTime?>("StartAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("start_at");
-
-                    b.HasKey("UserId", "NodeId", "RoleId");
-
-                    b.HasIndex("NodeId")
-                        .HasDatabaseName("ix_user_node_roles_node_id");
-
-                    b.HasIndex("RoleId")
-                        .HasDatabaseName("ix_user_node_roles_role_id");
-
-                    b.HasIndex("UserId")
-                        .HasDatabaseName("ix_user_node_roles_user_id");
-
-                    b.ToTable("user_node_roles");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserThemeEf", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("BorderRadius")
-                        .HasColumnType("integer")
-                        .HasColumnName("border_radius");
-
-                    b.Property<bool>("CompactMode")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("compact_mode");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<long?>("CreatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
-
-                    b.Property<bool>("DarkTheme")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("dark_theme");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<long?>("DeletedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<bool>("PinNavbar")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("pin_navbar");
-
-                    b.Property<string>("PrimaryColor")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("primary_color");
-
-                    b.Property<string>("Theme")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("theme");
-
-                    b.Property<decimal>("Transparency")
-                        .HasPrecision(3, 2)
-                        .HasColumnType("numeric(3,2)")
-                        .HasColumnName("transparency");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<long?>("UpdatedById")
-                        .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("user_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_user_themes");
-
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasDatabaseName("ix_user_themes_user_id")
-                        .HasFilter("is_deleted = false");
-
-                    b.ToTable("user_themes");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetCategoryEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetCategoryEf", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_asset_categories_asset_categories_parent_id");
-
-                    b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetTypeEf", "AssetType")
-                        .WithMany("Assets")
+                    b.HasOne("FAM.Domain.Types.AssetType", "AssetType")
+                        .WithMany()
                         .HasForeignKey("AssetTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_asset_types_asset_type_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetCategoryEf", "Category")
-                        .WithMany("Assets")
+                    b.HasOne("FAM.Domain.Categories.AssetCategory", "Category")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_asset_categories_category_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.CompanyDetailsEf", "Company")
+                    b.HasOne("FAM.Domain.Organizations.CompanyDetails", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_company_details_company_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetConditionEf", "Condition")
-                        .WithMany("Assets")
+                    b.HasOne("FAM.Domain.Conditions.AssetCondition", "Condition")
+                        .WithMany()
                         .HasForeignKey("ConditionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_asset_conditions_condition_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.CountryEf", null)
-                        .WithMany("Assets")
-                        .HasForeignKey("CountryEfId");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.CountryEf", "Country")
+                    b.HasOne("FAM.Domain.Geography.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_countries_country_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
+                    b.HasOne("FAM.Domain.Statuses.LifecycleStatus", "LifecycleStatus")
                         .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.LifecycleStatusEf", "LifecycleStatus")
-                        .WithMany("Assets")
                         .HasForeignKey("LifecycleStatusId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_lifecycle_statuses_lifecycle_status_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.LocationEf", "Location")
-                        .WithMany("Assets")
+                    b.HasOne("FAM.Domain.Locations.Location", "Location")
+                        .WithMany()
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_locations_location_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.ManufacturerEf", "Manufacturer")
+                    b.HasOne("FAM.Domain.Locations.Location", null)
                         .WithMany("Assets")
+                        .HasForeignKey("LocationId1");
+
+                    b.HasOne("FAM.Domain.Manufacturers.Manufacturer", "Manufacturer")
+                        .WithMany()
                         .HasForeignKey("ManufacturerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_manufacturers_manufacturer_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.ModelEf", "Model")
+                    b.HasOne("FAM.Domain.Models.Model", "Model")
                         .WithMany("Assets")
                         .HasForeignKey("ModelId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_models_model_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "Owner")
+                    b.HasOne("FAM.Domain.Users.User", "Owner")
                         .WithMany()
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_users_owner_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.SupplierEf", "Supplier")
-                        .WithMany("Assets")
+                    b.HasOne("FAM.Domain.Suppliers.Supplier", "Supplier")
+                        .WithMany()
                         .HasForeignKey("SupplierId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_suppliers_supplier_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "UpdatedBy")
+                    b.HasOne("FAM.Domain.Statuses.UsageStatus", "UsageStatus")
                         .WithMany()
-                        .HasForeignKey("UpdatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UsageStatusEf", "UsageStatus")
-                        .WithMany("Assets")
                         .HasForeignKey("UsageStatusId")
-                        .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_assets_usage_statuses_usage_status_id");
 
                     b.Navigation("AssetType");
@@ -4928,8 +4697,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Navigation("Condition");
 
                     b.Navigation("Country");
-
-                    b.Navigation("CreatedBy");
 
                     b.Navigation("LifecycleStatus");
 
@@ -4943,30 +4710,29 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     b.Navigation("Supplier");
 
-                    b.Navigation("UpdatedBy");
-
                     b.Navigation("UsageStatus");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetEventEf", b =>
+            modelBuilder.Entity("FAM.Domain.Assets.AssetEvent", b =>
                 {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "Actor")
+                    b.HasOne("FAM.Domain.Users.User", "Actor")
                         .WithMany()
                         .HasForeignKey("ActorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_asset_events_users_actor_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetEf", "Asset")
+                    b.HasOne("FAM.Domain.Assets.Asset", "Asset")
                         .WithMany("AssetEvents")
                         .HasForeignKey("AssetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_asset_events_assets_asset_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetEventTypeEf", "EventType")
-                        .WithMany("AssetEvents")
+                    b.HasOne("FAM.Domain.Statuses.AssetEventType", "EventType")
+                        .WithMany()
                         .HasForeignKey("EventTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_asset_events_asset_event_types_event_type_id");
 
                     b.Navigation("Actor");
@@ -4976,197 +4742,48 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Navigation("EventType");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetTypeEf", b =>
+            modelBuilder.Entity("FAM.Domain.Assets.Assignment", b =>
                 {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetTypeEf", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_asset_types_asset_types_parent_id");
-
-                    b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssignmentEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetEf", "Asset")
+                    b.HasOne("FAM.Domain.Assets.Asset", "Asset")
                         .WithMany("Assignments")
                         .HasForeignKey("AssetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_asset_assignments_assets_asset_id");
+                        .HasConstraintName("fk_assignments_assets_asset_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "ByUser")
+                    b.HasOne("FAM.Domain.Users.User", "ByUser")
                         .WithMany()
                         .HasForeignKey("ByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_asset_assignments_users_by_user_id");
+                        .HasConstraintName("fk_assignments_users_by_user_id");
 
                     b.Navigation("Asset");
 
                     b.Navigation("ByUser");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AttachmentEf", b =>
+            modelBuilder.Entity("FAM.Domain.Assets.Attachment", b =>
                 {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetEf", "Asset")
+                    b.HasOne("FAM.Domain.Assets.Asset", "Asset")
                         .WithMany("Attachments")
                         .HasForeignKey("AssetId")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .HasConstraintName("fk_asset_attachments_assets_asset_id");
+                        .HasConstraintName("fk_attachments_assets_asset_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "Uploader")
+                    b.HasOne("FAM.Domain.Users.User", "Uploader")
                         .WithMany()
                         .HasForeignKey("UploadedBy")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_asset_attachments_users_uploader_id");
+                        .HasConstraintName("fk_attachments_users_uploader_id");
 
                     b.Navigation("Asset");
 
                     b.Navigation("Uploader");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.CompanyDetailsEf", b =>
+            modelBuilder.Entity("FAM.Domain.Authorization.Resource", b =>
                 {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.OrgNodeEf", "Node")
-                        .WithOne("CompanyDetails")
-                        .HasForeignKey("FAM.Infrastructure.PersistenceModels.Ef.CompanyDetailsEf", "NodeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_company_details_org_nodes_node_id");
-
-                    b.Navigation("Node");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.DepartmentDetailsEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.OrgNodeEf", "Node")
-                        .WithOne("DepartmentDetails")
-                        .HasForeignKey("FAM.Infrastructure.PersistenceModels.Ef.DepartmentDetailsEf", "NodeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_department_details_org_nodes_node_id");
-
-                    b.Navigation("Node");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.FinanceEntryEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetEf", "Asset")
-                        .WithMany("FinanceEntries")
-                        .HasForeignKey("AssetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_finance_entries_assets_asset_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Asset");
-
-                    b.Navigation("CreatedBy");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.LocationEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.CompanyDetailsEf", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_locations_company_details_company_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.CountryEf", null)
-                        .WithMany("Locations")
-                        .HasForeignKey("CountryEfId");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.CountryEf", "Country")
-                        .WithMany()
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_locations_countries_country_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.LocationEf", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_locations_locations_parent_id");
-
-                    b.Navigation("Company");
-
-                    b.Navigation("Country");
-
-                    b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.ManufacturerEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.CountryEf", null)
-                        .WithMany("Manufacturers")
-                        .HasForeignKey("CountryEfId");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.CountryEf", "Country")
-                        .WithMany()
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_manufacturers_countries_country_id");
-
-                    b.Navigation("Country");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.MenuItemEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.MenuItemEf", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_menu_items_menu_items_parent_id");
-
-                    b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.ModelEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetCategoryEf", "Category")
-                        .WithMany("Models")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_models_asset_categories_category_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.ManufacturerEf", "Manufacturer")
-                        .WithMany("Models")
-                        .HasForeignKey("ManufacturerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_models_manufacturers_manufacturer_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.AssetTypeEf", "Type")
-                        .WithMany("Models")
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_models_asset_types_type_id");
-
-                    b.Navigation("Category");
-
-                    b.Navigation("Manufacturer");
-
-                    b.Navigation("Type");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.OrgNodeEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.OrgNodeEf", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_org_nodes_org_nodes_parent_id");
-
-                    b.Navigation("Parent");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.ResourceEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.OrgNodeEf", "Node")
+                    b.HasOne("FAM.Domain.Organizations.OrgNode", "Node")
                         .WithMany("Resources")
                         .HasForeignKey("NodeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -5176,16 +4793,16 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Navigation("Node");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.RolePermissionEf", b =>
+            modelBuilder.Entity("FAM.Domain.Authorization.RolePermission", b =>
                 {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.PermissionEf", "Permission")
+                    b.HasOne("FAM.Domain.Authorization.Permission", "Permission")
                         .WithMany("RolePermissions")
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_role_permissions_permissions_permission_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.RoleEf", "Role")
+                    b.HasOne("FAM.Domain.Authorization.Role", "Role")
                         .WithMany("RolePermissions")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -5197,57 +4814,23 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.SupplierEf", b =>
+            modelBuilder.Entity("FAM.Domain.Authorization.UserNodeRole", b =>
                 {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.CompanyDetailsEf", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .HasConstraintName("fk_suppliers_company_details_company_id");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.CountryEf", null)
-                        .WithMany("Suppliers")
-                        .HasForeignKey("CountryEfId");
-
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.CountryEf", "Country")
-                        .WithMany()
-                        .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("fk_suppliers_countries_country_id");
-
-                    b.Navigation("Company");
-
-                    b.Navigation("Country");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserDeviceEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "User")
-                        .WithMany("UserDevices")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("fk_user_devices_users_user_id");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserNodeRoleEf", b =>
-                {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.OrgNodeEf", "Node")
+                    b.HasOne("FAM.Domain.Organizations.OrgNode", "Node")
                         .WithMany("UserNodeRoles")
                         .HasForeignKey("NodeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_node_roles_org_nodes_node_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.RoleEf", "Role")
+                    b.HasOne("FAM.Domain.Authorization.Role", "Role")
                         .WithMany("UserNodeRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_node_roles_roles_role_id");
 
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "User")
+                    b.HasOne("FAM.Domain.Users.User", "User")
                         .WithMany("UserNodeRoles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -5261,9 +4844,398 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserThemeEf", b =>
+            modelBuilder.Entity("FAM.Domain.Categories.AssetCategory", b =>
                 {
-                    b.HasOne("FAM.Infrastructure.PersistenceModels.Ef.UserEf", "User")
+                    b.HasOne("FAM.Domain.Categories.AssetCategory", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_asset_categories_asset_categories_parent_id");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Common.Entities.MenuItem", b =>
+                {
+                    b.HasOne("FAM.Domain.Common.Entities.MenuItem", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_menu_items_menu_items_parent_id");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Finance.FinanceEntry", b =>
+                {
+                    b.HasOne("FAM.Domain.Assets.Asset", "Asset")
+                        .WithMany("FinanceEntries")
+                        .HasForeignKey("AssetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_finance_entries_assets_asset_id");
+
+                    b.HasOne("FAM.Domain.Users.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("FAM.Domain.Users.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("CreatorId")
+                        .HasConstraintName("fk_finance_entries_users_creator_id");
+
+                    b.Navigation("Asset");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Locations.Location", b =>
+                {
+                    b.HasOne("FAM.Domain.Organizations.CompanyDetails", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_locations_company_details_company_id");
+
+                    b.HasOne("FAM.Domain.Geography.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_locations_countries_country_id");
+
+                    b.HasOne("FAM.Domain.Geography.Country", null)
+                        .WithMany("Locations")
+                        .HasForeignKey("CountryId1");
+
+                    b.HasOne("FAM.Domain.Locations.Location", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_locations_locations_parent_id");
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Country");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Manufacturers.Manufacturer", b =>
+                {
+                    b.HasOne("FAM.Domain.Geography.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_manufacturers_countries_country_id");
+
+                    b.Navigation("Country");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Models.Model", b =>
+                {
+                    b.HasOne("FAM.Domain.Categories.AssetCategory", "Category")
+                        .WithMany("Models")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_models_asset_categories_category_id");
+
+                    b.HasOne("FAM.Domain.Manufacturers.Manufacturer", "Manufacturer")
+                        .WithMany("Models")
+                        .HasForeignKey("ManufacturerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_models_manufacturers_manufacturer_id");
+
+                    b.HasOne("FAM.Domain.Types.AssetType", "Type")
+                        .WithMany("Models")
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_models_asset_types_type_id");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Manufacturer");
+
+                    b.Navigation("Type");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Organizations.CompanyDetails", b =>
+                {
+                    b.HasOne("FAM.Domain.Organizations.OrgNode", "Node")
+                        .WithOne("CompanyDetails")
+                        .HasForeignKey("FAM.Domain.Organizations.CompanyDetails", "NodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_company_details_org_nodes_node_id");
+
+                    b.OwnsOne("FAM.Domain.ValueObjects.Address", "Address", b1 =>
+                        {
+                            b1.Property<long>("CompanyDetailsId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<string>("City")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("address_city");
+
+                            b1.Property<string>("CountryCode")
+                                .IsRequired()
+                                .HasMaxLength(10)
+                                .HasColumnType("character varying(10)")
+                                .HasColumnName("address_country_code");
+
+                            b1.Property<string>("District")
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("address_district");
+
+                            b1.Property<string>("PostalCode")
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("address_postal_code");
+
+                            b1.Property<string>("Province")
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("address_province");
+
+                            b1.Property<string>("Street")
+                                .IsRequired()
+                                .HasMaxLength(255)
+                                .HasColumnType("character varying(255)")
+                                .HasColumnName("address_street");
+
+                            b1.Property<string>("Ward")
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)")
+                                .HasColumnName("address_ward");
+
+                            b1.HasKey("CompanyDetailsId");
+
+                            b1.ToTable("address");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CompanyDetailsId");
+                        });
+
+                    b.Navigation("Address");
+
+                    b.Navigation("Node");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Organizations.DepartmentDetails", b =>
+                {
+                    b.HasOne("FAM.Domain.Organizations.OrgNode", "Node")
+                        .WithOne("DepartmentDetails")
+                        .HasForeignKey("FAM.Domain.Organizations.DepartmentDetails", "NodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_department_details_org_nodes_node_id");
+
+                    b.Navigation("Node");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Organizations.OrgNode", b =>
+                {
+                    b.HasOne("FAM.Domain.Organizations.OrgNode", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_org_nodes_org_nodes_parent_id");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Suppliers.Supplier", b =>
+                {
+                    b.HasOne("FAM.Domain.Geography.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_suppliers_countries_country_id");
+
+                    b.OwnsOne("FAM.Domain.ValueObjects.Money", "AnnualRevenue", b1 =>
+                        {
+                            b1.Property<long>("SupplierId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("numeric")
+                                .HasColumnName("annual_revenue_amount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasColumnName("annual_revenue_currency");
+
+                            b1.HasKey("SupplierId");
+
+                            b1.ToTable("money");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierId");
+                        });
+
+                    b.OwnsOne("FAM.Domain.ValueObjects.Money", "AverageOrderValue", b1 =>
+                        {
+                            b1.Property<long>("SupplierId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("numeric")
+                                .HasColumnName("average_order_value_amount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasColumnName("average_order_value_currency");
+
+                            b1.HasKey("SupplierId");
+
+                            b1.ToTable("suppliers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierId");
+                        });
+
+                    b.OwnsOne("FAM.Domain.ValueObjects.Money", "CreditLimit", b1 =>
+                        {
+                            b1.Property<long>("SupplierId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("numeric")
+                                .HasColumnName("credit_limit_amount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasColumnName("credit_limit_currency");
+
+                            b1.HasKey("SupplierId");
+
+                            b1.ToTable("suppliers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierId");
+                        });
+
+                    b.OwnsOne("FAM.Domain.ValueObjects.Money", "InsuranceCoverage", b1 =>
+                        {
+                            b1.Property<long>("SupplierId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("numeric")
+                                .HasColumnName("insurance_coverage_amount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasColumnName("insurance_coverage_currency");
+
+                            b1.HasKey("SupplierId");
+
+                            b1.ToTable("suppliers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierId");
+                        });
+
+                    b.OwnsOne("FAM.Domain.ValueObjects.Money", "MinimumOrderValue", b1 =>
+                        {
+                            b1.Property<long>("SupplierId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("numeric")
+                                .HasColumnName("minimum_order_value_amount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasColumnName("minimum_order_value_currency");
+
+                            b1.HasKey("SupplierId");
+
+                            b1.ToTable("suppliers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierId");
+                        });
+
+                    b.OwnsOne("FAM.Domain.ValueObjects.Money", "TotalSpent", b1 =>
+                        {
+                            b1.Property<long>("SupplierId")
+                                .HasColumnType("bigint");
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("numeric")
+                                .HasColumnName("total_spent_amount");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasMaxLength(3)
+                                .HasColumnType("character varying(3)")
+                                .HasColumnName("total_spent_currency");
+
+                            b1.HasKey("SupplierId");
+
+                            b1.ToTable("suppliers");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SupplierId");
+                        });
+
+                    b.Navigation("AnnualRevenue");
+
+                    b.Navigation("AverageOrderValue");
+
+                    b.Navigation("Country");
+
+                    b.Navigation("CreditLimit");
+
+                    b.Navigation("InsuranceCoverage");
+
+                    b.Navigation("MinimumOrderValue");
+
+                    b.Navigation("TotalSpent");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Types.AssetType", b =>
+                {
+                    b.HasOne("FAM.Domain.Types.AssetType", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_asset_types_asset_types_parent_id");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Users.Entities.UserDevice", b =>
+                {
+                    b.HasOne("FAM.Domain.Users.User", "User")
+                        .WithMany("UserDevices")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_devices_users_user_id");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Users.Entities.UserTheme", b =>
+                {
+                    b.HasOne("FAM.Domain.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -5273,21 +5245,36 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetCategoryEf", b =>
+            modelBuilder.Entity("FAM.Domain.Users.User", b =>
                 {
-                    b.Navigation("Assets");
+                    b.OwnsOne("FAM.Domain.ValueObjects.Password", "Password", b1 =>
+                        {
+                            b1.Property<long>("UserId")
+                                .HasColumnType("bigint");
 
-                    b.Navigation("Children");
+                            b1.Property<string>("Hash")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("password_hash");
 
-                    b.Navigation("Models");
+                            b1.Property<string>("Salt")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("password_salt");
+
+                            b1.HasKey("UserId");
+
+                            b1.ToTable("password");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserId");
+                        });
+
+                    b.Navigation("Password")
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetConditionEf", b =>
-                {
-                    b.Navigation("Assets");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetEf", b =>
+            modelBuilder.Entity("FAM.Domain.Assets.Asset", b =>
                 {
                     b.Navigation("AssetEvents");
 
@@ -5298,61 +5285,53 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Navigation("FinanceEntries");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetEventTypeEf", b =>
+            modelBuilder.Entity("FAM.Domain.Authorization.Permission", b =>
                 {
-                    b.Navigation("AssetEvents");
+                    b.Navigation("RolePermissions");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.AssetTypeEf", b =>
+            modelBuilder.Entity("FAM.Domain.Authorization.Role", b =>
                 {
-                    b.Navigation("Assets");
+                    b.Navigation("RolePermissions");
 
+                    b.Navigation("UserNodeRoles");
+                });
+
+            modelBuilder.Entity("FAM.Domain.Categories.AssetCategory", b =>
+                {
                     b.Navigation("Children");
 
                     b.Navigation("Models");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.CountryEf", b =>
+            modelBuilder.Entity("FAM.Domain.Common.Entities.MenuItem", b =>
                 {
-                    b.Navigation("Assets");
+                    b.Navigation("Children");
+                });
 
+            modelBuilder.Entity("FAM.Domain.Geography.Country", b =>
+                {
                     b.Navigation("Locations");
-
-                    b.Navigation("Manufacturers");
-
-                    b.Navigation("Suppliers");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.LifecycleStatusEf", b =>
-                {
-                    b.Navigation("Assets");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.LocationEf", b =>
+            modelBuilder.Entity("FAM.Domain.Locations.Location", b =>
                 {
                     b.Navigation("Assets");
 
                     b.Navigation("Children");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.ManufacturerEf", b =>
+            modelBuilder.Entity("FAM.Domain.Manufacturers.Manufacturer", b =>
                 {
-                    b.Navigation("Assets");
-
                     b.Navigation("Models");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.MenuItemEf", b =>
-                {
-                    b.Navigation("Children");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.ModelEf", b =>
+            modelBuilder.Entity("FAM.Domain.Models.Model", b =>
                 {
                     b.Navigation("Assets");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.OrgNodeEf", b =>
+            modelBuilder.Entity("FAM.Domain.Organizations.OrgNode", b =>
                 {
                     b.Navigation("Children");
 
@@ -5365,29 +5344,14 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Navigation("UserNodeRoles");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.PermissionEf", b =>
+            modelBuilder.Entity("FAM.Domain.Types.AssetType", b =>
                 {
-                    b.Navigation("RolePermissions");
+                    b.Navigation("Children");
+
+                    b.Navigation("Models");
                 });
 
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.RoleEf", b =>
-                {
-                    b.Navigation("RolePermissions");
-
-                    b.Navigation("UserNodeRoles");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.SupplierEf", b =>
-                {
-                    b.Navigation("Assets");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UsageStatusEf", b =>
-                {
-                    b.Navigation("Assets");
-                });
-
-            modelBuilder.Entity("FAM.Infrastructure.PersistenceModels.Ef.UserEf", b =>
+            modelBuilder.Entity("FAM.Domain.Users.User", b =>
                 {
                     b.Navigation("UserDevices");
 

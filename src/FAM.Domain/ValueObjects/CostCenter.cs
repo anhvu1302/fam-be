@@ -33,9 +33,9 @@ public sealed class CostCenter : ValueObject
     /// <summary>
     /// Implicit conversion từ CostCenter sang string
     /// </summary>
-    public static implicit operator string(CostCenter costCenter)
+    public static implicit operator string?(CostCenter? costCenter)
     {
-        return costCenter.Value;
+        return costCenter?.Value;
     }
 
     /// <summary>

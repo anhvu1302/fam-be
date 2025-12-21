@@ -1,5 +1,5 @@
+using FAM.Domain.Users;
 using FAM.Infrastructure.Common.Seeding;
-using FAM.Infrastructure.PersistenceModels.Ef;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -32,28 +32,25 @@ public class AdminUserSeeder : BaseDataSeeder
             return;
         }
 
-        var users = new List<UserEf>
-        {
-            new()
-            {
-                Username = "admin",
-                Email = "admin@gmail.com",
-                FirstName = "System",
-                LastName = "Administrator",
-                FullName = "System Administrator",
-                Avatar = "https://gravatar.com/userimage/244508532/70e488bb05c1956db10a6d7673009e76.jpeg?size=1024",
-                PhoneNumber = "0123456789",
-                PhoneCountryCode = "+84",
-                PasswordHash = "RlI1JkKTEVI6+RhcU/dLzeKshHhDwe3NpWd6Z3BIFtY=", // Hash for Admin@123
-                PasswordSalt = "6eb1ccfd64a94810bd3398067dff13f5", // Salt for Admin@123
-                IsEmailVerified = true,
-                IsPhoneVerified = false,
-                IsActive = true,
-                IsDeleted = false,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            }
-        };
+        var admin = User.Create(
+            "admin",
+            "admin@gmail.com",
+            "RlI1JkKTEVI6+RhcU/dLzeKshHhDwe3NpWd6Z3BIFtY=",
+            "6eb1ccfd64a94810bd3398067dff13f5",
+            "System",
+            "Administrator",
+            "+84:0123456789"
+        );
+        admin.VerifyEmail();
+        admin.UpdatePersonalInfo(
+            "System",
+            "Administrator",
+            "https://gravatar.com/userimage/244508532/70e488bb05c1956db10a6d7673009e76.jpeg?size=1024",
+            null,
+            null
+        );
+
+        var users = new List<User> { admin };
 
         await _dbContext.Users.AddRangeAsync(users, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);

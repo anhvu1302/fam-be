@@ -1,85 +1,74 @@
 using System.Linq.Expressions;
 
-using AutoMapper;
-
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
-using FAM.Infrastructure.PersistenceModels.Ef;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
 /// <summary>
 /// PostgreSQL repository for SigningKey
+/// Uses Pragmatic Architecture - directly works with Domain entities
 /// </summary>
 public class SigningKeyRepository : ISigningKeyRepository
 {
     private readonly PostgreSqlDbContext _context;
-    private readonly IMapper _mapper;
 
-    public SigningKeyRepository(PostgreSqlDbContext context, IMapper mapper)
+    public SigningKeyRepository(PostgreSqlDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<SigningKey?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        SigningKeyEf? entity = await _context.SigningKeys
+        return await _context.SigningKeys
             .FirstOrDefaultAsync(k => k.Id == id && !k.IsDeleted, cancellationToken);
-        return entity != null ? _mapper.Map<SigningKey>(entity) : null;
     }
 
     public async Task<IEnumerable<SigningKey>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        List<SigningKeyEf> entities = await _context.SigningKeys
+        return await _context.SigningKeys
             .Where(k => !k.IsDeleted)
             .ToListAsync(cancellationToken);
-        return entities.Select(e => _mapper.Map<SigningKey>(e));
     }
 
     public async Task<IEnumerable<SigningKey>> FindAsync(
         Expression<Func<SigningKey, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        // For simple queries, get all and filter in memory
-        IEnumerable<SigningKey> all = await GetAllAsync(cancellationToken);
-        return all.Where(predicate.Compile());
+        // Apply predicate at database level - no need for in-memory filtering
+        return await _context.SigningKeys.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(SigningKey entity, CancellationToken cancellationToken = default)
     {
-        SigningKeyEf? efEntity = _mapper.Map<SigningKeyEf>(entity);
-        await _context.SigningKeys.AddAsync(efEntity, cancellationToken);
+        await _context.SigningKeys.AddAsync(entity, cancellationToken);
     }
 
     public void Update(SigningKey entity)
     {
-        SigningKeyEf? efEntity = _mapper.Map<SigningKeyEf>(entity);
-
-        EntityEntry<SigningKeyEf>? trackedEntry = _context.ChangeTracker.Entries<SigningKeyEf>()
+        var trackedEntry = _context.ChangeTracker.Entries<SigningKey>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
         {
-            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(entity);
         }
         else
         {
-            _context.SigningKeys.Attach(efEntity);
-            _context.Entry(efEntity).State = EntityState.Modified;
+            _context.SigningKeys.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
         }
     }
 
     public void Delete(SigningKey entity)
     {
-        SigningKeyEf? efEntity = _context.SigningKeys.Local.FirstOrDefault(k => k.Id == entity.Id);
-        if (efEntity != null)
+        var trackedEntity = _context.SigningKeys.Local.FirstOrDefault(k => k.Id == entity.Id);
+        if (trackedEntity != null)
         {
-            efEntity.IsDeleted = true;
-            efEntity.DeletedAt = DateTime.UtcNow;
+            trackedEntity.IsDeleted = true;
+            trackedEntity.DeletedAt = DateTime.UtcNow;
         }
     }
 
@@ -91,38 +80,34 @@ public class SigningKeyRepository : ISigningKeyRepository
 
     public async Task<SigningKey?> GetByKeyIdAsync(string keyId, CancellationToken cancellationToken = default)
     {
-        SigningKeyEf? entity = await _context.SigningKeys
+        return await _context.SigningKeys
             .FirstOrDefaultAsync(k => k.KeyId == keyId && !k.IsDeleted, cancellationToken);
-        return entity != null ? _mapper.Map<SigningKey>(entity) : null;
     }
 
     public async Task<SigningKey?> GetActiveKeyAsync(CancellationToken cancellationToken = default)
     {
-        SigningKeyEf? entity = await _context.SigningKeys
+        return await _context.SigningKeys
             .Where(k => k.IsActive && !k.IsRevoked && !k.IsDeleted)
             .Where(k => k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow)
             .OrderByDescending(k => k.CreatedAt)
             .FirstOrDefaultAsync(cancellationToken);
-        return entity != null ? _mapper.Map<SigningKey>(entity) : null;
     }
 
     public async Task<IReadOnlyList<SigningKey>> GetVerificationKeysAsync(CancellationToken cancellationToken = default)
     {
-        List<SigningKeyEf> entities = await _context.SigningKeys
+        return await _context.SigningKeys
             .Where(k => !k.IsRevoked && !k.IsDeleted)
             .ToListAsync(cancellationToken);
-        return entities.Select(e => _mapper.Map<SigningKey>(e)).ToList();
     }
 
     public async Task<IReadOnlyList<SigningKey>> GetAllActiveKeysAsync(CancellationToken cancellationToken = default)
     {
-        List<SigningKeyEf> entities = await _context.SigningKeys
+        return await _context.SigningKeys
             .Where(k => !k.IsRevoked && !k.IsDeleted)
             .Where(k => k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow)
             .OrderByDescending(k => k.IsActive)
             .ThenByDescending(k => k.CreatedAt)
             .ToListAsync(cancellationToken);
-        return entities.Select(e => _mapper.Map<SigningKey>(e)).ToList();
     }
 
     public async Task DeactivateAllExceptAsync(long keyId, CancellationToken cancellationToken = default)
@@ -138,10 +123,9 @@ public class SigningKeyRepository : ISigningKeyRepository
     public async Task<IReadOnlyList<SigningKey>> GetExpiredKeysAsync(CancellationToken cancellationToken = default)
     {
         DateTime now = DateTime.UtcNow;
-        List<SigningKeyEf> entities = await _context.SigningKeys
+        return await _context.SigningKeys
             .Where(k => !k.IsDeleted && k.ExpiresAt != null && k.ExpiresAt < now)
             .ToListAsync(cancellationToken);
-        return entities.Select(e => _mapper.Map<SigningKey>(e)).ToList();
     }
 
     public async Task<IReadOnlyList<SigningKey>> GetKeysExpiringWithinAsync(TimeSpan timeSpan,
@@ -149,10 +133,9 @@ public class SigningKeyRepository : ISigningKeyRepository
     {
         DateTime now = DateTime.UtcNow;
         DateTime expiryThreshold = now.Add(timeSpan);
-        List<SigningKeyEf> entities = await _context.SigningKeys
+        return await _context.SigningKeys
             .Where(k => !k.IsDeleted && !k.IsRevoked && k.ExpiresAt != null)
             .Where(k => k.ExpiresAt > now && k.ExpiresAt <= expiryThreshold)
             .ToListAsync(cancellationToken);
-        return entities.Select(e => _mapper.Map<SigningKey>(e)).ToList();
     }
 }

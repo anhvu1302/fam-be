@@ -20,7 +20,7 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
     public string? LongDescription { get; private set; }
 
     // Hierarchy
-    public int? ParentId { get; private set; } // For hierarchical types
+    public long? ParentId { get; private set; } // For hierarchical types
     public int Level { get; private set; } // Hierarchy level (0 = root)
     public string? Path { get; private set; } // Full path (e.g., "/IT/Hardware/Laptop")
 
@@ -126,8 +126,7 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
     public AssetType? Parent { get; set; }
     public ICollection<AssetType> Children { get; set; } = new List<AssetType>();
     public ICollection<Model> Models { get; set; } = new List<Model>();
-    public ICollection<Asset> Assets { get; set; } = new List<Asset>();
-
+    
     private AssetType()
     {
     }

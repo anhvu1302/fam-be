@@ -69,12 +69,14 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public bool ReceiveMarketingEmails { get; private set; }
 
     // Navigation properties
-    public ICollection<Asset> OwnedAssets { get; set; } = new List<Asset>();
-    public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
-    public ICollection<AssetEvent> AssetEvents { get; set; } = new List<AssetEvent>();
-    public ICollection<FinanceEntry> FinanceEntries { get; set; } = new List<FinanceEntry>();
-    public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
+    /// <summary>
+    /// User's role assignments within organization nodes (part of User aggregate boundary)
+    /// </summary>
     public ICollection<UserNodeRole> UserNodeRoles { get; set; } = new List<UserNodeRole>();
+
+    /// <summary>
+    /// User's login devices (part of User aggregate boundary)
+    /// </summary>
     public ICollection<UserDevice> UserDevices { get; set; } = new List<UserDevice>();
 
     private User()
@@ -116,7 +118,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
 
     /// <summary>
     /// Factory method for loading User from database storage
-    /// Used by AutoMapper to hydrate domain entity from EF persistence model
+    /// Hydrates domain entity from persistence model
     /// </summary>
     public static User CreateFromStorage(
         long id,
@@ -190,6 +192,14 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
             PhoneNumber = null;
     }
 
+    public void ChangePassword(string currentPassRaw, string newPassRaw)
+    {
+        if (!Password.Verify(currentPassRaw)) 
+            throw new DomainException(ErrorCodes.AUTH_INVALID_OLD_PASSWORD, "Current password is incorrect");
+
+        var newPassVo = Password.Create(newPassRaw);
+        UpdatePassword(newPassVo.Hash, newPassVo.Salt);
+    }
     public void UpdatePassword(string newPasswordHash, string newPasswordSalt)
     {
         Password = Password.FromHash(newPasswordHash, newPasswordSalt);

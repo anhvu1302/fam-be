@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
-public class SeedHistoryRepositoryPostgreSql : ISeedHistoryRepository
+public class SeedHistoryRepository : ISeedHistoryRepository
 {
     private readonly PostgreSqlDbContext _dbContext;
 
-    public SeedHistoryRepositoryPostgreSql(PostgreSqlDbContext dbContext)
+    public SeedHistoryRepository(PostgreSqlDbContext dbContext)
     {
         _dbContext = dbContext;
     }

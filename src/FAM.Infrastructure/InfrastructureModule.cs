@@ -3,7 +3,6 @@ using FAM.Application.Common.Services;
 using FAM.Application.Storage;
 using FAM.Domain.Abstractions;
 using FAM.Infrastructure.Auth;
-using FAM.Infrastructure.Common.Mapping;
 using FAM.Infrastructure.Common.Options;
 using FAM.Infrastructure.Common.Seeding;
 using FAM.Infrastructure.Providers.PostgreSQL;
@@ -52,9 +51,6 @@ public static class InfrastructureModule
             default:
                 throw new InvalidOperationException($"Unsupported database provider: {provider}");
         }
-
-        // Register AutoMapper with specific profiles (Domain <-> Persistence layer mappings)
-        services.AddAutoMapper(cfg => { cfg.AddProfile<DomainToEfProfile>(); });
 
         // Register Data Seeder Orchestrator
         services.AddScoped<DataSeederOrchestrator>();

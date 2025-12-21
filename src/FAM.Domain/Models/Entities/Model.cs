@@ -23,9 +23,9 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public string? Description { get; private set; }
 
     // Relationships
-    public int? ManufacturerId { get; private set; }
-    public int? CategoryId { get; private set; }
-    public int? TypeId { get; private set; } // Asset Type
+    public long? ManufacturerId { get; private set; }
+    public long? CategoryId { get; private set; }
+    public long? TypeId { get; private set; } // Asset Type
 
     // Product Information
     public string? ProductFamily { get; private set; } // e.g., "ThinkPad", "MacBook", "Surface"

@@ -69,7 +69,7 @@ public class CostCenterTests
         var costCenter = CostCenter.Create("CC-001");
 
         // Act
-        string value = costCenter;
+        string value = costCenter!;
 
         // Assert
         value.Should().Be("CC-001");

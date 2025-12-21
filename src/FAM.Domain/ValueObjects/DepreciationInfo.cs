@@ -7,10 +7,15 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class DepreciationInfo : ValueObject
 {
-    public string Method { get; }
-    public int UsefulLifeMonths { get; }
-    public decimal ResidualValue { get; }
-    public DateTime? InServiceDate { get; }
+    public string Method { get; private set; } = null!;
+    public int UsefulLifeMonths { get; private set; }
+    public decimal ResidualValue { get; private set; }
+    public DateTime? InServiceDate { get; private set; }
+
+    // Constructor for EF Core
+    private DepreciationInfo()
+    {
+    }
 
     private DepreciationInfo(
         string method,

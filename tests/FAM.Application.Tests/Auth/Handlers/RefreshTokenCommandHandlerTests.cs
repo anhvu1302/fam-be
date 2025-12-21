@@ -2,6 +2,7 @@ using FAM.Application.Auth.RefreshToken;
 using FAM.Application.Auth.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
 
@@ -132,7 +133,7 @@ public class RefreshTokenCommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -174,7 +175,7 @@ public class RefreshTokenCommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -217,7 +218,7 @@ public class RefreshTokenCommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -264,7 +265,7 @@ public class RefreshTokenCommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -313,7 +314,7 @@ public class RefreshTokenCommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -359,7 +360,7 @@ public class RefreshTokenCommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);

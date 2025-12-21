@@ -744,7 +744,7 @@ public class AuthController : BaseApiController
         var deviceId = GetDeviceId();
         var ipAddress = GetClientIpAddress();
 
-        // Update last activity for current device - using direct repository method to avoid AutoMapper issues
+        // Update last activity for current device
         if (!string.IsNullOrEmpty(deviceId))
         {
             await _unitOfWork.UserDevices.UpdateLastActivityAsync(deviceId, ipAddress);

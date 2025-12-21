@@ -14,7 +14,7 @@ public class Attachment : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
     public long? AssetId { get; private set; }
     public string? FileName { get; private set; }
     public string? FileUrl { get; private set; }
-    public int? UploadedBy { get; private set; }
+    public long? UploadedBy { get; private set; }
     public DateTime UploadedAt { get; private set; } = DateTime.UtcNow;
 
     // Audit fields
@@ -27,9 +27,6 @@ public class Attachment : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
     public long? DeletedById { get; set; }
 
     // Navigation properties
-    public User? CreatedBy { get; set; }
-    public User? UpdatedBy { get; set; }
-    public User? DeletedBy { get; set; }
     public Asset? Asset { get; set; }
     public User? Uploader { get; set; }
 

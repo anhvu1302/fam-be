@@ -7,13 +7,18 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class Address : ValueObject
 {
-    public string Street { get; }
-    public string? Ward { get; }
-    public string? District { get; }
-    public string City { get; }
-    public string? Province { get; }
-    public string CountryCode { get; }
-    public string? PostalCode { get; }
+    public string Street { get; private set; } = null!;
+    public string? Ward { get; private set; }
+    public string? District { get; private set; }
+    public string City { get; private set; } = null!;
+    public string? Province { get; private set; }
+    public string CountryCode { get; private set; } = null!;
+    public string? PostalCode { get; private set; }
+
+    // Constructor for EF Core
+    private Address()
+    {
+    }
 
     private Address(
         string street,

@@ -2,6 +2,7 @@ using System.Text.Json;
 
 using FAM.Application.Auth.DisableTwoFactorWithBackup;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 
 using FluentAssertions;
@@ -106,7 +107,7 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         user.TwoFactorEnabled.Should().BeTrue(); // Should still be enabled
@@ -145,7 +146,7 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         user.TwoFactorEnabled.Should().BeTrue();
@@ -168,7 +169,7 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);

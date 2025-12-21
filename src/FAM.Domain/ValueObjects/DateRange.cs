@@ -7,8 +7,13 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class DateRange : ValueObject
 {
-    public DateTime StartDate { get; }
-    public DateTime EndDate { get; }
+    public DateTime StartDate { get; private set; }
+    public DateTime EndDate { get; private set; }
+
+    // Constructor for EF Core
+    private DateRange()
+    {
+    }
 
     private DateRange(DateTime startDate, DateTime endDate)
     {

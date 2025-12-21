@@ -14,7 +14,7 @@ public class AssetEvent : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
     // Domain fields
     public long AssetId { get; private set; }
     public string EventCode { get; private set; } = string.Empty;
-    public int? ActorId { get; private set; }
+    public long? ActorId { get; private set; }
     public DateTime At { get; private set; } = DateTime.UtcNow;
     public string? FromLifecycleCode { get; private set; }
     public string? ToLifecycleCode { get; private set; }
@@ -31,9 +31,6 @@ public class AssetEvent : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
     public long? DeletedById { get; set; }
 
     // Navigation properties
-    public User? CreatedBy { get; set; }
-    public User? UpdatedBy { get; set; }
-    public User? DeletedBy { get; set; }
     public Asset Asset { get; set; } = null!;
     public AssetEventType EventType { get; set; } = null!;
     public User? Actor { get; set; }

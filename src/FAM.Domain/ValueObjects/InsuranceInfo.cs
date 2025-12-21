@@ -7,11 +7,16 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class InsuranceInfo : ValueObject
 {
-    public string PolicyNumber { get; }
-    public decimal InsuredValue { get; }
-    public DateTime? ExpiryDate { get; }
-    public string? Provider { get; }
-    public string? CoverageType { get; }
+    public string PolicyNumber { get; private set; } = null!;
+    public decimal InsuredValue { get; private set; }
+    public DateTime? ExpiryDate { get; private set; }
+    public string? Provider { get; private set; }
+    public string? CoverageType { get; private set; }
+
+    // Constructor for EF Core
+    private InsuranceInfo()
+    {
+    }
 
     private InsuranceInfo(
         string policyNumber,

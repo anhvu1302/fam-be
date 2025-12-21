@@ -1,75 +1,64 @@
 using System.Linq.Expressions;
 
-using AutoMapper;
-
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
-using FAM.Infrastructure.PersistenceModels.Ef;
 using FAM.Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
 /// <summary>
 /// PostgreSQL implementation of IRoleRepository
-/// Inherits from BasePostgreSqlRepository for common query operations
+/// Uses Pragmatic Architecture - directly works with Domain entities
 /// </summary>
-public class RoleRepositoryPostgreSql : BasePostgreSqlRepository<Role, RoleEf>, IRoleRepository
+public class RoleRepository : BaseRepository<Role>, IRoleRepository
 {
-    public RoleRepositoryPostgreSql(PostgreSqlDbContext context, IMapper mapper) : base(context, mapper)
+    public RoleRepository(PostgreSqlDbContext context) : base(context)
     {
     }
 
     public async Task<Role?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        RoleEf? entity = await Context.Roles.FindAsync(new object[] { id }, cancellationToken);
-        return entity != null ? Mapper.Map<Role>(entity) : null;
+        return await Context.Roles.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public async Task<IEnumerable<Role>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        List<RoleEf> entities = await Context.Roles.ToListAsync(cancellationToken);
-        return Mapper.Map<IEnumerable<Role>>(entities);
+        return await Context.Roles.ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Role>> FindAsync(Expression<Func<Role, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        List<RoleEf> allEntities = await Context.Roles.ToListAsync(cancellationToken);
-        IEnumerable<Role>? allRoles = Mapper.Map<IEnumerable<Role>>(allEntities);
-        return allRoles.Where(predicate.Compile());
+        // Apply predicate at database level - no need for in-memory filtering
+        return await Context.Roles.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(Role entity, CancellationToken cancellationToken = default)
     {
-        RoleEf? efEntity = Mapper.Map<RoleEf>(entity);
-        await Context.Roles.AddAsync(efEntity, cancellationToken);
+        await Context.Roles.AddAsync(entity, cancellationToken);
     }
 
     public void Update(Role entity)
     {
-        RoleEf? efEntity = Mapper.Map<RoleEf>(entity);
-
-        EntityEntry<RoleEf>? trackedEntry = Context.ChangeTracker.Entries<RoleEf>()
+        var trackedEntry = Context.ChangeTracker.Entries<Role>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
         {
-            Context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
+            Context.Entry(trackedEntry.Entity).CurrentValues.SetValues(entity);
         }
         else
         {
-            Context.Roles.Attach(efEntity);
-            Context.Entry(efEntity).State = EntityState.Modified;
+            Context.Roles.Attach(entity);
+            Context.Entry(entity).State = EntityState.Modified;
         }
     }
 
     public void Delete(Role entity)
     {
-        RoleEf? efEntity = Mapper.Map<RoleEf>(entity);
-        Context.Roles.Remove(efEntity);
+        Context.Roles.Remove(entity);
     }
 
     public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
@@ -79,25 +68,23 @@ public class RoleRepositoryPostgreSql : BasePostgreSqlRepository<Role, RoleEf>, 
 
     public async Task<Role?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
-        RoleEf? entity = await Context.Roles
+        return await Context.Roles
             .FirstOrDefaultAsync(r => r.Code == code, cancellationToken);
-        return entity != null ? Mapper.Map<Role>(entity) : null;
     }
 
     public async Task<IEnumerable<Role>> GetByRankGreaterThanAsync(int rank,
         CancellationToken cancellationToken = default)
     {
-        List<RoleEf> entities = await Context.Roles
+        return await Context.Roles
             .Where(r => r.Rank > rank)
             .OrderBy(r => r.Rank)
             .ToListAsync(cancellationToken);
-        return Mapper.Map<IEnumerable<Role>>(entities);
     }
 
     public async Task<bool> ExistsByCodeAsync(string code, long? excludeRoleId = null,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<RoleEf> query = Context.Roles.Where(r => r.Code == code);
+        IQueryable<Role> query = Context.Roles.Where(r => r.Code == code);
         if (excludeRoleId.HasValue) query = query.Where(r => r.Id != excludeRoleId.Value);
         return await query.AnyAsync(cancellationToken);
     }
@@ -110,48 +97,44 @@ public class RoleRepositoryPostgreSql : BasePostgreSqlRepository<Role, RoleEf>, 
         IEnumerable<Expression<Func<Role, object>>>? includes = null,
         CancellationToken cancellationToken = default)
     {
-        // Build base query for counting
-        IQueryable<RoleEf> countQuery = Context.Roles.AsQueryable();
+        // Build base query
+        IQueryable<Role> countQuery = Context.Roles.AsQueryable();
+        IQueryable<Role> dataQuery = Context.Roles.AsQueryable();
 
-        // Build query for data
-        IQueryable<RoleEf> dataQuery = Context.Roles.AsQueryable();
-
-        // Apply includes dynamically if provided
+        // Apply includes if provided
         if (includes != null && includes.Any())
-            foreach (Expression<Func<Role, object>> include in includes)
+        {
+            foreach (var include in includes)
             {
                 var propertyPath = GetPropertyName(include.Body);
                 dataQuery = dataQuery.Include(propertyPath);
             }
+        }
 
         // Apply filter at database level
         if (filter != null)
         {
-            Expression<Func<RoleEf, bool>> efFilter = ConvertToEfExpression(filter);
-            countQuery = countQuery.Where(efFilter);
-            dataQuery = dataQuery.Where(efFilter);
+            countQuery = countQuery.Where(filter);
+            dataQuery = dataQuery.Where(filter);
         }
 
-        // Get total count from count query
+        // Get total count
         var total = await countQuery.LongCountAsync(cancellationToken);
 
-        // Apply sorting to data query
+        // Apply sorting
         dataQuery = ApplySort(dataQuery, sort, GetSortExpression, r => r.Rank);
 
         // Apply pagination and execute
-        List<RoleEf> entities = await dataQuery
+        var roles = await dataQuery
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        // Map to domain entities
-        List<Role>? roles = Mapper.Map<List<Role>>(entities);
-
         return (roles, total);
     }
 
-    private Expression<Func<RoleEf, object>> GetSortExpression(string fieldName)
+    private Expression<Func<Role, object>> GetSortExpression(string fieldName)
     {
         return fieldName switch
         {

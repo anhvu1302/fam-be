@@ -7,10 +7,15 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class Dimensions : ValueObject
 {
-    public decimal Length { get; }
-    public decimal Width { get; }
-    public decimal Height { get; }
-    public string Unit { get; }
+    public decimal Length { get; private set; }
+    public decimal Width { get; private set; }
+    public decimal Height { get; private set; }
+    public string Unit { get; private set; } = null!;
+
+    // Constructor for EF Core
+    private Dimensions()
+    {
+    }
 
     private Dimensions(decimal length, decimal width, decimal height, string unit)
     {

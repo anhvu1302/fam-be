@@ -1,5 +1,5 @@
+using FAM.Domain.Common.Entities;
 using FAM.Infrastructure.Common.Seeding;
-using FAM.Infrastructure.PersistenceModels.Ef;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -36,22 +36,22 @@ public class MenuSeeder : BaseDataSeeder
 
         LogInfo("Seeding initial menu items...");
 
-        var menus = new List<MenuItemEf>();
+        var menus = new List<MenuItem>();
 
         // Dashboard
-        MenuItemEf dashboard = CreateMenu("dashboard", "Dashboard", "dashboard", "/dashboard", sortOrder: 0);
+        MenuItem dashboard = CreateMenu("dashboard", "Dashboard", "dashboard", "/dashboard", sortOrder: 0);
         menus.Add(dashboard);
 
         // Asset Management (Parent)
-        MenuItemEf assets = CreateMenu("assets", "Asset Management", "inventory_2", null, sortOrder: 1);
+        MenuItem assets = CreateMenu("assets", "Asset Management", "inventory_2", null, sortOrder: 1);
         menus.Add(assets);
 
         // Reports (Parent)
-        MenuItemEf reports = CreateMenu("reports", "Reports", "assessment", null, sortOrder: 2);
+        MenuItem reports = CreateMenu("reports", "Reports", "assessment", null, sortOrder: 2);
         menus.Add(reports);
 
         // Settings (Parent)
-        MenuItemEf settings = CreateMenu("settings", "Settings", "settings", null, sortOrder: 3,
+        MenuItem settings = CreateMenu("settings", "Settings", "settings", null, sortOrder: 3,
             requiredRoles: "Admin,SuperAdmin");
         menus.Add(settings);
 
@@ -59,7 +59,7 @@ public class MenuSeeder : BaseDataSeeder
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         // Now add children with proper parent IDs
-        var childMenus = new List<MenuItemEf>();
+        var childMenus = new List<MenuItem>();
 
         // Asset Management children
         childMenus.Add(CreateMenu("assets.list", "All Assets", "list", "/assets", assets.Id, 0, 1));
@@ -93,7 +93,7 @@ public class MenuSeeder : BaseDataSeeder
         LogInfo($"Created {menus.Count + childMenus.Count} menu items");
     }
 
-    private static MenuItemEf CreateMenu(
+    private static MenuItem CreateMenu(
         string code,
         string name,
         string? icon = null,
@@ -103,19 +103,13 @@ public class MenuSeeder : BaseDataSeeder
         int level = 0,
         string? requiredRoles = null)
     {
-        return new MenuItemEf
-        {
-            Code = code,
-            Name = name,
-            Icon = icon,
-            Route = route,
-            ParentId = parentId,
-            SortOrder = sortOrder,
-            Level = level,
-            IsVisible = true,
-            IsEnabled = true,
-            RequiredRoles = requiredRoles,
-            CreatedAt = DateTime.UtcNow
-        };
+        return MenuItem.Create(
+            code: code,
+            name: name,
+            icon: icon,
+            route: route,
+            parentId: parentId,
+            sortOrder: sortOrder,
+            requiredRoles: requiredRoles);
     }
 }

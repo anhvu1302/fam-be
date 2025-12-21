@@ -38,14 +38,14 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     is_capitalized = table.Column<bool>(type: "boolean", nullable: false),
                     requires_maintenance = table.Column<bool>(type: "boolean", nullable: false),
                     requires_insurance = table.Column<bool>(type: "boolean", nullable: false),
-                    minimum_capitalization_value = table.Column<decimal>(type: "numeric(18,2)", nullable: true),
+                    minimum_capitalization_value = table.Column<decimal>(type: "numeric", nullable: true),
                     valuation_method = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     requires_compliance = table.Column<bool>(type: "boolean", nullable: false),
                     compliance_standards = table.Column<string>(type: "text", nullable: true),
                     requires_audit = table.Column<bool>(type: "boolean", nullable: false),
                     audit_interval_months = table.Column<int>(type: "integer", nullable: true),
                     icon_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    icon_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    IconUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     color = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
                     display_order = table.Column<int>(type: "integer", nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
@@ -54,7 +54,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     search_keywords = table.Column<string>(type: "text", nullable: true),
                     aliases = table.Column<string>(type: "text", nullable: true),
                     asset_count = table.Column<int>(type: "integer", nullable: false),
-                    total_value = table.Column<decimal>(type: "numeric(18,2)", nullable: true),
+                    total_value = table.Column<decimal>(type: "numeric", nullable: true),
                     internal_notes = table.Column<string>(type: "text", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     created_by_id = table.Column<long>(type: "bigint", nullable: true),
@@ -158,7 +158,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     default_warranty_months = table.Column<int>(type: "integer", nullable: true),
                     default_maintenance_interval_days = table.Column<int>(type: "integer", nullable: true),
                     default_maintenance_type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    minimum_capitalization_value = table.Column<decimal>(type: "numeric(18,2)", nullable: true),
+                    minimum_capitalization_value = table.Column<decimal>(type: "numeric", nullable: true),
                     valuation_currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
                     valuation_method = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     requires_compliance = table.Column<bool>(type: "boolean", nullable: false),
@@ -175,7 +175,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     custom_fields_schema = table.Column<string>(type: "text", nullable: true),
                     required_fields = table.Column<string>(type: "text", nullable: true),
                     icon_name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    icon_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    IconUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     color = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
                     display_order = table.Column<int>(type: "integer", nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
@@ -186,7 +186,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     search_keywords = table.Column<string>(type: "text", nullable: true),
                     aliases = table.Column<string>(type: "text", nullable: true),
                     asset_count = table.Column<int>(type: "integer", nullable: false),
-                    total_value = table.Column<decimal>(type: "numeric(18,2)", nullable: true),
+                    total_value = table.Column<decimal>(type: "numeric", nullable: true),
                     internal_notes = table.Column<string>(type: "text", nullable: true),
                     procurement_notes = table.Column<string>(type: "text", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -214,8 +214,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    code = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false),
-                    alpha3_code = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
+                    Code = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: false),
+                    iso3_code = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
                     numeric_code = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     native_name = table.Column<string>(type: "text", nullable: true),
@@ -225,8 +225,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     continent = table.Column<string>(type: "text", nullable: true),
                     latitude = table.Column<decimal>(type: "numeric", nullable: true),
                     longitude = table.Column<decimal>(type: "numeric", nullable: true),
-                    calling_code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
-                    top_level_domain = table.Column<string>(type: "character varying(5)", maxLength: 5, nullable: true),
+                    phone_code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
+                    tld = table.Column<string>(type: "character varying(5)", maxLength: 5, nullable: true),
                     currency_code = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
                     currency_name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     currency_symbol = table.Column<string>(type: "text", nullable: true),
@@ -315,6 +315,13 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true),
                     code = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
@@ -332,14 +339,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     css_class = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     badge = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     badge_variant = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    metadata = table.Column<string>(type: "text", nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                    metadata = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -358,16 +358,16 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    type = table.Column<int>(type: "integer", nullable: false),
-                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    parent_id = table.Column<long>(type: "bigint", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    type = table.Column<int>(type: "integer", nullable: false),
+                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    parent_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -386,16 +386,16 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    resource = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    action = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    description = table.Column<string>(type: "text", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    description = table.Column<string>(type: "text", nullable: true),
+                    action = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    resource = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -408,18 +408,18 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    description = table.Column<string>(type: "text", nullable: true),
-                    rank = table.Column<int>(type: "integer", nullable: false),
-                    is_system_role = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    Code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
+                    rank = table.Column<int>(type: "integer", nullable: false),
+                    is_system_role = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -432,6 +432,13 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true),
                     key_id = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     public_key = table.Column<string>(type: "text", nullable: false),
                     private_key = table.Column<string>(type: "text", nullable: false),
@@ -445,14 +452,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     revocation_reason = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     last_used_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                    description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -555,16 +555,18 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    username = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    password_hash = table.Column<string>(type: "text", nullable: false),
-                    password_salt = table.Column<string>(type: "text", nullable: false),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    Username = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     first_name = table.Column<string>(type: "text", nullable: true),
                     last_name = table.Column<string>(type: "text", nullable: true),
                     full_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
                     avatar = table.Column<string>(type: "text", nullable: true),
-                    phone_number = table.Column<string>(type: "text", nullable: true),
-                    phone_country_code = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
                     date_of_birth = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     bio = table.Column<string>(type: "text", nullable: true),
                     two_factor_enabled = table.Column<bool>(type: "boolean", nullable: false),
@@ -588,14 +590,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     preferred_language = table.Column<string>(type: "text", nullable: true),
                     time_zone = table.Column<string>(type: "text", nullable: true),
                     receive_notifications = table.Column<bool>(type: "boolean", nullable: false),
-                    receive_marketing_emails = table.Column<bool>(type: "boolean", nullable: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                    receive_marketing_emails = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -609,12 +604,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     short_name = table.Column<string>(type: "text", nullable: true),
                     legal_name = table.Column<string>(type: "text", nullable: true),
                     description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     brand_name = table.Column<string>(type: "text", nullable: true),
-                    logo_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    LogoUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     tagline = table.Column<string>(type: "text", nullable: true),
                     registration_number = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     tax_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
@@ -625,21 +619,17 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     city = table.Column<string>(type: "text", nullable: true),
                     state = table.Column<string>(type: "text", nullable: true),
                     postal_code = table.Column<string>(type: "text", nullable: true),
-                    website = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    contact_email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    contact_phone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    email = table.Column<string>(type: "text", nullable: true),
-                    phone = table.Column<string>(type: "text", nullable: true),
+                    Website = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    phone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     fax = table.Column<string>(type: "text", nullable: true),
-                    support_contact = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     support_email = table.Column<string>(type: "text", nullable: true),
                     support_phone = table.Column<string>(type: "text", nullable: true),
-                    support_website = table.Column<string>(type: "text", nullable: true),
-                    linked_in_url = table.Column<string>(type: "text", nullable: true),
+                    SupportWebsite = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    LinkedInUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     twitter_handle = table.Column<string>(type: "text", nullable: true),
-                    facebook_url = table.Column<string>(type: "text", nullable: true),
-                    industry = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    industry_type = table.Column<string>(type: "text", nullable: true),
+                    FacebookUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    industry_type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     business_type = table.Column<string>(type: "text", nullable: true),
                     founded_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     employee_count = table.Column<int>(type: "integer", nullable: true),
@@ -649,11 +639,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     iso14001_certified = table.Column<string>(type: "text", nullable: true),
                     iso27001_certified = table.Column<string>(type: "text", nullable: true),
                     certifications = table.Column<string>(type: "text", nullable: true),
-                    warranty_terms = table.Column<string>(type: "text", nullable: true),
                     warranty_policy = table.Column<string>(type: "text", nullable: true),
                     standard_warranty_months = table.Column<int>(type: "integer", nullable: true),
                     support_hours = table.Column<string>(type: "text", nullable: true),
-                    sladocument_url = table.Column<string>(type: "text", nullable: true),
+                    SLADocumentUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     is_preferred = table.Column<bool>(type: "boolean", nullable: false),
                     is_approved = table.Column<bool>(type: "boolean", nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
@@ -663,7 +652,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     service_rating = table.Column<decimal>(type: "numeric", nullable: true),
                     price_rating = table.Column<decimal>(type: "numeric", nullable: true),
                     internal_notes = table.Column<string>(type: "text", nullable: true),
-                    notes = table.Column<string>(type: "text", nullable: true),
                     payment_terms = table.Column<string>(type: "text", nullable: true),
                     preferred_currency = table.Column<string>(type: "text", nullable: true),
                     discount_rate = table.Column<decimal>(type: "numeric", nullable: true),
@@ -675,19 +663,157 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    CountryEfId = table.Column<long>(type: "bigint", nullable: true)
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_manufacturers", x => x.id);
                     table.ForeignKey(
-                        name: "FK_manufacturers_countries_CountryEfId",
-                        column: x => x.CountryEfId,
-                        principalTable: "countries",
-                        principalColumn: "id");
-                    table.ForeignKey(
                         name: "fk_manufacturers_countries_country_id",
+                        column: x => x.country_id,
+                        principalTable: "countries",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "suppliers",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    company_id = table.Column<long>(type: "bigint", nullable: true),
+                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    legal_name = table.Column<string>(type: "text", nullable: true),
+                    short_name = table.Column<string>(type: "text", nullable: true),
+                    description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    supplier_code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    tax_code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    vatnumber = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    registration_number = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    dunsnumber = table.Column<string>(type: "text", nullable: true),
+                    gln = table.Column<string>(type: "text", nullable: true),
+                    country_id = table.Column<long>(type: "bigint", nullable: true),
+                    address = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    city = table.Column<string>(type: "text", nullable: true),
+                    state = table.Column<string>(type: "text", nullable: true),
+                    PostalCode = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    region = table.Column<string>(type: "text", nullable: true),
+                    Website = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    Email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    Phone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    Fax = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    MobilePhone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    contact_person_name = table.Column<string>(type: "text", nullable: true),
+                    contact_person_title = table.Column<string>(type: "text", nullable: true),
+                    ContactPersonEmail = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    ContactPersonPhone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    account_manager_name = table.Column<string>(type: "text", nullable: true),
+                    AccountManagerEmail = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    AccountManagerPhone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    supplier_type = table.Column<string>(type: "text", nullable: true),
+                    industry_type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    business_type = table.Column<string>(type: "text", nullable: true),
+                    established_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    employee_count = table.Column<int>(type: "integer", nullable: true),
+                    revenue_currency = table.Column<string>(type: "text", nullable: true),
+                    payment_terms = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    payment_methods = table.Column<string>(type: "text", nullable: true),
+                    currency = table.Column<string>(type: "text", nullable: true),
+                    credit_limit_amount = table.Column<decimal>(type: "numeric", nullable: true),
+                    credit_limit_currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
+                    DiscountRate = table.Column<decimal>(type: "numeric", nullable: true),
+                    tax_exempt = table.Column<bool>(type: "boolean", nullable: false),
+                    tax_exempt_certificate = table.Column<string>(type: "text", nullable: true),
+                    bank_name = table.Column<string>(type: "text", nullable: true),
+                    bank_account_number = table.Column<string>(type: "text", nullable: true),
+                    bank_routing_number = table.Column<string>(type: "text", nullable: true),
+                    swift_code = table.Column<string>(type: "text", nullable: true),
+                    iban = table.Column<string>(type: "text", nullable: true),
+                    iso9001_certified = table.Column<string>(type: "text", nullable: true),
+                    iso14001_certified = table.Column<string>(type: "text", nullable: true),
+                    certifications = table.Column<string>(type: "text", nullable: true),
+                    is_minority_owned = table.Column<bool>(type: "boolean", nullable: false),
+                    is_woman_owned = table.Column<bool>(type: "boolean", nullable: false),
+                    is_veteran_owned = table.Column<bool>(type: "boolean", nullable: false),
+                    is_small_business = table.Column<bool>(type: "boolean", nullable: false),
+                    product_categories = table.Column<string>(type: "text", nullable: true),
+                    service_categories = table.Column<string>(type: "text", nullable: true),
+                    specialization = table.Column<string>(type: "text", nullable: true),
+                    QualityRating = table.Column<int>(type: "integer", nullable: true),
+                    DeliveryRating = table.Column<int>(type: "integer", nullable: true),
+                    ServiceRating = table.Column<int>(type: "integer", nullable: true),
+                    PriceRating = table.Column<int>(type: "integer", nullable: true),
+                    on_time_delivery_percentage = table.Column<int>(type: "integer", nullable: true),
+                    defect_rate = table.Column<int>(type: "integer", nullable: true),
+                    supplier_status = table.Column<string>(type: "text", nullable: true),
+                    is_preferred = table.Column<bool>(type: "boolean", nullable: false),
+                    is_approved = table.Column<bool>(type: "boolean", nullable: false),
+                    is_active = table.Column<bool>(type: "boolean", nullable: false),
+                    approved_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    approved_by = table.Column<string>(type: "text", nullable: true),
+                    partner_since = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    last_order_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    last_review_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    risk_level = table.Column<string>(type: "text", nullable: true),
+                    risk_factors = table.Column<string>(type: "text", nullable: true),
+                    requires_insurance = table.Column<bool>(type: "boolean", nullable: false),
+                    requires_background_check = table.Column<bool>(type: "boolean", nullable: false),
+                    contract_number = table.Column<string>(type: "text", nullable: true),
+                    contract_start_date = table.Column<DateTime>(type: "date", nullable: true),
+                    contract_end_date = table.Column<DateTime>(type: "date", nullable: true),
+                    ContractDocumentUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    auto_renew = table.Column<bool>(type: "boolean", nullable: false),
+                    shipping_methods = table.Column<string>(type: "text", nullable: true),
+                    shipping_terms = table.Column<string>(type: "text", nullable: true),
+                    lead_time_days = table.Column<int>(type: "integer", nullable: true),
+                    minimum_order_value_amount = table.Column<decimal>(type: "numeric", nullable: true),
+                    minimum_order_value_currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
+                    minimum_order_currency = table.Column<string>(type: "text", nullable: true),
+                    drop_ship_capable = table.Column<bool>(type: "boolean", nullable: false),
+                    warehouse_locations = table.Column<string>(type: "text", nullable: true),
+                    SupportEmail = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    SupportPhone = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    support_hours = table.Column<string>(type: "text", nullable: true),
+                    SLADocumentUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    provides24x7_support = table.Column<bool>(type: "boolean", nullable: false),
+                    insurance_provider = table.Column<string>(type: "text", nullable: true),
+                    insurance_policy_number = table.Column<string>(type: "text", nullable: true),
+                    insurance_coverage_amount = table.Column<decimal>(type: "numeric", nullable: true),
+                    insurance_coverage_currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
+                    insurance_expiry_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    bonding_information = table.Column<string>(type: "text", nullable: true),
+                    is_mbe = table.Column<bool>(type: "boolean", nullable: false),
+                    is_wbe = table.Column<bool>(type: "boolean", nullable: false),
+                    is_sdvosb = table.Column<bool>(type: "boolean", nullable: false),
+                    is_environmentally_certified = table.Column<bool>(type: "boolean", nullable: false),
+                    sustainability_rating = table.Column<string>(type: "text", nullable: true),
+                    internal_notes = table.Column<string>(type: "text", nullable: true),
+                    procurement_notes = table.Column<string>(type: "text", nullable: true),
+                    our_account_manager = table.Column<string>(type: "text", nullable: true),
+                    tags = table.Column<string>(type: "text", nullable: true),
+                    total_orders = table.Column<int>(type: "integer", nullable: true),
+                    total_spent_amount = table.Column<decimal>(type: "numeric", nullable: true),
+                    total_spent_currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
+                    average_order_value_amount = table.Column<decimal>(type: "numeric", nullable: true),
+                    average_order_value_currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
+                    W9FormUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    CertificateOfInsuranceUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    BusinessLicenseUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    references = table.Column<string>(type: "text", nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_suppliers", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_suppliers_countries_country_id",
                         column: x => x.country_id,
                         principalTable: "countries",
                         principalColumn: "id",
@@ -700,18 +826,15 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    node_id = table.Column<long>(type: "bigint", nullable: false),
-                    tax_code = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
-                    domain = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    address = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    established_on = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                    node_id = table.Column<long>(type: "bigint", nullable: false),
+                    TaxCode = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    Domain = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    established_on = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -730,17 +853,15 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    node_id = table.Column<long>(type: "bigint", nullable: false),
-                    cost_center = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
-                    headcount = table.Column<int>(type: "integer", nullable: true),
-                    budget_year = table.Column<decimal>(type: "numeric", nullable: true),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                    node_id = table.Column<long>(type: "bigint", nullable: false),
+                    CostCenter = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
+                    headcount = table.Column<int>(type: "integer", nullable: true),
+                    budget_year = table.Column<decimal>(type: "numeric", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -759,16 +880,14 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    node_id = table.Column<long>(type: "bigint", nullable: false),
-                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     created_by_id = table.Column<long>(type: "bigint", nullable: true),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                    Type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    node_id = table.Column<long>(type: "bigint", nullable: false),
+                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -807,16 +926,40 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "password",
+                columns: table => new
+                {
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    password_hash = table.Column<string>(type: "text", nullable: false),
+                    password_salt = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_password", x => x.UserId);
+                    table.ForeignKey(
+                        name: "FK_password_users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "user_devices",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "gen_random_uuid()"),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     user_id = table.Column<long>(type: "bigint", nullable: false),
                     device_id = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
                     device_name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     device_type = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     user_agent = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    ip_address = table.Column<string>(type: "character varying(45)", maxLength: 45, nullable: true),
+                    IpAddress = table.Column<string>(type: "character varying(45)", maxLength: 45, nullable: true),
                     location = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     browser = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     operating_system = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
@@ -826,14 +969,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     is_trusted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     refresh_token = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     refresh_token_expires_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    active_access_token_jti = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                    active_access_token_jti = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -886,6 +1022,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     user_id = table.Column<long>(type: "bigint", nullable: false),
                     theme = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     primary_color = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
@@ -893,14 +1034,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     border_radius = table.Column<int>(type: "integer", nullable: false),
                     dark_theme = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     pin_navbar = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    compact_mode = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                    compact_mode = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -956,14 +1090,13 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     network_interfaces = table.Column<string>(type: "text", nullable: true),
                     standard_warranty_months = table.Column<int>(type: "integer", nullable: true),
                     warranty_type = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    support_document_url = table.Column<string>(type: "text", nullable: true),
-                    user_manual_url = table.Column<string>(type: "text", nullable: true),
-                    quick_start_guide_url = table.Column<string>(type: "text", nullable: true),
+                    SupportDocumentUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    UserManualUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    QuickStartGuideUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     msrp = table.Column<decimal>(type: "numeric", nullable: true),
-                    currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
-                    msrpcurrency = table.Column<string>(type: "text", nullable: true),
+                    msrpcurrency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
                     average_cost = table.Column<decimal>(type: "numeric", nullable: true),
-                    cost_currency = table.Column<string>(type: "text", nullable: true),
+                    cost_currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: true),
                     is_available = table.Column<bool>(type: "boolean", nullable: false),
                     availability_status = table.Column<string>(type: "text", nullable: true),
                     certifications = table.Column<string>(type: "text", nullable: true),
@@ -982,11 +1115,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     optional_accessories = table.Column<string>(type: "text", nullable: true),
                     required_accessories = table.Column<string>(type: "text", nullable: true),
                     compatible_models = table.Column<string>(type: "text", nullable: true),
-                    image_url = table.Column<string>(type: "text", nullable: true),
-                    thumbnail_url = table.Column<string>(type: "text", nullable: true),
-                    product_page_url = table.Column<string>(type: "text", nullable: true),
-                    datasheet_url = table.Column<string>(type: "text", nullable: true),
-                    video_url = table.Column<string>(type: "text", nullable: true),
+                    ImageUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    ThumbnailUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    ProductPageUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    DatasheetUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    VideoUrl = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     is_depreciable = table.Column<bool>(type: "boolean", nullable: false),
                     is_tangible = table.Column<bool>(type: "boolean", nullable: false),
@@ -1031,11 +1164,61 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "money",
+                columns: table => new
+                {
+                    SupplierId = table.Column<long>(type: "bigint", nullable: false),
+                    annual_revenue_amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    annual_revenue_currency = table.Column<string>(type: "character varying(3)", maxLength: 3, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_money", x => x.SupplierId);
+                    table.ForeignKey(
+                        name: "FK_money_suppliers_SupplierId",
+                        column: x => x.SupplierId,
+                        principalTable: "suppliers",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "address",
+                columns: table => new
+                {
+                    CompanyDetailsId = table.Column<long>(type: "bigint", nullable: false),
+                    address_street = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    address_ward = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    address_district = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    address_city = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    address_province = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    address_country_code = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    address_postal_code = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_address", x => x.CompanyDetailsId);
+                    table.ForeignKey(
+                        name: "FK_address_company_details_CompanyDetailsId",
+                        column: x => x.CompanyDetailsId,
+                        principalTable: "company_details",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "locations",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true),
                     name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     company_id = table.Column<long>(type: "bigint", nullable: true),
                     code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
@@ -1045,21 +1228,14 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     path_ids = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     country_id = table.Column<long>(type: "bigint", nullable: true),
                     description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    CountryEfId = table.Column<long>(type: "bigint", nullable: true)
+                    CountryId1 = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_locations", x => x.id);
                     table.ForeignKey(
-                        name: "FK_locations_countries_CountryEfId",
-                        column: x => x.CountryEfId,
+                        name: "FK_locations_countries_CountryId1",
+                        column: x => x.CountryId1,
                         principalTable: "countries",
                         principalColumn: "id");
                     table.ForeignKey(
@@ -1083,165 +1259,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "suppliers",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    company_id = table.Column<long>(type: "bigint", nullable: true),
-                    name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    legal_name = table.Column<string>(type: "text", nullable: true),
-                    short_name = table.Column<string>(type: "text", nullable: true),
-                    description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    supplier_code = table.Column<string>(type: "text", nullable: true),
-                    code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    logo_url = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    tax_code = table.Column<string>(type: "text", nullable: true),
-                    tax_id = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    vatnumber = table.Column<string>(type: "text", nullable: true),
-                    registration_number = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    dunsnumber = table.Column<string>(type: "text", nullable: true),
-                    gln = table.Column<string>(type: "text", nullable: true),
-                    country_id = table.Column<long>(type: "bigint", nullable: true),
-                    address = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    city = table.Column<string>(type: "text", nullable: true),
-                    state = table.Column<string>(type: "text", nullable: true),
-                    postal_code = table.Column<string>(type: "text", nullable: true),
-                    region = table.Column<string>(type: "text", nullable: true),
-                    website = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    email = table.Column<string>(type: "text", nullable: true),
-                    phone = table.Column<string>(type: "text", nullable: true),
-                    fax = table.Column<string>(type: "text", nullable: true),
-                    mobile_phone = table.Column<string>(type: "text", nullable: true),
-                    contact_email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    contact_phone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    contact_person_name = table.Column<string>(type: "text", nullable: true),
-                    contact_person_title = table.Column<string>(type: "text", nullable: true),
-                    contact_person_email = table.Column<string>(type: "text", nullable: true),
-                    contact_person_phone = table.Column<string>(type: "text", nullable: true),
-                    account_manager_name = table.Column<string>(type: "text", nullable: true),
-                    account_manager_email = table.Column<string>(type: "text", nullable: true),
-                    account_manager_phone = table.Column<string>(type: "text", nullable: true),
-                    supplier_type = table.Column<string>(type: "text", nullable: true),
-                    industry_type = table.Column<string>(type: "text", nullable: true),
-                    industry = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    business_type = table.Column<string>(type: "text", nullable: true),
-                    established_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    employee_count = table.Column<int>(type: "integer", nullable: true),
-                    annual_revenue = table.Column<decimal>(type: "numeric", nullable: true),
-                    revenue_currency = table.Column<string>(type: "text", nullable: true),
-                    payment_terms = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    payment_methods = table.Column<string>(type: "text", nullable: true),
-                    currency = table.Column<string>(type: "text", nullable: true),
-                    credit_limit = table.Column<decimal>(type: "numeric", nullable: true),
-                    discount_rate = table.Column<decimal>(type: "numeric", nullable: true),
-                    tax_exempt = table.Column<bool>(type: "boolean", nullable: false),
-                    tax_exempt_certificate = table.Column<string>(type: "text", nullable: true),
-                    bank_name = table.Column<string>(type: "text", nullable: true),
-                    bank_account_number = table.Column<string>(type: "text", nullable: true),
-                    bank_routing_number = table.Column<string>(type: "text", nullable: true),
-                    swift_code = table.Column<string>(type: "text", nullable: true),
-                    iban = table.Column<string>(type: "text", nullable: true),
-                    iso9001_certified = table.Column<string>(type: "text", nullable: true),
-                    iso14001_certified = table.Column<string>(type: "text", nullable: true),
-                    certifications = table.Column<string>(type: "text", nullable: true),
-                    is_minority_owned = table.Column<bool>(type: "boolean", nullable: false),
-                    is_woman_owned = table.Column<bool>(type: "boolean", nullable: false),
-                    is_veteran_owned = table.Column<bool>(type: "boolean", nullable: false),
-                    is_small_business = table.Column<bool>(type: "boolean", nullable: false),
-                    product_categories = table.Column<string>(type: "text", nullable: true),
-                    service_categories = table.Column<string>(type: "text", nullable: true),
-                    specialization = table.Column<string>(type: "text", nullable: true),
-                    quality_rating = table.Column<int>(type: "integer", nullable: true),
-                    delivery_rating = table.Column<int>(type: "integer", nullable: true),
-                    service_rating = table.Column<int>(type: "integer", nullable: true),
-                    price_rating = table.Column<int>(type: "integer", nullable: true),
-                    on_time_delivery_percentage = table.Column<int>(type: "integer", nullable: true),
-                    defect_rate = table.Column<int>(type: "integer", nullable: true),
-                    supplier_status = table.Column<string>(type: "text", nullable: true),
-                    is_preferred = table.Column<bool>(type: "boolean", nullable: false),
-                    is_approved = table.Column<bool>(type: "boolean", nullable: false),
-                    is_active = table.Column<bool>(type: "boolean", nullable: false),
-                    approved_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    approved_by = table.Column<string>(type: "text", nullable: true),
-                    partner_since = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    last_order_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    last_review_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    risk_level = table.Column<string>(type: "text", nullable: true),
-                    risk_factors = table.Column<string>(type: "text", nullable: true),
-                    requires_insurance = table.Column<bool>(type: "boolean", nullable: false),
-                    requires_background_check = table.Column<bool>(type: "boolean", nullable: false),
-                    contract_number = table.Column<string>(type: "text", nullable: true),
-                    contract_start_date = table.Column<DateTime>(type: "date", nullable: true),
-                    contract_end_date = table.Column<DateTime>(type: "date", nullable: true),
-                    contract_document_url = table.Column<string>(type: "text", nullable: true),
-                    auto_renew = table.Column<bool>(type: "boolean", nullable: false),
-                    shipping_methods = table.Column<string>(type: "text", nullable: true),
-                    shipping_terms = table.Column<string>(type: "text", nullable: true),
-                    lead_time_days = table.Column<int>(type: "integer", nullable: true),
-                    minimum_order_value = table.Column<decimal>(type: "numeric", nullable: true),
-                    minimum_order_currency = table.Column<string>(type: "text", nullable: true),
-                    drop_ship_capable = table.Column<bool>(type: "boolean", nullable: false),
-                    warehouse_locations = table.Column<string>(type: "text", nullable: true),
-                    support_email = table.Column<string>(type: "text", nullable: true),
-                    support_phone = table.Column<string>(type: "text", nullable: true),
-                    support_hours = table.Column<string>(type: "text", nullable: true),
-                    sladocument_url = table.Column<string>(type: "text", nullable: true),
-                    provides24x7_support = table.Column<bool>(type: "boolean", nullable: false),
-                    insurance_provider = table.Column<string>(type: "text", nullable: true),
-                    insurance_policy_number = table.Column<string>(type: "text", nullable: true),
-                    insurance_coverage = table.Column<decimal>(type: "numeric", nullable: true),
-                    insurance_expiry_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    bonding_information = table.Column<string>(type: "text", nullable: true),
-                    is_mbe = table.Column<bool>(type: "boolean", nullable: false),
-                    is_wbe = table.Column<bool>(type: "boolean", nullable: false),
-                    is_sdvosb = table.Column<bool>(type: "boolean", nullable: false),
-                    is_environmentally_certified = table.Column<bool>(type: "boolean", nullable: false),
-                    sustainability_rating = table.Column<string>(type: "text", nullable: true),
-                    internal_notes = table.Column<string>(type: "text", nullable: true),
-                    notes = table.Column<string>(type: "text", nullable: true),
-                    procurement_notes = table.Column<string>(type: "text", nullable: true),
-                    our_account_manager = table.Column<string>(type: "text", nullable: true),
-                    tags = table.Column<string>(type: "text", nullable: true),
-                    total_orders = table.Column<int>(type: "integer", nullable: true),
-                    total_spent = table.Column<decimal>(type: "numeric", nullable: true),
-                    total_spent_currency = table.Column<string>(type: "text", nullable: true),
-                    average_order_value = table.Column<decimal>(type: "numeric", nullable: true),
-                    w9_form_url = table.Column<string>(type: "text", nullable: true),
-                    certificate_of_insurance_url = table.Column<string>(type: "text", nullable: true),
-                    business_license_url = table.Column<string>(type: "text", nullable: true),
-                    references = table.Column<string>(type: "text", nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    CountryEfId = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_suppliers", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_suppliers_countries_CountryEfId",
-                        column: x => x.CountryEfId,
-                        principalTable: "countries",
-                        principalColumn: "id");
-                    table.ForeignKey(
-                        name: "fk_suppliers_company_details_company_id",
-                        column: x => x.company_id,
-                        principalTable: "company_details",
-                        principalColumn: "id");
-                    table.ForeignKey(
-                        name: "fk_suppliers_countries_country_id",
-                        column: x => x.country_id,
-                        principalTable: "countries",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "assets",
                 columns: table => new
                 {
@@ -1253,8 +1270,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     category_id = table.Column<long>(type: "bigint", nullable: true),
                     model_id = table.Column<long>(type: "bigint", nullable: true),
                     manufacturer_id = table.Column<long>(type: "bigint", nullable: true),
-                    serial_no = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    asset_tag = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    SerialNo = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    AssetTag = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     barcode = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     qrcode = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     rfidtag = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
@@ -1270,14 +1287,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     location_id = table.Column<long>(type: "bigint", nullable: true),
                     location_code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     country_id = table.Column<long>(type: "bigint", nullable: true),
-                    department_id = table.Column<int>(type: "integer", nullable: true),
+                    department_id = table.Column<long>(type: "bigint", nullable: true),
                     owner_id = table.Column<long>(type: "bigint", nullable: true),
-                    usage_status_id = table.Column<long>(type: "bigint", nullable: true),
-                    lifecycle_status_id = table.Column<long>(type: "bigint", nullable: true),
-                    current_value = table.Column<decimal>(type: "numeric", nullable: true),
-                    net_book_value = table.Column<decimal>(type: "numeric", nullable: true),
-                    maintenance_interval_days = table.Column<int>(type: "integer", nullable: true),
-                    custom_fields = table.Column<string>(type: "text", nullable: true),
+                    lifecycle_code = table.Column<string>(type: "text", nullable: false),
+                    usage_code = table.Column<string>(type: "text", nullable: true),
                     depreciation_method = table.Column<string>(type: "text", nullable: true),
                     useful_life_months = table.Column<int>(type: "integer", nullable: true),
                     residual_value = table.Column<decimal>(type: "numeric", nullable: true),
@@ -1294,11 +1307,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     risk_level = table.Column<string>(type: "text", nullable: true),
                     last_maintenance_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     next_maintenance_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    maintenance_interval_days = table.Column<int>(type: "integer", nullable: true),
                     maintenance_contract_no = table.Column<string>(type: "text", nullable: true),
                     support_expiry_date = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     service_level = table.Column<string>(type: "text", nullable: true),
-                    ipaddress = table.Column<string>(type: "text", nullable: true),
-                    macaddress = table.Column<string>(type: "text", nullable: true),
+                    IPAddress = table.Column<string>(type: "character varying(45)", maxLength: 45, nullable: true),
+                    MACAddress = table.Column<string>(type: "character varying(17)", maxLength: 17, nullable: true),
                     hostname = table.Column<string>(type: "text", nullable: true),
                     operating_system = table.Column<string>(type: "text", nullable: true),
                     software_version = table.Column<string>(type: "text", nullable: true),
@@ -1334,28 +1348,18 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     deleted_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    CountryEfId = table.Column<long>(type: "bigint", nullable: true)
+                    lifecycle_status_id = table.Column<long>(type: "bigint", nullable: true),
+                    usage_status_id = table.Column<long>(type: "bigint", nullable: true),
+                    LocationId1 = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_assets", x => x.id);
                     table.ForeignKey(
-                        name: "FK_assets_countries_CountryEfId",
-                        column: x => x.CountryEfId,
-                        principalTable: "countries",
+                        name: "FK_assets_locations_LocationId1",
+                        column: x => x.LocationId1,
+                        principalTable: "locations",
                         principalColumn: "id");
-                    table.ForeignKey(
-                        name: "FK_assets_users_created_by_id",
-                        column: x => x.created_by_id,
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_assets_users_updated_by_id",
-                        column: x => x.updated_by_id,
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "fk_assets_asset_categories_category_id",
                         column: x => x.category_id,
@@ -1390,8 +1394,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         name: "fk_assets_lifecycle_statuses_lifecycle_status_id",
                         column: x => x.lifecycle_status_id,
                         principalTable: "lifecycle_statuses",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "fk_assets_locations_location_id",
                         column: x => x.location_id,
@@ -1420,8 +1423,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         name: "fk_assets_usage_statuses_usage_status_id",
                         column: x => x.usage_status_id,
                         principalTable: "usage_statuses",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "fk_assets_users_owner_id",
                         column: x => x.owner_id,
@@ -1431,7 +1433,53 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "asset_assignments",
+                name: "asset_events",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    asset_id = table.Column<long>(type: "bigint", nullable: false),
+                    event_code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    actor_id = table.Column<long>(type: "bigint", nullable: true),
+                    at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    from_lifecycle_code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    to_lifecycle_code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    payload = table.Column<string>(type: "text", nullable: true),
+                    note = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    event_type_id = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_asset_events", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_asset_events_asset_event_types_event_type_id",
+                        column: x => x.event_type_id,
+                        principalTable: "asset_event_types",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_asset_events_assets_asset_id",
+                        column: x => x.asset_id,
+                        principalTable: "assets",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_asset_events_users_actor_id",
+                        column: x => x.actor_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "assignments",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
@@ -1453,15 +1501,15 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_asset_assignments", x => x.id);
+                    table.PrimaryKey("pk_assignments", x => x.id);
                     table.ForeignKey(
-                        name: "fk_asset_assignments_assets_asset_id",
+                        name: "fk_assignments_assets_asset_id",
                         column: x => x.asset_id,
                         principalTable: "assets",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_asset_assignments_users_by_user_id",
+                        name: "fk_assignments_users_by_user_id",
                         column: x => x.by_user_id,
                         principalTable: "users",
                         principalColumn: "id",
@@ -1469,13 +1517,13 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "asset_attachments",
+                name: "attachments",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     asset_id = table.Column<long>(type: "bigint", nullable: true),
-                    file_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    file_name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     file_url = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     uploaded_by = table.Column<long>(type: "bigint", nullable: true),
                     uploaded_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -1489,62 +1537,16 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_asset_attachments", x => x.id);
+                    table.PrimaryKey("pk_attachments", x => x.id);
                     table.ForeignKey(
-                        name: "fk_asset_attachments_assets_asset_id",
+                        name: "fk_attachments_assets_asset_id",
                         column: x => x.asset_id,
                         principalTable: "assets",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_asset_attachments_users_uploader_id",
+                        name: "fk_attachments_users_uploader_id",
                         column: x => x.uploaded_by,
-                        principalTable: "users",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "asset_events",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    asset_id = table.Column<long>(type: "bigint", nullable: false),
-                    event_type_id = table.Column<long>(type: "bigint", nullable: true),
-                    event_code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    actor_id = table.Column<long>(type: "bigint", nullable: true),
-                    at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    from_lifecycle_code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    to_lifecycle_code = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    payload = table.Column<string>(type: "text", nullable: true),
-                    note = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
-                    created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    created_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    updated_by_id = table.Column<long>(type: "bigint", nullable: true),
-                    is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
-                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_asset_events", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_asset_events_asset_event_types_event_type_id",
-                        column: x => x.event_type_id,
-                        principalTable: "asset_event_types",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "fk_asset_events_assets_asset_id",
-                        column: x => x.asset_id,
-                        principalTable: "assets",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "fk_asset_events_users_actor_id",
-                        column: x => x.actor_id,
                         principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
@@ -1567,7 +1569,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     updated_by_id = table.Column<long>(type: "bigint", nullable: true),
                     is_deleted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false),
                     deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true)
+                    deleted_by_id = table.Column<long>(type: "bigint", nullable: true),
+                    creator_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1584,47 +1587,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         principalTable: "assets",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_finance_entries_users_creator_id",
+                        column: x => x.creator_id,
+                        principalTable: "users",
+                        principalColumn: "id");
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "ix_assignments_asset_id",
-                table: "asset_assignments",
-                column: "asset_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_assignments_assigned_at",
-                table: "asset_assignments",
-                column: "assigned_at");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_assignments_assignee_id",
-                table: "asset_assignments",
-                column: "assignee_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_assignments_by_user_id",
-                table: "asset_assignments",
-                column: "by_user_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_assignments_released_at",
-                table: "asset_assignments",
-                column: "released_at");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_attachments_asset_id",
-                table: "asset_attachments",
-                column: "asset_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_attachments_uploaded_at",
-                table: "asset_attachments",
-                column: "uploaded_at");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_attachments_uploaded_by",
-                table: "asset_attachments",
-                column: "uploaded_by");
 
             migrationBuilder.CreateIndex(
                 name: "ix_asset_categories_code",
@@ -1717,7 +1685,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_assets_asset_tag",
                 table: "assets",
-                column: "asset_tag",
+                column: "AssetTag",
                 unique: true,
                 filter: "is_deleted = false AND asset_tag IS NOT NULL");
 
@@ -1754,16 +1722,6 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 column: "country_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_assets_CountryEfId",
-                table: "assets",
-                column: "CountryEfId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_assets_created_by_id",
-                table: "assets",
-                column: "created_by_id");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_assets_lifecycle_status_id",
                 table: "assets",
                 column: "lifecycle_status_id");
@@ -1772,6 +1730,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 name: "ix_assets_location_id",
                 table: "assets",
                 column: "location_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_assets_LocationId1",
+                table: "assets",
+                column: "LocationId1");
 
             migrationBuilder.CreateIndex(
                 name: "ix_assets_manufacturer_id",
@@ -1805,7 +1768,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_assets_serial_no",
                 table: "assets",
-                column: "serial_no",
+                column: "SerialNo",
                 unique: true,
                 filter: "is_deleted = false AND serial_no IS NOT NULL");
 
@@ -1815,19 +1778,54 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 column: "supplier_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_assets_updated_by_id",
-                table: "assets",
-                column: "updated_by_id");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_assets_usage_status_id",
                 table: "assets",
                 column: "usage_status_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_assignments_asset_id",
+                table: "assignments",
+                column: "asset_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_assignments_assigned_at",
+                table: "assignments",
+                column: "assigned_at");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_assignments_assignee_id",
+                table: "assignments",
+                column: "assignee_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_assignments_by_user_id",
+                table: "assignments",
+                column: "by_user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_assignments_released_at",
+                table: "assignments",
+                column: "released_at");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_attachments_asset_id",
+                table: "attachments",
+                column: "asset_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_attachments_uploaded_at",
+                table: "attachments",
+                column: "uploaded_at");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_attachments_uploaded_by",
+                table: "attachments",
+                column: "uploaded_by");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_company_details_domain",
                 table: "company_details",
-                column: "domain",
+                column: "Domain",
                 unique: true,
                 filter: "is_deleted = false AND domain IS NOT NULL");
 
@@ -1841,23 +1839,16 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_company_details_tax_code",
                 table: "company_details",
-                column: "tax_code",
+                column: "TaxCode",
                 unique: true,
                 filter: "is_deleted = false AND tax_code IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "ix_countries_alpha3_code",
+                name: "ix_countries_iso3_code",
                 table: "countries",
-                column: "alpha3_code",
+                column: "iso3_code",
                 unique: true,
-                filter: "is_deleted = false AND alpha3_code IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_countries_code",
-                table: "countries",
-                column: "code",
-                unique: true,
-                filter: "is_deleted = false");
+                filter: "is_deleted = false AND iso3_code IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "ix_countries_name",
@@ -1867,7 +1858,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_department_details_cost_center",
                 table: "department_details",
-                column: "cost_center",
+                column: "CostCenter",
                 unique: true,
                 filter: "is_deleted = false AND cost_center IS NOT NULL");
 
@@ -1911,6 +1902,11 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 column: "created_by_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_finance_entries_creator_id",
+                table: "finance_entries",
+                column: "creator_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_finance_entries_entry_type",
                 table: "finance_entries",
                 column: "entry_type");
@@ -1945,9 +1941,9 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 column: "country_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_locations_CountryEfId",
+                name: "IX_locations_CountryId1",
                 table: "locations",
-                column: "CountryEfId");
+                column: "CountryId1");
 
             migrationBuilder.CreateIndex(
                 name: "ix_locations_name",
@@ -1960,21 +1956,9 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 column: "parent_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_manufacturers_code",
-                table: "manufacturers",
-                column: "code",
-                unique: true,
-                filter: "is_deleted = false AND code IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_manufacturers_country_id",
                 table: "manufacturers",
                 column: "country_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_manufacturers_CountryEfId",
-                table: "manufacturers",
-                column: "CountryEfId");
 
             migrationBuilder.CreateIndex(
                 name: "ix_manufacturers_is_active",
@@ -2072,7 +2056,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_resources_type_node",
                 table: "resources",
-                columns: new[] { "type", "node_id" });
+                columns: new[] { "Type", "node_id" });
 
             migrationBuilder.CreateIndex(
                 name: "ix_role_permissions_permission_id",
@@ -2082,7 +2066,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_roles_code",
                 table: "roles",
-                column: "code",
+                column: "Code",
                 unique: true,
                 filter: "is_deleted = false");
 
@@ -2114,33 +2098,9 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 filter: "is_deleted = false");
 
             migrationBuilder.CreateIndex(
-                name: "ix_suppliers_code",
-                table: "suppliers",
-                column: "code",
-                unique: true,
-                filter: "is_deleted = false AND code IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_suppliers_company_id",
-                table: "suppliers",
-                column: "company_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_suppliers_contact_email",
-                table: "suppliers",
-                column: "contact_email",
-                unique: true,
-                filter: "is_deleted = false AND contact_email IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "ix_suppliers_country_id",
                 table: "suppliers",
                 column: "country_id");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_suppliers_CountryEfId",
-                table: "suppliers",
-                column: "CountryEfId");
 
             migrationBuilder.CreateIndex(
                 name: "ix_suppliers_is_active",
@@ -2151,6 +2111,13 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 name: "ix_suppliers_name",
                 table: "suppliers",
                 column: "name");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_suppliers_supplier_code",
+                table: "suppliers",
+                column: "supplier_code",
+                unique: true,
+                filter: "is_deleted = false AND supplier_code IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "ix_system_settings_group",
@@ -2228,14 +2195,14 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_users_email",
                 table: "users",
-                column: "email",
+                column: "Email",
                 unique: true,
                 filter: "is_deleted = false");
 
             migrationBuilder.CreateIndex(
                 name: "ix_users_username",
                 table: "users",
-                column: "username",
+                column: "Username",
                 unique: true,
                 filter: "is_deleted = false");
         }
@@ -2244,13 +2211,16 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "asset_assignments");
-
-            migrationBuilder.DropTable(
-                name: "asset_attachments");
+                name: "address");
 
             migrationBuilder.DropTable(
                 name: "asset_events");
+
+            migrationBuilder.DropTable(
+                name: "assignments");
+
+            migrationBuilder.DropTable(
+                name: "attachments");
 
             migrationBuilder.DropTable(
                 name: "department_details");
@@ -2263,6 +2233,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
             migrationBuilder.DropTable(
                 name: "menu_items");
+
+            migrationBuilder.DropTable(
+                name: "money");
+
+            migrationBuilder.DropTable(
+                name: "password");
 
             migrationBuilder.DropTable(
                 name: "resources");
@@ -2301,16 +2277,13 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 name: "roles");
 
             migrationBuilder.DropTable(
-                name: "users");
+                name: "locations");
 
             migrationBuilder.DropTable(
                 name: "asset_conditions");
 
             migrationBuilder.DropTable(
                 name: "lifecycle_statuses");
-
-            migrationBuilder.DropTable(
-                name: "locations");
 
             migrationBuilder.DropTable(
                 name: "models");
@@ -2322,6 +2295,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 name: "usage_statuses");
 
             migrationBuilder.DropTable(
+                name: "users");
+
+            migrationBuilder.DropTable(
+                name: "company_details");
+
+            migrationBuilder.DropTable(
                 name: "asset_categories");
 
             migrationBuilder.DropTable(
@@ -2331,13 +2310,10 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                 name: "manufacturers");
 
             migrationBuilder.DropTable(
-                name: "company_details");
+                name: "org_nodes");
 
             migrationBuilder.DropTable(
                 name: "countries");
-
-            migrationBuilder.DropTable(
-                name: "org_nodes");
         }
     }
 }

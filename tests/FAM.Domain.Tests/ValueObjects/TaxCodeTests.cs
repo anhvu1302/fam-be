@@ -97,7 +97,7 @@ public class TaxCodeTests
         var taxCode = TaxCode.Create("1234567890");
 
         // Act
-        string value = taxCode;
+        string value = taxCode!;
 
         // Assert
         value.Should().Be("1234567890");

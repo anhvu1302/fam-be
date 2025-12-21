@@ -27,25 +27,25 @@ public static class ServiceCollectionExtensions
         services.AddScoped<PostgreSqlDbContext>(_ => new PostgreSqlDbContext(options));
 
         // Register repositories
-        services.AddScoped<IUserRepository, UserRepositoryPostgreSql>();
-        services.AddScoped<IUserDeviceRepository, UserDeviceRepositoryPostgreSql>();
-        services.AddScoped<IUserThemeRepository, UserThemeRepositoryPostgreSql>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUserDeviceRepository, UserDeviceRepository>();
+        services.AddScoped<IUserThemeRepository, UserThemeRepository>();
         services.AddScoped<ISigningKeyRepository, SigningKeyRepository>();
         services.AddScoped<IMenuItemRepository, MenuItemRepository>();
         services.AddScoped<ISystemSettingRepository, SystemSettingRepository>();
-        services.AddScoped<IEmailTemplateRepository, EmailTemplateRepositoryPostgreSql>();
+        services.AddScoped<IEmailTemplateRepository, EmailTemplateRepository>();
 
         // Authorization repositories
-        services.AddScoped<IPermissionRepository, PermissionRepositoryPostgreSql>();
-        services.AddScoped<IRoleRepository, RoleRepositoryPostgreSql>();
-        services.AddScoped<IResourceRepository, ResourceRepositoryPostgreSql>();
-        services.AddScoped<IRolePermissionRepository, RolePermissionRepositoryPostgreSql>();
-        services.AddScoped<IUserNodeRoleRepository, UserNodeRoleRepositoryPostgreSql>();
+        services.AddScoped<IPermissionRepository, PermissionRepository>();
+        services.AddScoped<IRoleRepository, RoleRepository>();
+        services.AddScoped<IResourceRepository, ResourceRepository>();
+        services.AddScoped<IRolePermissionRepository, RolePermissionRepository>();
+        services.AddScoped<IUserNodeRoleRepository, UserNodeRoleRepository>();
 
         // Organizations repositories
-        services.AddScoped<IOrgNodeRepository, OrgNodeRepositoryPostgreSql>();
-        services.AddScoped<ICompanyDetailsRepository, CompanyDetailsRepositoryPostgreSql>();
-        services.AddScoped<IDepartmentDetailsRepository, DepartmentDetailsRepositoryPostgreSql>();
+        services.AddScoped<IOrgNodeRepository, OrgNodeRepository>();
+        services.AddScoped<ICompanyDetailsRepository, CompanyDetailsRepository>();
+        services.AddScoped<IDepartmentDetailsRepository, DepartmentDetailsRepository>();
 
         // Storage repositories
         services.AddScoped<IUploadSessionRepository, UploadSessionRepository>();
@@ -68,7 +68,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDataSeeder, EmailTemplateSeeder>();
 
         // Register Seed History Repository
-        services.AddScoped<ISeedHistoryRepository, SeedHistoryRepositoryPostgreSql>();
+        services.AddScoped<ISeedHistoryRepository, SeedHistoryRepository>();
 
         return services;
     }

@@ -13,10 +13,10 @@ public class Assignment : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
     // Domain fields
     public long AssetId { get; private set; }
     public string AssigneeType { get; private set; } = string.Empty; // user, department, location
-    public int AssigneeId { get; private set; }
+    public long AssigneeId { get; private set; }
     public DateTime AssignedAt { get; private set; } = DateTime.UtcNow;
     public DateTime? ReleasedAt { get; private set; }
-    public int? ByUserId { get; private set; }
+    public long? ByUserId { get; private set; }
     public string? Comments { get; private set; }
 
     // Audit fields
@@ -29,9 +29,6 @@ public class Assignment : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
     public long? DeletedById { get; set; }
 
     // Navigation properties
-    public User? CreatedBy { get; set; }
-    public User? UpdatedBy { get; set; }
-    public User? DeletedBy { get; set; }
     public Asset Asset { get; set; } = null!;
     public User? ByUser { get; set; }
 

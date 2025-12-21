@@ -9,6 +9,11 @@ public sealed class Rating : ValueObject
 {
     public int Value { get; private set; }
 
+    // Constructor for EF Core
+    private Rating()
+    {
+    }
+
     private Rating(int value)
     {
         Value = value;

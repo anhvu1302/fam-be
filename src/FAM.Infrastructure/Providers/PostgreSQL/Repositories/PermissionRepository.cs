@@ -12,9 +12,9 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 /// PostgreSQL implementation of IPermissionRepository
 /// Uses Pragmatic Architecture - directly works with Domain entities
 /// </summary>
-public class PermissionRepositoryPostgreSql : BasePostgreSqlRepository<Permission>, IPermissionRepository
+public class PermissionRepository : BaseRepository<Permission>, IPermissionRepository
 {
-    public PermissionRepositoryPostgreSql(PostgreSqlDbContext context) : base(context)
+    public PermissionRepository(PostgreSqlDbContext context) : base(context)
     {
     }
 

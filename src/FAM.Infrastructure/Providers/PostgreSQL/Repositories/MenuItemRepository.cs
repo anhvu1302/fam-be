@@ -1,88 +1,78 @@
 using System.Linq.Expressions;
 
-using AutoMapper;
-
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Entities;
-using FAM.Infrastructure.PersistenceModels.Ef;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
 /// <summary>
 /// PostgreSQL repository for MenuItem
+/// Uses Pragmatic Architecture - directly works with Domain entities
 /// </summary>
 public class MenuItemRepository : IMenuItemRepository
 {
     private readonly PostgreSqlDbContext _context;
-    private readonly IMapper _mapper;
     private const int MaxMenuDepth = 3;
 
-    public MenuItemRepository(PostgreSqlDbContext context, IMapper mapper)
+    public MenuItemRepository(PostgreSqlDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<MenuItem?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        MenuItemEf? entity = await _context.MenuItems
+        return await _context.MenuItems
             .Include(m => m.Parent)
             .Include(m => m.Children.Where(c => !c.IsDeleted))
             .FirstOrDefaultAsync(m => m.Id == id && !m.IsDeleted, cancellationToken);
-        return entity != null ? _mapper.Map<MenuItem>(entity) : null;
     }
 
     public async Task<IEnumerable<MenuItem>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        List<MenuItemEf> entities = await _context.MenuItems
+        return await _context.MenuItems
             .Where(m => !m.IsDeleted)
             .OrderBy(m => m.SortOrder)
             .ToListAsync(cancellationToken);
-        return entities.Select(e => _mapper.Map<MenuItem>(e));
     }
 
     public async Task<IEnumerable<MenuItem>> FindAsync(
         Expression<Func<MenuItem, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        IEnumerable<MenuItem> all = await GetAllAsync(cancellationToken);
-        return all.Where(predicate.Compile());
+        // Apply predicate at database level - no need for in-memory filtering
+        return await _context.MenuItems.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(MenuItem entity, CancellationToken cancellationToken = default)
     {
-        MenuItemEf? efEntity = _mapper.Map<MenuItemEf>(entity);
-        await _context.MenuItems.AddAsync(efEntity, cancellationToken);
+        await _context.MenuItems.AddAsync(entity, cancellationToken);
     }
 
     public void Update(MenuItem entity)
     {
-        MenuItemEf? efEntity = _mapper.Map<MenuItemEf>(entity);
-
-        EntityEntry<MenuItemEf>? trackedEntry = _context.ChangeTracker.Entries<MenuItemEf>()
+        var trackedEntry = _context.ChangeTracker.Entries<MenuItem>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
         {
-            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(entity);
         }
         else
         {
-            _context.MenuItems.Attach(efEntity);
-            _context.Entry(efEntity).State = EntityState.Modified;
+            _context.MenuItems.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
         }
     }
 
     public void Delete(MenuItem entity)
     {
-        MenuItemEf? efEntity = _context.MenuItems.Local.FirstOrDefault(m => m.Id == entity.Id);
-        if (efEntity != null)
+        var trackedEntity = _context.MenuItems.Local.FirstOrDefault(m => m.Id == entity.Id);
+        if (trackedEntity != null)
         {
-            efEntity.IsDeleted = true;
-            efEntity.DeletedAt = DateTime.UtcNow;
+            trackedEntity.IsDeleted = true;
+            trackedEntity.DeletedAt = DateTime.UtcNow;
         }
     }
 
@@ -93,28 +83,25 @@ public class MenuItemRepository : IMenuItemRepository
 
     public async Task<MenuItem?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
-        MenuItemEf? entity = await _context.MenuItems
+        return await _context.MenuItems
             .FirstOrDefaultAsync(m => m.Code == code.ToLowerInvariant() && !m.IsDeleted, cancellationToken);
-        return entity != null ? _mapper.Map<MenuItem>(entity) : null;
     }
 
     public async Task<IReadOnlyList<MenuItem>> GetRootMenusAsync(CancellationToken cancellationToken = default)
     {
-        List<MenuItemEf> entities = await _context.MenuItems
+        return await _context.MenuItems
             .Where(m => m.ParentId == null && !m.IsDeleted)
             .OrderBy(m => m.SortOrder)
             .ToListAsync(cancellationToken);
-        return entities.Select(e => _mapper.Map<MenuItem>(e)).ToList();
     }
 
     public async Task<IReadOnlyList<MenuItem>> GetByParentIdAsync(long parentId,
         CancellationToken cancellationToken = default)
     {
-        List<MenuItemEf> entities = await _context.MenuItems
+        return await _context.MenuItems
             .Where(m => m.ParentId == parentId && !m.IsDeleted)
             .OrderBy(m => m.SortOrder)
             .ToListAsync(cancellationToken);
-        return entities.Select(e => _mapper.Map<MenuItem>(e)).ToList();
     }
 
     public async Task<IReadOnlyList<MenuItem>> GetMenuTreeAsync(int maxDepth = 3,
@@ -123,7 +110,7 @@ public class MenuItemRepository : IMenuItemRepository
         maxDepth = Math.Min(maxDepth, MaxMenuDepth);
 
         // Get all menu items ordered by sort order
-        List<MenuItemEf> allMenus = await _context.MenuItems
+        List<MenuItem> allMenus = await _context.MenuItems
             .Where(m => !m.IsDeleted && m.Level < maxDepth)
             .OrderBy(m => m.Level)
             .ThenBy(m => m.SortOrder)
@@ -131,20 +118,19 @@ public class MenuItemRepository : IMenuItemRepository
 
         // Build tree structure in memory
         var menuDict = allMenus.ToDictionary(m => m.Id);
-        var rootMenus = new List<MenuItemEf>();
+        var rootMenus = new List<MenuItem>();
 
-        foreach (MenuItemEf menu in allMenus)
+        foreach (MenuItem menu in allMenus)
             if (menu.ParentId == null)
             {
                 rootMenus.Add(menu);
             }
-            else if (menuDict.TryGetValue(menu.ParentId.Value, out MenuItemEf? parent))
+            else if (menuDict.TryGetValue(menu.ParentId.Value, out MenuItem? parent))
             {
                 parent.Children.Add(menu);
-                menu.Parent = parent;
             }
 
-        return rootMenus.Select(e => _mapper.Map<MenuItem>(e)).ToList();
+        return rootMenus;
     }
 
     public async Task<IReadOnlyList<MenuItem>> GetVisibleMenuTreeAsync(
@@ -177,7 +163,7 @@ public class MenuItemRepository : IMenuItemRepository
     public async Task<bool> CodeExistsAsync(string code, long? excludeId = null,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<MenuItemEf> query = _context.MenuItems.Where(m => m.Code == code.ToLowerInvariant() && !m.IsDeleted);
+        IQueryable<MenuItem> query = _context.MenuItems.Where(m => m.Code == code.ToLowerInvariant() && !m.IsDeleted);
         if (excludeId.HasValue)
             query = query.Where(m => m.Id != excludeId.Value);
         return await query.AnyAsync(cancellationToken);

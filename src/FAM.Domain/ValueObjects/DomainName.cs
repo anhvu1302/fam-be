@@ -40,9 +40,9 @@ public sealed class DomainName : ValueObject
     /// <summary>
     /// Implicit conversion từ DomainName sang string
     /// </summary>
-    public static implicit operator string(DomainName domainName)
+    public static implicit operator string?(DomainName? domainName)
     {
-        return domainName.Value;
+        return domainName?.Value;
     }
 
     /// <summary>

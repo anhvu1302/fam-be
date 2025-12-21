@@ -9,7 +9,12 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class Email : ValueObject
 {
-    public string Value { get; }
+    public string Value { get; private set; } = null!;
+
+    // Constructor for EF Core
+    private Email()
+    {
+    }
 
     private Email(string value)
     {

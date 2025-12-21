@@ -26,16 +26,8 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
 
         if (user == null) throw new KeyNotFoundException($"User with ID {request.UserId} not found");
 
-        // Verify current password
-        var isCurrentPasswordValid = user.Password.Verify(request.CurrentPassword);
+        user.ChangePassword(request.CurrentPassword, request.NewPassword);
 
-        if (!isCurrentPasswordValid) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_OLD_PASSWORD);
-
-        // Validate new password (Password.Create will throw if invalid)
-        var newPassword = Password.Create(request.NewPassword);
-
-        // Update password
-        user.UpdatePassword(newPassword.Hash, newPassword.Salt);
         _unitOfWork.Users.Update(user);
 
         // Optionally: Logout all devices except current one for security

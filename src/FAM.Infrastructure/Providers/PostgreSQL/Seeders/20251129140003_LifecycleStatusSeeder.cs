@@ -1,5 +1,5 @@
+using FAM.Domain.Statuses;
 using FAM.Infrastructure.Common.Seeding;
-using FAM.Infrastructure.PersistenceModels.Ef;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -35,71 +35,15 @@ public class LifecycleStatusSeeder : BaseDataSeeder
 
         LogInfo("Seeding lifecycle statuses...");
 
-        var statuses = new List<LifecycleStatusEf>
+        var statuses = new List<LifecycleStatus>
         {
-            new()
-            {
-                Code = "NEW",
-                Name = "New",
-                Description = "Asset is newly acquired and not yet in use",
-                Color = "#4CAF50",
-                OrderNo = 1,
-                CreatedAt = DateTime.UtcNow
-            },
-            new()
-            {
-                Code = "ACTIVE",
-                Name = "Active",
-                Description = "Asset is currently in active use",
-                Color = "#2196F3",
-                OrderNo = 2,
-                CreatedAt = DateTime.UtcNow
-            },
-            new()
-            {
-                Code = "MAINTENANCE",
-                Name = "Under Maintenance",
-                Description = "Asset is currently being maintained or repaired",
-                Color = "#FF9800",
-                OrderNo = 3,
-                CreatedAt = DateTime.UtcNow
-            },
-            new()
-            {
-                Code = "RETIRED",
-                Name = "Retired",
-                Description = "Asset has been retired from service",
-                Color = "#9E9E9E",
-                OrderNo = 4,
-                CreatedAt = DateTime.UtcNow
-            },
-            new()
-            {
-                Code = "DISPOSED",
-                Name = "Disposed",
-                Description = "Asset has been disposed or sold",
-                Color = "#F44336",
-                OrderNo = 5,
-                CreatedAt = DateTime.UtcNow
-            },
-            new()
-            {
-                Code = "LOST",
-                Name = "Lost",
-                Description = "Asset is missing or cannot be located",
-                Color = "#E91E63",
-                OrderNo = 6,
-                CreatedAt = DateTime.UtcNow
-            },
-            new()
-            {
-                Code = "DAMAGED",
-                Name = "Damaged",
-                Description = "Asset is damaged beyond repair",
-                Color = "#795548",
-                OrderNo = 7,
-                CreatedAt = DateTime.UtcNow
-            }
+            LifecycleStatus.Create("NEW", "New", "Asset is newly acquired and not yet in use", "#4CAF50", 1),
+            LifecycleStatus.Create("ACTIVE", "Active", "Asset is currently in active use", "#2196F3", 2),
+            LifecycleStatus.Create("MAINTENANCE", "Under Maintenance", "Asset is currently being maintained or repaired", "#FF9800", 3),
+            LifecycleStatus.Create("RETIRED", "Retired", "Asset has been retired from service", "#9E9E9E", 4),
+            LifecycleStatus.Create("DISPOSED", "Disposed", "Asset has been disposed or sold", "#F44336", 5),
+            LifecycleStatus.Create("LOST", "Lost", "Asset is missing or cannot be located", "#E91E63", 6),
+            LifecycleStatus.Create("DAMAGED", "Damaged", "Asset is damaged beyond repair", "#795548", 7)
         };
 
         await _dbContext.LifecycleStatuses.AddRangeAsync(statuses, cancellationToken);

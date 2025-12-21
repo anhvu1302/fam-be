@@ -124,7 +124,7 @@ public class ChangePasswordCommandHandlerTests
         Func<Task> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<UnauthorizedAccessException>()
+        await act.Should().ThrowAsync<DomainException>()
             .WithMessage("Current password is incorrect");
 
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Never);

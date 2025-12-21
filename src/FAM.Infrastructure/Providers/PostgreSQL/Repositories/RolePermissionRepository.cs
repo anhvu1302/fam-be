@@ -1,84 +1,72 @@
 using System.Linq.Expressions;
 
-using AutoMapper;
-
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
-using FAM.Infrastructure.PersistenceModels.Ef;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
 /// <summary>
-/// PostgreSQL implementation of IRolePermissionRepository
+/// PostgreSQL implementation of IRolePermissionRepository using Pragmatic Architecture.
+/// Works with RolePermission domain entity directly with EF Core.
 /// </summary>
-public class RolePermissionRepositoryPostgreSql : IRolePermissionRepository
+public class RolePermissionRepository : IRolePermissionRepository
 {
     private readonly PostgreSqlDbContext _context;
-    private readonly IMapper _mapper;
 
-    public RolePermissionRepositoryPostgreSql(PostgreSqlDbContext context, IMapper mapper)
+    public RolePermissionRepository(PostgreSqlDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<IEnumerable<RolePermission>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        List<RolePermissionEf> entities = await _context.RolePermissions.ToListAsync(cancellationToken);
-        return _mapper.Map<IEnumerable<RolePermission>>(entities);
+        return await _context.RolePermissions.ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<RolePermission>> FindAsync(Expression<Func<RolePermission, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        List<RolePermissionEf> allEntities = await _context.RolePermissions.ToListAsync(cancellationToken);
-        IEnumerable<RolePermission>? allRolePermissions = _mapper.Map<IEnumerable<RolePermission>>(allEntities);
-        return allRolePermissions.Where(predicate.Compile());
+        return await _context.RolePermissions.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(RolePermission entity, CancellationToken cancellationToken = default)
     {
-        RolePermissionEf? efEntity = _mapper.Map<RolePermissionEf>(entity);
-        await _context.RolePermissions.AddAsync(efEntity, cancellationToken);
+        await _context.RolePermissions.AddAsync(entity, cancellationToken);
     }
 
     public void Delete(RolePermission entity)
     {
-        RolePermissionEf? efEntity = _mapper.Map<RolePermissionEf>(entity);
-        _context.RolePermissions.Remove(efEntity);
+        _context.RolePermissions.Remove(entity);
     }
 
     public async Task<IEnumerable<RolePermission>> GetByRoleIdAsync(long roleId,
         CancellationToken cancellationToken = default)
     {
-        List<RolePermissionEf> entities = await _context.RolePermissions
+        return await _context.RolePermissions
             .Where(rp => rp.RoleId == roleId)
             .ToListAsync(cancellationToken);
-        return _mapper.Map<IEnumerable<RolePermission>>(entities);
     }
 
     public async Task<IEnumerable<RolePermission>> GetByPermissionIdAsync(long permissionId,
         CancellationToken cancellationToken = default)
     {
-        List<RolePermissionEf> entities = await _context.RolePermissions
+        return await _context.RolePermissions
             .Where(rp => rp.PermissionId == permissionId)
             .ToListAsync(cancellationToken);
-        return _mapper.Map<IEnumerable<RolePermission>>(entities);
     }
 
     public async Task<RolePermission?> GetByRoleAndPermissionAsync(long roleId, long permissionId,
         CancellationToken cancellationToken = default)
     {
-        RolePermissionEf? entity = await _context.RolePermissions
+        return await _context.RolePermissions
             .FirstOrDefaultAsync(rp => rp.RoleId == roleId && rp.PermissionId == permissionId, cancellationToken);
-        return entity != null ? _mapper.Map<RolePermission>(entity) : null;
     }
 
     public async Task DeleteByRoleIdAsync(long roleId, CancellationToken cancellationToken = default)
     {
-        List<RolePermissionEf> entities = await _context.RolePermissions
+        List<RolePermission> entities = await _context.RolePermissions
             .Where(rp => rp.RoleId == roleId)
             .ToListAsync(cancellationToken);
 

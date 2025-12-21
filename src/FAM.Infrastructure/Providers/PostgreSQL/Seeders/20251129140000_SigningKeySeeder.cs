@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 
+using FAM.Domain.Authorization;
 using FAM.Infrastructure.Common.Seeding;
-using FAM.Infrastructure.PersistenceModels.Ef;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -46,20 +46,15 @@ public class SigningKeySeeder : BaseDataSeeder
         var privateKey = rsa.ExportRSAPrivateKeyPem();
         var keyId = GenerateKeyId();
 
-        var signingKey = new SigningKeyEf
-        {
-            KeyId = keyId,
-            PublicKey = publicKey,
-            PrivateKey = privateKey,
-            Algorithm = "RS256",
-            KeySize = 2048,
-            Use = "sig",
-            KeyType = "RSA",
-            IsActive = true,
-            IsRevoked = false,
-            Description = "Initial signing key generated during system setup",
-            CreatedAt = DateTime.UtcNow
-        };
+        var signingKey = SigningKey.Create(
+            keyId,
+            publicKey,
+            privateKey,
+            "RS256",
+            2048,
+            null,
+            "Initial signing key generated during system setup"
+        );
 
         await _dbContext.SigningKeys.AddAsync(signingKey, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);

@@ -9,8 +9,13 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class MACAddress : ValueObject
 {
-    public string Value { get; }
-    public MACAddressFormat Format { get; }
+    public string Value { get; private set; } = null!;
+    public MACAddressFormat Format { get; private set; }
+
+    // Constructor for EF Core
+    private MACAddress()
+    {
+    }
 
     private MACAddress(string value, MACAddressFormat format)
     {

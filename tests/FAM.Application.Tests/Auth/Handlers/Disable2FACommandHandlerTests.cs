@@ -1,5 +1,6 @@
 using FAM.Application.Auth.Disable2FA;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Common.Base;
 using FAM.Domain.Users;
 
 using FluentAssertions;
@@ -92,7 +93,7 @@ public class Disable2FACommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         // 2FA should still be enabled
@@ -117,7 +118,7 @@ public class Disable2FACommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+        await Assert.ThrowsAsync<UnauthorizedException>(() =>
             _handler.Handle(command, CancellationToken.None));
 
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);

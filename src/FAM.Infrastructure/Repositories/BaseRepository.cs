@@ -5,15 +5,16 @@ using FAM.Infrastructure.Providers.PostgreSQL;
 namespace FAM.Infrastructure.Repositories;
 
 /// <summary>
-/// Base repository for PostgreSQL with EF Core
+/// Base repository for EF Core
 /// Pragmatic Architecture - uses single Domain entity
+/// Provider-agnostic (can work with any EF Core provider)
 /// </summary>
-public abstract class BasePostgreSqlRepository<TEntity> : BasePagedRepository<TEntity>
+public abstract class BaseRepository<TEntity> : BasePagedRepository<TEntity>
     where TEntity : class
 {
     protected readonly PostgreSqlDbContext Context;
 
-    protected BasePostgreSqlRepository(PostgreSqlDbContext context) : base()
+    protected BaseRepository(PostgreSqlDbContext context) : base()
     {
         Context = context;
     }

@@ -30,13 +30,13 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public string Name { get; private set; } = string.Empty;
 
     // Company & Type
-    public int? CompanyId { get; private set; }
-    public int? AssetTypeId { get; private set; }
-    public int? CategoryId { get; private set; }
+    public long? CompanyId { get; private set; }
+    public long? AssetTypeId { get; private set; }
+    public long? CategoryId { get; private set; }
 
     // Model & Manufacturer
-    public int? ModelId { get; private set; }
-    public int? ManufacturerId { get; private set; }
+    public long? ModelId { get; private set; }
+    public long? ManufacturerId { get; private set; }
 
     // Identification
     public SerialNumber? SerialNo { get; private set; }
@@ -50,20 +50,20 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public decimal? PurchaseCost { get; private set; }
     public string? PurchaseOrderNo { get; private set; }
     public string? InvoiceNo { get; private set; }
-    public int? SupplierId { get; private set; }
+    public long? SupplierId { get; private set; }
     public DateTime? WarrantyUntil { get; private set; }
     public int? WarrantyMonths { get; private set; }
     public string? WarrantyTerms { get; private set; }
 
     // Condition & Location
-    public int? ConditionId { get; private set; }
-    public int? LocationId { get; private set; }
+    public long? ConditionId { get; private set; }
+    public long? LocationId { get; private set; }
     public string? LocationCode { get; private set; }
-    public int? CountryId { get; private set; }
+    public long? CountryId { get; private set; }
 
     // Assignment
-    public int? DepartmentId { get; private set; }
-    public int? OwnerId { get; private set; }
+    public long? DepartmentId { get; private set; }
+    public long? OwnerId { get; private set; }
 
     // Status
     public string LifecycleCode { get; private set; } = "draft";
@@ -148,10 +148,27 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     // Navigation properties
-    public User? CreatedBy { get; set; }
-    public User? UpdatedBy { get; set; }
-    public User? DeletedBy { get; set; }
-    public CompanyDetails? Company { get; set; }
+    /// <summary>
+    /// Assignment records for this asset (part of Asset aggregate)
+    /// </summary>
+    public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+
+    /// <summary>
+    /// Lifecycle events for this asset (part of Asset aggregate)
+    /// </summary>
+    public ICollection<AssetEvent> AssetEvents { get; set; } = new List<AssetEvent>();
+
+    /// <summary>
+    /// Finance entries (depreciation, adjustments) for this asset (part of Asset aggregate)
+    /// </summary>
+    public ICollection<FinanceEntry> FinanceEntries { get; set; } = new List<FinanceEntry>();
+
+    /// <summary>
+    /// Attachments/documents for this asset (part of Asset aggregate)
+    /// </summary>
+    public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
+
+    // Reference-only navigations (NOT included in aggregate boundary):
     public AssetType? AssetType { get; set; }
     public AssetCategory? Category { get; set; }
     public Model? Model { get; set; }
@@ -159,17 +176,11 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public Supplier? Supplier { get; set; }
     public AssetCondition? Condition { get; set; }
     public Location? Location { get; set; }
-
     public Country? Country { get; set; }
-
-    // public Departments.Department? Department { get; set; }
+    public CompanyDetails? Company { get; set; }
     public User? Owner { get; set; }
     public LifecycleStatus? LifecycleStatus { get; set; }
     public UsageStatus? UsageStatus { get; set; }
-    public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
-    public ICollection<AssetEvent> AssetEvents { get; set; } = new List<AssetEvent>();
-    public ICollection<FinanceEntry> FinanceEntries { get; set; } = new List<FinanceEntry>();
-    public ICollection<Attachment> Attachments { get; set; } = new List<Attachment>();
 
     // EF Core constructor
     private Asset()

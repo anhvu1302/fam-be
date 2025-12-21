@@ -42,9 +42,9 @@ public sealed class TaxCode : ValueObject
     /// <summary>
     /// Implicit conversion từ TaxCode sang string
     /// </summary>
-    public static implicit operator string(TaxCode taxCode)
+    public static implicit operator string?(TaxCode? taxCode)
     {
-        return taxCode.Value;
+        return taxCode?.Value;
     }
 
     /// <summary>

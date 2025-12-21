@@ -10,8 +10,13 @@ namespace FAM.Domain.ValueObjects;
 /// </summary>
 public sealed class Password : ValueObject
 {
-    public string Hash { get; private set; }
-    public string Salt { get; private set; }
+    public string Hash { get; private set; } = null!;
+    public string Salt { get; private set; } = null!;
+
+    // Constructor for EF Core
+    private Password()
+    {
+    }
 
     private Password(string hash, string salt)
     {

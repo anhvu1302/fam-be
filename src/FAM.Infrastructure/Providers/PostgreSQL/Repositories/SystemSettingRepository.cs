@@ -1,86 +1,76 @@
 using System.Linq.Expressions;
 
-using AutoMapper;
-
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Entities;
-using FAM.Infrastructure.PersistenceModels.Ef;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
 /// <summary>
 /// PostgreSQL repository for SystemSetting
+/// Uses Pragmatic Architecture - directly works with Domain entities
 /// </summary>
 public class SystemSettingRepository : ISystemSettingRepository
 {
     private readonly PostgreSqlDbContext _context;
-    private readonly IMapper _mapper;
 
-    public SystemSettingRepository(PostgreSqlDbContext context, IMapper mapper)
+    public SystemSettingRepository(PostgreSqlDbContext context)
     {
         _context = context;
-        _mapper = mapper;
     }
 
     public async Task<SystemSetting?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        SystemSettingEf? entity = await _context.SystemSettings
+        return await _context.SystemSettings
             .FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted, cancellationToken);
-        return entity != null ? _mapper.Map<SystemSetting>(entity) : null;
     }
 
     public async Task<IEnumerable<SystemSetting>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        List<SystemSettingEf> entities = await _context.SystemSettings
+        return await _context.SystemSettings
             .Where(s => !s.IsDeleted)
             .OrderBy(s => s.Group)
             .ThenBy(s => s.SortOrder)
             .ToListAsync(cancellationToken);
-        return entities.Select(e => _mapper.Map<SystemSetting>(e));
     }
 
     public async Task<IEnumerable<SystemSetting>> FindAsync(
         Expression<Func<SystemSetting, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        IEnumerable<SystemSetting> all = await GetAllAsync(cancellationToken);
-        return all.Where(predicate.Compile());
+        // Apply predicate at database level - no need for in-memory filtering
+        return await _context.SystemSettings.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(SystemSetting entity, CancellationToken cancellationToken = default)
     {
-        SystemSettingEf? efEntity = _mapper.Map<SystemSettingEf>(entity);
-        await _context.SystemSettings.AddAsync(efEntity, cancellationToken);
+        await _context.SystemSettings.AddAsync(entity, cancellationToken);
     }
 
     public void Update(SystemSetting entity)
     {
-        SystemSettingEf? efEntity = _mapper.Map<SystemSettingEf>(entity);
-
-        EntityEntry<SystemSettingEf>? trackedEntry = _context.ChangeTracker.Entries<SystemSettingEf>()
+        var trackedEntry = _context.ChangeTracker.Entries<SystemSetting>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
         {
-            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(efEntity);
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(entity);
         }
         else
         {
-            _context.SystemSettings.Attach(efEntity);
-            _context.Entry(efEntity).State = EntityState.Modified;
+            _context.SystemSettings.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
         }
     }
 
     public void Delete(SystemSetting entity)
     {
-        SystemSettingEf? efEntity = _context.SystemSettings.Local.FirstOrDefault(s => s.Id == entity.Id);
-        if (efEntity != null)
+        var trackedEntity = _context.SystemSettings.Local.FirstOrDefault(s => s.Id == entity.Id);
+        if (trackedEntity != null)
         {
-            efEntity.IsDeleted = true;
-            efEntity.DeletedAt = DateTime.UtcNow;
+            trackedEntity.IsDeleted = true;
+            trackedEntity.DeletedAt = DateTime.UtcNow;
         }
     }
 
@@ -91,40 +81,36 @@ public class SystemSettingRepository : ISystemSettingRepository
 
     public async Task<SystemSetting?> GetByKeyAsync(string key, CancellationToken cancellationToken = default)
     {
-        SystemSettingEf? entity = await _context.SystemSettings
+        return await _context.SystemSettings
             .FirstOrDefaultAsync(s => s.Key == key.ToLowerInvariant() && !s.IsDeleted, cancellationToken);
-        return entity != null ? _mapper.Map<SystemSetting>(entity) : null;
     }
 
     public async Task<IReadOnlyList<SystemSetting>> GetAllSettingsAsync(CancellationToken cancellationToken = default)
     {
-        List<SystemSettingEf> entities = await _context.SystemSettings
+        return await _context.SystemSettings
             .Where(s => !s.IsDeleted)
             .OrderBy(s => s.Group)
             .ThenBy(s => s.SortOrder)
             .ToListAsync(cancellationToken);
-        return entities.Select(e => _mapper.Map<SystemSetting>(e)).ToList();
     }
 
     public async Task<IReadOnlyList<SystemSetting>> GetByGroupAsync(string group,
         CancellationToken cancellationToken = default)
     {
-        List<SystemSettingEf> entities = await _context.SystemSettings
+        return await _context.SystemSettings
             .Where(s => s.Group == group.ToLowerInvariant() && !s.IsDeleted)
             .OrderBy(s => s.SortOrder)
             .ToListAsync(cancellationToken);
-        return entities.Select(e => _mapper.Map<SystemSetting>(e)).ToList();
     }
 
     public async Task<IReadOnlyList<SystemSetting>> GetVisibleSettingsAsync(
         CancellationToken cancellationToken = default)
     {
-        List<SystemSettingEf> entities = await _context.SystemSettings
+        return await _context.SystemSettings
             .Where(s => s.IsVisible && !s.IsDeleted)
             .OrderBy(s => s.Group)
             .ThenBy(s => s.SortOrder)
             .ToListAsync(cancellationToken);
-        return entities.Select(e => _mapper.Map<SystemSetting>(e)).ToList();
     }
 
     public async Task<IReadOnlyList<string>> GetGroupsAsync(CancellationToken cancellationToken = default)
@@ -140,7 +126,7 @@ public class SystemSettingRepository : ISystemSettingRepository
     public async Task<bool> KeyExistsAsync(string key, long? excludeId = null,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<SystemSettingEf> query =
+        IQueryable<SystemSetting> query =
             _context.SystemSettings.Where(s => s.Key == key.ToLowerInvariant() && !s.IsDeleted);
         if (excludeId.HasValue)
             query = query.Where(s => s.Id != excludeId.Value);
