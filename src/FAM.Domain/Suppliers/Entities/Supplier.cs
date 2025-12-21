@@ -1,4 +1,3 @@
-using FAM.Domain.Assets;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Geography;
@@ -33,26 +32,26 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public string? Address { get; private set; }
     public string? City { get; private set; }
     public string? State { get; private set; }
-    public PostalCode? PostalCode { get; private set; }
+    public string? PostalCode { get; private set; }
     public string? Region { get; private set; }
 
     // Contact Information
-    public Url? Website { get; private set; }
-    public Email? Email { get; private set; }
-    public PhoneNumber? Phone { get; private set; }
-    public PhoneNumber? Fax { get; private set; }
-    public PhoneNumber? MobilePhone { get; private set; }
+    public string? Website { get; private set; }
+    public string? Email { get; private set; }
+    public string? Phone { get; private set; }
+    public string? Fax { get; private set; }
+    public string? MobilePhone { get; private set; }
 
     // Primary Contact Person
     public string? ContactPersonName { get; private set; }
     public string? ContactPersonTitle { get; private set; }
-    public Email? ContactPersonEmail { get; private set; }
-    public PhoneNumber? ContactPersonPhone { get; private set; }
+    public string? ContactPersonEmail { get; private set; }
+    public string? ContactPersonPhone { get; private set; }
 
     // Account Manager (their side)
     public string? AccountManagerName { get; private set; }
-    public Email? AccountManagerEmail { get; private set; }
-    public PhoneNumber? AccountManagerPhone { get; private set; }
+    public string? AccountManagerEmail { get; private set; }
+    public string? AccountManagerPhone { get; private set; }
 
     // Business Information
     public string? SupplierType { get; private set; } // Manufacturer, Distributor, Reseller, Service Provider
@@ -68,7 +67,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public string? PaymentMethods { get; private set; } // JSON array: Wire, Check, Credit Card
     public string? Currency { get; private set; } // Preferred currency
     public Money? CreditLimit { get; private set; }
-    public Percentage? DiscountRate { get; private set; } // Standard discount %
+    public decimal? DiscountRate { get; private set; } // Standard discount %
     public bool TaxExempt { get; private set; }
     public string? TaxExemptCertificate { get; private set; }
 
@@ -94,10 +93,10 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public string? Specialization { get; private set; }
 
     // Performance & Rating
-    public Rating? QualityRating { get; private set; }
-    public Rating? DeliveryRating { get; private set; }
-    public Rating? ServiceRating { get; private set; }
-    public Rating? PriceRating { get; private set; }
+    public int? QualityRating { get; private set; }
+    public int? DeliveryRating { get; private set; }
+    public int? ServiceRating { get; private set; }
+    public int? PriceRating { get; private set; }
     public int? OnTimeDeliveryPercentage { get; private set; }
     public int? DefectRate { get; private set; } // Percentage
 
@@ -122,7 +121,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public string? ContractNumber { get; private set; }
     public DateTime? ContractStartDate { get; private set; }
     public DateTime? ContractEndDate { get; private set; }
-    public Url? ContractDocumentUrl { get; private set; }
+    public string? ContractDocumentUrl { get; private set; }
     public bool AutoRenew { get; private set; }
 
     // Shipping & Logistics
@@ -135,10 +134,10 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public string? WarehouseLocations { get; private set; } // JSON array
 
     // Support & Service
-    public Email? SupportEmail { get; private set; }
-    public PhoneNumber? SupportPhone { get; private set; }
+    public string? SupportEmail { get; private set; }
+    public string? SupportPhone { get; private set; }
     public string? SupportHours { get; private set; }
-    public Url? SLADocumentUrl { get; private set; }
+    public string? SLADocumentUrl { get; private set; }
     public bool Provides24x7Support { get; private set; }
 
     // Insurance & Bonding
@@ -167,9 +166,9 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public Money? AverageOrderValue { get; private set; }
 
     // Documents & Attachments
-    public Url? W9FormUrl { get; private set; } // US tax form
-    public Url? CertificateOfInsuranceUrl { get; private set; }
-    public Url? BusinessLicenseUrl { get; private set; }
+    public string? W9FormUrl { get; private set; } // US tax form
+    public string? CertificateOfInsuranceUrl { get; private set; }
+    public string? BusinessLicenseUrl { get; private set; }
     public string? References { get; private set; } // JSON array of references
 
     // Audit fields
@@ -258,8 +257,161 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         Address = address;
         City = city;
         State = state;
-        PostalCode = postalCode != null ? PostalCode.Create(postalCode) : null;
+        SetPostalCode(postalCode);
         Region = region;
+    }
+
+    // Setters with validation
+    private void SetPostalCode(string? postalCode)
+    {
+        if (!string.IsNullOrWhiteSpace(postalCode))
+        {
+            var postalCodeVo = ValueObjects.PostalCode.Create(postalCode);
+            PostalCode = postalCodeVo.Value;
+        }
+        else
+        {
+            PostalCode = null;
+        }
+    }
+
+    private void SetWebsite(string? website)
+    {
+        if (!string.IsNullOrWhiteSpace(website))
+        {
+            var websiteVo = Url.Create(website);
+            Website = websiteVo.Value;
+        }
+        else
+        {
+            Website = null;
+        }
+    }
+
+    private void SetEmail(string? email)
+    {
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            var emailVo = ValueObjects.Email.Create(email);
+            Email = emailVo.Value;
+        }
+        else
+        {
+            Email = null;
+        }
+    }
+
+    private void SetPhone(string? phone)
+    {
+        if (!string.IsNullOrWhiteSpace(phone))
+        {
+            var phoneVo = PhoneNumber.Create(phone);
+            Phone = phoneVo.Value;
+        }
+        else
+        {
+            Phone = null;
+        }
+    }
+
+    private void SetFax(string? fax)
+    {
+        if (!string.IsNullOrWhiteSpace(fax))
+        {
+            var phoneVo = PhoneNumber.Create(fax);
+            Fax = phoneVo.Value;
+        }
+        else
+        {
+            Fax = null;
+        }
+    }
+
+    private void SetMobilePhone(string? mobile)
+    {
+        if (!string.IsNullOrWhiteSpace(mobile))
+        {
+            var phoneVo = PhoneNumber.Create(mobile);
+            MobilePhone = phoneVo.Value;
+        }
+        else
+        {
+            MobilePhone = null;
+        }
+    }
+
+    private void SetContactPersonEmail(string? email)
+    {
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            var emailVo = ValueObjects.Email.Create(email);
+            ContactPersonEmail = emailVo.Value;
+        }
+        else
+        {
+            ContactPersonEmail = null;
+        }
+    }
+
+    private void SetContactPersonPhone(string? phone)
+    {
+        if (!string.IsNullOrWhiteSpace(phone))
+        {
+            var phoneVo = PhoneNumber.Create(phone);
+            ContactPersonPhone = phoneVo.Value;
+        }
+        else
+        {
+            ContactPersonPhone = null;
+        }
+    }
+
+    private void SetAccountManagerEmail(string? email)
+    {
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            var emailVo = ValueObjects.Email.Create(email);
+            AccountManagerEmail = emailVo.Value;
+        }
+        else
+        {
+            AccountManagerEmail = null;
+        }
+    }
+
+    private void SetAccountManagerPhone(string? phone)
+    {
+        if (!string.IsNullOrWhiteSpace(phone))
+        {
+            var phoneVo = PhoneNumber.Create(phone);
+            AccountManagerPhone = phoneVo.Value;
+        }
+        else
+        {
+            AccountManagerPhone = null;
+        }
+    }
+
+    private void SetDiscountRate(decimal? discountRate)
+    {
+        if (discountRate.HasValue)
+        {
+            var percentageVo = Percentage.Create(discountRate.Value);
+            DiscountRate = percentageVo.Value;
+        }
+        else
+        {
+            DiscountRate = null;
+        }
+    }
+
+    private string? ValidateUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return null;
+
+        var urlVo = Url.Create(url);
+        return urlVo.Value;
     }
 
     public void UpdateContactInfo(
@@ -269,11 +421,11 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         string? fax,
         string? mobile)
     {
-        Website = website != null ? Url.Create(website) : null;
-        Email = email != null ? Email.Create(email) : null;
-        Phone = phone != null ? PhoneNumber.Create(phone) : null;
-        Fax = fax != null ? PhoneNumber.Create(fax) : null;
-        MobilePhone = mobile != null ? PhoneNumber.Create(mobile) : null;
+        SetWebsite(website);
+        SetEmail(email);
+        SetPhone(phone);
+        SetFax(fax);
+        SetMobilePhone(mobile);
     }
 
     public void UpdatePrimaryContact(
@@ -284,8 +436,8 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         ContactPersonName = name;
         ContactPersonTitle = title;
-        ContactPersonEmail = email != null ? Email.Create(email) : null;
-        ContactPersonPhone = phone != null ? PhoneNumber.Create(phone) : null;
+        SetContactPersonEmail(email);
+        SetContactPersonPhone(phone);
     }
 
     public void UpdateAccountManager(
@@ -294,8 +446,8 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         string? phone)
     {
         AccountManagerName = name;
-        AccountManagerEmail = email != null ? Email.Create(email) : null;
-        AccountManagerPhone = phone != null ? PhoneNumber.Create(phone) : null;
+        SetAccountManagerEmail(email);
+        SetAccountManagerPhone(phone);
     }
 
     public void UpdateBusinessInfo(
@@ -326,7 +478,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         PaymentMethods = paymentMethods;
         Currency = currency;
         CreditLimit = creditLimit.HasValue ? Money.Create(creditLimit.Value, currency ?? "VND") : null;
-        DiscountRate = discountRate.HasValue ? Percentage.Create(discountRate.Value) : null;
+        SetDiscountRate(discountRate);
     }
 
     public void UpdateBankingInfo(
@@ -368,7 +520,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         ContractNumber = contractNumber;
         ContractStartDate = startDate;
         ContractEndDate = endDate;
-        ContractDocumentUrl = documentUrl != null ? Url.Create(documentUrl) : null;
+        ContractDocumentUrl = ValidateUrl(documentUrl);
         AutoRenew = autoRenew;
     }
 
@@ -378,9 +530,9 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         string? businessLicenseUrl,
         string? references)
     {
-        W9FormUrl = w9FormUrl != null ? Url.Create(w9FormUrl) : null;
-        CertificateOfInsuranceUrl = certificateOfInsuranceUrl != null ? Url.Create(certificateOfInsuranceUrl) : null;
-        BusinessLicenseUrl = businessLicenseUrl != null ? Url.Create(businessLicenseUrl) : null;
+        W9FormUrl = ValidateUrl(w9FormUrl);
+        CertificateOfInsuranceUrl = ValidateUrl(certificateOfInsuranceUrl);
+        BusinessLicenseUrl = ValidateUrl(businessLicenseUrl);
         References = references;
     }
 

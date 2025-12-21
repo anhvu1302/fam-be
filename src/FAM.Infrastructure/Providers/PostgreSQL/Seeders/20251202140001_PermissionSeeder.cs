@@ -39,9 +39,7 @@ public class PermissionSeeder : BaseDataSeeder
         var permissionEntities = new List<Permission>();
 
         foreach (var (resource, action, description) in allPermissions)
-        {
             permissionEntities.Add(Permission.Create(resource, action, description));
-        }
 
         await _dbContext.Permissions.AddRangeAsync(permissionEntities, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);

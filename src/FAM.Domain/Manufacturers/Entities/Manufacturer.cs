@@ -1,4 +1,3 @@
-using FAM.Domain.Assets;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Geography;
@@ -22,7 +21,7 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
 
     // Brand Information
     public string? BrandName { get; private set; }
-    public Url? LogoUrl { get; private set; }
+    public string? LogoUrl { get; private set; }
     public string? Tagline { get; private set; }
 
     // Company Details
@@ -39,18 +38,18 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
     public string? PostalCode { get; private set; }
 
     // Contact Information
-    public Url? Website { get; private set; }
+    public string? Website { get; private set; }
     public string? Email { get; private set; }
     public string? Phone { get; private set; }
     public string? Fax { get; private set; }
     public string? SupportEmail { get; private set; }
     public string? SupportPhone { get; private set; }
-    public Url? SupportWebsite { get; private set; }
+    public string? SupportWebsite { get; private set; }
 
     // Social Media
-    public Url? LinkedInUrl { get; private set; }
+    public string? LinkedInUrl { get; private set; }
     public string? TwitterHandle { get; private set; }
-    public Url? FacebookUrl { get; private set; }
+    public string? FacebookUrl { get; private set; }
 
     // Business Information
     public string? IndustryType { get; private set; } // Electronics, Automotive, Software, etc.
@@ -70,7 +69,7 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
     public string? WarrantyPolicy { get; private set; }
     public int? StandardWarrantyMonths { get; private set; }
     public string? SupportHours { get; private set; } // Business hours or 24/7
-    public Url? SLADocumentUrl { get; private set; }
+    public string? SLADocumentUrl { get; private set; }
 
     // Partner Information
     public bool IsPreferred { get; private set; } // Preferred manufacturer
@@ -109,7 +108,7 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
     public User? DeletedBy { get; set; }
     public Country? Country { get; set; }
     public ICollection<Model> Models { get; set; } = new List<Model>();
-    
+
     private Manufacturer()
     {
     }
@@ -119,13 +118,15 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Manufacturer name is required");
 
-        return new Manufacturer
+        var manufacturer = new Manufacturer
         {
             Name = name,
-            Website = website != null ? Url.Create(website) : null,
             IsActive = true,
             IsApproved = true
         };
+
+        manufacturer.Website = manufacturer.ValidateUrl(website);
+        return manufacturer;
     }
 
     public void UpdateBasicInfo(
@@ -149,7 +150,7 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
         string? tagline)
     {
         BrandName = brandName;
-        LogoUrl = logoUrl != null ? Url.Create(logoUrl) : null;
+        LogoUrl = ValidateUrl(logoUrl);
         Tagline = tagline;
     }
 
@@ -185,7 +186,7 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
         string? phone,
         string? fax)
     {
-        Website = website != null ? Url.Create(website) : null;
+        Website = ValidateUrl(website);
         Email = email;
         Phone = phone;
         Fax = fax;
@@ -199,7 +200,7 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
     {
         SupportEmail = supportEmail;
         SupportPhone = supportPhone;
-        SupportWebsite = supportWebsite != null ? Url.Create(supportWebsite) : null;
+        SupportWebsite = ValidateUrl(supportWebsite);
         SupportHours = supportHours;
     }
 
@@ -208,9 +209,9 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
         string? twitter,
         string? facebook)
     {
-        LinkedInUrl = linkedIn != null ? Url.Create(linkedIn) : null;
+        LinkedInUrl = ValidateUrl(linkedIn);
         TwitterHandle = twitter;
-        FacebookUrl = facebook != null ? Url.Create(facebook) : null;
+        FacebookUrl = ValidateUrl(facebook);
     }
 
     public void UpdateBusinessInfo(
@@ -270,7 +271,7 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
 
         WarrantyPolicy = warrantyPolicy;
         StandardWarrantyMonths = standardWarrantyMonths;
-        SLADocumentUrl = slaDocumentUrl != null ? Url.Create(slaDocumentUrl) : null;
+        SLADocumentUrl = ValidateUrl(slaDocumentUrl);
     }
 
     public void UpdatePartnerInfo(
@@ -367,5 +368,15 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
         DeletedAt = null;
         DeletedById = null;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Private helper methods
+    private string? ValidateUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return null;
+
+        var urlVo = Url.Create(url);
+        return urlVo.Value;
     }
 }

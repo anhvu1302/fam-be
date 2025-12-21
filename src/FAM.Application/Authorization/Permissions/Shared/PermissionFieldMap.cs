@@ -21,8 +21,8 @@ public class PermissionFieldMap : BaseFieldMap<Permission>
 
     public override FieldMap<Permission> Fields { get; } = new FieldMap<Permission>()
         .Add("id", p => p.Id)
-        .Add("resource", p => p.Resource.Value)
-        .Add("action", p => p.Action.Value)
+        .Add("resource", p => p.Resource)
+        .Add("action", p => p.Action)
         .Add("description", p => p.Description!)
         .Add("createdAt", p => p.CreatedAt)
         .Add("updatedAt", p => p.UpdatedAt!)

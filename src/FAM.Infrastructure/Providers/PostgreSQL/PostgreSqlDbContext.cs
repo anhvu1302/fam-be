@@ -3,7 +3,6 @@ using System.Reflection;
 using FAM.Domain.Assets;
 using FAM.Domain.Authorization;
 using FAM.Domain.Categories;
-using FAM.Domain.Common;
 using FAM.Domain.Common.Entities;
 using FAM.Domain.Conditions;
 using FAM.Domain.EmailTemplates;
@@ -19,12 +18,12 @@ using FAM.Domain.Suppliers;
 using FAM.Domain.Types;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
-using FAM.Domain.ValueObjects;
 using FAM.Infrastructure.Common.Extensions;
 using FAM.Infrastructure.Common.Options;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL;
 
@@ -100,11 +99,11 @@ public class PostgreSqlDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(_options.ConnectionString, npgsqlOptions =>
-        {
-            // store migrations history table without schema
-            npgsqlOptions.MigrationsHistoryTable("__ef_migrations_history");
-        })
-        .UseSnakeCaseNamingConvention();
+            {
+                // store migrations history table without schema
+                npgsqlOptions.MigrationsHistoryTable("__ef_migrations_history");
+            })
+            .UseSnakeCaseNamingConvention();
 
         if (_options.EnableDetailedErrors)
             optionsBuilder.EnableDetailedErrors();
@@ -129,41 +128,33 @@ public class PostgreSqlDbContext : DbContext
                 modelBuilder.Entity(entityType.ClrType).Ignore(navProperty.Name);
         }
 
-        // Apply centralized snake_case naming convention (tables, columns, constraints, indexes)
-        ModelBuilderExtensions.ApplySnakeCaseNamingConvention(modelBuilder);
-
         // User configuration
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(u => u.Id);
-            
-            // Value object conversions
+
+            // Primitive properties (no longer Value Objects)
             entity.Property(u => u.Username)
                 .IsRequired()
-                .HasMaxLength(50)
-                .HasConversion(
-                    v => v.Value,
-                    v => Username.Create(v));
-            
+                .HasMaxLength(50);
+
             entity.Property(u => u.Email)
                 .IsRequired()
-                .HasMaxLength(255)
-                .HasConversion(
-                    v => v.Value,
-                    v => Email.Create(v));
-            
+                .HasMaxLength(255);
+
+            // Password remains as OwnsOne (complex Value Object)
             entity.OwnsOne(u => u.Password, password =>
             {
                 password.Property(p => p.Hash).HasColumnName("password_hash").IsRequired();
                 password.Property(p => p.Salt).HasColumnName("password_salt").IsRequired();
             });
-            
+
             entity.Property(u => u.PhoneNumber)
-                .HasMaxLength(20)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? PhoneNumber.Create(v, null) : null);
-            
+                .HasMaxLength(20);
+
+            entity.Property(u => u.PhoneCountryCode)
+                .HasMaxLength(10);
+
             entity.Property(u => u.FullName).HasMaxLength(200);
             entity.Property(u => u.IsDeleted).HasDefaultValue(false);
 
@@ -197,14 +188,14 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(ud => ud.Location).HasMaxLength(255);
             entity.Property(ud => ud.Browser).HasMaxLength(100);
             entity.Property(ud => ud.OperatingSystem).HasMaxLength(100);
-            
-            // Value object conversion for IPAddress
-            entity.Property(ud => ud.IpAddress)
-                .HasMaxLength(45)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? IPAddress.Create(v) : null);
-            
+
+            // Value object as owned entity for IPAddress
+            entity.OwnsOne(ud => ud.IpAddress, ip =>
+            {
+                ip.Property(i => i.Value).HasColumnName("ip_address").HasMaxLength(45);
+                ip.Property(i => i.Type).HasColumnName("ip_address_type").HasMaxLength(10);
+            });
+
             entity.Property(ud => ud.RefreshToken).HasMaxLength(500);
             entity.Property(ud => ud.ActiveAccessTokenJti).HasMaxLength(255);
             entity.Property(ud => ud.IsActive).HasDefaultValue(true);
@@ -265,44 +256,35 @@ public class PostgreSqlDbContext : DbContext
         modelBuilder.Entity<Permission>(entity =>
         {
             entity.ToTable("permissions");
-            
+
             entity.HasKey(p => p.Id);
-            
-            // Map backing fields to columns
-            entity.Property<string>("_resource")
-                .HasColumnName("resource")
+
+            // Map properties to columns
+            entity.Property(p => p.Resource)
                 .IsRequired()
                 .HasMaxLength(100);
-                
-            entity.Property<string>("_action")
-                .HasColumnName("action")
+
+            entity.Property(p => p.Action)
                 .IsRequired()
                 .HasMaxLength(100);
-            
-            entity.Property(p => p.Description)
-                .HasColumnName("description");
-                
+
             // Audit fields
-            entity.Property(p => p.CreatedAt).HasColumnName("created_at");
-            entity.Property(p => p.CreatedById).HasColumnName("created_by_id");
-            entity.Property(p => p.UpdatedAt).HasColumnName("updated_at");
-            entity.Property(p => p.UpdatedById).HasColumnName("updated_by_id");
-            entity.Property(p => p.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
-            entity.Property(p => p.DeletedAt).HasColumnName("deleted_at");
-            entity.Property(p => p.DeletedById).HasColumnName("deleted_by_id");
+            entity.Property(p => p.CreatedAt);
+            entity.Property(p => p.CreatedById);
+            entity.Property(p => p.UpdatedAt);
+            entity.Property(p => p.UpdatedById);
+            entity.Property(p => p.IsDeleted).HasDefaultValue(false);
+            entity.Property(p => p.DeletedAt);
+            entity.Property(p => p.DeletedById);
 
             // Ignore navigation properties for audit
             entity.Ignore(p => p.CreatedBy);
             entity.Ignore(p => p.UpdatedBy);
             entity.Ignore(p => p.DeletedBy);
-            
-            // Ignore computed properties
-            entity.Ignore(p => p.Resource);
-            entity.Ignore(p => p.Action);
 
             entity.HasQueryFilter(p => !p.IsDeleted);
-            
-            entity.HasIndex("_resource", "_action")
+
+            entity.HasIndex(p => new { p.Resource, p.Action })
                 .IsUnique()
                 .HasFilter("is_deleted = false")
                 .HasDatabaseName("ix_permissions_resource_action");
@@ -311,15 +293,10 @@ public class PostgreSqlDbContext : DbContext
         modelBuilder.Entity<Role>(entity =>
         {
             entity.HasKey(r => r.Id);
-            
+
             // Value object conversion
-            entity.Property(r => r.Code)
-                .IsRequired()
-                .HasMaxLength(50)
-                .HasConversion(
-                    v => v.Value,
-                    v => RoleCode.Create(v));
-            
+            entity.Property(r => r.Code).IsRequired().HasMaxLength(50);
+
             entity.Property(r => r.Name).IsRequired().HasMaxLength(100);
             entity.Property(r => r.Rank).IsRequired();
             entity.Property(r => r.IsDeleted).HasDefaultValue(false);
@@ -332,15 +309,11 @@ public class PostgreSqlDbContext : DbContext
         modelBuilder.Entity<Resource>(entity =>
         {
             entity.HasKey(r => r.Id);
-            
-            // Value object conversion
+
             entity.Property(r => r.Type)
                 .IsRequired()
-                .HasMaxLength(100)
-                .HasConversion(
-                    v => v.Value,
-                    v => ResourceType.Create(v));
-            
+                .HasMaxLength(100);
+
             entity.Property(r => r.NodeId).IsRequired();
             entity.Property(r => r.Name).IsRequired().HasMaxLength(200);
             entity.Property(r => r.IsDeleted).HasDefaultValue(false);
@@ -430,21 +403,13 @@ public class PostgreSqlDbContext : DbContext
         {
             entity.HasKey(cd => cd.Id);
             entity.Property(cd => cd.NodeId).IsRequired();
-            
+
             // Value object conversions
-            entity.Property(cd => cd.TaxCode)
-                .HasMaxLength(20)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? TaxCode.Create(v) : null);
-            
-            entity.Property(cd => cd.Domain)
-                .HasMaxLength(255)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? DomainName.Create(v) : null);
-            
-            // Owned entity for Address
+            entity.Property(cd => cd.TaxCode).HasMaxLength(50);
+
+            entity.Property(cd => cd.Domain).HasMaxLength(255);
+
+            // Owned entity for Address - mapped to same table
             entity.OwnsOne(cd => cd.Address, address =>
             {
                 address.Property(a => a.Street).HasColumnName("address_street").HasMaxLength(255);
@@ -455,7 +420,7 @@ public class PostgreSqlDbContext : DbContext
                 address.Property(a => a.CountryCode).HasColumnName("address_country_code").HasMaxLength(10);
                 address.Property(a => a.PostalCode).HasColumnName("address_postal_code").HasMaxLength(20);
             });
-            
+
             entity.Property(cd => cd.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(cd => !cd.IsDeleted);
@@ -477,14 +442,10 @@ public class PostgreSqlDbContext : DbContext
         {
             entity.HasKey(dd => dd.Id);
             entity.Property(dd => dd.NodeId).IsRequired();
-            
+
             // Value object conversion
-            entity.Property(dd => dd.CostCenter)
-                .HasMaxLength(30)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? CostCenter.Create(v) : null);
-            
+            entity.Property(dd => dd.CostCenter).HasMaxLength(50);
+
             entity.Property(dd => dd.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(dd => !dd.IsDeleted);
@@ -505,20 +466,12 @@ public class PostgreSqlDbContext : DbContext
         {
             entity.HasKey(a => a.Id);
             entity.Property(a => a.Name).IsRequired().HasMaxLength(500);
-            
+
             // Value object conversions
-            entity.Property(a => a.SerialNo)
-                .HasMaxLength(100)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? SerialNumber.Create(v) : null);
-            
-            entity.Property(a => a.AssetTag)
-                .HasMaxLength(50)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? AssetTag.Create(v) : null);
-            
+            entity.Property(a => a.SerialNo).HasMaxLength(100);
+
+            entity.Property(a => a.AssetTag).HasMaxLength(50);
+
             entity.Property(a => a.Barcode).HasMaxLength(100);
             entity.Property(a => a.QRCode).HasMaxLength(500);
             entity.Property(a => a.RFIDTag).HasMaxLength(100);
@@ -526,20 +479,20 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(a => a.InvoiceNo).HasMaxLength(50);
             entity.Property(a => a.LocationCode).HasMaxLength(50);
             entity.Property(a => a.Notes).HasMaxLength(2000);
-            
-            // IT/Software Specific - Value object conversions
-            entity.Property(a => a.IPAddress)
-                .HasMaxLength(45)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? IPAddress.Create(v) : null);
-            
-            entity.Property(a => a.MACAddress)
-                .HasMaxLength(17)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? MACAddress.Create(v) : null);
-            
+
+            // IT/Software Specific - Value objects as owned entities
+            entity.OwnsOne(a => a.IPAddress, ip =>
+            {
+                ip.Property(i => i.Value).HasColumnName("ip_address").HasMaxLength(45);
+                ip.Property(i => i.Type).HasColumnName("ip_address_type").HasMaxLength(10);
+            });
+
+            entity.OwnsOne(a => a.MACAddress, mac =>
+            {
+                mac.Property(m => m.Value).HasColumnName("mac_address").HasMaxLength(17);
+                mac.Property(m => m.Format).HasColumnName("mac_address_format").HasMaxLength(20);
+            });
+
             entity.Property(a => a.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(a => !a.IsDeleted);
@@ -694,14 +647,7 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(ac => ac.Aliases).HasColumnType("text");
             entity.Property(ac => ac.InternalNotes).HasColumnType("text");
             entity.Property(ac => ac.IconName).HasMaxLength(100);
-            
-            // Value object conversion
-            entity.Property(ac => ac.IconUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
+            entity.Property(ac => ac.IconUrl).HasMaxLength(500);
             entity.Property(ac => ac.Color).HasMaxLength(20);
             entity.Property(ac => ac.IsDeleted).HasDefaultValue(false);
 
@@ -755,14 +701,7 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(at => at.InternalNotes).HasColumnType("text");
             entity.Property(at => at.ProcurementNotes).HasColumnType("text");
             entity.Property(at => at.IconName).HasMaxLength(100);
-            
-            // Value object conversion
-            entity.Property(at => at.IconUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
+            entity.Property(at => at.IconUrl).HasMaxLength(500);
             entity.Property(at => at.Color).HasMaxLength(20);
             entity.Property(at => at.IsDeleted).HasDefaultValue(false);
 
@@ -842,15 +781,10 @@ public class PostgreSqlDbContext : DbContext
         modelBuilder.Entity<Country>(entity =>
         {
             entity.HasKey(c => c.Id);
-            
+
             // Value object conversion
-            entity.Property(c => c.Code)
-                .IsRequired()
-                .HasMaxLength(2)
-                .HasConversion(
-                    v => v.Value,
-                    v => CountryCode.Create(v));
-            
+            entity.Property(c => c.Code).IsRequired().HasMaxLength(2);
+
             entity.Property(c => c.Name).IsRequired().HasMaxLength(100);
             entity.Property(c => c.Iso3Code).HasMaxLength(3);
             entity.Property(c => c.NumericCode).HasMaxLength(3);
@@ -917,44 +851,20 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(m => m.IndustryType).HasMaxLength(100);
             entity.Property(m => m.Certifications).HasColumnType("text");
             entity.Property(m => m.WarrantyPolicy).HasColumnType("text");
-            
+
             // Value object conversions for URLs
-            entity.Property(m => m.LogoUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            entity.Property(m => m.Website)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            entity.Property(m => m.SupportWebsite)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            entity.Property(m => m.LinkedInUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            entity.Property(m => m.FacebookUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            entity.Property(m => m.SLADocumentUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
+            entity.Property(m => m.LogoUrl).HasMaxLength(500);
+
+            entity.Property(m => m.Website).HasMaxLength(500);
+
+            entity.Property(m => m.SupportWebsite).HasMaxLength(500);
+
+            entity.Property(m => m.LinkedInUrl).HasMaxLength(500);
+
+            entity.Property(m => m.FacebookUrl).HasMaxLength(500);
+
+            entity.Property(m => m.SLADocumentUrl).HasMaxLength(500);
+
             entity.Property(m => m.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(m => !m.IsDeleted);
@@ -995,56 +905,24 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(m => m.WarrantyType).HasMaxLength(100);
             entity.Property(m => m.MSRPCurrency).HasMaxLength(3);
             entity.Property(m => m.CostCurrency).HasMaxLength(3);
-            
+
             // Value object conversions for URLs
-            entity.Property(m => m.SupportDocumentUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            entity.Property(m => m.UserManualUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            entity.Property(m => m.QuickStartGuideUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            entity.Property(m => m.ImageUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            entity.Property(m => m.ThumbnailUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            entity.Property(m => m.ProductPageUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            entity.Property(m => m.DatasheetUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            entity.Property(m => m.VideoUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
+            entity.Property(m => m.SupportDocumentUrl).HasMaxLength(500);
+
+            entity.Property(m => m.UserManualUrl).HasMaxLength(500);
+
+            entity.Property(m => m.QuickStartGuideUrl).HasMaxLength(500);
+
+            entity.Property(m => m.ImageUrl).HasMaxLength(500);
+
+            entity.Property(m => m.ThumbnailUrl).HasMaxLength(500);
+
+            entity.Property(m => m.ProductPageUrl).HasMaxLength(500);
+
+            entity.Property(m => m.DatasheetUrl).HasMaxLength(500);
+
+            entity.Property(m => m.VideoUrl).HasMaxLength(500);
+
             entity.Property(m => m.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(m => !m.IsDeleted);
@@ -1084,179 +962,104 @@ public class PostgreSqlDbContext : DbContext
             entity.Property(s => s.PaymentTerms).HasMaxLength(200);
             entity.Property(s => s.ContractStartDate).HasColumnType("date");
             entity.Property(s => s.ContractEndDate).HasColumnType("date");
-            
-            // Value object conversions
+
+            // Primitive properties (no longer Value Objects)
             entity.Property(s => s.PostalCode)
-                .HasMaxLength(20)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? PostalCode.Create(v) : null);
-            
+                .HasMaxLength(20);
+
             entity.Property(s => s.Website)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
+                .HasMaxLength(500);
+
             entity.Property(s => s.Email)
-                .HasMaxLength(255)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Email.Create(v) : null);
-            
+                .HasMaxLength(255);
+
             entity.Property(s => s.Phone)
-                .HasMaxLength(20)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? PhoneNumber.Create(v, null) : null);
-            
+                .HasMaxLength(20);
+
             entity.Property(s => s.Fax)
-                .HasMaxLength(20)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? PhoneNumber.Create(v, null) : null);
-            
+                .HasMaxLength(20);
+
             entity.Property(s => s.MobilePhone)
-                .HasMaxLength(20)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? PhoneNumber.Create(v, null) : null);
-            
+                .HasMaxLength(20);
+
             entity.Property(s => s.ContactPersonEmail)
-                .HasMaxLength(255)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Email.Create(v) : null);
-            
+                .HasMaxLength(255);
+
             entity.Property(s => s.ContactPersonPhone)
-                .HasMaxLength(20)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? PhoneNumber.Create(v, null) : null);
-            
+                .HasMaxLength(20);
+
             entity.Property(s => s.AccountManagerEmail)
-                .HasMaxLength(255)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Email.Create(v) : null);
-            
+                .HasMaxLength(255);
+
             entity.Property(s => s.AccountManagerPhone)
-                .HasMaxLength(20)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? PhoneNumber.Create(v, null) : null);
-            
+                .HasMaxLength(20);
+
             // Money value objects - stored as complex owned entities
             entity.OwnsOne(s => s.AnnualRevenue, money =>
             {
                 money.Property(m => m.Amount).HasColumnName("annual_revenue_amount");
                 money.Property(m => m.Currency).HasColumnName("annual_revenue_currency").HasMaxLength(3);
             });
-            
+
             entity.OwnsOne(s => s.CreditLimit, money =>
             {
                 money.Property(m => m.Amount).HasColumnName("credit_limit_amount");
                 money.Property(m => m.Currency).HasColumnName("credit_limit_currency").HasMaxLength(3);
             });
-            
-            entity.Property(s => s.DiscountRate)
-                .HasConversion(
-                    v => v != null ? v.Value : (decimal?)null,
-                    v => v != null ? Percentage.Create(v.Value) : null);
-            
+
+            entity.Property(s => s.DiscountRate);
+
             entity.Property(s => s.ContractDocumentUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
+                .HasMaxLength(500);
+
             entity.OwnsOne(s => s.MinimumOrderValue, money =>
             {
                 money.Property(m => m.Amount).HasColumnName("minimum_order_value_amount");
                 money.Property(m => m.Currency).HasColumnName("minimum_order_value_currency").HasMaxLength(3);
             });
-            
+
             entity.Property(s => s.SupportEmail)
-                .HasMaxLength(255)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Email.Create(v) : null);
-            
+                .HasMaxLength(255);
+
             entity.Property(s => s.SupportPhone)
-                .HasMaxLength(20)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? PhoneNumber.Create(v, null) : null);
-            
+                .HasMaxLength(20);
+
             entity.Property(s => s.SLADocumentUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
+                .HasMaxLength(500);
+
             entity.OwnsOne(s => s.InsuranceCoverage, money =>
             {
                 money.Property(m => m.Amount).HasColumnName("insurance_coverage_amount");
                 money.Property(m => m.Currency).HasColumnName("insurance_coverage_currency").HasMaxLength(3);
             });
-            
+
             entity.OwnsOne(s => s.TotalSpent, money =>
             {
                 money.Property(m => m.Amount).HasColumnName("total_spent_amount");
                 money.Property(m => m.Currency).HasColumnName("total_spent_currency").HasMaxLength(3);
             });
-            
+
             entity.OwnsOne(s => s.AverageOrderValue, money =>
             {
                 money.Property(m => m.Amount).HasColumnName("average_order_value_amount");
                 money.Property(m => m.Currency).HasColumnName("average_order_value_currency").HasMaxLength(3);
             });
-            
+
             entity.Property(s => s.W9FormUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
+                .HasMaxLength(500);
+
             entity.Property(s => s.CertificateOfInsuranceUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
+                .HasMaxLength(500);
+
             entity.Property(s => s.BusinessLicenseUrl)
-                .HasMaxLength(500)
-                .HasConversion(
-                    v => v != null ? v.Value : null,
-                    v => v != null ? Url.Create(v) : null);
-            
-            // Rating conversions
-            entity.Property(s => s.QualityRating)
-                .HasConversion(
-                    v => v != null ? (int?)v.Value : null,
-                    v => v != null ? Rating.Create(v.Value) : null);
-            
-            entity.Property(s => s.DeliveryRating)
-                .HasConversion(
-                    v => v != null ? (int?)v.Value : null,
-                    v => v != null ? Rating.Create(v.Value) : null);
-            
-            entity.Property(s => s.ServiceRating)
-                .HasConversion(
-                    v => v != null ? (int?)v.Value : null,
-                    v => v != null ? Rating.Create(v.Value) : null);
-            
-            entity.Property(s => s.PriceRating)
-                .HasConversion(
-                    v => v != null ? (int?)v.Value : null,
-                    v => v != null ? Rating.Create(v.Value) : null);
-            
+                .HasMaxLength(500);
             entity.Property(s => s.IsDeleted).HasDefaultValue(false);
 
             entity.HasQueryFilter(s => !s.IsDeleted);
 
             // Indexes
-            entity.HasIndex(s => s.SupplierCode).IsUnique().HasFilter("is_deleted = false AND supplier_code IS NOT NULL")
+            entity.HasIndex(s => s.SupplierCode).IsUnique()
+                .HasFilter("is_deleted = false AND supplier_code IS NOT NULL")
                 .HasDatabaseName("ix_suppliers_supplier_code");
             entity.HasIndex(s => s.Name).HasDatabaseName("ix_suppliers_name");
             entity.HasIndex(s => s.CountryId).HasDatabaseName("ix_suppliers_country_id");
@@ -1381,40 +1184,42 @@ public class PostgreSqlDbContext : DbContext
             // Skip owned types (like Password, Money, Address)
             if (entityType.IsOwned())
                 continue;
-            
+
             // Skip value objects (they don't have audit fields)
             if (entityType.ClrType.Namespace?.Contains("ValueObjects") == true)
                 continue;
-                
+
             // Only process if entity has audit fields
             var properties = entityType.GetProperties().ToList();
             if (!properties.Any(p => IsAuditField(p.Name)))
                 continue;
-                
-            var entityBuilder = modelBuilder.Entity(entityType.ClrType);
-            
+
+            EntityTypeBuilder entityBuilder = modelBuilder.Entity(entityType.ClrType);
+
             // Set column order: id first, business fields next, audit fields last
-            int orderCounter = 0;
-            
+            var orderCounter = 0;
+
             // 1. Id column first
-            var idProperty = properties.FirstOrDefault(p => p.Name == "Id");
+            IMutableProperty? idProperty = properties.FirstOrDefault(p => p.Name == "Id");
             if (idProperty != null)
                 entityBuilder.Property(idProperty.Name).HasColumnOrder(orderCounter++);
-            
+
             // 2. Business fields (non-audit fields)
-            foreach (var property in properties.Where(p => p.Name != "Id" && !IsAuditField(p.Name)))
-            {
+            foreach (IMutableProperty property in properties.Where(p => p.Name != "Id" && !IsAuditField(p.Name)))
                 entityBuilder.Property(property.Name).HasColumnOrder(orderCounter++);
-            }
-            
+
             // 3. Audit fields last
-            foreach (var property in properties.Where(p => IsAuditField(p.Name)))
-            {
+            foreach (IMutableProperty property in properties.Where(p => IsAuditField(p.Name)))
                 entityBuilder.Property(property.Name).HasColumnOrder(orderCounter++);
-            }
         }
 
-        static bool IsAuditField(string propertyName) =>
-            propertyName is "CreatedAt" or "CreatedById" or "UpdatedAt" or "UpdatedById" or "IsDeleted" or "DeletedAt" or "DeletedById";
+        // Apply centralized snake_case naming convention (tables, columns, constraints, indexes)
+        ModelBuilderExtensions.ApplySnakeCaseNamingConvention(modelBuilder);
+
+        static bool IsAuditField(string propertyName)
+        {
+            return propertyName is "CreatedAt" or "CreatedById" or "UpdatedAt" or "UpdatedById" or "IsDeleted"
+                or "DeletedAt" or "DeletedById";
+        }
     }
 }

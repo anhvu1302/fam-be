@@ -11,6 +11,12 @@ public sealed class PostalCode : ValueObject
 {
     public string Value { get; private set; }
 
+    // Constructor for EF Core
+    private PostalCode()
+    {
+        Value = string.Empty;
+    }
+
     private PostalCode(string value)
     {
         Value = value;

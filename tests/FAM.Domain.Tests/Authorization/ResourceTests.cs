@@ -21,7 +21,7 @@ public class ResourceTests
 
         // Assert
         resource.Should().NotBeNull();
-        string typeValue = resource.Type;
+        var typeValue = resource.Type;
         typeValue.Should().Be("asset");
         resource.NodeId.Should().Be(node.Id);
         resource.Node.Should().Be(node);

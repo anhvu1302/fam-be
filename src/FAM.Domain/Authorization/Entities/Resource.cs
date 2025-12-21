@@ -17,7 +17,7 @@ public class Resource : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public bool IsDeleted { get; set; } = false;
     public DateTime? DeletedAt { get; set; }
 
-    public ResourceType Type { get; private set; } = null!;
+    public string Type { get; private set; } = null!;
     public long NodeId { get; private set; }
     public OrgNode Node { get; private set; } = null!;
     public string Name { get; private set; } = string.Empty;
@@ -31,9 +31,12 @@ public class Resource : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainException("Resource name cannot be empty");
 
+        // Validate type
+        var resourceTypeVo = ResourceType.Create(type);
+
         return new Resource
         {
-            Type = ResourceType.Create(type),
+            Type = resourceTypeVo.Value,
             NodeId = node.Id,
             Node = node,
             Name = name.Trim()

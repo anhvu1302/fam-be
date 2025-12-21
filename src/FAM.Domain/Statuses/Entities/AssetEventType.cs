@@ -1,4 +1,3 @@
-using FAM.Domain.Assets;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Users;
@@ -31,7 +30,7 @@ public class AssetEventType : BaseEntity, IHasCreationTime, IHasCreator, IHasMod
     public User? CreatedBy { get; set; }
     public User? UpdatedBy { get; set; }
     public User? DeletedBy { get; set; }
-    
+
     private AssetEventType()
     {
     }

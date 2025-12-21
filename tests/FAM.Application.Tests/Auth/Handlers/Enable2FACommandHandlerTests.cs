@@ -31,11 +31,8 @@ public class Enable2FACommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
@@ -55,7 +52,7 @@ public class Enable2FACommandHandlerTests
         result.Secret.Should().NotBeNullOrEmpty();
         result.QrCodeUri.Should().NotBeNullOrEmpty();
         result.QrCodeUri.Should().Contain("otpauth://totp/FAM:");
-        result.QrCodeUri.Should().Contain(Uri.EscapeDataString(user.Email.Value)); // Email is URL encoded
+        result.QrCodeUri.Should().Contain(Uri.EscapeDataString(user.Email)); // Email is URL encoded
         result.ManualEntryKey.Should().NotBeNullOrEmpty();
         result.ManualEntryKey.Should().Contain(" "); // Should be formatted with spaces
     }
@@ -66,11 +63,8 @@ public class Enable2FACommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var wrongPassword = "WrongPassword123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
@@ -113,11 +107,8 @@ public class Enable2FACommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))

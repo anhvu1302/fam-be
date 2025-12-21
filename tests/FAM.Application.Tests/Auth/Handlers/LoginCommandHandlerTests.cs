@@ -69,7 +69,7 @@ public class LoginCommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         // User.Create with plain password will hash it internally
-        var user = User.Create("testuser", "test@example.com", plainPassword);
+        var user = User.CreateWithPlainPassword("testuser", "test@example.com", plainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
         user.VerifyEmail(); // Ensure email is verified
 
@@ -277,7 +277,7 @@ public class LoginCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create("testuser", "test@example.com", plainPassword);
+        var user = User.CreateWithPlainPassword("testuser", "test@example.com", plainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
         user.VerifyEmail(); // Ensure email is verified
         user.EnableTwoFactor("secret", "{\"codes\":[\"code1\",\"code2\"]}");
@@ -334,7 +334,7 @@ public class LoginCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create("testuser", "test@example.com", plainPassword);
+        var user = User.CreateWithPlainPassword("testuser", "test@example.com", plainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
         user.VerifyEmail(); // Ensure email is verified
 

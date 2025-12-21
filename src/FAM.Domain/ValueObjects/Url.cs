@@ -9,6 +9,12 @@ public sealed class Url : ValueObject
 {
     public string Value { get; private set; }
 
+    // Constructor for EF Core
+    private Url()
+    {
+        Value = string.Empty;
+    }
+
     private Url(string value)
     {
         Value = value;

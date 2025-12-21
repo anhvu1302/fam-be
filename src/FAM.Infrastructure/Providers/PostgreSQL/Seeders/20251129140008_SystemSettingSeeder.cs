@@ -116,15 +116,15 @@ public class SystemSettingSeeder : BaseDataSeeder
         string? options = null)
     {
         return SystemSetting.Create(
-            key: key,
-            displayName: displayName,
-            value: value,
-            defaultValue: defaultValue ?? value,
-            dataType: (SettingDataType)dataType,
-            group: group,
-            description: description,
-            sortOrder: sortOrder,
-            isRequired: isRequired,
-            isSensitive: isSensitive);
+            key,
+            displayName,
+            value,
+            defaultValue ?? value,
+            (SettingDataType)dataType,
+            group,
+            description,
+            sortOrder,
+            isRequired,
+            isSensitive);
     }
 }

@@ -1,4 +1,3 @@
-using FAM.Domain.Assets;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Users;

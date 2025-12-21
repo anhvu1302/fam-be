@@ -4,6 +4,7 @@ using FAM.Domain.Abstractions;
 using FAM.Domain.Users.Entities;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -45,7 +46,7 @@ public class UserDeviceRepository : IUserDeviceRepository
     {
         entity.UpdatedAt = DateTime.UtcNow;
 
-        var trackedEntry = _context.ChangeTracker.Entries<UserDevice>()
+        EntityEntry<UserDevice>? trackedEntry = _context.ChangeTracker.Entries<UserDevice>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -120,10 +121,7 @@ public class UserDeviceRepository : IUserDeviceRepository
 
         List<UserDevice> entities = await query.ToListAsync(cancellationToken);
 
-        foreach (UserDevice entity in entities)
-        {
-            entity.Deactivate();
-        }
+        foreach (UserDevice entity in entities) entity.Deactivate();
 
         _context.UserDevices.UpdateRange(entities);
     }

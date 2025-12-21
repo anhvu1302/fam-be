@@ -24,7 +24,7 @@ public abstract class BasePagedRepository<TEntity>
             expression = unaryExpression.Operand;
 
         // Handle member access
-        if (expression is MemberExpression memberExpression) 
+        if (expression is MemberExpression memberExpression)
             return memberExpression.Member.Name;
 
         throw new InvalidOperationException($"Cannot extract property name from expression: {expression}");
@@ -49,13 +49,11 @@ public abstract class BasePagedRepository<TEntity>
         var expressions = new List<Expression<Func<TEntity, object>>>();
 
         foreach (var includeName in includeNames)
-        {
             if (allowedIncludes.TryGetValue(includeName, out Expression<Func<TEntity, object>>? expression))
                 expressions.Add(expression);
             else
                 throw new InvalidOperationException(
                     $"Include '{includeName}' is not allowed. Allowed includes: {string.Join(", ", allowedIncludes.Keys)}");
-        }
 
         return expressions.ToArray();
     }

@@ -32,11 +32,8 @@ public class Disable2FACommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         // Enable 2FA first
         var secretKey = KeyGeneration.GenerateRandomKey(32);
@@ -72,11 +69,8 @@ public class Disable2FACommandHandlerTests
         // Arrange
         var plainPassword = "SecurePass123!";
         var wrongPassword = "WrongPassword123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
@@ -129,11 +123,8 @@ public class Disable2FACommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
         // User has no 2FA enabled
 
         _mockUserRepository

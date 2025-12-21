@@ -37,10 +37,10 @@ public class OrganizationSeeder : BaseDataSeeder
 
         // Create root company
         var companyDetails = CompanyDetails.Create(
-            taxCode: "0123456789",
-            domain: "fam-corp.com",
-            address: "123 Business District, Ho Chi Minh City, Vietnam",
-            establishedOn: new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+            "0123456789",
+            "fam-corp.com",
+            "123 Business District, Ho Chi Minh City, Vietnam",
+            new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
         var company = OrgNode.CreateCompany("FAM Corporation", companyDetails);
 
@@ -65,14 +65,14 @@ public class OrganizationSeeder : BaseDataSeeder
         LogInfo($"Created {totalNodes} organization nodes (1 company, {departments.Count} departments)");
     }
 
-    private OrgNode CreateDepartment(string name, long parentId, string? costCenter = null, int? headcount = null, decimal? budgetYear = null)
+    private OrgNode CreateDepartment(string name, long parentId, string? costCenter = null, int? headcount = null,
+        decimal? budgetYear = null)
     {
-        var parent = _dbContext.OrgNodes.Find(parentId);
+        OrgNode? parent = _dbContext.OrgNodes.Find(parentId);
         if (parent == null)
             throw new InvalidOperationException($"Parent node with ID {parentId} not found");
 
         var details = DepartmentDetails.Create(costCenter, headcount, budgetYear);
         return OrgNode.CreateDepartment(name, details, parent);
     }
-
 }

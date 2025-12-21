@@ -39,8 +39,8 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public long? ManufacturerId { get; private set; }
 
     // Identification
-    public SerialNumber? SerialNo { get; private set; }
-    public AssetTag? AssetTag { get; private set; }
+    public string? SerialNo { get; private set; }
+    public string? AssetTag { get; private set; }
     public string? Barcode { get; private set; }
     public string? QRCode { get; private set; }
     public string? RFIDTag { get; private set; }
@@ -206,11 +206,12 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
             Name = name.Trim(),
             CompanyId = companyId,
             AssetTypeId = assetTypeId,
-            AssetTag = assetTag != null ? AssetTag.Create(assetTag) : null,
             LifecycleCode = "draft",
             CreatedAt = DateTime.UtcNow,
             CreatedById = createdById
         };
+
+        asset.AssetTag = asset.ValidateAssetTag(assetTag);
 
         asset.RaiseDomainEvent(new AssetCreated
         {
@@ -401,7 +402,7 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
                 throw new DomainException("RFID tag cannot exceed 50 characters");
         }
 
-        SerialNo = serialNo != null ? SerialNumber.Create(serialNo) : null;
+        SerialNo = ValidateSerialNumber(serialNo);
         Barcode = barcode;
         QRCode = qrCode;
         RFIDTag = rfidTag;
@@ -997,6 +998,25 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         DeletedAt = null;
         DeletedById = null;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Private helper methods
+    private string? ValidateAssetTag(string? assetTag)
+    {
+        if (string.IsNullOrWhiteSpace(assetTag))
+            return null;
+
+        var assetTagVo = ValueObjects.AssetTag.Create(assetTag);
+        return assetTagVo.Value;
+    }
+
+    private string? ValidateSerialNumber(string? serialNumber)
+    {
+        if (string.IsNullOrWhiteSpace(serialNumber))
+            return null;
+
+        var serialNumberVo = SerialNumber.Create(serialNumber);
+        return serialNumberVo.Value;
     }
 }
 

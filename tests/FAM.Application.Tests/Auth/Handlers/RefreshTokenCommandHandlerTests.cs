@@ -45,11 +45,8 @@ public class RefreshTokenCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         UserDevice device = user.GetOrCreateDevice(
             "device-123",
@@ -82,7 +79,7 @@ public class RefreshTokenCommandHandlerTests
             .ReturnsAsync(mockSigningKey);
 
         _mockJwtService
-            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username.Value, user.Email.Value,
+            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username, user.Email,
                 It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(newAccessToken);
 
@@ -144,11 +141,8 @@ public class RefreshTokenCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         UserDevice device = user.GetOrCreateDevice(
             "device-123",
@@ -186,11 +180,8 @@ public class RefreshTokenCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         UserDevice device = user.GetOrCreateDevice(
             "device-123",
@@ -229,11 +220,8 @@ public class RefreshTokenCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
         user.Deactivate(); // Deactivate the user
 
         UserDevice device = user.GetOrCreateDevice(
@@ -276,11 +264,8 @@ public class RefreshTokenCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         // Lock the user by recording failed attempts
         for (var i = 0; i < 5; i++) user.RecordFailedLogin();
@@ -325,11 +310,8 @@ public class RefreshTokenCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         UserDevice device = user.GetOrCreateDevice(
             "device-123",

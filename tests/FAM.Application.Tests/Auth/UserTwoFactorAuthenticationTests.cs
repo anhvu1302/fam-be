@@ -198,12 +198,12 @@ public class UserTwoFactorAuthenticationTests
 
     private static User CreateTestUser()
     {
-        return User.Create(
+        return User.CreateWithPlainPassword(
             "testuser",
             "test@example.com",
             "Password123!",
-            firstName: "Test",
-            lastName: "User"
+            "Test",
+            "User"
         );
     }
 }

@@ -4,6 +4,7 @@ using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Entities;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -50,7 +51,7 @@ public class SystemSettingRepository : ISystemSettingRepository
 
     public void Update(SystemSetting entity)
     {
-        var trackedEntry = _context.ChangeTracker.Entries<SystemSetting>()
+        EntityEntry<SystemSetting>? trackedEntry = _context.ChangeTracker.Entries<SystemSetting>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -66,7 +67,7 @@ public class SystemSettingRepository : ISystemSettingRepository
 
     public void Delete(SystemSetting entity)
     {
-        var trackedEntity = _context.SystemSettings.Local.FirstOrDefault(s => s.Id == entity.Id);
+        SystemSetting? trackedEntity = _context.SystemSettings.Local.FirstOrDefault(s => s.Id == entity.Id);
         if (trackedEntity != null)
         {
             trackedEntity.IsDeleted = true;

@@ -4,6 +4,7 @@ using FAM.Domain.Abstractions;
 using FAM.Domain.Organizations;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -42,7 +43,7 @@ public class OrgNodeRepository : IOrgNodeRepository
 
     public void Update(OrgNode entity)
     {
-        var trackedEntry = _context.ChangeTracker.Entries<OrgNode>()
+        EntityEntry<OrgNode>? trackedEntry = _context.ChangeTracker.Entries<OrgNode>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)

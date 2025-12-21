@@ -9,6 +9,12 @@ public sealed class CostCenter : ValueObject
 {
     public string Value { get; private set; }
 
+    // Constructor for EF Core
+    private CostCenter()
+    {
+        Value = string.Empty;
+    }
+
     private CostCenter(string value)
     {
         Value = value;

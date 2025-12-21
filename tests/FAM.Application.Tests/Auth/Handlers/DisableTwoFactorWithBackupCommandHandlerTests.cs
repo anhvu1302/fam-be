@@ -41,11 +41,8 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
         var backupCode = "12345-67890";
         var hashedBackupCode = BCrypt.Net.BCrypt.HashPassword(backupCode);
 
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
@@ -84,11 +81,8 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
         var wrongBackupCode = "99999-88888";
         var hashedBackupCode = BCrypt.Net.BCrypt.HashPassword(correctBackupCode);
 
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
@@ -123,11 +117,8 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
         var backupCode = "12345-67890";
         var hashedBackupCode = BCrypt.Net.BCrypt.HashPassword(backupCode);
 
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
@@ -180,11 +171,8 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
         // User has no 2FA enabled
 
         _mockUserRepository
@@ -218,11 +206,8 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
         var hashedCode2 = BCrypt.Net.BCrypt.HashPassword(backupCode2);
         var hashedCode3 = BCrypt.Net.BCrypt.HashPassword(backupCode3);
 
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
@@ -257,11 +242,8 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);

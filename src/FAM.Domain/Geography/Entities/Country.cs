@@ -1,9 +1,6 @@
-using FAM.Domain.Assets;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Locations;
-using FAM.Domain.Manufacturers;
-using FAM.Domain.Suppliers;
 using FAM.Domain.Users;
 using FAM.Domain.ValueObjects;
 
@@ -16,7 +13,7 @@ public class Country : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
     IHasDeleter
 {
     // ISO Codes
-    public CountryCode Code { get; private set; } = null!; // ISO 3166-1 alpha-2 (VN, US, JP)
+    public string Code { get; private set; } = null!; // ISO 3166-1 alpha-2 (VN, US, JP)
     public string? Iso3Code { get; private set; } // ISO 3166-1 alpha-3 (VNM, USA, JPN)
     public string? NumericCode { get; private set; } // ISO 3166-1 numeric (704, 840, 392)
 
@@ -82,6 +79,7 @@ public class Country : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
     /// Locations within this country (part of Country aggregate)
     /// </summary>
     public ICollection<Location> Locations { get; set; } = new List<Location>();
+
     private Country()
     {
     }
@@ -92,9 +90,12 @@ public class Country : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
         string? iso3Code = null,
         string? numericCode = null)
     {
+        // Validate country code
+        var countryCodeVo = CountryCode.Create(code);
+
         return new Country
         {
-            Code = CountryCode.Create(code),
+            Code = countryCodeVo.Value,
             Name = name,
             Iso3Code = iso3Code?.ToUpperInvariant(),
             NumericCode = numericCode
@@ -180,7 +181,7 @@ public class Country : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
         decimal? area)
     {
         Flag = flag;
-        CoatOfArms = coatOfArms;
+        CoatOfArms = ValidateUrl(coatOfArms);
         Population = population;
         Area = area;
     }
@@ -210,5 +211,15 @@ public class Country : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
         DeletedAt = null;
         DeletedById = null;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Private helper methods
+    private string? ValidateUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return null;
+
+        var urlVo = Url.Create(url);
+        return urlVo.Value;
     }
 }

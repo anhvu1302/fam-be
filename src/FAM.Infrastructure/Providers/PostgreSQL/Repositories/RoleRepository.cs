@@ -5,6 +5,7 @@ using FAM.Domain.Authorization;
 using FAM.Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -42,7 +43,7 @@ public class RoleRepository : BaseRepository<Role>, IRoleRepository
 
     public void Update(Role entity)
     {
-        var trackedEntry = Context.ChangeTracker.Entries<Role>()
+        EntityEntry<Role>? trackedEntry = Context.ChangeTracker.Entries<Role>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -103,13 +104,11 @@ public class RoleRepository : BaseRepository<Role>, IRoleRepository
 
         // Apply includes if provided
         if (includes != null && includes.Any())
-        {
-            foreach (var include in includes)
+            foreach (Expression<Func<Role, object>> include in includes)
             {
                 var propertyPath = GetPropertyName(include.Body);
                 dataQuery = dataQuery.Include(propertyPath);
             }
-        }
 
         // Apply filter at database level
         if (filter != null)
@@ -125,7 +124,7 @@ public class RoleRepository : BaseRepository<Role>, IRoleRepository
         dataQuery = ApplySort(dataQuery, sort, GetSortExpression, r => r.Rank);
 
         // Apply pagination and execute
-        var roles = await dataQuery
+        List<Role> roles = await dataQuery
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .AsNoTracking()

@@ -11,6 +11,12 @@ public sealed class RoleCode : ValueObject
 {
     public string Value { get; private set; }
 
+    // Constructor for EF Core
+    private RoleCode()
+    {
+        Value = string.Empty;
+    }
+
     private RoleCode(string value)
     {
         Value = value;

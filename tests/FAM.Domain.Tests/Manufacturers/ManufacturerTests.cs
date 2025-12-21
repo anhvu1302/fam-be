@@ -35,7 +35,7 @@ public class ManufacturerTests
         // Assert
         manufacturer.Name.Should().Be(name);
         manufacturer.Website.Should().NotBeNull();
-        manufacturer.Website!.Value.Should().Be(website);
+        manufacturer.Website.Should().Be(website);
     }
 
     [Fact]
@@ -145,7 +145,7 @@ public class ManufacturerTests
         // Assert
         manufacturer.BrandName.Should().Be(brandName);
         manufacturer.LogoUrl.Should().NotBeNull();
-        manufacturer.LogoUrl!.Value.Should().Be(logoUrl);
+        manufacturer.LogoUrl.Should().Be(logoUrl);
         manufacturer.Tagline.Should().Be(tagline);
     }
 
@@ -179,7 +179,7 @@ public class ManufacturerTests
 
         // Assert
         manufacturer.Website.Should().NotBeNull();
-        manufacturer.Website!.Value.Should().Be(website);
+        manufacturer.Website.Should().Be(website);
         manufacturer.Email.Should().Be(email);
         manufacturer.Phone.Should().Be(phone);
         manufacturer.Fax.Should().Be(fax);
@@ -202,7 +202,7 @@ public class ManufacturerTests
         manufacturer.SupportEmail.Should().Be(supportEmail);
         manufacturer.SupportPhone.Should().Be(supportPhone);
         manufacturer.SupportWebsite.Should().NotBeNull();
-        manufacturer.SupportWebsite!.Value.Should().Be(supportWebsite);
+        manufacturer.SupportWebsite.Should().Be(supportWebsite);
         manufacturer.SupportHours.Should().Be(supportHours);
     }
 
@@ -220,10 +220,10 @@ public class ManufacturerTests
 
         // Assert
         manufacturer.LinkedInUrl.Should().NotBeNull();
-        manufacturer.LinkedInUrl!.Value.Should().Be(linkedIn);
+        manufacturer.LinkedInUrl.Should().Be(linkedIn);
         manufacturer.TwitterHandle.Should().Be(twitter);
         manufacturer.FacebookUrl.Should().NotBeNull();
-        manufacturer.FacebookUrl!.Value.Should().Be(facebook);
+        manufacturer.FacebookUrl.Should().Be(facebook);
     }
 
     [Fact]

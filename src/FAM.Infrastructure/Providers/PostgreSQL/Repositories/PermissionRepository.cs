@@ -5,6 +5,7 @@ using FAM.Domain.Authorization;
 using FAM.Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -42,7 +43,7 @@ public class PermissionRepository : BaseRepository<Permission>, IPermissionRepos
 
     public void Update(Permission entity)
     {
-        var trackedEntry = Context.ChangeTracker.Entries<Permission>()
+        EntityEntry<Permission>? trackedEntry = Context.ChangeTracker.Entries<Permission>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -71,8 +72,8 @@ public class PermissionRepository : BaseRepository<Permission>, IPermissionRepos
     {
         // Query using backing fields that EF Core maps
         return await Context.Permissions
-            .Where(p => EF.Property<string>(p, "_resource") == resource && 
-                       EF.Property<string>(p, "_action") == action)
+            .Where(p => EF.Property<string>(p, "_resource") == resource &&
+                        EF.Property<string>(p, "_action") == action)
             .FirstOrDefaultAsync(cancellationToken);
     }
 
@@ -88,9 +89,9 @@ public class PermissionRepository : BaseRepository<Permission>, IPermissionRepos
         CancellationToken cancellationToken = default)
     {
         return await Context.Permissions
-            .AnyAsync(p => EF.Property<string>(p, "_resource") == resource && 
-                          EF.Property<string>(p, "_action") == action, 
-                    cancellationToken);
+            .AnyAsync(p => EF.Property<string>(p, "_resource") == resource &&
+                           EF.Property<string>(p, "_action") == action,
+                cancellationToken);
     }
 
     public async Task<(IEnumerable<Permission> Items, long Total)> GetPagedAsync(
@@ -107,13 +108,11 @@ public class PermissionRepository : BaseRepository<Permission>, IPermissionRepos
 
         // Apply includes if provided
         if (includes != null && includes.Any())
-        {
-            foreach (var include in includes)
+            foreach (Expression<Func<Permission, object>> include in includes)
             {
                 var propertyPath = GetPropertyName(include.Body);
                 dataQuery = dataQuery.Include(propertyPath);
             }
-        }
 
         // Apply filter at database level
         if (filter != null)
@@ -129,7 +128,7 @@ public class PermissionRepository : BaseRepository<Permission>, IPermissionRepos
         dataQuery = ApplySort(dataQuery, sort, GetSortExpression, p => p.Id);
 
         // Apply pagination and execute
-        var permissions = await dataQuery
+        List<Permission> permissions = await dataQuery
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .AsNoTracking()

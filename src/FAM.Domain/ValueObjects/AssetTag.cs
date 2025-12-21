@@ -9,6 +9,12 @@ public sealed class AssetTag : ValueObject
 {
     public string Value { get; private set; }
 
+    // Constructor for EF Core
+    private AssetTag()
+    {
+        Value = string.Empty;
+    }
+
     private AssetTag(string value)
     {
         Value = value;

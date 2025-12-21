@@ -67,9 +67,9 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     // Warranty & Support
     public int? StandardWarrantyMonths { get; private set; }
     public string? WarrantyType { get; private set; } // Onsite, Mail-in, Depot
-    public Url? SupportDocumentUrl { get; private set; }
-    public Url? UserManualUrl { get; private set; }
-    public Url? QuickStartGuideUrl { get; private set; }
+    public string? SupportDocumentUrl { get; private set; }
+    public string? UserManualUrl { get; private set; }
+    public string? QuickStartGuideUrl { get; private set; }
 
     // Pricing & Availability
     public decimal? MSRP { get; private set; } // Manufacturer's Suggested Retail Price
@@ -104,11 +104,11 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public string? CompatibleModels { get; private set; } // JSON array of compatible model IDs
 
     // Media & Resources
-    public Url? ImageUrl { get; private set; }
-    public Url? ThumbnailUrl { get; private set; }
-    public Url? ProductPageUrl { get; private set; }
-    public Url? DatasheetUrl { get; private set; }
-    public Url? VideoUrl { get; private set; }
+    public string? ImageUrl { get; private set; }
+    public string? ThumbnailUrl { get; private set; }
+    public string? ProductPageUrl { get; private set; }
+    public string? DatasheetUrl { get; private set; }
+    public string? VideoUrl { get; private set; }
 
     // Status & Flags
     public bool IsActive { get; private set; } = true;
@@ -279,9 +279,9 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
 
         StandardWarrantyMonths = standardWarrantyMonths;
         WarrantyType = warrantyType;
-        SupportDocumentUrl = supportDocUrl != null ? Url.Create(supportDocUrl) : null;
-        UserManualUrl = manualUrl != null ? Url.Create(manualUrl) : null;
-        QuickStartGuideUrl = quickStartUrl != null ? Url.Create(quickStartUrl) : null;
+        SupportDocumentUrl = ValidateUrl(supportDocUrl);
+        UserManualUrl = ValidateUrl(manualUrl);
+        QuickStartGuideUrl = ValidateUrl(quickStartUrl);
     }
 
     public void UpdatePricing(
@@ -380,11 +380,11 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         string? datasheetUrl,
         string? videoUrl)
     {
-        ImageUrl = imageUrl != null ? Url.Create(imageUrl) : null;
-        ThumbnailUrl = thumbnailUrl != null ? Url.Create(thumbnailUrl) : null;
-        ProductPageUrl = productPageUrl != null ? Url.Create(productPageUrl) : null;
-        DatasheetUrl = datasheetUrl != null ? Url.Create(datasheetUrl) : null;
-        VideoUrl = videoUrl != null ? Url.Create(videoUrl) : null;
+        ImageUrl = ValidateUrl(imageUrl);
+        ThumbnailUrl = ValidateUrl(thumbnailUrl);
+        ProductPageUrl = ValidateUrl(productPageUrl);
+        DatasheetUrl = ValidateUrl(datasheetUrl);
+        VideoUrl = ValidateUrl(videoUrl);
     }
 
     public void UpdateFlags(
@@ -471,5 +471,15 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         DeletedAt = null;
         DeletedById = null;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Private helper methods
+    private string? ValidateUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return null;
+
+        var urlVo = Url.Create(url);
+        return urlVo.Value;
     }
 }

@@ -32,14 +32,14 @@ public class EmailTemplateSeeder : BaseDataSeeder
             return;
         }
 
-        var templates = new[]
+        EmailTemplate[] templates = new[]
         {
             // OTP Email Template
             EmailTemplate.Create(
-                code: "OTP_EMAIL",
-                name: "OTP Verification Code",
-                subject: "Your verification code - {{appName}}",
-                htmlBody: @"<!DOCTYPE html>
+                "OTP_EMAIL",
+                "OTP Verification Code",
+                "Your verification code - {{appName}}",
+                @"<!DOCTYPE html>
 <html>
 <head>
     <meta charset=""UTF-8"">
@@ -81,9 +81,9 @@ public class EmailTemplateSeeder : BaseDataSeeder
     </table>
 </body>
 </html>",
-                category: EmailTemplateCategory.Authentication,
-                description: "Email template for sending OTP verification codes",
-                plainTextBody: @"Hello {{userName}},
+                EmailTemplateCategory.Authentication,
+                "Email template for sending OTP verification codes",
+                @"Hello {{userName}},
 
 You requested a verification code for {{appName}}. Please use the code below:
 
@@ -94,16 +94,16 @@ This code will expire in {{expiryMinutes}} minutes.
 If you didn't request this code, please ignore this email.
 
 © 2025 {{appName}}. All rights reserved.",
-                availablePlaceholders: "[\"userName\",\"otpCode\",\"expiryMinutes\",\"appName\"]",
-                isSystem: true
+                "[\"userName\",\"otpCode\",\"expiryMinutes\",\"appName\"]",
+                true
             ),
 
             // Password Reset Template
             EmailTemplate.Create(
-                code: "PASSWORD_RESET",
-                name: "Password Reset Request",
-                subject: "Reset your password - {{appName}}",
-                htmlBody: @"<!DOCTYPE html>
+                "PASSWORD_RESET",
+                "Password Reset Request",
+                "Reset your password - {{appName}}",
+                @"<!DOCTYPE html>
 <html>
 <head>
     <meta charset=""UTF-8"">
@@ -157,9 +157,9 @@ If you didn't request this code, please ignore this email.
     </table>
 </body>
 </html>",
-                category: EmailTemplateCategory.Authentication,
-                description: "Email template for password reset requests",
-                plainTextBody: @"Hello {{userName}},
+                EmailTemplateCategory.Authentication,
+                "Email template for password reset requests",
+                @"Hello {{userName}},
 
 We received a request to reset your password for your {{appName}} account.
 
@@ -171,16 +171,16 @@ This link will expire in {{expiryMinutes}} minutes.
 If you didn't request a password reset, please ignore this email.
 
 © 2025 {{appName}}. All rights reserved.",
-                availablePlaceholders: "[\"userName\",\"resetLink\",\"expiryMinutes\",\"appName\"]",
-                isSystem: true
+                "[\"userName\",\"resetLink\",\"expiryMinutes\",\"appName\"]",
+                true
             ),
 
             // Password Changed Template
             EmailTemplate.Create(
-                code: "PASSWORD_CHANGED",
-                name: "Password Changed Confirmation",
-                subject: "Your password was changed - {{appName}}",
-                htmlBody: @"<!DOCTYPE html>
+                "PASSWORD_CHANGED",
+                "Password Changed Confirmation",
+                "Your password was changed - {{appName}}",
+                @"<!DOCTYPE html>
 <html>
 <head>
     <meta charset=""UTF-8"">
@@ -224,9 +224,9 @@ If you didn't request a password reset, please ignore this email.
     </table>
 </body>
 </html>",
-                category: EmailTemplateCategory.Authentication,
-                description: "Email template for password change confirmation",
-                plainTextBody: @"Hello {{userName}},
+                EmailTemplateCategory.Authentication,
+                "Email template for password change confirmation",
+                @"Hello {{userName}},
 
 Your password for {{appName}} has been successfully changed.
 
@@ -236,16 +236,16 @@ IP Address: {{ipAddress}}
 If you didn't make this change, please contact our support team immediately.
 
 © 2025 {{appName}}. All rights reserved.",
-                availablePlaceholders: "[\"userName\",\"changeTime\",\"ipAddress\",\"appName\"]",
-                isSystem: true
+                "[\"userName\",\"changeTime\",\"ipAddress\",\"appName\"]",
+                true
             ),
 
             // Welcome Email Template
             EmailTemplate.Create(
-                code: "WELCOME_EMAIL",
-                name: "Welcome New User",
-                subject: "Welcome to {{appName}}!",
-                htmlBody: @"<!DOCTYPE html>
+                "WELCOME_EMAIL",
+                "Welcome New User",
+                "Welcome to {{appName}}!",
+                @"<!DOCTYPE html>
 <html>
 <head>
     <meta charset=""UTF-8"">
@@ -298,9 +298,9 @@ If you didn't make this change, please contact our support team immediately.
     </table>
 </body>
 </html>",
-                category: EmailTemplateCategory.Notification,
-                description: "Email template for welcoming new users",
-                plainTextBody: @"Welcome to {{appName}}!
+                EmailTemplateCategory.Notification,
+                "Email template for welcoming new users",
+                @"Welcome to {{appName}}!
 
 Hello {{userName}},
 
@@ -313,16 +313,16 @@ Login at: {{loginUrl}}
 If you have any questions, feel free to contact our support team.
 
 © 2025 {{appName}}. All rights reserved.",
-                availablePlaceholders: "[\"userName\",\"email\",\"loginUrl\",\"appName\"]",
-                isSystem: true
+                "[\"userName\",\"email\",\"loginUrl\",\"appName\"]",
+                true
             ),
 
             // Account Locked Template
             EmailTemplate.Create(
-                code: "ACCOUNT_LOCKED",
-                name: "Account Locked Notification",
-                subject: "Your account has been locked - {{appName}}",
-                htmlBody: @"<!DOCTYPE html>
+                "ACCOUNT_LOCKED",
+                "Account Locked Notification",
+                "Your account has been locked - {{appName}}",
+                @"<!DOCTYPE html>
 <html>
 <head>
     <meta charset=""UTF-8"">
@@ -372,9 +372,9 @@ If you have any questions, feel free to contact our support team.
     </table>
 </body>
 </html>",
-                category: EmailTemplateCategory.System,
-                description: "Email template for account locked notification",
-                plainTextBody: @"⚠️ ACCOUNT LOCKED
+                EmailTemplateCategory.System,
+                "Email template for account locked notification",
+                @"⚠️ ACCOUNT LOCKED
 
 Hello {{userName}},
 
@@ -388,8 +388,8 @@ To unlock your account, please contact our support team at {{supportEmail}}
 If you believe this is an error, please contact support immediately.
 
 © 2025 {{appName}}. All rights reserved.",
-                availablePlaceholders: "[\"userName\",\"lockTime\",\"reason\",\"supportEmail\",\"appName\"]",
-                isSystem: true
+                "[\"userName\",\"lockTime\",\"reason\",\"supportEmail\",\"appName\"]",
+                true
             )
         };
 

@@ -115,9 +115,9 @@ public class AuthController : BaseApiController
         {
             return UnauthorizedResponse(ex.Message, "INVALID_CREDENTIALS");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return InternalErrorResponse("An error occurred during login", "LOGIN_ERROR");
+            return InternalErrorResponse(ex.Message, "LOGIN_ERROR");
         }
     }
 

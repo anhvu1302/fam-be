@@ -18,8 +18,8 @@ public class CompanyDetails : BaseEntity, IHasCreationTime, IHasCreator, IHasMod
 
     public long NodeId { get; private set; }
     public OrgNode Node { get; private set; } = null!;
-    public TaxCode? TaxCode { get; private set; }
-    public DomainName? Domain { get; private set; }
+    public string? TaxCode { get; private set; }
+    public string? Domain { get; private set; }
     public Address? Address { get; private set; }
     public DateTime? EstablishedOn { get; private set; }
 
@@ -30,13 +30,16 @@ public class CompanyDetails : BaseEntity, IHasCreationTime, IHasCreator, IHasMod
     public static CompanyDetails Create(string? taxCode = null, string? domain = null, string? address = null,
         DateTime? establishedOn = null)
     {
-        return new CompanyDetails
+        var companyDetails = new CompanyDetails
         {
-            TaxCode = taxCode != null ? TaxCode.Create(taxCode) : null,
-            Domain = domain != null ? DomainName.Create(domain) : null,
             Address = address != null ? Address.Create(address, "Unknown", "VN") : null,
             EstablishedOn = establishedOn
         };
+
+        companyDetails.TaxCode = companyDetails.ValidateTaxCode(taxCode);
+        companyDetails.Domain = companyDetails.ValidateDomainName(domain);
+
+        return companyDetails;
     }
 
     internal void SetNode(OrgNode node)
@@ -47,8 +50,8 @@ public class CompanyDetails : BaseEntity, IHasCreationTime, IHasCreator, IHasMod
 
     public void Update(string? taxCode, string? domain, string? address, DateTime? establishedOn)
     {
-        TaxCode = taxCode != null ? TaxCode.Create(taxCode) : null;
-        Domain = domain != null ? DomainName.Create(domain) : null;
+        TaxCode = ValidateTaxCode(taxCode);
+        Domain = ValidateDomainName(domain);
         Address = address != null ? Address.Create(address, "Unknown", "VN") : null;
         EstablishedOn = establishedOn;
     }
@@ -65,5 +68,24 @@ public class CompanyDetails : BaseEntity, IHasCreationTime, IHasCreator, IHasMod
         IsDeleted = false;
         DeletedAt = null;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Private helper methods
+    private string? ValidateTaxCode(string? taxCode)
+    {
+        if (string.IsNullOrWhiteSpace(taxCode))
+            return null;
+
+        var taxCodeVo = ValueObjects.TaxCode.Create(taxCode);
+        return taxCodeVo.Value;
+    }
+
+    private string? ValidateDomainName(string? domain)
+    {
+        if (string.IsNullOrWhiteSpace(domain))
+            return null;
+
+        var domainVo = DomainName.Create(domain);
+        return domainVo.Value;
     }
 }

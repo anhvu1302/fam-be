@@ -1,4 +1,3 @@
-using FAM.Domain.Assets;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Interfaces;
 using FAM.Domain.Models;
@@ -87,7 +86,7 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
 
     // Display & UI
     public string? IconName { get; private set; } // Icon identifier
-    public Url? IconUrl { get; private set; }
+    public string? IconUrl { get; private set; }
     public string? Color { get; private set; } // Hex color for UI
     public int DisplayOrder { get; private set; }
 
@@ -126,7 +125,7 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
     public AssetType? Parent { get; set; }
     public ICollection<AssetType> Children { get; set; } = new List<AssetType>();
     public ICollection<Model> Models { get; set; } = new List<Model>();
-    
+
     private AssetType()
     {
     }
@@ -314,7 +313,7 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
         int displayOrder)
     {
         IconName = iconName;
-        IconUrl = iconUrl != null ? Url.Create(iconUrl) : null;
+        IconUrl = ValidateUrl(iconUrl);
         Color = color;
         DisplayOrder = displayOrder;
     }
@@ -399,5 +398,15 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
         DeletedAt = null;
         DeletedById = null;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Private helper methods
+    private string? ValidateUrl(string? url)
+    {
+        if (string.IsNullOrWhiteSpace(url))
+            return null;
+
+        var urlVo = Url.Create(url);
+        return urlVo.Value;
     }
 }

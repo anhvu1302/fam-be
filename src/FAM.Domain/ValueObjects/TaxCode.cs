@@ -11,6 +11,12 @@ public sealed class TaxCode : ValueObject
 {
     public string Value { get; private set; }
 
+    // Constructor for EF Core
+    private TaxCode()
+    {
+        Value = string.Empty;
+    }
+
     private TaxCode(string value)
     {
         Value = value;

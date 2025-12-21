@@ -74,11 +74,8 @@ public class VerifyTwoFactorCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
         // Manually set Id since User.Create doesn't set it (normally set by EF Core)
         typeof(User).GetProperty("Id")!.SetValue(user, 1L);
 
@@ -111,7 +108,7 @@ public class VerifyTwoFactorCommandHandlerTests
             .ReturnsAsync(mockSigningKey);
 
         _mockJwtService
-            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username.Value, user.Email.Value,
+            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username, user.Email,
                 It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(accessToken);
 
@@ -162,11 +159,8 @@ public class VerifyTwoFactorCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
         SetUserId(user, 2L);
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
@@ -203,7 +197,7 @@ public class VerifyTwoFactorCommandHandlerTests
             .ReturnsAsync(mockSigningKey);
 
         _mockJwtService
-            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username.Value, user.Email.Value,
+            .Setup(x => x.GenerateAccessTokenWithRsa(user.Id, user.Username, user.Email,
                 It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(accessToken);
         _mockJwtService.Setup(x => x.GenerateRefreshToken()).Returns(refreshToken);
@@ -238,11 +232,8 @@ public class VerifyTwoFactorCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
         SetUserId(user, 3L);
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
@@ -301,11 +292,8 @@ public class VerifyTwoFactorCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
         SetUserId(user, 4L);
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
@@ -365,11 +353,8 @@ public class VerifyTwoFactorCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
         SetUserId(user, 5L);
         // User has no 2FA enabled
 

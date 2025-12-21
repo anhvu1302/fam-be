@@ -39,7 +39,7 @@ public sealed class Enable2FACommandHandler : IRequestHandler<Enable2FACommand, 
         // Create QR code URI for authenticator apps
         // Format: otpauth://totp/{Issuer}:{AccountName}?secret={Secret}&issuer={Issuer}
         var issuer = "FAM"; // Fixed Asset Management
-        var accountName = user.Email.Value;
+        var accountName = user.Email;
         var qrCodeUri =
             $"otpauth://totp/{Uri.EscapeDataString(issuer)}:{Uri.EscapeDataString(accountName)}?secret={base32Secret}&issuer={Uri.EscapeDataString(issuer)}";
 

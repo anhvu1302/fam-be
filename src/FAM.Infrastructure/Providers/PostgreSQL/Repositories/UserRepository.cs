@@ -47,7 +47,7 @@ public class UserRepository : BasePagedRepository<User>, IUserRepository
 
     public void Update(User entity)
     {
-        var trackedEntry = Context.ChangeTracker.Entries<User>()
+        EntityEntry<User>? trackedEntry = Context.ChangeTracker.Entries<User>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -94,31 +94,35 @@ public class UserRepository : BasePagedRepository<User>, IUserRepository
     public async Task<bool> IsEmailTakenAsync(string email, long? excludeUserId = null,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<User> query = Context.Users.Where(u => u.Email.Value.ToLower() == email.ToLower() && !u.IsDeleted);
+        var normalizedEmail = email.ToLower();
+        IQueryable<User> query = Context.Users.Where(u => u.Email.ToLower() == normalizedEmail && !u.IsDeleted);
         if (excludeUserId.HasValue) query = query.Where(u => u.Id != excludeUserId.Value);
         return await query.AnyAsync(cancellationToken);
     }
 
     public async Task<User?> FindByUsernameAsync(string username, CancellationToken cancellationToken = default)
     {
+        var normalizedUsername = username.ToLower();
         return await Context.Users
             .Include(u => u.UserDevices)
-            .FirstOrDefaultAsync(u => u.Username.Value.ToLower() == username.ToLower() && !u.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Username.ToLower() == normalizedUsername && !u.IsDeleted, cancellationToken);
     }
 
     public async Task<User?> FindByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
+        var normalizedEmail = email.ToLower();
         return await Context.Users
-            .FirstOrDefaultAsync(u => u.Email.Value.ToLower() == email.ToLower() && !u.IsDeleted, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail && !u.IsDeleted, cancellationToken);
     }
 
     public async Task<User?> FindByIdentityAsync(string identity, CancellationToken cancellationToken = default)
     {
         var normalizedInput = identity.ToLower();
+
         return await Context.Users
             .Include(u => u.UserDevices)
-            .FirstOrDefaultAsync(u =>
-                    (u.Username.Value.ToLower() == normalizedInput || u.Email.Value.ToLower() == normalizedInput) && !u.IsDeleted,
+            .Where(u => !u.IsDeleted)
+            .FirstOrDefaultAsync(u => u.Username.ToLower() == normalizedInput || u.Email.ToLower() == normalizedInput,
                 cancellationToken);
     }
 
@@ -159,14 +163,10 @@ public class UserRepository : BasePagedRepository<User>, IUserRepository
 
         // Apply sorting to data query (default to CreatedAt descending if not specified)
         if (string.IsNullOrWhiteSpace(sort))
-        {
             dataQuery = dataQuery.OrderByDescending(u => u.CreatedAt);
-        }
         else
-        {
             // TODO: Implement dynamic sorting based on sort parameter if needed
             dataQuery = dataQuery.OrderByDescending(u => u.CreatedAt);
-        }
 
         // Apply pagination and execute
         List<User> users = await dataQuery

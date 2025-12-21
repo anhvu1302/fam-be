@@ -10,6 +10,12 @@ public sealed class Username : ValueObject
 {
     public string Value { get; private set; }
 
+    // Parameterless constructor for EF Core
+    private Username()
+    {
+        Value = string.Empty;
+    }
+
     private Username(string value)
     {
         Value = value;

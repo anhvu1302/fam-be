@@ -47,11 +47,8 @@ public class LogoutCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         UserDevice device = user.GetOrCreateDevice(
             "device-123",
@@ -98,11 +95,8 @@ public class LogoutCommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         var deviceId = "device-123";
         UserDevice device = user.GetOrCreateDevice(

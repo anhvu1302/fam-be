@@ -33,11 +33,8 @@ public class Confirm2FACommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         // Generate a real secret and valid TOTP code
         var secretKey = KeyGeneration.GenerateRandomKey(32);
@@ -84,11 +81,8 @@ public class Confirm2FACommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);
@@ -151,8 +145,8 @@ public class Confirm2FACommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user1 = User.Create("user1", "user1@example.com", plainPassword);
-        var user2 = User.Create("user2", "user2@example.com", plainPassword);
+        var user1 = User.CreateWithPlainPassword("user1", "user1@example.com", plainPassword);
+        var user2 = User.CreateWithPlainPassword("user2", "user2@example.com", plainPassword);
 
         var secretKey1 = KeyGeneration.GenerateRandomKey(32);
         var base32Secret1 = Base32Encoding.ToString(secretKey1);
@@ -197,11 +191,8 @@ public class Confirm2FACommandHandlerTests
     {
         // Arrange
         var plainPassword = "SecurePass123!";
-        var user = User.Create(
-            "testuser",
-            "test@example.com",
-            plainPassword
-        );
+        var user = User.CreateWithPlainPassword(
+            "testuser", "test@example.com", plainPassword);
 
         var secretKey = KeyGeneration.GenerateRandomKey(32);
         var base32Secret = Base32Encoding.ToString(secretKey);

@@ -66,11 +66,11 @@ public class
                 // SECURITY: Bind OTP với session token
                 var otpCode =
                     await _otpService.GenerateOtpAsync(userId, request.TwoFactorSessionToken, 10, cancellationToken);
-                await _emailService.SendOtpEmailAsync(user.Email.Value, otpCode, user.Username.Value,
+                await _emailService.SendOtpEmailAsync(user.Email, otpCode, user.Username,
                     cancellationToken);
 
                 response.SelectedMethod = "email_otp";
-                response.AdditionalInfo = $"Code sent to {MaskEmail(user.Email.Value)}";
+                response.AdditionalInfo = $"Code sent to {MaskEmail(user.Email)}";
                 response.ExpiresAt = DateTime.UtcNow.AddMinutes(10);
                 break;
 

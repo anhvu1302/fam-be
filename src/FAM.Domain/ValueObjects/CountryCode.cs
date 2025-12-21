@@ -9,6 +9,12 @@ public sealed class CountryCode : ValueObject
 {
     public string Value { get; private set; }
 
+    // Constructor for EF Core
+    private CountryCode()
+    {
+        Value = string.Empty;
+    }
+
     private CountryCode(string value)
     {
         Value = value;

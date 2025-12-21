@@ -62,7 +62,7 @@ public class RolePermissionSeeder : BaseDataSeeder
         {
             LogInfo("Assigning ALL permissions to Admin role");
             foreach (Permission permission in allPermissions)
-                rolePermissions.Add(RolePermission.Create(roleId: adminRole.Id, permissionId: permission.Id));
+                rolePermissions.Add(RolePermission.Create(adminRole.Id, permission.Id));
         }
 
         // ==================== FA WORKER - Search, create, approve/disapprove assets ====================
@@ -71,15 +71,15 @@ public class RolePermissionSeeder : BaseDataSeeder
             LogInfo("Assigning permissions to FA Worker role");
             var workerPermissions = allPermissions.Where(p =>
             {
-                var resource = p.Resource.Value;
-                var action = p.Action.Value;
+                var resource = p.Resource;
+                var action = p.Action;
                 return
                     // Assets: view, search, create, approve, disapprove
                     (resource == Resources.Assets && (action == Actions.View ||
-                                                        action == Actions.Search ||
-                                                        action == Actions.Create ||
-                                                        action == Actions.Approve ||
-                                                        action == Actions.Disapprove)) ||
+                                                      action == Actions.Search ||
+                                                      action == Actions.Create ||
+                                                      action == Actions.Approve ||
+                                                      action == Actions.Disapprove)) ||
                     // Categories: view
                     (resource == Resources.Categories && action == Actions.View) ||
                     // Locations: view
@@ -95,7 +95,7 @@ public class RolePermissionSeeder : BaseDataSeeder
             }).ToList();
 
             foreach (Permission permission in workerPermissions)
-                rolePermissions.Add(RolePermission.Create(roleId: faWorkerRole.Id, permissionId: permission.Id));
+                rolePermissions.Add(RolePermission.Create(faWorkerRole.Id, permission.Id));
         }
 
         // ==================== FA MANAGER - All FA Worker permissions + management ====================
@@ -104,41 +104,41 @@ public class RolePermissionSeeder : BaseDataSeeder
             LogInfo("Assigning permissions to FA Manager role");
             var managerPermissions = allPermissions.Where(p =>
             {
-                var resource = p.Resource.Value;
-                var action = p.Action.Value;
+                var resource = p.Resource;
+                var action = p.Action;
                 return
                     // Assets: all except delete
                     (resource == Resources.Assets && action != Actions.Delete) ||
                     // Categories: view, create, update
                     (resource == Resources.Categories && (action == Actions.View ||
-                                                            action == Actions.Create ||
-                                                            action == Actions.Update)) ||
+                                                          action == Actions.Create ||
+                                                          action == Actions.Update)) ||
                     // Locations: view, create, update
                     (resource == Resources.Locations && (action == Actions.View ||
-                                                           action == Actions.Create ||
-                                                           action == Actions.Update)) ||
+                                                         action == Actions.Create ||
+                                                         action == Actions.Update)) ||
                     // Organizations: view
                     (resource == Resources.Organizations && action == Actions.View) ||
                     // Departments: view, create, update
                     (resource == Resources.Departments && (action == Actions.View ||
-                                                             action == Actions.Create ||
-                                                             action == Actions.Update)) ||
-                    // Suppliers: view, create, update
-                    (resource == Resources.Suppliers && (action == Actions.View ||
                                                            action == Actions.Create ||
                                                            action == Actions.Update)) ||
+                    // Suppliers: view, create, update
+                    (resource == Resources.Suppliers && (action == Actions.View ||
+                                                         action == Actions.Create ||
+                                                         action == Actions.Update)) ||
                     // Manufacturers: view, create, update
                     (resource == Resources.Manufacturers && (action == Actions.View ||
-                                                               action == Actions.Create ||
-                                                               action == Actions.Update)) ||
+                                                             action == Actions.Create ||
+                                                             action == Actions.Update)) ||
                     // Reports: view, create, export
                     (resource == Resources.Reports && (action == Actions.View ||
-                                                         action == Actions.Create ||
-                                                         action == Actions.Export));
+                                                       action == Actions.Create ||
+                                                       action == Actions.Export));
             }).ToList();
 
             foreach (Permission permission in managerPermissions)
-                rolePermissions.Add(RolePermission.Create(roleId: faManagerRole.Id, permissionId: permission.Id));
+                rolePermissions.Add(RolePermission.Create(faManagerRole.Id, permission.Id));
         }
 
         // ==================== PIC - Only view managed assets ====================
@@ -147,8 +147,8 @@ public class RolePermissionSeeder : BaseDataSeeder
             LogInfo("Assigning permissions to PIC role");
             var picPermissions = allPermissions.Where(p =>
             {
-                var resource = p.Resource.Value;
-                var action = p.Action.Value;
+                var resource = p.Resource;
+                var action = p.Action;
                 return
                     // Assets: only view owned
                     (resource == Resources.Assets && action == Actions.ViewOwned) ||
@@ -159,7 +159,7 @@ public class RolePermissionSeeder : BaseDataSeeder
             }).ToList();
 
             foreach (Permission permission in picPermissions)
-                rolePermissions.Add(RolePermission.Create(roleId: picRole.Id, permissionId: permission.Id));
+                rolePermissions.Add(RolePermission.Create(picRole.Id, permission.Id));
         }
 
         // ==================== FIN STAFF - View reports, export Excel ====================
@@ -168,23 +168,23 @@ public class RolePermissionSeeder : BaseDataSeeder
             LogInfo("Assigning permissions to Finance Staff role");
             var finPermissions = allPermissions.Where(p =>
             {
-                var resource = p.Resource.Value;
-                var action = p.Action.Value;
+                var resource = p.Resource;
+                var action = p.Action;
                 return
                     // Finance: view
                     (resource == Resources.Finance && action == Actions.View) ||
                     // Reports: view all, create, export, export Excel
                     (resource == Resources.Reports && (action == Actions.View ||
-                                                         action == Actions.ViewAll ||
-                                                         action == Actions.Create ||
-                                                         action == Actions.Export ||
-                                                         action == Actions.ExportExcel)) ||
+                                                       action == Actions.ViewAll ||
+                                                       action == Actions.Create ||
+                                                       action == Actions.Export ||
+                                                       action == Actions.ExportExcel)) ||
                     // Assets: view (for reporting)
                     (resource == Resources.Assets && action == Actions.View);
             }).ToList();
 
             foreach (Permission permission in finPermissions)
-                rolePermissions.Add(RolePermission.Create(roleId: finStaffRole.Id, permissionId: permission.Id));
+                rolePermissions.Add(RolePermission.Create(finStaffRole.Id, permission.Id));
         }
 
         // Convert domain entities to EF entities

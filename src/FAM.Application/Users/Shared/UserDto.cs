@@ -110,13 +110,13 @@ public static class UserExtensions
 
         return new UserDto(
             user.Id,
-            user.Username.Value,
-            user.Email.Value,
+            user.Username,
+            user.Email,
             user.FullName,
             user.FirstName,
             user.LastName,
             user.Avatar,
-            user.PhoneNumber?.Value,
+            user.PhoneNumber,
             user.DateOfBirth,
             user.Bio,
             user.TwoFactorEnabled,
@@ -148,8 +148,8 @@ public static class UserExtensions
 
         return new UserDto(
             user.Id,
-            user.Username.Value,
-            user.Email.Value,
+            user.Username,
+            user.Email,
             user.FullName,
             user.FirstName,
             user.LastName,

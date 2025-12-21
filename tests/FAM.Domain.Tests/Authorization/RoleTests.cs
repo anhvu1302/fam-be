@@ -22,7 +22,7 @@ public class RoleTests
 
         // Assert
         role.Should().NotBeNull();
-        string codeValue = role.Code;
+        var codeValue = role.Code;
         codeValue.Should().Be("ADMIN");
         role.Name.Should().Be(name);
         role.Description.Should().Be(description);

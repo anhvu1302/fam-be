@@ -21,7 +21,7 @@ public class RoleFieldMap : BaseFieldMap<Role>
 
     public override FieldMap<Role> Fields { get; } = new FieldMap<Role>()
         .Add("id", r => r.Id)
-        .Add("code", r => r.Code.Value)
+        .Add("code", r => r.Code)
         .Add("name", r => r.Name)
         .Add("description", r => r.Description!)
         .Add("rank", r => r.Rank)

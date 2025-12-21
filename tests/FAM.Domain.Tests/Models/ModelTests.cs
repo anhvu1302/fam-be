@@ -290,15 +290,15 @@ public class ModelTests
 
         // Assert
         model.ImageUrl.Should().NotBeNull();
-        model.ImageUrl!.Value.Should().Be(imageUrl);
+        model.ImageUrl.Should().Be(imageUrl);
         model.ThumbnailUrl.Should().NotBeNull();
-        model.ThumbnailUrl!.Value.Should().Be(thumbnailUrl);
+        model.ThumbnailUrl.Should().Be(thumbnailUrl);
         model.ProductPageUrl.Should().NotBeNull();
-        model.ProductPageUrl!.Value.Should().Be(productPageUrl);
+        model.ProductPageUrl.Should().Be(productPageUrl);
         model.DatasheetUrl.Should().NotBeNull();
-        model.DatasheetUrl!.Value.Should().Be(datasheetUrl);
+        model.DatasheetUrl.Should().Be(datasheetUrl);
         model.VideoUrl.Should().NotBeNull();
-        model.VideoUrl!.Value.Should().Be(videoUrl);
+        model.VideoUrl.Should().Be(videoUrl);
     }
 
     [Fact]

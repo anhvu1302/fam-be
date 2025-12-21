@@ -68,7 +68,7 @@ public static class RoleExtensions
         return new RoleDto
         {
             Id = role.Id,
-            Code = role.Code.Value,
+            Code = role.Code,
             Name = role.Name,
             Description = role.Description,
             Rank = role.Rank,

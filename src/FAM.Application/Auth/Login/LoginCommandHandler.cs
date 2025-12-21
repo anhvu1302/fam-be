@@ -48,15 +48,16 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         User? user = await _unitOfWork.Users.FindByIdentityAsync(request.Identity, cancellationToken);
 
         if (user == null)
-            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS, ErrorMessages.GetMessage(ErrorCodes.AUTH_INVALID_CREDENTIALS));
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS,
+                ErrorMessages.GetMessage(ErrorCodes.AUTH_INVALID_CREDENTIALS));
 
         if (user.IsLockedOut())
-        {
-            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_LOCKED, ErrorMessages.GetMessage(ErrorCodes.AUTH_ACCOUNT_LOCKED));
-        }
+            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_LOCKED,
+                ErrorMessages.GetMessage(ErrorCodes.AUTH_ACCOUNT_LOCKED));
 
         if (!user.IsActive)
-            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE, ErrorMessages.GetMessage(ErrorCodes.AUTH_ACCOUNT_INACTIVE));
+            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE,
+                ErrorMessages.GetMessage(ErrorCodes.AUTH_ACCOUNT_INACTIVE));
 
         var isPasswordValid = user.Password.Verify(request.Password);
 
@@ -66,7 +67,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             _unitOfWork.Users.Update(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD, ErrorMessages.GetMessage(ErrorCodes.AUTH_INVALID_PASSWORD));
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD,
+                ErrorMessages.GetMessage(ErrorCodes.AUTH_INVALID_PASSWORD));
         }
 
         if (!user.IsEmailVerified)
@@ -76,27 +78,27 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             {
                 var otp = await _otpService.GenerateOtpAsync(
                     user.Id,
-                    user.Email.Value,
+                    user.Email,
                     10,
                     cancellationToken);
 
                 // Send OTP via email
                 await _emailService.SendOtpEmailAsync(
-                    user.Email.Value,
+                    user.Email,
                     otp,
-                    user.Username.Value,
+                    user.Username,
                     cancellationToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to send verification OTP to {Email}", user.Email.Value);
+                _logger.LogError(ex, "Failed to send verification OTP to {Email}", user.Email);
                 throw;
             }
 
             return new LoginResponse
             {
                 RequiresEmailVerification = true,
-                MaskedEmail = user.Email.Value,
+                MaskedEmail = user.Email,
                 User = new UserInfoDto()
             };
         }
@@ -117,7 +119,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
         // TODO: Load user roles from UserNodeRoles properly
         var roles = new List<string>();
-        if (user.Username.Value.Equals("admin", StringComparison.OrdinalIgnoreCase))
+        if (user.Username.Equals("admin", StringComparison.OrdinalIgnoreCase))
         {
             roles.Add("Admin");
             roles.Add("SuperAdmin");
@@ -125,8 +127,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
         var accessToken = _jwtService.GenerateAccessTokenWithRsa(
             user.Id,
-            user.Username.Value,
-            user.Email.Value,
+            user.Username,
+            user.Email,
             roles,
             activeKey.KeyId,
             activeKey.PrivateKey,
@@ -190,14 +192,14 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         return new UserInfoDto
         {
             Id = user.Id,
-            Username = user.Username.Value,
-            Email = user.Email.Value,
+            Username = user.Username,
+            Email = user.Email,
             FirstName = user.FirstName,
             LastName = user.LastName,
             FullName = user.FullName,
             Avatar = user.Avatar,
-            PhoneNumber = user.PhoneNumber?.Value,
-            PhoneCountryCode = user.PhoneNumber?.CountryCode,
+            PhoneNumber = user.PhoneNumber,
+            PhoneCountryCode = user.PhoneCountryCode,
             DateOfBirth = user.DateOfBirth,
             Bio = user.Bio,
             IsEmailVerified = user.IsEmailVerified,

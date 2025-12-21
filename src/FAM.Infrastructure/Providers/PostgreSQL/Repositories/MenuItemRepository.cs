@@ -4,6 +4,7 @@ using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Entities;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -52,7 +53,7 @@ public class MenuItemRepository : IMenuItemRepository
 
     public void Update(MenuItem entity)
     {
-        var trackedEntry = _context.ChangeTracker.Entries<MenuItem>()
+        EntityEntry<MenuItem>? trackedEntry = _context.ChangeTracker.Entries<MenuItem>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -68,7 +69,7 @@ public class MenuItemRepository : IMenuItemRepository
 
     public void Delete(MenuItem entity)
     {
-        var trackedEntity = _context.MenuItems.Local.FirstOrDefault(m => m.Id == entity.Id);
+        MenuItem? trackedEntity = _context.MenuItems.Local.FirstOrDefault(m => m.Id == entity.Id);
         if (trackedEntity != null)
         {
             trackedEntity.IsDeleted = true;
@@ -122,13 +123,8 @@ public class MenuItemRepository : IMenuItemRepository
 
         foreach (MenuItem menu in allMenus)
             if (menu.ParentId == null)
-            {
                 rootMenus.Add(menu);
-            }
-            else if (menuDict.TryGetValue(menu.ParentId.Value, out MenuItem? parent))
-            {
-                parent.Children.Add(menu);
-            }
+            else if (menuDict.TryGetValue(menu.ParentId.Value, out MenuItem? parent)) parent.Children.Add(menu);
 
         return rootMenus;
     }

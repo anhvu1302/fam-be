@@ -16,14 +16,14 @@ public class UserTests
         var password = "MySecurePass123!";
 
         // Act
-        var user = User.Create(username, email, password);
+        var user = User.CreateWithPlainPassword(username, email, password);
 
         // Assert
         user.Should().NotBeNull();
         user.Username.Should().NotBeNull();
-        user.Username.Value.Should().Be(username);
+        user.Username.Should().Be(username);
         user.Email.Should().NotBeNull();
-        user.Email.Value.Should().Be(email);
+        user.Email.Should().Be(email);
         user.Password.Should().NotBeNull();
     }
 
@@ -38,11 +38,11 @@ public class UserTests
         var lastName = "Smith";
 
         // Act
-        var user = User.Create(username, email, password, firstName, lastName, null);
+        var user = User.CreateWithPlainPassword(username, email, password, firstName, lastName, null);
 
         // Assert
-        user.Username.Value.Should().Be(username);
-        user.Email.Value.Should().Be(email);
+        user.Username.Should().Be(username);
+        user.Email.Should().Be(email);
         user.FullName.Should().Be("Jane Smith");
     }
 
@@ -55,7 +55,7 @@ public class UserTests
         var password = "MySecurePass123!";
 
         // Act
-        var user = User.Create(username, email, password, null, null, null);
+        var user = User.CreateWithPlainPassword(username, email, password, null, null, null);
 
         // Assert
         user.FullName.Should().Be(username);
@@ -69,7 +69,7 @@ public class UserTests
         var email = "test@example.com";
 
         // Act & Assert
-        Assert.Throws<DomainException>(() => User.Create(invalidUsername, email, "MySecurePass123!"));
+        Assert.Throws<DomainException>(() => User.CreateWithPlainPassword(invalidUsername, email, "MySecurePass123!"));
     }
 
     [Fact]
@@ -80,6 +80,6 @@ public class UserTests
         var invalidEmail = "invalid-email";
 
         // Act & Assert
-        Assert.Throws<DomainException>(() => User.Create(username, invalidEmail, "MySecurePass123!"));
+        Assert.Throws<DomainException>(() => User.CreateWithPlainPassword(username, invalidEmail, "MySecurePass123!"));
     }
 }

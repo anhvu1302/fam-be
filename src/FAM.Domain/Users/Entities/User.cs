@@ -1,8 +1,6 @@
-using FAM.Domain.Assets;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Interfaces;
-using FAM.Domain.Finance;
 using FAM.Domain.Users.Entities;
 using FAM.Domain.ValueObjects;
 
@@ -22,17 +20,18 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public bool IsDeleted { get; set; } = false;
     public DateTime? DeletedAt { get; set; }
 
-    // Authentication
-    public Username Username { get; private set; } = null!;
-    public Email Email { get; private set; } = null!;
-    public Password Password { get; private set; } = null!;
+    // Authentication - Pragmatic DDD: primitives for single-field, VO for complex
+    public string Username { get; private set; } = null!;
+    public string Email { get; private set; } = null!;
+    public Password Password { get; private set; } = null!; // Keep as VO (Hash + Salt)
 
     // Personal Information
     public string? FirstName { get; private set; }
     public string? LastName { get; private set; }
     public string? FullName { get; private set; }
     public string? Avatar { get; private set; }
-    public PhoneNumber? PhoneNumber { get; private set; }
+    public string? PhoneNumber { get; private set; }
+    public string? PhoneCountryCode { get; private set; }
     public DateTime? DateOfBirth { get; private set; }
     public string? Bio { get; private set; }
 
@@ -83,14 +82,12 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     {
     }
 
+    // ============ Factory Methods ============
     public static User Create(string username, string email, string passwordHash, string passwordSalt,
-        string? firstName = null, string? lastName = null, string? phoneNumber = null)
+        string? firstName = null, string? lastName = null, string? phoneNumber = null, string? phoneCountryCode = null)
     {
         var user = new User
         {
-            Username = Username.Create(username),
-            Email = Email.Create(email),
-            Password = Password.FromHash(passwordHash, passwordSalt),
             FirstName = firstName,
             LastName = lastName,
             IsActive = true,
@@ -99,21 +96,24 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
             TimeZone = "UTC"
         };
 
-        if (!string.IsNullOrWhiteSpace(phoneNumber))
-            user.PhoneNumber = PhoneNumber.Create(phoneNumber, "VN"); // Default to Vietnam
-
+        user.SetUsername(username);
+        user.SetEmail(email);
+        user.SetPassword(passwordHash, passwordSalt);
+        user.SetPhoneNumber(phoneNumber, phoneCountryCode);
         user.UpdateFullName();
+
         return user;
     }
 
     /// <summary>
     /// Tạo User từ plain password (sẽ được hash tự động)
     /// </summary>
-    public static User Create(string username, string email, string plainPassword,
-        string? firstName = null, string? lastName = null, string? phoneNumber = null)
+    public static User CreateWithPlainPassword(string username, string email, string plainPassword,
+        string? firstName = null, string? lastName = null, string? phoneNumber = null, string? phoneCountryCode = null)
     {
         var password = Password.Create(plainPassword);
-        return Create(username, email, password.Hash, password.Salt, firstName, lastName, phoneNumber);
+        return Create(username, email, password.Hash, password.Salt, firstName, lastName, phoneNumber,
+            phoneCountryCode);
     }
 
     /// <summary>
@@ -147,9 +147,6 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
         var user = new User
         {
             Id = id,
-            Username = Username.Create(username),
-            Email = Email.Create(email),
-            Password = Password.FromHash(passwordHash, passwordSalt),
             FullName = fullName,
             FirstName = firstName,
             LastName = lastName,
@@ -168,52 +165,61 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
             UpdatedAt = updatedAt
         };
 
-        if (!string.IsNullOrWhiteSpace(phoneNumber)) user.PhoneNumber = PhoneNumber.Create(phoneNumber, "VN");
+        user.SetUsername(username);
+        user.SetEmail(email);
+        user.SetPassword(passwordHash, passwordSalt);
+        if (!string.IsNullOrWhiteSpace(phoneNumber)) user.SetPhoneNumber(phoneNumber, "VN");
 
         return user;
     }
 
-    public void UpdatePersonalInfo(string? firstName, string? lastName, string? avatar, string? bio,
-        DateTime? dateOfBirth)
+    // ============ Getters & Setters ============
+    public void SetUsername(string username)
     {
-        FirstName = firstName;
-        LastName = lastName;
-        Avatar = avatar;
-        Bio = bio;
-        DateOfBirth = dateOfBirth;
-        UpdateFullName();
+        var usernameVo = Domain.ValueObjects.Username.Create(username);
+        Username = usernameVo.Value;
     }
 
-    public void UpdateContactInfo(string? phoneNumber, string? countryCode = "VN")
+    public void SetEmail(string email)
+    {
+        var emailVo = Domain.ValueObjects.Email.Create(email);
+        Email = emailVo.Value;
+        IsEmailVerified = false;
+        EmailVerifiedAt = null;
+    }
+
+    public void SetPassword(string passwordHash, string passwordSalt)
+    {
+        Password = Password.FromHash(passwordHash, passwordSalt);
+    }
+
+    public void SetPhoneNumber(string? phoneNumber, string? countryCode = "VN")
     {
         if (!string.IsNullOrWhiteSpace(phoneNumber))
-            PhoneNumber = PhoneNumber.Create(phoneNumber, countryCode);
+        {
+            var phoneVo = Domain.ValueObjects.PhoneNumber.Create(phoneNumber, countryCode ?? "VN");
+            PhoneNumber = phoneVo.Value;
+            PhoneCountryCode = phoneVo.CountryCode;
+            IsPhoneVerified = false;
+            PhoneVerifiedAt = null;
+        }
         else
+        {
             PhoneNumber = null;
-    }
-
-    public void ChangePassword(string currentPassRaw, string newPassRaw)
-    {
-        if (!Password.Verify(currentPassRaw)) 
-            throw new DomainException(ErrorCodes.AUTH_INVALID_OLD_PASSWORD, "Current password is incorrect");
-
-        var newPassVo = Password.Create(newPassRaw);
-        UpdatePassword(newPassVo.Hash, newPassVo.Salt);
-    }
-    public void UpdatePassword(string newPasswordHash, string newPasswordSalt)
-    {
-        Password = Password.FromHash(newPasswordHash, newPasswordSalt);
-        PasswordChangedAt = DateTime.UtcNow;
-
-        // Clear any pending reset token
-        PasswordResetToken = null;
-        PasswordResetTokenExpiresAt = null;
+            PhoneCountryCode = null;
+        }
     }
 
     public void SetPasswordResetToken(string token, int expirationMinutes = 60)
     {
         PasswordResetToken = token;
         PasswordResetTokenExpiresAt = DateTime.UtcNow.AddMinutes(expirationMinutes);
+    }
+
+    public void SetPendingTwoFactorSecret(string secret, int expirationMinutes = 10)
+    {
+        PendingTwoFactorSecret = secret;
+        PendingTwoFactorSecretExpiresAt = DateTime.UtcNow.AddMinutes(expirationMinutes);
     }
 
     public bool IsPasswordResetTokenValid(string token)
@@ -228,6 +234,53 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
             return false;
 
         return PasswordResetTokenExpiresAt.Value > DateTime.UtcNow;
+    }
+
+    public bool IsPendingTwoFactorSecretValid(string secret)
+    {
+        return PendingTwoFactorSecret == secret &&
+               PendingTwoFactorSecretExpiresAt > DateTime.UtcNow;
+    }
+
+    public bool IsLockedOut()
+    {
+        return LockoutEnd.HasValue && LockoutEnd.Value > DateTime.UtcNow;
+    }
+
+    // ============ Business Logic Methods ============
+    public void UpdatePersonalInfo(string? firstName, string? lastName, string? avatar, string? bio,
+        DateTime? dateOfBirth)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        Avatar = avatar;
+        Bio = bio;
+        DateOfBirth = dateOfBirth;
+        UpdateFullName();
+    }
+
+    public void UpdateContactInfo(string? phoneNumber, string? countryCode = "VN")
+    {
+        SetPhoneNumber(phoneNumber, countryCode);
+    }
+
+    public void ChangePassword(string currentPassRaw, string newPassRaw)
+    {
+        if (!Password.Verify(currentPassRaw))
+            throw new DomainException(ErrorCodes.AUTH_INVALID_OLD_PASSWORD, "Current password is incorrect");
+
+        var newPassVo = Password.Create(newPassRaw);
+        UpdatePassword(newPassVo.Hash, newPassVo.Salt);
+    }
+
+    public void UpdatePassword(string newPasswordHash, string newPasswordSalt)
+    {
+        Password = Password.FromHash(newPasswordHash, newPasswordSalt);
+        PasswordChangedAt = DateTime.UtcNow;
+
+        // Clear any pending reset token
+        PasswordResetToken = null;
+        PasswordResetTokenExpiresAt = null;
     }
 
     public void ClearPasswordResetToken()
@@ -245,18 +298,6 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
         // Clear pending secret after confirmation
         PendingTwoFactorSecret = null;
         PendingTwoFactorSecretExpiresAt = null;
-    }
-
-    public void SetPendingTwoFactorSecret(string secret, int expirationMinutes = 10)
-    {
-        PendingTwoFactorSecret = secret;
-        PendingTwoFactorSecretExpiresAt = DateTime.UtcNow.AddMinutes(expirationMinutes);
-    }
-
-    public bool IsPendingTwoFactorSecretValid(string secret)
-    {
-        return PendingTwoFactorSecret == secret &&
-               PendingTwoFactorSecretExpiresAt > DateTime.UtcNow;
     }
 
     public void DisableTwoFactor()
@@ -383,17 +424,14 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
         LockoutEnd = null;
     }
 
-    public bool IsLockedOut()
-    {
-        return LockoutEnd.HasValue && LockoutEnd.Value > DateTime.UtcNow;
-    }
-
+    // ============ Private Helpers ============
     private void UpdateFullName()
     {
         FullName = $"{FirstName} {LastName}".Trim();
-        if (string.IsNullOrWhiteSpace(FullName)) FullName = Username.Value;
+        if (string.IsNullOrWhiteSpace(FullName)) FullName = Username;
     }
 
+    // ============ Domain Events ============
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     protected void RaiseDomainEvent(IDomainEvent domainEvent)

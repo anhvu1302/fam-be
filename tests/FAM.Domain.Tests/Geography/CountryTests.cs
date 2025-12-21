@@ -19,7 +19,7 @@ public class CountryTests
 
         // Assert
         country.Should().NotBeNull();
-        country.Code.Value.Should().Be(code);
+        country.Code.Should().Be(code);
         country.Name.Should().Be(name);
         country.IsActive.Should().BeTrue();
         country.IsUNMember.Should().BeTrue();
@@ -39,7 +39,7 @@ public class CountryTests
         var country = Country.Create(code, name, iso3Code, numericCode);
 
         // Assert
-        country.Code.Value.Should().Be(code);
+        country.Code.Should().Be(code);
         country.Name.Should().Be(name);
         country.Iso3Code.Should().Be(iso3Code);
         country.NumericCode.Should().Be(numericCode);

@@ -4,6 +4,7 @@ using FAM.Domain.Abstractions;
 using FAM.Domain.Users.Entities;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -56,7 +57,7 @@ public class UserThemeRepository : IUserThemeRepository
 
     public void Update(UserTheme entity)
     {
-        var trackedEntry = _context.ChangeTracker.Entries<UserTheme>()
+        EntityEntry<UserTheme>? trackedEntry = _context.ChangeTracker.Entries<UserTheme>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)

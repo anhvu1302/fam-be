@@ -37,7 +37,7 @@ public class ChangePasswordCommandHandlerTests
         // Arrange
         var userId = 1L;
         var currentPlainPassword = "OldPass123!";
-        var user = User.Create("testuser", "test@example.com", currentPlainPassword);
+        var user = User.CreateWithPlainPassword("testuser", "test@example.com", currentPlainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
         var command = new ChangePasswordCommand
@@ -137,7 +137,7 @@ public class ChangePasswordCommandHandlerTests
         var userId = 1L;
         var currentDeviceId = "device123";
         var currentPlainPassword = "OldPass123!";
-        var user = User.Create("testuser", "test@example.com", currentPlainPassword);
+        var user = User.CreateWithPlainPassword("testuser", "test@example.com", currentPlainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
         var command = new ChangePasswordCommand
@@ -182,7 +182,7 @@ public class ChangePasswordCommandHandlerTests
         // Arrange
         var userId = 1L;
         var currentPlainPassword = "OldPass123!";
-        var user = User.Create("testuser", "test@example.com", currentPlainPassword);
+        var user = User.CreateWithPlainPassword("testuser", "test@example.com", currentPlainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
         var command = new ChangePasswordCommand
@@ -212,7 +212,7 @@ public class ChangePasswordCommandHandlerTests
         // Arrange
         var userId = 1L;
         var samePlainPassword = "SamePass123!";
-        var user = User.Create("testuser", "test@example.com", samePlainPassword);
+        var user = User.CreateWithPlainPassword("testuser", "test@example.com", samePlainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
         var command = new ChangePasswordCommand

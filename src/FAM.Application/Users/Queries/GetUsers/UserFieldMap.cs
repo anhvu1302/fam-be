@@ -21,8 +21,8 @@ public class UserFieldMap : BaseFieldMap<User>
 
     public override FieldMap<User> Fields { get; } = new FieldMap<User>()
         .Add("id", u => u.Id)
-        .Add("username", u => u.Username.Value)
-        .Add("email", u => u.Email.Value)
+        .Add("username", u => u.Username)
+        .Add("email", u => u.Email)
         .Add("fullName", u => u.FullName!)
         .Add("firstName", u => u.FirstName!)
         .Add("lastName", u => u.LastName!)

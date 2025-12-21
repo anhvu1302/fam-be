@@ -29,7 +29,7 @@ public class Role : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public User? UpdatedBy { get; set; }
     public User? DeletedBy { get; set; }
 
-    public RoleCode Code { get; private set; } = null!;
+    public string Code { get; private set; } = null!;
     public string Name { get; private set; } = string.Empty;
     public string? Description { get; private set; }
     public int Rank { get; private set; }
@@ -54,9 +54,12 @@ public class Role : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
         if (rank < 0)
             throw new DomainException(ErrorCodes.ROLE_INVALID_RANK, "Role rank must be non-negative");
 
+        // Validate code
+        var roleCodeVo = RoleCode.Create(code);
+
         var role = new Role
         {
-            Code = RoleCode.Create(code),
+            Code = roleCodeVo.Value,
             Name = name.Trim(),
             Description = description?.Trim(),
             Rank = rank,

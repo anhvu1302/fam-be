@@ -79,7 +79,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
             .ReturnsAsync(signingKey);
 
         _mockJwtService.Setup(x => x.GenerateAccessTokenWithRsa(
-                userId, user.Username.Value, email, It.IsAny<List<string>>(),
+                userId, user.Username, email, It.IsAny<List<string>>(),
                 signingKey.KeyId, signingKey.PrivateKey, signingKey.Algorithm))
             .Returns("access_token");
 
@@ -134,7 +134,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
             .ReturnsAsync(signingKey);
 
         _mockJwtService.Setup(x => x.GenerateAccessTokenWithRsa(
-                userId, user.Username.Value, email, It.IsAny<List<string>>(),
+                userId, user.Username, email, It.IsAny<List<string>>(),
                 signingKey.KeyId, signingKey.PrivateKey, signingKey.Algorithm))
             .Returns("access_token");
 
@@ -250,12 +250,12 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         bool isEmailVerified = true,
         bool twoFactorEnabled = false)
     {
-        var user = User.Create(
+        var user = User.CreateWithPlainPassword(
             $"testuser{id}",
             email,
             "Password123!",
-            firstName: "Test",
-            lastName: "User");
+            "Test",
+            "User");
 
         // Use reflection to set IsEmailVerified if needed
         if (!isEmailVerified) typeof(User).GetProperty("IsEmailVerified")?.SetValue(user, false);

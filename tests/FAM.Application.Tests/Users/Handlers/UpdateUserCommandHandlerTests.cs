@@ -30,12 +30,12 @@ public class UpdateUserCommandHandlerTests
     {
         // Arrange
         var userId = 1L;
-        var existingUser = User.Create(
+        var existingUser = User.CreateWithPlainPassword(
             "olduser",
             "old@example.com",
             "OldPass123!",
-            firstName: "Old",
-            lastName: "User"
+            "Old",
+            "User"
         );
 
         var command = new UpdateUserCommand(

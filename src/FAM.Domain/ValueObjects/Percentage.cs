@@ -9,6 +9,12 @@ public sealed class Percentage : ValueObject
 {
     public decimal Value { get; private set; }
 
+    // Constructor for EF Core
+    private Percentage()
+    {
+        Value = 0;
+    }
+
     private Percentage(decimal value)
     {
         Value = value;

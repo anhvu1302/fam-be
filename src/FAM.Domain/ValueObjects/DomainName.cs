@@ -11,6 +11,12 @@ public sealed class DomainName : ValueObject
 {
     public string Value { get; private set; }
 
+    // Constructor for EF Core
+    private DomainName()
+    {
+        Value = string.Empty;
+    }
+
     private DomainName(string value)
     {
         Value = value;

@@ -104,8 +104,8 @@ public class MenuSeeder : BaseDataSeeder
         string? requiredRoles = null)
     {
         return MenuItem.Create(
-            code: code,
-            name: name,
+            code,
+            name,
             icon: icon,
             route: route,
             parentId: parentId,

@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.WebApi.Contracts.Common;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,13 +28,10 @@ public class ErrorCodesController : BaseApiController
     public IActionResult GetAllErrorCodes()
     {
         // Only allow in Development environment
-        if (!_environment.IsDevelopment())
-        {
-            return Forbid("This API is only available in Development environment");
-        }
+        if (!_environment.IsDevelopment()) return Forbid("This API is only available in Development environment");
 
-        var errorCodesDict = ErrorMessages.GetAllErrorCodes();
-        
+        IReadOnlyDictionary<string, string> errorCodesDict = ErrorMessages.GetAllErrorCodes();
+
         var errorCodesList = errorCodesDict
             .Select(kvp => new ErrorCodeResponse
             {

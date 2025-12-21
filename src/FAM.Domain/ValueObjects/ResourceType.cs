@@ -9,6 +9,12 @@ public sealed class ResourceType : ValueObject
 {
     public string Value { get; private set; }
 
+    // Constructor for EF Core
+    private ResourceType()
+    {
+        Value = string.Empty;
+    }
+
     private ResourceType(string value)
     {
         Value = value;

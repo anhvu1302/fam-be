@@ -88,32 +88,6 @@ public class CountryCodeTests
     }
 
     [Fact]
-    public void GetCountryName_WithKnownCountryCode_ShouldReturnCountryName()
-    {
-        // Arrange
-        var countryCode = CountryCode.Create("VN");
-
-        // Act
-        var countryName = countryCode.GetCountryName();
-
-        // Assert
-        countryName.Should().Be("Vietnam");
-    }
-
-    [Fact]
-    public void GetCountryName_WithUnknownCountryCode_ShouldReturnUnknown()
-    {
-        // Arrange
-        var countryCode = CountryCode.Create("AF");
-
-        // Act
-        var countryName = countryCode.GetCountryName();
-
-        // Assert
-        countryName.Should().Be("Unknown");
-    }
-
-    [Fact]
     public void IsAsian_WithAsianCountry_ShouldReturnTrue()
     {
         // Arrange

@@ -239,15 +239,15 @@ public class SupplierTests
 
         // Assert
         supplier.Website.Should().NotBeNull();
-        supplier.Website!.Value.Should().Be(website);
+        supplier.Website.Should().Be(website);
         supplier.Email.Should().NotBeNull();
-        supplier.Email!.Value.Should().Be(email);
+        supplier.Email.Should().Be(email);
         supplier.Phone.Should().NotBeNull();
-        supplier.Phone!.Value.Should().Be(phone);
+        supplier.Phone.Should().Be(phone);
         supplier.Fax.Should().NotBeNull();
-        supplier.Fax!.Value.Should().Be(fax);
+        supplier.Fax.Should().Be(fax);
         supplier.MobilePhone.Should().NotBeNull();
-        supplier.MobilePhone!.Value.Should().Be(mobile);
+        supplier.MobilePhone.Should().Be(mobile);
     }
 
     [Fact]
@@ -299,8 +299,7 @@ public class SupplierTests
         supplier.CreditLimit.Should().NotBeNull();
         supplier.CreditLimit!.Amount.Should().Be(creditLimit);
         supplier.CreditLimit!.Currency.Should().Be(currency);
-        supplier.DiscountRate.Should().NotBeNull();
-        supplier.DiscountRate!.Value.Should().Be(discountRate);
+        supplier.DiscountRate.Should().Be(discountRate);
     }
 
     [Fact]

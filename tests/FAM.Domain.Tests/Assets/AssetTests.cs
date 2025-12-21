@@ -25,7 +25,7 @@ public class AssetTests
         asset.Name.Should().Be(name);
         asset.CompanyId.Should().Be(companyId);
         asset.AssetTypeId.Should().Be(assetTypeId);
-        asset.AssetTag!.Value.Should().Be(assetTag);
+        asset.AssetTag.Should().Be(assetTag);
         asset.LifecycleCode.Should().Be("draft");
         asset.CreatedById.Should().Be(createdBy);
         asset.CreatedAt.Should().NotBe(default);

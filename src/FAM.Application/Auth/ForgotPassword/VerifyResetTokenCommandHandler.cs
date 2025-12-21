@@ -51,7 +51,7 @@ public class VerifyResetTokenCommandHandler : IRequestHandler<VerifyResetTokenCo
 
         return new VerifyResetTokenResponse
         {
-            MaskedEmail = MaskEmail(user.Email.Value)
+            MaskedEmail = MaskEmail(user.Email)
         };
     }
 

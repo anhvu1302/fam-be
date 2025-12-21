@@ -33,8 +33,8 @@ public sealed class GetRoleByIdQueryHandler : IRequestHandler<GetRoleByIdQuery, 
             if (permission != null)
                 permissions.Add(new PermissionDto(
                     permission.Id,
-                    permission.Resource.Value,
-                    permission.Action.Value,
+                    permission.Resource,
+                    permission.Action,
                     permission.Description,
                     permission.GetPermissionKey(),
                     permission.CreatedAt,
@@ -46,7 +46,7 @@ public sealed class GetRoleByIdQueryHandler : IRequestHandler<GetRoleByIdQuery, 
         return new RoleWithPermissionsDto
         {
             Id = role.Id,
-            Code = role.Code.Value,
+            Code = role.Code,
             Name = role.Name,
             Description = role.Description,
             Rank = role.Rank,

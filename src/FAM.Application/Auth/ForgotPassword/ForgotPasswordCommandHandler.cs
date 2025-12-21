@@ -76,9 +76,9 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
             var resetUrl = _frontendOptions.GetResetPasswordUrl();
 
             await _emailService.SendPasswordResetEmailAsync(
-                user.Email.Value,
+                user.Email,
                 resetToken,
-                user.Username.Value,
+                user.Username,
                 resetUrl,
                 _frontendOptions.PasswordResetTokenExpiryMinutes,
                 cancellationToken);

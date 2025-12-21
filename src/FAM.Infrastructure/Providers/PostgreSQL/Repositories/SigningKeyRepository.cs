@@ -4,6 +4,7 @@ using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -48,7 +49,7 @@ public class SigningKeyRepository : ISigningKeyRepository
 
     public void Update(SigningKey entity)
     {
-        var trackedEntry = _context.ChangeTracker.Entries<SigningKey>()
+        EntityEntry<SigningKey>? trackedEntry = _context.ChangeTracker.Entries<SigningKey>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -64,7 +65,7 @@ public class SigningKeyRepository : ISigningKeyRepository
 
     public void Delete(SigningKey entity)
     {
-        var trackedEntity = _context.SigningKeys.Local.FirstOrDefault(k => k.Id == entity.Id);
+        SigningKey? trackedEntity = _context.SigningKeys.Local.FirstOrDefault(k => k.Id == entity.Id);
         if (trackedEntity != null)
         {
             trackedEntity.IsDeleted = true;

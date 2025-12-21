@@ -49,8 +49,8 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
         var roles = new List<string>(); // TODO: Load user roles from UserNodeRoles
         var accessToken = _jwtService.GenerateAccessTokenWithRsa(
             user.Id,
-            user.Username.Value,
-            user.Email.Value,
+            user.Username,
+            user.Email,
             roles,
             activeKey.KeyId,
             activeKey.PrivateKey,
@@ -85,14 +85,14 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
             User = new UserInfoDto
             {
                 Id = user.Id,
-                Username = user.Username.Value,
-                Email = user.Email.Value,
+                Username = user.Username,
+                Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 FullName = user.FullName,
                 Avatar = user.Avatar,
-                PhoneNumber = user.PhoneNumber?.Value,
-                PhoneCountryCode = user.PhoneNumber?.CountryCode,
+                PhoneNumber = user.PhoneNumber,
+                PhoneCountryCode = user.PhoneCountryCode,
                 DateOfBirth = user.DateOfBirth,
                 Bio = user.Bio,
                 IsEmailVerified = user.IsEmailVerified,

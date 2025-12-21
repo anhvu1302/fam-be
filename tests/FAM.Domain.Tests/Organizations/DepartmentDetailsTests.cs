@@ -20,7 +20,7 @@ public class DepartmentDetailsTests
 
         // Assert
         details.Should().NotBeNull();
-        string costCenterValue = details.CostCenter!;
+        var costCenterValue = details.CostCenter!;
         costCenterValue.Should().Be("CC001");
         details.Headcount.Should().Be(headcount);
         details.BudgetYear.Should().Be(budgetYear);
@@ -84,7 +84,7 @@ public class DepartmentDetailsTests
         details.Update(costCenter, headcount, budgetYear);
 
         // Assert
-        string costCenterValue = details.CostCenter!;
+        var costCenterValue = details.CostCenter!;
         costCenterValue.Should().Be("CC001");
         details.Headcount.Should().Be(headcount);
         details.BudgetYear.Should().Be(budgetYear);

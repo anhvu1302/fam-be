@@ -56,7 +56,7 @@ public class
             }
 
         // Mask email để hiển thị
-        var maskedEmail = MaskEmail(user.Email.Value);
+        var maskedEmail = MaskEmail(user.Email);
 
         var response = new AuthenticationMethodsResponse
         {

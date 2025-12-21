@@ -1,6 +1,5 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Interfaces;
-using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Organizations;
 
@@ -18,7 +17,7 @@ public class DepartmentDetails : BaseEntity, IHasCreationTime, IHasCreator, IHas
 
     public long NodeId { get; private set; }
     public OrgNode Node { get; private set; } = null!;
-    public CostCenter? CostCenter { get; private set; }
+    public string? CostCenter { get; private set; }
     public int? Headcount { get; private set; }
     public decimal? BudgetYear { get; private set; }
 
@@ -34,12 +33,14 @@ public class DepartmentDetails : BaseEntity, IHasCreationTime, IHasCreator, IHas
         if (budgetYear.HasValue && budgetYear.Value < 0)
             throw new DomainException("Budget year cannot be negative");
 
-        return new DepartmentDetails
+        var departmentDetails = new DepartmentDetails
         {
-            CostCenter = costCenter != null ? CostCenter.Create(costCenter) : null,
             Headcount = headcount,
             BudgetYear = budgetYear
         };
+
+        departmentDetails.CostCenter = departmentDetails.ValidateCostCenter(costCenter);
+        return departmentDetails;
     }
 
     internal void SetNode(OrgNode node)
@@ -56,7 +57,7 @@ public class DepartmentDetails : BaseEntity, IHasCreationTime, IHasCreator, IHas
         if (budgetYear.HasValue && budgetYear.Value < 0)
             throw new DomainException("Budget year cannot be negative");
 
-        CostCenter = costCenter != null ? CostCenter.Create(costCenter) : null;
+        CostCenter = ValidateCostCenter(costCenter);
         Headcount = headcount;
         BudgetYear = budgetYear;
     }
@@ -73,5 +74,15 @@ public class DepartmentDetails : BaseEntity, IHasCreationTime, IHasCreator, IHas
         IsDeleted = false;
         DeletedAt = null;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    // Private helper methods
+    private string? ValidateCostCenter(string? costCenter)
+    {
+        if (string.IsNullOrWhiteSpace(costCenter))
+            return null;
+
+        var costCenterVo = ValueObjects.CostCenter.Create(costCenter);
+        return costCenterVo.Value;
     }
 }

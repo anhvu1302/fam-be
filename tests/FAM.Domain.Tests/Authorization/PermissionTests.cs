@@ -19,8 +19,8 @@ public class PermissionTests
 
         // Assert
         permission.Should().NotBeNull();
-        string resourceValue = permission.Resource;
-        string actionValue = permission.Action;
+        var resourceValue = permission.Resource;
+        var actionValue = permission.Action;
         resourceValue.Should().Be(resource);
         actionValue.Should().Be(action);
     }
@@ -33,8 +33,8 @@ public class PermissionTests
         {
             var permission = Permission.Create(resource, action);
             permission.Should().NotBeNull();
-            string resourceValue = permission.Resource;
-            string actionValue = permission.Action;
+            var resourceValue = permission.Resource;
+            var actionValue = permission.Action;
             resourceValue.Should().Be(resource);
             actionValue.Should().Be(action);
         }

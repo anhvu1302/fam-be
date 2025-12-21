@@ -5,6 +5,7 @@ using FAM.Domain.EmailTemplates;
 using FAM.Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
@@ -46,7 +47,7 @@ public class EmailTemplateRepository : BaseRepository<EmailTemplate>,
 
     public void Update(EmailTemplate entity)
     {
-        var trackedEntry = Context.ChangeTracker.Entries<EmailTemplate>()
+        EntityEntry<EmailTemplate>? trackedEntry = Context.ChangeTracker.Entries<EmailTemplate>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
@@ -118,13 +119,11 @@ public class EmailTemplateRepository : BaseRepository<EmailTemplate>,
 
         // Apply includes if provided
         if (includes != null && includes.Any())
-        {
-            foreach (var include in includes)
+            foreach (Expression<Func<EmailTemplate, object>> include in includes)
             {
                 var propertyPath = GetPropertyName(include.Body);
                 dataQuery = dataQuery.Include(propertyPath);
             }
-        }
 
         // Apply filter at database level
         if (filter != null)
@@ -140,7 +139,7 @@ public class EmailTemplateRepository : BaseRepository<EmailTemplate>,
         dataQuery = ApplySort(dataQuery, sort, GetSortExpression, t => t.Id);
 
         // Apply pagination and execute
-        var templates = await dataQuery
+        List<EmailTemplate> templates = await dataQuery
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .AsNoTracking()
