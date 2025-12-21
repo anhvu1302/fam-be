@@ -61,33 +61,8 @@ public class OrganizationSeeder : BaseDataSeeder
         await _dbContext.OrgNodes.AddRangeAsync(departments, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        // Create sub-departments for IT
-        OrgNode itDept = departments[0];
-        var itSubDepts = new List<OrgNode>
-        {
-            CreateDepartment("Software Development", itDept.Id, "IT-DEV-001", 15, 300000),
-            CreateDepartment("Infrastructure", itDept.Id, "IT-INFRA-001", 5, 100000),
-            CreateDepartment("IT Support", itDept.Id, "IT-SUP-001", 5, 100000)
-        };
-
-        await _dbContext.OrgNodes.AddRangeAsync(itSubDepts, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
-
-        // Create sub-departments for Sales
-        OrgNode salesDept = departments[4];
-        var salesSubDepts = new List<OrgNode>
-        {
-            CreateDepartment("Domestic Sales", salesDept.Id, "SALES-DOM-001", 12, 250000),
-            CreateDepartment("International Sales", salesDept.Id, "SALES-INT-001", 8, 200000),
-            CreateDepartment("Marketing", salesDept.Id, "MKT-001", 10, 150000)
-        };
-
-        await _dbContext.OrgNodes.AddRangeAsync(salesSubDepts, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
-
-        var totalNodes = 1 + departments.Count + itSubDepts.Count + salesSubDepts.Count;
-        LogInfo(
-            $"Created {totalNodes} organization nodes (1 company, {departments.Count + itSubDepts.Count + salesSubDepts.Count} departments)");
+        var totalNodes = 1 + departments.Count;
+        LogInfo($"Created {totalNodes} organization nodes (1 company, {departments.Count} departments)");
     }
 
     private OrgNode CreateDepartment(string name, long parentId, string? costCenter = null, int? headcount = null, decimal? budgetYear = null)

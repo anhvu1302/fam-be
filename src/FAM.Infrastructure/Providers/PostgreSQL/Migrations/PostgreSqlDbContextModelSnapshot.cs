@@ -27,368 +27,461 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AccountingCode")
                         .HasColumnType("text")
-                        .HasColumnName("accounting_code");
+                        .HasColumnName("accounting_code")
+                        .HasColumnOrder(1);
 
                     b.Property<decimal?>("AccumulatedDepreciation")
                         .HasColumnType("numeric")
-                        .HasColumnName("accumulated_depreciation");
+                        .HasColumnName("accumulated_depreciation")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("AssetTag")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("asset_tag")
+                        .HasColumnOrder(3);
 
                     b.Property<long?>("AssetTypeId")
                         .HasColumnType("bigint")
-                        .HasColumnName("asset_type_id");
+                        .HasColumnName("asset_type_id")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("Barcode")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("barcode");
+                        .HasColumnName("barcode")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("CampaignCode")
                         .HasColumnType("text")
-                        .HasColumnName("campaign_code");
+                        .HasColumnName("campaign_code")
+                        .HasColumnOrder(6);
 
                     b.Property<long?>("CategoryId")
                         .HasColumnType("bigint")
-                        .HasColumnName("category_id");
+                        .HasColumnName("category_id")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("Color")
                         .HasColumnType("text")
-                        .HasColumnName("color");
+                        .HasColumnName("color")
+                        .HasColumnOrder(8);
 
                     b.Property<long?>("CompanyId")
                         .HasColumnType("bigint")
-                        .HasColumnName("company_id");
+                        .HasColumnName("company_id")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("ComplianceStatus")
                         .HasColumnType("text")
-                        .HasColumnName("compliance_status");
+                        .HasColumnName("compliance_status")
+                        .HasColumnOrder(10);
 
                     b.Property<long?>("ConditionId")
                         .HasColumnType("bigint")
-                        .HasColumnName("condition_id");
+                        .HasColumnName("condition_id")
+                        .HasColumnOrder(11);
 
                     b.Property<string>("CostCenter")
                         .HasColumnType("text")
-                        .HasColumnName("cost_center");
+                        .HasColumnName("cost_center")
+                        .HasColumnOrder(12);
 
                     b.Property<long?>("CountryId")
                         .HasColumnType("bigint")
-                        .HasColumnName("country_id");
+                        .HasColumnName("country_id")
+                        .HasColumnOrder(13);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(81);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(82);
 
                     b.Property<decimal?>("CurrentBookValue")
                         .HasColumnType("numeric")
-                        .HasColumnName("current_book_value");
+                        .HasColumnName("current_book_value")
+                        .HasColumnOrder(14);
 
                     b.Property<string>("DataClassification")
                         .HasColumnType("text")
-                        .HasColumnName("data_classification");
+                        .HasColumnName("data_classification")
+                        .HasColumnOrder(15);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(83);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(84);
 
                     b.Property<long?>("DepartmentId")
                         .HasColumnType("bigint")
-                        .HasColumnName("department_id");
+                        .HasColumnName("department_id")
+                        .HasColumnOrder(16);
 
                     b.Property<string>("DepreciationMethod")
                         .HasColumnType("text")
-                        .HasColumnName("depreciation_method");
+                        .HasColumnName("depreciation_method")
+                        .HasColumnOrder(17);
 
                     b.Property<string>("Dimensions")
                         .HasColumnType("text")
-                        .HasColumnName("dimensions");
+                        .HasColumnName("dimensions")
+                        .HasColumnOrder(18);
 
                     b.Property<string>("DisposalMethod")
                         .HasColumnType("text")
-                        .HasColumnName("disposal_method");
+                        .HasColumnName("disposal_method")
+                        .HasColumnOrder(19);
 
                     b.Property<DateTime?>("EndOfLifeDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("end_of_life_date");
+                        .HasColumnName("end_of_life_date")
+                        .HasColumnOrder(20);
 
                     b.Property<string>("EnergyRating")
                         .HasColumnType("text")
-                        .HasColumnName("energy_rating");
+                        .HasColumnName("energy_rating")
+                        .HasColumnOrder(21);
 
                     b.Property<int?>("EstimatedRemainingLifeMonths")
                         .HasColumnType("integer")
-                        .HasColumnName("estimated_remaining_life_months");
+                        .HasColumnName("estimated_remaining_life_months")
+                        .HasColumnOrder(22);
 
                     b.Property<string>("FundingSource")
                         .HasColumnType("text")
-                        .HasColumnName("funding_source");
+                        .HasColumnName("funding_source")
+                        .HasColumnOrder(23);
 
                     b.Property<string>("GLAccount")
                         .HasColumnType("text")
-                        .HasColumnName("glaccount");
+                        .HasColumnName("glaccount")
+                        .HasColumnOrder(24);
 
                     b.Property<string>("Hostname")
                         .HasColumnType("text")
-                        .HasColumnName("hostname");
+                        .HasColumnName("hostname")
+                        .HasColumnOrder(25);
 
                     b.Property<string>("IPAddress")
                         .HasMaxLength(45)
-                        .HasColumnType("character varying(45)");
+                        .HasColumnType("character varying(45)")
+                        .HasColumnName("ip_address")
+                        .HasColumnOrder(26);
 
                     b.Property<DateTime?>("InServiceDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("in_service_date");
+                        .HasColumnName("in_service_date")
+                        .HasColumnOrder(27);
 
                     b.Property<DateTime?>("InsuranceExpiryDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("insurance_expiry_date");
+                        .HasColumnName("insurance_expiry_date")
+                        .HasColumnOrder(28);
 
                     b.Property<string>("InsurancePolicyNo")
                         .HasColumnType("text")
-                        .HasColumnName("insurance_policy_no");
+                        .HasColumnName("insurance_policy_no")
+                        .HasColumnOrder(29);
 
                     b.Property<decimal?>("InsuredValue")
                         .HasColumnType("numeric")
-                        .HasColumnName("insured_value");
+                        .HasColumnName("insured_value")
+                        .HasColumnOrder(30);
 
                     b.Property<string>("InternalNotes")
                         .HasColumnType("text")
-                        .HasColumnName("internal_notes");
+                        .HasColumnName("internal_notes")
+                        .HasColumnOrder(31);
 
                     b.Property<string>("InvoiceNo")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("invoice_no");
+                        .HasColumnName("invoice_no")
+                        .HasColumnOrder(32);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(85);
 
                     b.Property<bool>("IsEnvironmentallyFriendly")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_environmentally_friendly");
+                        .HasColumnName("is_environmentally_friendly")
+                        .HasColumnOrder(33);
 
                     b.Property<DateTime?>("LastAuditDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_audit_date");
+                        .HasColumnName("last_audit_date")
+                        .HasColumnOrder(34);
 
                     b.Property<DateTime?>("LastDepreciationDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_depreciation_date");
+                        .HasColumnName("last_depreciation_date")
+                        .HasColumnOrder(35);
 
                     b.Property<DateTime?>("LastMaintenanceDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_maintenance_date");
+                        .HasColumnName("last_maintenance_date")
+                        .HasColumnOrder(36);
 
                     b.Property<int?>("LicenseCount")
                         .HasColumnType("integer")
-                        .HasColumnName("license_count");
+                        .HasColumnName("license_count")
+                        .HasColumnOrder(37);
 
                     b.Property<DateTime?>("LicenseExpiryDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("license_expiry_date");
+                        .HasColumnName("license_expiry_date")
+                        .HasColumnOrder(38);
 
                     b.Property<string>("LicenseKey")
                         .HasColumnType("text")
-                        .HasColumnName("license_key");
+                        .HasColumnName("license_key")
+                        .HasColumnOrder(39);
 
                     b.Property<string>("LifecycleCode")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("lifecycle_code");
+                        .HasColumnName("lifecycle_code")
+                        .HasColumnOrder(40);
 
                     b.Property<long?>("LifecycleStatusId")
                         .HasColumnType("bigint")
-                        .HasColumnName("lifecycle_status_id");
+                        .HasColumnName("lifecycle_status_id")
+                        .HasColumnOrder(41);
 
                     b.Property<string>("LocationCode")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("location_code");
+                        .HasColumnName("location_code")
+                        .HasColumnOrder(42);
 
                     b.Property<long?>("LocationId")
                         .HasColumnType("bigint")
-                        .HasColumnName("location_id");
+                        .HasColumnName("location_id")
+                        .HasColumnOrder(43);
 
                     b.Property<long?>("LocationId1")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("location_id1")
+                        .HasColumnOrder(44);
 
                     b.Property<string>("MACAddress")
                         .HasMaxLength(17)
-                        .HasColumnType("character varying(17)");
+                        .HasColumnType("character varying(17)")
+                        .HasColumnName("mac_address")
+                        .HasColumnOrder(45);
 
                     b.Property<string>("MaintenanceContractNo")
                         .HasColumnType("text")
-                        .HasColumnName("maintenance_contract_no");
+                        .HasColumnName("maintenance_contract_no")
+                        .HasColumnOrder(46);
 
                     b.Property<int?>("MaintenanceIntervalDays")
                         .HasColumnType("integer")
-                        .HasColumnName("maintenance_interval_days");
+                        .HasColumnName("maintenance_interval_days")
+                        .HasColumnOrder(47);
 
                     b.Property<long?>("ManufacturerId")
                         .HasColumnType("bigint")
-                        .HasColumnName("manufacturer_id");
+                        .HasColumnName("manufacturer_id")
+                        .HasColumnOrder(48);
 
                     b.Property<string>("Material")
                         .HasColumnType("text")
-                        .HasColumnName("material");
+                        .HasColumnName("material")
+                        .HasColumnOrder(49);
 
                     b.Property<long?>("ModelId")
                         .HasColumnType("bigint")
-                        .HasColumnName("model_id");
+                        .HasColumnName("model_id")
+                        .HasColumnOrder(50);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(51);
 
                     b.Property<DateTime?>("NextAuditDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("next_audit_date");
+                        .HasColumnName("next_audit_date")
+                        .HasColumnOrder(52);
 
                     b.Property<DateTime?>("NextMaintenanceDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("next_maintenance_date");
+                        .HasColumnName("next_maintenance_date")
+                        .HasColumnOrder(53);
 
                     b.Property<string>("Notes")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)")
-                        .HasColumnName("notes");
+                        .HasColumnName("notes")
+                        .HasColumnOrder(54);
 
                     b.Property<string>("OperatingSystem")
                         .HasColumnType("text")
-                        .HasColumnName("operating_system");
+                        .HasColumnName("operating_system")
+                        .HasColumnOrder(55);
 
                     b.Property<long?>("OwnerId")
                         .HasColumnType("bigint")
-                        .HasColumnName("owner_id");
+                        .HasColumnName("owner_id")
+                        .HasColumnOrder(56);
 
                     b.Property<decimal?>("PowerConsumption")
                         .HasColumnType("numeric")
-                        .HasColumnName("power_consumption");
+                        .HasColumnName("power_consumption")
+                        .HasColumnOrder(57);
 
                     b.Property<string>("ProjectCode")
                         .HasColumnType("text")
-                        .HasColumnName("project_code");
+                        .HasColumnName("project_code")
+                        .HasColumnOrder(58);
 
                     b.Property<decimal?>("PurchaseCost")
                         .HasColumnType("numeric")
-                        .HasColumnName("purchase_cost");
+                        .HasColumnName("purchase_cost")
+                        .HasColumnOrder(59);
 
                     b.Property<DateTime?>("PurchaseDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("purchase_date");
+                        .HasColumnName("purchase_date")
+                        .HasColumnOrder(60);
 
                     b.Property<string>("PurchaseOrderNo")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("purchase_order_no");
+                        .HasColumnName("purchase_order_no")
+                        .HasColumnOrder(61);
 
                     b.Property<string>("QRCode")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("qrcode");
+                        .HasColumnName("qrcode")
+                        .HasColumnOrder(62);
 
                     b.Property<string>("RFIDTag")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("rfidtag");
+                        .HasColumnName("rfidtag")
+                        .HasColumnOrder(63);
 
                     b.Property<decimal?>("ReplacementCost")
                         .HasColumnType("numeric")
-                        .HasColumnName("replacement_cost");
+                        .HasColumnName("replacement_cost")
+                        .HasColumnOrder(64);
 
                     b.Property<bool>("RequiresBackgroundCheck")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_background_check");
+                        .HasColumnName("requires_background_check")
+                        .HasColumnOrder(65);
 
                     b.Property<decimal?>("ResidualValue")
                         .HasColumnType("numeric")
-                        .HasColumnName("residual_value");
+                        .HasColumnName("residual_value")
+                        .HasColumnOrder(66);
 
                     b.Property<string>("RiskLevel")
                         .HasColumnType("text")
-                        .HasColumnName("risk_level");
+                        .HasColumnName("risk_level")
+                        .HasColumnOrder(67);
 
                     b.Property<string>("SecurityClassification")
                         .HasColumnType("text")
-                        .HasColumnName("security_classification");
+                        .HasColumnName("security_classification")
+                        .HasColumnOrder(68);
 
                     b.Property<string>("SerialNo")
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("serial_no")
+                        .HasColumnOrder(69);
 
                     b.Property<string>("ServiceLevel")
                         .HasColumnType("text")
-                        .HasColumnName("service_level");
+                        .HasColumnName("service_level")
+                        .HasColumnOrder(70);
 
                     b.Property<string>("SoftwareVersion")
                         .HasColumnType("text")
-                        .HasColumnName("software_version");
+                        .HasColumnName("software_version")
+                        .HasColumnOrder(71);
 
                     b.Property<long?>("SupplierId")
                         .HasColumnType("bigint")
-                        .HasColumnName("supplier_id");
+                        .HasColumnName("supplier_id")
+                        .HasColumnOrder(72);
 
                     b.Property<DateTime?>("SupportExpiryDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("support_expiry_date");
+                        .HasColumnName("support_expiry_date")
+                        .HasColumnOrder(73);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(86);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(87);
 
                     b.Property<string>("UsageCode")
                         .HasColumnType("text")
-                        .HasColumnName("usage_code");
+                        .HasColumnName("usage_code")
+                        .HasColumnOrder(74);
 
                     b.Property<long?>("UsageStatusId")
                         .HasColumnType("bigint")
-                        .HasColumnName("usage_status_id");
+                        .HasColumnName("usage_status_id")
+                        .HasColumnOrder(75);
 
                     b.Property<int?>("UsefulLifeMonths")
                         .HasColumnType("integer")
-                        .HasColumnName("useful_life_months");
+                        .HasColumnName("useful_life_months")
+                        .HasColumnOrder(76);
 
                     b.Property<int?>("WarrantyMonths")
                         .HasColumnType("integer")
-                        .HasColumnName("warranty_months");
+                        .HasColumnName("warranty_months")
+                        .HasColumnOrder(77);
 
                     b.Property<string>("WarrantyTerms")
                         .HasColumnType("text")
-                        .HasColumnName("warranty_terms");
+                        .HasColumnName("warranty_terms")
+                        .HasColumnOrder(78);
 
                     b.Property<DateTime?>("WarrantyUntil")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("warranty_until");
+                        .HasColumnName("warranty_until")
+                        .HasColumnOrder(79);
 
                     b.Property<decimal?>("Weight")
                         .HasColumnType("numeric")
-                        .HasColumnName("weight");
+                        .HasColumnName("weight")
+                        .HasColumnOrder(80);
 
                     b.HasKey("Id")
                         .HasName("pk_assets");
@@ -424,7 +517,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("LocationId")
                         .HasDatabaseName("ix_assets_location_id");
 
-                    b.HasIndex("LocationId1");
+                    b.HasIndex("LocationId1")
+                        .HasDatabaseName("ix_assets_location_id1");
 
                     b.HasIndex("ManufacturerId")
                         .HasDatabaseName("ix_assets_manufacturer_id");
@@ -456,7 +550,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("UsageStatusId")
                         .HasDatabaseName("ix_assets_usage_status_id");
 
-                    b.ToTable("assets");
+                    b.ToTable("assets", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Assets.AssetEvent", b =>
@@ -464,80 +558,97 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("ActorId")
                         .HasColumnType("bigint")
-                        .HasColumnName("actor_id");
+                        .HasColumnName("actor_id")
+                        .HasColumnOrder(1);
 
                     b.Property<long>("AssetId")
                         .HasColumnType("bigint")
-                        .HasColumnName("asset_id");
+                        .HasColumnName("asset_id")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime>("At")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("at");
+                        .HasColumnName("at")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(10);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(11);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(12);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(13);
 
                     b.Property<string>("EventCode")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("event_code");
+                        .HasColumnName("event_code")
+                        .HasColumnOrder(4);
 
                     b.Property<long>("EventTypeId")
                         .HasColumnType("bigint")
-                        .HasColumnName("event_type_id");
+                        .HasColumnName("event_type_id")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("FromLifecycleCode")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("from_lifecycle_code");
+                        .HasColumnName("from_lifecycle_code")
+                        .HasColumnOrder(6);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(14);
 
                     b.Property<string>("Note")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
-                        .HasColumnName("note");
+                        .HasColumnName("note")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("Payload")
                         .HasColumnType("text")
-                        .HasColumnName("payload");
+                        .HasColumnName("payload")
+                        .HasColumnOrder(8);
 
                     b.Property<string>("ToLifecycleCode")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("to_lifecycle_code");
+                        .HasColumnName("to_lifecycle_code")
+                        .HasColumnOrder(9);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(15);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(16);
 
                     b.HasKey("Id")
                         .HasName("pk_asset_events");
@@ -554,7 +665,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("EventTypeId")
                         .HasDatabaseName("ix_asset_events_event_type_id");
 
-                    b.ToTable("asset_events");
+                    b.ToTable("asset_events", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Assets.Assignment", b =>
@@ -562,70 +673,85 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long>("AssetId")
                         .HasColumnType("bigint")
-                        .HasColumnName("asset_id");
+                        .HasColumnName("asset_id")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("AssignedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("assigned_at");
+                        .HasColumnName("assigned_at")
+                        .HasColumnOrder(2);
 
                     b.Property<long>("AssigneeId")
                         .HasColumnType("bigint")
-                        .HasColumnName("assignee_id");
+                        .HasColumnName("assignee_id")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("AssigneeType")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("assignee_type");
+                        .HasColumnName("assignee_type")
+                        .HasColumnOrder(4);
 
                     b.Property<long?>("ByUserId")
                         .HasColumnType("bigint")
-                        .HasColumnName("by_user_id");
+                        .HasColumnName("by_user_id")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("Comments")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
-                        .HasColumnName("comments");
+                        .HasColumnName("comments")
+                        .HasColumnOrder(6);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(8);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(9);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(10);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(11);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(12);
 
                     b.Property<DateTime?>("ReleasedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("released_at");
+                        .HasColumnName("released_at")
+                        .HasColumnOrder(7);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(13);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(14);
 
                     b.HasKey("Id")
                         .HasName("pk_assignments");
@@ -645,7 +771,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("ReleasedAt")
                         .HasDatabaseName("ix_assignments_released_at");
 
-                    b.ToTable("assignments");
+                    b.ToTable("assignments", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Assets.Attachment", b =>
@@ -653,61 +779,74 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<long?>("AssetId")
                         .HasColumnType("bigint")
-                        .HasColumnName("asset_id");
+                        .HasColumnName("asset_id")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(6);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(7);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(8);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("FileName")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("file_name");
+                        .HasColumnName("file_name")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("FileUrl")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
-                        .HasColumnName("file_url");
+                        .HasColumnName("file_url")
+                        .HasColumnOrder(3);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(10);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(11);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(12);
 
                     b.Property<DateTime>("UploadedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("uploaded_at");
+                        .HasColumnName("uploaded_at")
+                        .HasColumnOrder(4);
 
                     b.Property<long?>("UploadedBy")
                         .HasColumnType("bigint")
-                        .HasColumnName("uploaded_by");
+                        .HasColumnName("uploaded_by")
+                        .HasColumnOrder(5);
 
                     b.HasKey("Id")
                         .HasName("pk_attachments");
@@ -721,7 +860,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("UploadedBy")
                         .HasDatabaseName("ix_attachments_uploaded_by");
 
-                    b.ToTable("attachments");
+                    b.ToTable("attachments", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Authorization.Permission", b =>
@@ -729,55 +868,66 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(4);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(5);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(6);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("Description")
                         .HasColumnType("text")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(1);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(8);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(9);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(10);
 
                     b.Property<string>("_action")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("action");
+                        .HasColumnName("action")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("_resource")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("resource");
+                        .HasColumnName("resource")
+                        .HasColumnOrder(3);
 
                     b.HasKey("Id")
                         .HasName("pk_permissions");
@@ -795,46 +945,56 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(4);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(5);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(6);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(1);
 
                     b.Property<long>("NodeId")
                         .HasColumnType("bigint")
-                        .HasColumnName("node_id");
+                        .HasColumnName("node_id")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("type")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(8);
 
                     b.HasKey("Id")
                         .HasName("pk_resources");
@@ -845,7 +1005,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("Type", "NodeId")
                         .HasDatabaseName("ix_resources_type_node");
 
-                    b.ToTable("resources");
+                    b.ToTable("resources", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Authorization.Role", b =>
@@ -853,62 +1013,76 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("code")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(6);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(7);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(8);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("Description")
                         .HasColumnType("text")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(10);
 
                     b.Property<bool>("IsSystemRole")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_system_role");
+                        .HasColumnName("is_system_role")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(4);
 
                     b.Property<int>("Rank")
                         .HasColumnType("integer")
-                        .HasColumnName("rank");
+                        .HasColumnName("rank")
+                        .HasColumnOrder(5);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(11);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(12);
 
                     b.HasKey("Id")
                         .HasName("pk_roles");
@@ -921,7 +1095,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("Rank")
                         .HasDatabaseName("ix_roles_rank");
 
-                    b.ToTable("roles");
+                    b.ToTable("roles", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Authorization.RolePermission", b =>
@@ -938,12 +1112,13 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("granted_by_id");
 
-                    b.HasKey("RoleId", "PermissionId");
+                    b.HasKey("RoleId", "PermissionId")
+                        .HasName("pk_role_permissions");
 
                     b.HasIndex("PermissionId")
                         .HasDatabaseName("ix_role_permissions_permission_id");
 
-                    b.ToTable("role_permissions");
+                    b.ToTable("role_permissions", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Authorization.SigningKey", b =>
@@ -951,7 +1126,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
@@ -959,103 +1135,124 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("algorithm");
+                        .HasColumnName("algorithm")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(15);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(16);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(17);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(18);
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime?>("ExpiresAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at");
+                        .HasColumnName("expires_at")
+                        .HasColumnOrder(3);
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasColumnOrder(4);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(19);
 
                     b.Property<bool>("IsRevoked")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_revoked");
+                        .HasColumnName("is_revoked")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("KeyId")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("key_id");
+                        .HasColumnName("key_id")
+                        .HasColumnOrder(6);
 
                     b.Property<int>("KeySize")
                         .HasColumnType("integer")
-                        .HasColumnName("key_size");
+                        .HasColumnName("key_size")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("KeyType")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
-                        .HasColumnName("key_type");
+                        .HasColumnName("key_type")
+                        .HasColumnOrder(8);
 
                     b.Property<DateTime?>("LastUsedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_used_at");
+                        .HasColumnName("last_used_at")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("PrivateKey")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("private_key");
+                        .HasColumnName("private_key")
+                        .HasColumnOrder(10);
 
                     b.Property<string>("PublicKey")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("public_key");
+                        .HasColumnName("public_key")
+                        .HasColumnOrder(11);
 
                     b.Property<string>("RevocationReason")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("revocation_reason");
+                        .HasColumnName("revocation_reason")
+                        .HasColumnOrder(12);
 
                     b.Property<DateTime?>("RevokedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("revoked_at");
+                        .HasColumnName("revoked_at")
+                        .HasColumnOrder(13);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(20);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(21);
 
                     b.Property<string>("Use")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
-                        .HasColumnName("use");
+                        .HasColumnName("use")
+                        .HasColumnOrder(14);
 
                     b.HasKey("Id")
                         .HasName("pk_signing_keys");
@@ -1074,7 +1271,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDatabaseName("ix_signing_keys_key_id")
                         .HasFilter("is_deleted = false");
 
-                    b.ToTable("signing_keys");
+                    b.ToTable("signing_keys", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Authorization.UserNodeRole", b =>
@@ -1103,7 +1300,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("start_at");
 
-                    b.HasKey("UserId", "NodeId", "RoleId");
+                    b.HasKey("UserId", "NodeId", "RoleId")
+                        .HasName("pk_user_node_roles");
 
                     b.HasIndex("NodeId")
                         .HasDatabaseName("ix_user_node_roles_node_id");
@@ -1114,7 +1312,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_user_node_roles_user_id");
 
-                    b.ToTable("user_node_roles");
+                    b.ToTable("user_node_roles", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Categories.AssetCategory", b =>
@@ -1122,207 +1320,254 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Aliases")
                         .HasColumnType("text")
-                        .HasColumnName("aliases");
+                        .HasColumnName("aliases")
+                        .HasColumnOrder(1);
 
                     b.Property<int>("AssetCount")
                         .HasColumnType("integer")
-                        .HasColumnName("asset_count");
+                        .HasColumnName("asset_count")
+                        .HasColumnOrder(2);
 
                     b.Property<int?>("AuditIntervalMonths")
                         .HasColumnType("integer")
-                        .HasColumnName("audit_interval_months");
+                        .HasColumnName("audit_interval_months")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("CategoryType")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("category_type");
+                        .HasColumnName("category_type")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("Code")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("code");
+                        .HasColumnName("code")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("Color")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("color");
+                        .HasColumnName("color")
+                        .HasColumnOrder(6);
 
                     b.Property<string>("ComplianceStandards")
                         .HasColumnType("text")
-                        .HasColumnName("compliance_standards");
+                        .HasColumnName("compliance_standards")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("CostCenter")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("cost_center");
+                        .HasColumnName("cost_center")
+                        .HasColumnOrder(8);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(39);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(40);
 
                     b.Property<string>("DefaultDepreciationMethod")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("default_depreciation_method");
+                        .HasColumnName("default_depreciation_method")
+                        .HasColumnOrder(9);
 
                     b.Property<decimal?>("DefaultResidualValuePercentage")
                         .HasColumnType("numeric")
-                        .HasColumnName("default_residual_value_percentage");
+                        .HasColumnName("default_residual_value_percentage")
+                        .HasColumnOrder(10);
 
                     b.Property<int?>("DefaultUsefulLifeMonths")
                         .HasColumnType("integer")
-                        .HasColumnName("default_useful_life_months");
+                        .HasColumnName("default_useful_life_months")
+                        .HasColumnOrder(11);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(41);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(42);
 
                     b.Property<string>("DepreciationAccountCode")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("depreciation_account_code");
+                        .HasColumnName("depreciation_account_code")
+                        .HasColumnOrder(12);
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(13);
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer")
-                        .HasColumnName("display_order");
+                        .HasColumnName("display_order")
+                        .HasColumnOrder(14);
 
                     b.Property<string>("GLAccountCode")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("glaccount_code");
+                        .HasColumnName("glaccount_code")
+                        .HasColumnOrder(15);
 
                     b.Property<string>("IconName")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("icon_name");
+                        .HasColumnName("icon_name")
+                        .HasColumnOrder(16);
 
                     b.Property<string>("IconUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("icon_url")
+                        .HasColumnOrder(17);
 
                     b.Property<string>("Industry")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("industry");
+                        .HasColumnName("industry")
+                        .HasColumnOrder(18);
 
                     b.Property<string>("InternalNotes")
                         .HasColumnType("text")
-                        .HasColumnName("internal_notes");
+                        .HasColumnName("internal_notes")
+                        .HasColumnOrder(19);
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasColumnOrder(20);
 
                     b.Property<bool>("IsCapitalized")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_capitalized");
+                        .HasColumnName("is_capitalized")
+                        .HasColumnOrder(21);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(43);
 
                     b.Property<bool>("IsDepreciable")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_depreciable");
+                        .HasColumnName("is_depreciable")
+                        .HasColumnOrder(22);
 
                     b.Property<bool>("IsSystemCategory")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_system_category");
+                        .HasColumnName("is_system_category")
+                        .HasColumnOrder(23);
 
                     b.Property<int>("Level")
                         .HasColumnType("integer")
-                        .HasColumnName("level");
+                        .HasColumnName("level")
+                        .HasColumnOrder(24);
 
                     b.Property<string>("LongDescription")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)")
-                        .HasColumnName("long_description");
+                        .HasColumnName("long_description")
+                        .HasColumnOrder(25);
 
                     b.Property<decimal?>("MinimumCapitalizationValue")
                         .HasColumnType("numeric")
-                        .HasColumnName("minimum_capitalization_value");
+                        .HasColumnName("minimum_capitalization_value")
+                        .HasColumnOrder(26);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(27);
 
                     b.Property<long?>("ParentId")
                         .HasColumnType("bigint")
-                        .HasColumnName("parent_id");
+                        .HasColumnName("parent_id")
+                        .HasColumnOrder(28);
 
                     b.Property<string>("Path")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
-                        .HasColumnName("path");
+                        .HasColumnName("path")
+                        .HasColumnOrder(29);
 
                     b.Property<bool>("RequiresAudit")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_audit");
+                        .HasColumnName("requires_audit")
+                        .HasColumnOrder(30);
 
                     b.Property<bool>("RequiresCompliance")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_compliance");
+                        .HasColumnName("requires_compliance")
+                        .HasColumnOrder(31);
 
                     b.Property<bool>("RequiresInsurance")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_insurance");
+                        .HasColumnName("requires_insurance")
+                        .HasColumnOrder(32);
 
                     b.Property<bool>("RequiresMaintenance")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_maintenance");
+                        .HasColumnName("requires_maintenance")
+                        .HasColumnOrder(33);
 
                     b.Property<string>("SearchKeywords")
                         .HasColumnType("text")
-                        .HasColumnName("search_keywords");
+                        .HasColumnName("search_keywords")
+                        .HasColumnOrder(34);
 
                     b.Property<string>("Sector")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("sector");
+                        .HasColumnName("sector")
+                        .HasColumnOrder(35);
 
                     b.Property<string>("Tags")
                         .HasColumnType("text")
-                        .HasColumnName("tags");
+                        .HasColumnName("tags")
+                        .HasColumnOrder(36);
 
                     b.Property<decimal?>("TotalValue")
                         .HasColumnType("numeric")
-                        .HasColumnName("total_value");
+                        .HasColumnName("total_value")
+                        .HasColumnOrder(37);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(44);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(45);
 
                     b.Property<string>("ValuationMethod")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("valuation_method");
+                        .HasColumnName("valuation_method")
+                        .HasColumnOrder(38);
 
                     b.HasKey("Id")
                         .HasName("pk_asset_categories");
@@ -1344,7 +1589,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("ParentId")
                         .HasDatabaseName("ix_asset_categories_parent_id");
 
-                    b.ToTable("asset_categories");
+                    b.ToTable("asset_categories", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Common.Entities.MenuItem", b =>
@@ -1352,128 +1597,154 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Badge")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("badge");
+                        .HasColumnName("badge")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("BadgeVariant")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("badge_variant");
+                        .HasColumnName("badge_variant")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("code");
+                        .HasColumnName("code")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(19);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(20);
 
                     b.Property<string>("CssClass")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("css_class");
+                        .HasColumnName("css_class")
+                        .HasColumnOrder(4);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(21);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(22);
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("ExternalUrl")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
-                        .HasColumnName("external_url");
+                        .HasColumnName("external_url")
+                        .HasColumnOrder(6);
 
                     b.Property<string>("Icon")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("icon");
+                        .HasColumnName("icon")
+                        .HasColumnOrder(7);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(23);
 
                     b.Property<bool>("IsEnabled")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
-                        .HasColumnName("is_enabled");
+                        .HasColumnName("is_enabled")
+                        .HasColumnOrder(8);
 
                     b.Property<bool>("IsVisible")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
-                        .HasColumnName("is_visible");
+                        .HasColumnName("is_visible")
+                        .HasColumnOrder(9);
 
                     b.Property<int>("Level")
                         .HasColumnType("integer")
-                        .HasColumnName("level");
+                        .HasColumnName("level")
+                        .HasColumnOrder(10);
 
                     b.Property<string>("Metadata")
                         .HasColumnType("text")
-                        .HasColumnName("metadata");
+                        .HasColumnName("metadata")
+                        .HasColumnOrder(11);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(12);
 
                     b.Property<bool>("OpenInNewTab")
                         .HasColumnType("boolean")
-                        .HasColumnName("open_in_new_tab");
+                        .HasColumnName("open_in_new_tab")
+                        .HasColumnOrder(13);
 
                     b.Property<long?>("ParentId")
                         .HasColumnType("bigint")
-                        .HasColumnName("parent_id");
+                        .HasColumnName("parent_id")
+                        .HasColumnOrder(14);
 
                     b.Property<string>("RequiredPermission")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("required_permission");
+                        .HasColumnName("required_permission")
+                        .HasColumnOrder(15);
 
                     b.Property<string>("RequiredRoles")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("required_roles");
+                        .HasColumnName("required_roles")
+                        .HasColumnOrder(16);
 
                     b.Property<string>("Route")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("route");
+                        .HasColumnName("route")
+                        .HasColumnOrder(17);
 
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer")
-                        .HasColumnName("sort_order");
+                        .HasColumnName("sort_order")
+                        .HasColumnOrder(18);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(24);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(25);
 
                     b.HasKey("Id")
                         .HasName("pk_menu_items");
@@ -1492,7 +1763,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("SortOrder")
                         .HasDatabaseName("ix_menu_items_sort_order");
 
-                    b.ToTable("menu_items");
+                    b.ToTable("menu_items", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Common.Entities.SystemSetting", b =>
@@ -1500,114 +1771,138 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(17);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(18);
 
                     b.Property<int>("DataType")
                         .HasColumnType("integer")
-                        .HasColumnName("data_type");
+                        .HasColumnName("data_type")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("DefaultValue")
                         .HasColumnType("text")
-                        .HasColumnName("default_value");
+                        .HasColumnName("default_value")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(19);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(20);
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("display_name");
+                        .HasColumnName("display_name")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("Group")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("group");
+                        .HasColumnName("group")
+                        .HasColumnOrder(5);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(21);
 
                     b.Property<bool>("IsEditable")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
-                        .HasColumnName("is_editable");
+                        .HasColumnName("is_editable")
+                        .HasColumnOrder(6);
 
                     b.Property<bool>("IsRequired")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_required");
+                        .HasColumnName("is_required")
+                        .HasColumnOrder(7);
 
                     b.Property<bool>("IsSensitive")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_sensitive");
+                        .HasColumnName("is_sensitive")
+                        .HasColumnOrder(8);
 
                     b.Property<bool>("IsVisible")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
-                        .HasColumnName("is_visible");
+                        .HasColumnName("is_visible")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("Key")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("key");
+                        .HasColumnName("key")
+                        .HasColumnOrder(10);
 
                     b.Property<long?>("LastModifiedBy")
                         .HasColumnType("bigint")
-                        .HasColumnName("last_modified_by");
+                        .HasColumnName("last_modified_by")
+                        .HasColumnOrder(11);
 
                     b.Property<string>("Metadata")
                         .HasColumnType("text")
-                        .HasColumnName("metadata");
+                        .HasColumnName("metadata")
+                        .HasColumnOrder(12);
 
                     b.Property<string>("Options")
                         .HasColumnType("text")
-                        .HasColumnName("options");
+                        .HasColumnName("options")
+                        .HasColumnOrder(13);
 
                     b.Property<int>("SortOrder")
                         .HasColumnType("integer")
-                        .HasColumnName("sort_order");
+                        .HasColumnName("sort_order")
+                        .HasColumnOrder(14);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(22);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(23);
 
                     b.Property<string>("ValidationRules")
                         .HasColumnType("text")
-                        .HasColumnName("validation_rules");
+                        .HasColumnName("validation_rules")
+                        .HasColumnOrder(15);
 
                     b.Property<string>("Value")
                         .HasColumnType("text")
-                        .HasColumnName("value");
+                        .HasColumnName("value")
+                        .HasColumnOrder(16);
 
                     b.HasKey("Id")
                         .HasName("pk_system_settings");
@@ -1623,7 +1918,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDatabaseName("ix_system_settings_key")
                         .HasFilter("is_deleted = false");
 
-                    b.ToTable("system_settings");
+                    b.ToTable("system_settings", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Conditions.AssetCondition", b =>
@@ -1631,50 +1926,60 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(3);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(4);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(5);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(6);
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(1);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(8);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(9);
 
                     b.HasKey("Id")
                         .HasName("pk_asset_conditions");
@@ -1684,7 +1989,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDatabaseName("ix_asset_conditions_name")
                         .HasFilter("is_deleted = false");
 
-                    b.ToTable("asset_conditions");
+                    b.ToTable("asset_conditions", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.EmailTemplates.EmailTemplate", b =>
@@ -1692,91 +1997,109 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AvailablePlaceholders")
                         .HasColumnType("text")
-                        .HasColumnName("available_placeholders");
+                        .HasColumnName("available_placeholders")
+                        .HasColumnOrder(1);
 
                     b.Property<int>("Category")
                         .HasColumnType("integer")
-                        .HasColumnName("category");
+                        .HasColumnName("category")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("code");
+                        .HasColumnName("code")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(11);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(12);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(13);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(14);
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("HtmlBody")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("html_body");
+                        .HasColumnName("html_body")
+                        .HasColumnOrder(5);
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasColumnOrder(6);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(15);
 
                     b.Property<bool>("IsSystem")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_system");
+                        .HasColumnName("is_system")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(8);
 
                     b.Property<string>("PlainTextBody")
                         .HasColumnType("text")
-                        .HasColumnName("plain_text_body");
+                        .HasColumnName("plain_text_body")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("subject");
+                        .HasColumnName("subject")
+                        .HasColumnOrder(10);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(16);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(17);
 
                     b.HasKey("Id")
                         .HasName("pk_email_templates");
@@ -1795,7 +2118,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("IsSystem")
                         .HasDatabaseName("ix_email_templates_is_system");
 
-                    b.ToTable("email_templates");
+                    b.ToTable("email_templates", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Finance.FinanceEntry", b =>
@@ -1803,65 +2126,79 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric")
-                        .HasColumnName("amount");
+                        .HasColumnName("amount")
+                        .HasColumnOrder(1);
 
                     b.Property<long>("AssetId")
                         .HasColumnType("bigint")
-                        .HasColumnName("asset_id");
+                        .HasColumnName("asset_id")
+                        .HasColumnOrder(2);
 
                     b.Property<decimal?>("BookValueAfter")
                         .HasColumnType("numeric")
-                        .HasColumnName("book_value_after");
+                        .HasColumnName("book_value_after")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(7);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(8);
 
                     b.Property<long?>("CreatorId")
                         .HasColumnType("bigint")
-                        .HasColumnName("creator_id");
+                        .HasColumnName("creator_id")
+                        .HasColumnOrder(4);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(9);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(10);
 
                     b.Property<string>("EntryType")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("entry_type");
+                        .HasColumnName("entry_type")
+                        .HasColumnOrder(5);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(11);
 
                     b.Property<DateTime>("Period")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("period");
+                        .HasColumnName("period")
+                        .HasColumnOrder(6);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(12);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(13);
 
                     b.HasKey("Id")
                         .HasName("pk_finance_entries");
@@ -1869,7 +2206,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("AssetId")
                         .HasDatabaseName("ix_finance_entries_asset_id");
 
-                    b.HasIndex("CreatedById");
+                    b.HasIndex("CreatedById")
+                        .HasDatabaseName("ix_finance_entries_created_by_id");
 
                     b.HasIndex("CreatorId")
                         .HasDatabaseName("ix_finance_entries_creator_id");
@@ -1880,7 +2218,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("Period")
                         .HasDatabaseName("ix_finance_entries_period");
 
-                    b.ToTable("finance_entries");
+                    b.ToTable("finance_entries", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Geography.Country", b =>
@@ -1888,167 +2226,205 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<decimal?>("Area")
                         .HasColumnType("numeric")
-                        .HasColumnName("area");
+                        .HasColumnName("area")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Capital")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("capital");
+                        .HasColumnName("capital")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("CoatOfArms")
                         .HasColumnType("text")
-                        .HasColumnName("coat_of_arms");
+                        .HasColumnName("coat_of_arms")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(2)
-                        .HasColumnType("character varying(2)");
+                        .HasColumnType("character varying(2)")
+                        .HasColumnName("code")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("Continent")
                         .HasColumnType("text")
-                        .HasColumnName("continent");
+                        .HasColumnName("continent")
+                        .HasColumnOrder(5);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(30);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(31);
 
                     b.Property<string>("CurrencyCode")
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
-                        .HasColumnName("currency_code");
+                        .HasColumnName("currency_code")
+                        .HasColumnOrder(6);
 
                     b.Property<string>("CurrencyName")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("currency_name");
+                        .HasColumnName("currency_name")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("CurrencySymbol")
                         .HasColumnType("text")
-                        .HasColumnName("currency_symbol");
+                        .HasColumnName("currency_symbol")
+                        .HasColumnOrder(8);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(32);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(33);
 
                     b.Property<string>("Flag")
                         .HasColumnType("text")
-                        .HasColumnName("flag");
+                        .HasColumnName("flag")
+                        .HasColumnOrder(9);
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasColumnOrder(10);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(34);
 
                     b.Property<bool>("IsEUMember")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_eumember");
+                        .HasColumnName("is_eumember")
+                        .HasColumnOrder(11);
 
                     b.Property<bool>("IsIndependent")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_independent");
+                        .HasColumnName("is_independent")
+                        .HasColumnOrder(12);
 
                     b.Property<bool>("IsUNMember")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_unmember");
+                        .HasColumnName("is_unmember")
+                        .HasColumnOrder(13);
 
                     b.Property<string>("Iso3Code")
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
-                        .HasColumnName("iso3_code");
+                        .HasColumnName("iso3_code")
+                        .HasColumnOrder(14);
 
                     b.Property<string>("Languages")
                         .HasColumnType("text")
-                        .HasColumnName("languages");
+                        .HasColumnName("languages")
+                        .HasColumnOrder(15);
 
                     b.Property<decimal?>("Latitude")
                         .HasColumnType("numeric")
-                        .HasColumnName("latitude");
+                        .HasColumnName("latitude")
+                        .HasColumnOrder(16);
 
                     b.Property<decimal?>("Longitude")
                         .HasColumnType("numeric")
-                        .HasColumnName("longitude");
+                        .HasColumnName("longitude")
+                        .HasColumnOrder(17);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(18);
 
                     b.Property<string>("Nationality")
                         .HasColumnType("text")
-                        .HasColumnName("nationality");
+                        .HasColumnName("nationality")
+                        .HasColumnOrder(19);
 
                     b.Property<string>("NativeName")
                         .HasColumnType("text")
-                        .HasColumnName("native_name");
+                        .HasColumnName("native_name")
+                        .HasColumnOrder(20);
 
                     b.Property<string>("NumericCode")
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
-                        .HasColumnName("numeric_code");
+                        .HasColumnName("numeric_code")
+                        .HasColumnOrder(21);
 
                     b.Property<string>("OfficialName")
                         .HasColumnType("text")
-                        .HasColumnName("official_name");
+                        .HasColumnName("official_name")
+                        .HasColumnOrder(22);
 
                     b.Property<string>("PhoneCode")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
-                        .HasColumnName("phone_code");
+                        .HasColumnName("phone_code")
+                        .HasColumnOrder(23);
 
                     b.Property<long?>("Population")
                         .HasColumnType("bigint")
-                        .HasColumnName("population");
+                        .HasColumnName("population")
+                        .HasColumnOrder(24);
 
                     b.Property<string>("PrimaryLanguage")
                         .HasColumnType("text")
-                        .HasColumnName("primary_language");
+                        .HasColumnName("primary_language")
+                        .HasColumnOrder(25);
 
                     b.Property<string>("Region")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("region");
+                        .HasColumnName("region")
+                        .HasColumnOrder(26);
 
                     b.Property<string>("SubRegion")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("sub_region");
+                        .HasColumnName("sub_region")
+                        .HasColumnOrder(27);
 
                     b.Property<string>("TLD")
                         .HasMaxLength(5)
                         .HasColumnType("character varying(5)")
-                        .HasColumnName("tld");
+                        .HasColumnName("tld")
+                        .HasColumnOrder(28);
 
                     b.Property<string>("TimeZones")
                         .HasColumnType("text")
-                        .HasColumnName("time_zones");
+                        .HasColumnName("time_zones")
+                        .HasColumnOrder(29);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(35);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(36);
 
                     b.HasKey("Id")
                         .HasName("pk_countries");
@@ -2061,7 +2437,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("Name")
                         .HasDatabaseName("ix_countries_name");
 
-                    b.ToTable("countries");
+                    b.ToTable("countries", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Locations.Location", b =>
@@ -2069,85 +2445,104 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Code")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("code");
+                        .HasColumnName("code")
+                        .HasColumnOrder(1);
 
                     b.Property<long?>("CompanyId")
                         .HasColumnType("bigint")
-                        .HasColumnName("company_id");
+                        .HasColumnName("company_id")
+                        .HasColumnOrder(2);
 
                     b.Property<long?>("CountryId")
                         .HasColumnType("bigint")
-                        .HasColumnName("country_id");
+                        .HasColumnName("country_id")
+                        .HasColumnOrder(3);
 
                     b.Property<long?>("CountryId1")
-                        .HasColumnType("bigint");
+                        .HasColumnType("bigint")
+                        .HasColumnName("country_id1")
+                        .HasColumnOrder(4);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(11);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(12);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(13);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(14);
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("FullPath")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
-                        .HasColumnName("full_path");
+                        .HasColumnName("full_path")
+                        .HasColumnOrder(6);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(15);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(7);
 
                     b.Property<long?>("ParentId")
                         .HasColumnType("bigint")
-                        .HasColumnName("parent_id");
+                        .HasColumnName("parent_id")
+                        .HasColumnOrder(8);
 
                     b.Property<string>("PathIds")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
-                        .HasColumnName("path_ids");
+                        .HasColumnName("path_ids")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("Type")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("type");
+                        .HasColumnName("type")
+                        .HasColumnOrder(10);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(16);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(17);
 
                     b.HasKey("Id")
                         .HasName("pk_locations");
@@ -2163,7 +2558,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("CountryId")
                         .HasDatabaseName("ix_locations_country_id");
 
-                    b.HasIndex("CountryId1");
+                    b.HasIndex("CountryId1")
+                        .HasDatabaseName("ix_locations_country_id1");
 
                     b.HasIndex("Name")
                         .HasDatabaseName("ix_locations_name");
@@ -2171,7 +2567,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("ParentId")
                         .HasDatabaseName("ix_locations_parent_id");
 
-                    b.ToTable("locations");
+                    b.ToTable("locations", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Manufacturers.Manufacturer", b =>
@@ -2179,264 +2575,332 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AccountManager")
                         .HasColumnType("text")
-                        .HasColumnName("account_manager");
+                        .HasColumnName("account_manager")
+                        .HasColumnOrder(1);
 
                     b.Property<decimal?>("AnnualRevenue")
                         .HasColumnType("numeric")
-                        .HasColumnName("annual_revenue");
+                        .HasColumnName("annual_revenue")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("BrandName")
                         .HasColumnType("text")
-                        .HasColumnName("brand_name");
+                        .HasColumnName("brand_name")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("BusinessType")
                         .HasColumnType("text")
-                        .HasColumnName("business_type");
+                        .HasColumnName("business_type")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("Certifications")
                         .HasColumnType("text")
-                        .HasColumnName("certifications");
+                        .HasColumnName("certifications")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("City")
                         .HasColumnType("text")
-                        .HasColumnName("city");
+                        .HasColumnName("city")
+                        .HasColumnOrder(6);
 
                     b.Property<long?>("CountryId")
                         .HasColumnType("bigint")
-                        .HasColumnName("country_id");
+                        .HasColumnName("country_id")
+                        .HasColumnOrder(7);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(55);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(56);
 
                     b.Property<string>("DUNSNumber")
                         .HasColumnType("text")
-                        .HasColumnName("dunsnumber");
+                        .HasColumnName("dunsnumber")
+                        .HasColumnOrder(8);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(57);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(58);
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(9);
 
                     b.Property<decimal?>("DiscountRate")
                         .HasColumnType("numeric")
-                        .HasColumnName("discount_rate");
+                        .HasColumnName("discount_rate")
+                        .HasColumnOrder(10);
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("email");
+                        .HasColumnName("email")
+                        .HasColumnOrder(11);
 
                     b.Property<int?>("EmployeeCount")
                         .HasColumnType("integer")
-                        .HasColumnName("employee_count");
+                        .HasColumnName("employee_count")
+                        .HasColumnOrder(12);
 
                     b.Property<string>("FacebookUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("facebook_url")
+                        .HasColumnOrder(13);
 
                     b.Property<string>("Fax")
                         .HasColumnType("text")
-                        .HasColumnName("fax");
+                        .HasColumnName("fax")
+                        .HasColumnOrder(14);
 
                     b.Property<DateTime?>("FoundedDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("founded_date");
+                        .HasColumnName("founded_date")
+                        .HasColumnOrder(15);
 
                     b.Property<string>("HeadquartersAddress")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("headquarters_address");
+                        .HasColumnName("headquarters_address")
+                        .HasColumnOrder(16);
 
                     b.Property<string>("ISO14001Certified")
                         .HasColumnType("text")
-                        .HasColumnName("iso14001_certified");
+                        .HasColumnName("iso14001_certified")
+                        .HasColumnOrder(17);
 
                     b.Property<string>("ISO27001Certified")
                         .HasColumnType("text")
-                        .HasColumnName("iso27001_certified");
+                        .HasColumnName("iso27001_certified")
+                        .HasColumnOrder(18);
 
                     b.Property<string>("ISO9001Certified")
                         .HasColumnType("text")
-                        .HasColumnName("iso9001_certified");
+                        .HasColumnName("iso9001_certified")
+                        .HasColumnOrder(19);
 
                     b.Property<string>("IndustryType")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("industry_type");
+                        .HasColumnName("industry_type")
+                        .HasColumnOrder(20);
 
                     b.Property<string>("InternalNotes")
                         .HasColumnType("text")
-                        .HasColumnName("internal_notes");
+                        .HasColumnName("internal_notes")
+                        .HasColumnOrder(21);
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasColumnOrder(22);
 
                     b.Property<bool>("IsApproved")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_approved");
+                        .HasColumnName("is_approved")
+                        .HasColumnOrder(23);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(59);
 
                     b.Property<bool>("IsPreferred")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_preferred");
+                        .HasColumnName("is_preferred")
+                        .HasColumnOrder(24);
 
                     b.Property<string>("LeadTime")
                         .HasColumnType("text")
-                        .HasColumnName("lead_time");
+                        .HasColumnName("lead_time")
+                        .HasColumnOrder(25);
 
                     b.Property<string>("LegalName")
                         .HasColumnType("text")
-                        .HasColumnName("legal_name");
+                        .HasColumnName("legal_name")
+                        .HasColumnOrder(26);
 
                     b.Property<string>("LinkedInUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("linked_in_url")
+                        .HasColumnOrder(27);
 
                     b.Property<string>("LogoUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("logo_url")
+                        .HasColumnOrder(28);
 
                     b.Property<string>("MinimumOrderQuantity")
                         .HasColumnType("text")
-                        .HasColumnName("minimum_order_quantity");
+                        .HasColumnName("minimum_order_quantity")
+                        .HasColumnOrder(29);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(30);
 
                     b.Property<DateTime?>("PartnerSince")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("partner_since");
+                        .HasColumnName("partner_since")
+                        .HasColumnOrder(31);
 
                     b.Property<string>("PaymentTerms")
                         .HasColumnType("text")
-                        .HasColumnName("payment_terms");
+                        .HasColumnName("payment_terms")
+                        .HasColumnOrder(32);
 
                     b.Property<string>("Phone")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("phone");
+                        .HasColumnName("phone")
+                        .HasColumnOrder(33);
 
                     b.Property<string>("PostalCode")
                         .HasColumnType("text")
-                        .HasColumnName("postal_code");
+                        .HasColumnName("postal_code")
+                        .HasColumnOrder(34);
 
                     b.Property<string>("PreferredCurrency")
                         .HasColumnType("text")
-                        .HasColumnName("preferred_currency");
+                        .HasColumnName("preferred_currency")
+                        .HasColumnOrder(35);
 
                     b.Property<decimal?>("PriceRating")
                         .HasColumnType("numeric")
-                        .HasColumnName("price_rating");
+                        .HasColumnName("price_rating")
+                        .HasColumnOrder(36);
 
                     b.Property<decimal?>("QualityRating")
                         .HasColumnType("numeric")
-                        .HasColumnName("quality_rating");
+                        .HasColumnName("quality_rating")
+                        .HasColumnOrder(37);
 
                     b.Property<string>("RegistrationNumber")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("registration_number");
+                        .HasColumnName("registration_number")
+                        .HasColumnOrder(38);
 
                     b.Property<string>("RevenueCurrency")
                         .HasColumnType("text")
-                        .HasColumnName("revenue_currency");
+                        .HasColumnName("revenue_currency")
+                        .HasColumnOrder(39);
 
                     b.Property<string>("SLADocumentUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("sla_document_url")
+                        .HasColumnOrder(40);
 
                     b.Property<decimal?>("ServiceRating")
                         .HasColumnType("numeric")
-                        .HasColumnName("service_rating");
+                        .HasColumnName("service_rating")
+                        .HasColumnOrder(41);
 
                     b.Property<string>("ShortName")
                         .HasColumnType("text")
-                        .HasColumnName("short_name");
+                        .HasColumnName("short_name")
+                        .HasColumnOrder(42);
 
                     b.Property<int?>("StandardWarrantyMonths")
                         .HasColumnType("integer")
-                        .HasColumnName("standard_warranty_months");
+                        .HasColumnName("standard_warranty_months")
+                        .HasColumnOrder(43);
 
                     b.Property<string>("State")
                         .HasColumnType("text")
-                        .HasColumnName("state");
+                        .HasColumnName("state")
+                        .HasColumnOrder(44);
 
                     b.Property<string>("SupportEmail")
                         .HasColumnType("text")
-                        .HasColumnName("support_email");
+                        .HasColumnName("support_email")
+                        .HasColumnOrder(45);
 
                     b.Property<string>("SupportHours")
                         .HasColumnType("text")
-                        .HasColumnName("support_hours");
+                        .HasColumnName("support_hours")
+                        .HasColumnOrder(46);
 
                     b.Property<string>("SupportPhone")
                         .HasColumnType("text")
-                        .HasColumnName("support_phone");
+                        .HasColumnName("support_phone")
+                        .HasColumnOrder(47);
 
                     b.Property<string>("SupportWebsite")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("support_website")
+                        .HasColumnOrder(48);
 
                     b.Property<string>("Tagline")
                         .HasColumnType("text")
-                        .HasColumnName("tagline");
+                        .HasColumnName("tagline")
+                        .HasColumnOrder(49);
 
                     b.Property<string>("TaxId")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("tax_id");
+                        .HasColumnName("tax_id")
+                        .HasColumnOrder(50);
 
                     b.Property<string>("TwitterHandle")
                         .HasColumnType("text")
-                        .HasColumnName("twitter_handle");
+                        .HasColumnName("twitter_handle")
+                        .HasColumnOrder(51);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(60);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(61);
 
                     b.Property<string>("VATNumber")
                         .HasColumnType("text")
-                        .HasColumnName("vatnumber");
+                        .HasColumnName("vatnumber")
+                        .HasColumnOrder(52);
 
                     b.Property<string>("WarrantyPolicy")
                         .HasColumnType("text")
-                        .HasColumnName("warranty_policy");
+                        .HasColumnName("warranty_policy")
+                        .HasColumnOrder(53);
 
                     b.Property<string>("Website")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("website")
+                        .HasColumnOrder(54);
 
                     b.HasKey("Id")
                         .HasName("pk_manufacturers");
@@ -2450,7 +2914,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("Name")
                         .HasDatabaseName("ix_manufacturers_name");
 
-                    b.ToTable("manufacturers");
+                    b.ToTable("manufacturers", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Models.Model", b =>
@@ -2458,380 +2922,475 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AvailabilityStatus")
                         .HasColumnType("text")
-                        .HasColumnName("availability_status");
+                        .HasColumnName("availability_status")
+                        .HasColumnOrder(1);
 
                     b.Property<decimal?>("AverageCost")
                         .HasColumnType("numeric")
-                        .HasColumnName("average_cost");
+                        .HasColumnName("average_cost")
+                        .HasColumnOrder(2);
 
                     b.Property<long?>("CategoryId")
                         .HasColumnType("bigint")
-                        .HasColumnName("category_id");
+                        .HasColumnName("category_id")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Certifications")
                         .HasColumnType("text")
-                        .HasColumnName("certifications");
+                        .HasColumnName("certifications")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("Color")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("color");
+                        .HasColumnName("color")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("CompatibleModels")
                         .HasColumnType("text")
-                        .HasColumnName("compatible_models");
+                        .HasColumnName("compatible_models")
+                        .HasColumnOrder(6);
 
                     b.Property<string>("ComplianceStandards")
                         .HasColumnType("text")
-                        .HasColumnName("compliance_standards");
+                        .HasColumnName("compliance_standards")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("Connectivity")
                         .HasColumnType("text")
-                        .HasColumnName("connectivity");
+                        .HasColumnName("connectivity")
+                        .HasColumnOrder(8);
 
                     b.Property<string>("CostCurrency")
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
-                        .HasColumnName("cost_currency");
+                        .HasColumnName("cost_currency")
+                        .HasColumnOrder(9);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(80);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(81);
 
                     b.Property<int?>("CurrentStock")
                         .HasColumnType("integer")
-                        .HasColumnName("current_stock");
+                        .HasColumnName("current_stock")
+                        .HasColumnOrder(10);
 
                     b.Property<string>("DatasheetUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("datasheet_url")
+                        .HasColumnOrder(11);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(82);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(83);
 
                     b.Property<string>("DepreciationMethod")
                         .HasColumnType("text")
-                        .HasColumnName("depreciation_method");
+                        .HasColumnName("depreciation_method")
+                        .HasColumnOrder(12);
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(13);
 
                     b.Property<string>("DimensionUnit")
                         .HasMaxLength(10)
                         .HasColumnType("character varying(10)")
-                        .HasColumnName("dimension_unit");
+                        .HasColumnName("dimension_unit")
+                        .HasColumnOrder(14);
 
                     b.Property<string>("Dimensions")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("dimensions");
+                        .HasColumnName("dimensions")
+                        .HasColumnOrder(15);
 
                     b.Property<DateTime?>("DiscontinuedDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("discontinued_date");
+                        .HasColumnName("discontinued_date")
+                        .HasColumnOrder(16);
 
                     b.Property<string>("Display")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("display");
+                        .HasColumnName("display")
+                        .HasColumnOrder(17);
 
                     b.Property<string>("EnergyRating")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("energy_rating");
+                        .HasColumnName("energy_rating")
+                        .HasColumnOrder(18);
 
                     b.Property<string>("Generation")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("generation");
+                        .HasColumnName("generation")
+                        .HasColumnOrder(19);
 
                     b.Property<string>("Graphics")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("graphics");
+                        .HasColumnName("graphics")
+                        .HasColumnOrder(20);
 
                     b.Property<string>("Humidity")
                         .HasColumnType("text")
-                        .HasColumnName("humidity");
+                        .HasColumnName("humidity")
+                        .HasColumnOrder(21);
 
                     b.Property<string>("ImageUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("image_url")
+                        .HasColumnOrder(22);
 
                     b.Property<string>("IncludedAccessories")
                         .HasColumnType("text")
-                        .HasColumnName("included_accessories");
+                        .HasColumnName("included_accessories")
+                        .HasColumnOrder(23);
 
                     b.Property<string>("InternalNotes")
                         .HasColumnType("text")
-                        .HasColumnName("internal_notes");
+                        .HasColumnName("internal_notes")
+                        .HasColumnOrder(24);
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasColumnOrder(25);
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_available");
+                        .HasColumnName("is_available")
+                        .HasColumnOrder(26);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(84);
 
                     b.Property<bool>("IsDepreciable")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_depreciable");
+                        .HasColumnName("is_depreciable")
+                        .HasColumnOrder(27);
 
                     b.Property<bool>("IsEPEATCertified")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_epeatcertified");
+                        .HasColumnName("is_epeatcertified")
+                        .HasColumnOrder(28);
 
                     b.Property<bool>("IsEnergyStarCertified")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_energy_star_certified");
+                        .HasColumnName("is_energy_star_certified")
+                        .HasColumnOrder(29);
 
                     b.Property<bool>("IsRoHSCompliant")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_ro_hscompliant");
+                        .HasColumnName("is_ro_hscompliant")
+                        .HasColumnOrder(30);
 
                     b.Property<bool>("IsTangible")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_tangible");
+                        .HasColumnName("is_tangible")
+                        .HasColumnOrder(31);
 
                     b.Property<string>("Keywords")
                         .HasColumnType("text")
-                        .HasColumnName("keywords");
+                        .HasColumnName("keywords")
+                        .HasColumnOrder(32);
 
                     b.Property<DateTime?>("LastOrderDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_order_date");
+                        .HasColumnName("last_order_date")
+                        .HasColumnOrder(33);
 
                     b.Property<int?>("LicenseDurationMonths")
                         .HasColumnType("integer")
-                        .HasColumnName("license_duration_months");
+                        .HasColumnName("license_duration_months")
+                        .HasColumnOrder(34);
 
                     b.Property<string>("LicenseType")
                         .HasColumnType("text")
-                        .HasColumnName("license_type");
+                        .HasColumnName("license_type")
+                        .HasColumnOrder(35);
 
                     b.Property<string>("LifecycleStatus")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("lifecycle_status");
+                        .HasColumnName("lifecycle_status")
+                        .HasColumnOrder(36);
 
                     b.Property<decimal?>("MSRP")
                         .HasColumnType("numeric")
-                        .HasColumnName("msrp");
+                        .HasColumnName("msrp")
+                        .HasColumnOrder(37);
 
                     b.Property<string>("MSRPCurrency")
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
-                        .HasColumnName("msrpcurrency");
+                        .HasColumnName("msrpcurrency")
+                        .HasColumnOrder(38);
 
                     b.Property<long?>("ManufacturerId")
                         .HasColumnType("bigint")
-                        .HasColumnName("manufacturer_id");
+                        .HasColumnName("manufacturer_id")
+                        .HasColumnOrder(39);
 
                     b.Property<string>("Material")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("material");
+                        .HasColumnName("material")
+                        .HasColumnOrder(40);
 
                     b.Property<int?>("MaxInstallations")
                         .HasColumnType("integer")
-                        .HasColumnName("max_installations");
+                        .HasColumnName("max_installations")
+                        .HasColumnOrder(41);
 
                     b.Property<string>("Memory")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("memory");
+                        .HasColumnName("memory")
+                        .HasColumnOrder(42);
 
                     b.Property<string>("ModelNumber")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("model_number");
+                        .HasColumnName("model_number")
+                        .HasColumnOrder(43);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(44);
 
                     b.Property<string>("NetworkInterfaces")
                         .HasColumnType("text")
-                        .HasColumnName("network_interfaces");
+                        .HasColumnName("network_interfaces")
+                        .HasColumnOrder(45);
 
                     b.Property<string>("OperatingSystem")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("operating_system");
+                        .HasColumnName("operating_system")
+                        .HasColumnOrder(46);
 
                     b.Property<string>("OperatingTemperature")
                         .HasColumnType("text")
-                        .HasColumnName("operating_temperature");
+                        .HasColumnName("operating_temperature")
+                        .HasColumnOrder(47);
 
                     b.Property<string>("OptionalAccessories")
                         .HasColumnType("text")
-                        .HasColumnName("optional_accessories");
+                        .HasColumnName("optional_accessories")
+                        .HasColumnOrder(48);
 
                     b.Property<string>("PartNumber")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("part_number");
+                        .HasColumnName("part_number")
+                        .HasColumnOrder(49);
 
                     b.Property<string>("Ports")
                         .HasColumnType("text")
-                        .HasColumnName("ports");
+                        .HasColumnName("ports")
+                        .HasColumnOrder(50);
 
                     b.Property<decimal?>("PowerConsumption")
                         .HasColumnType("numeric")
-                        .HasColumnName("power_consumption");
+                        .HasColumnName("power_consumption")
+                        .HasColumnOrder(51);
 
                     b.Property<string>("PowerRequirements")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("power_requirements");
+                        .HasColumnName("power_requirements")
+                        .HasColumnOrder(52);
 
                     b.Property<string>("Processor")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("processor");
+                        .HasColumnName("processor")
+                        .HasColumnOrder(53);
 
                     b.Property<string>("ProcurementNotes")
                         .HasColumnType("text")
-                        .HasColumnName("procurement_notes");
+                        .HasColumnName("procurement_notes")
+                        .HasColumnOrder(54);
 
                     b.Property<string>("ProductFamily")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("product_family");
+                        .HasColumnName("product_family")
+                        .HasColumnOrder(55);
 
                     b.Property<string>("ProductPageUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("product_page_url")
+                        .HasColumnOrder(56);
 
                     b.Property<string>("QuickStartGuideUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("quick_start_guide_url")
+                        .HasColumnOrder(57);
 
                     b.Property<DateTime?>("ReleaseDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("release_date");
+                        .HasColumnName("release_date")
+                        .HasColumnOrder(58);
 
                     b.Property<int?>("ReorderLevel")
                         .HasColumnType("integer")
-                        .HasColumnName("reorder_level");
+                        .HasColumnName("reorder_level")
+                        .HasColumnOrder(59);
 
                     b.Property<string>("RequiredAccessories")
                         .HasColumnType("text")
-                        .HasColumnName("required_accessories");
+                        .HasColumnName("required_accessories")
+                        .HasColumnOrder(60);
 
                     b.Property<bool>("RequiresActivation")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_activation");
+                        .HasColumnName("requires_activation")
+                        .HasColumnOrder(61);
 
                     b.Property<bool>("RequiresLicense")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_license");
+                        .HasColumnName("requires_license")
+                        .HasColumnOrder(62);
 
                     b.Property<bool>("RequiresMaintenance")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_maintenance");
+                        .HasColumnName("requires_maintenance")
+                        .HasColumnOrder(63);
 
                     b.Property<decimal?>("ResidualValuePercentage")
                         .HasColumnType("numeric")
-                        .HasColumnName("residual_value_percentage");
+                        .HasColumnName("residual_value_percentage")
+                        .HasColumnOrder(64);
 
                     b.Property<string>("SKU")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("sku");
+                        .HasColumnName("sku")
+                        .HasColumnOrder(65);
 
                     b.Property<string>("Series")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("series");
+                        .HasColumnName("series")
+                        .HasColumnOrder(66);
 
                     b.Property<int?>("StandardWarrantyMonths")
                         .HasColumnType("integer")
-                        .HasColumnName("standard_warranty_months");
+                        .HasColumnName("standard_warranty_months")
+                        .HasColumnOrder(67);
 
                     b.Property<string>("Storage")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("storage");
+                        .HasColumnName("storage")
+                        .HasColumnOrder(68);
 
                     b.Property<string>("SupportDocumentUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("support_document_url")
+                        .HasColumnOrder(69);
 
                     b.Property<string>("Tags")
                         .HasColumnType("text")
-                        .HasColumnName("tags");
+                        .HasColumnName("tags")
+                        .HasColumnOrder(70);
 
                     b.Property<string>("TechnicalSpecs")
                         .HasColumnType("text")
-                        .HasColumnName("technical_specs");
+                        .HasColumnName("technical_specs")
+                        .HasColumnOrder(71);
 
                     b.Property<string>("ThumbnailUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("thumbnail_url")
+                        .HasColumnOrder(72);
 
                     b.Property<long?>("TypeId")
                         .HasColumnType("bigint")
-                        .HasColumnName("type_id");
+                        .HasColumnName("type_id")
+                        .HasColumnOrder(73);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(85);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(86);
 
                     b.Property<int?>("UsefulLifeMonths")
                         .HasColumnType("integer")
-                        .HasColumnName("useful_life_months");
+                        .HasColumnName("useful_life_months")
+                        .HasColumnOrder(74);
 
                     b.Property<string>("UserManualUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("user_manual_url")
+                        .HasColumnOrder(75);
 
                     b.Property<string>("VideoUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("video_url")
+                        .HasColumnOrder(76);
 
                     b.Property<string>("WarrantyType")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("warranty_type");
+                        .HasColumnName("warranty_type")
+                        .HasColumnOrder(77);
 
                     b.Property<decimal?>("Weight")
                         .HasColumnType("numeric")
-                        .HasColumnName("weight");
+                        .HasColumnName("weight")
+                        .HasColumnOrder(78);
 
                     b.Property<string>("WeightUnit")
                         .HasColumnType("text")
-                        .HasColumnName("weight_unit");
+                        .HasColumnName("weight_unit")
+                        .HasColumnOrder(79);
 
                     b.HasKey("Id")
                         .HasName("pk_models");
@@ -2861,7 +3420,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("TypeId")
                         .HasDatabaseName("ix_models_type_id");
 
-                    b.ToTable("models");
+                    b.ToTable("models", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Organizations.CompanyDetails", b =>
@@ -2869,47 +3428,59 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(5);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(6);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("Domain")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("domain")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime?>("EstablishedOn")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("established_on");
+                        .HasColumnName("established_on")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(8);
 
                     b.Property<long>("NodeId")
                         .HasColumnType("bigint")
-                        .HasColumnName("node_id");
+                        .HasColumnName("node_id")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("TaxCode")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("tax_code")
+                        .HasColumnOrder(4);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(9);
 
                     b.HasKey("Id")
                         .HasName("pk_company_details");
@@ -2929,7 +3500,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDatabaseName("ix_company_details_tax_code")
                         .HasFilter("is_deleted = false AND tax_code IS NOT NULL");
 
-                    b.ToTable("company_details");
+                    b.ToTable("company_details", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Organizations.DepartmentDetails", b =>
@@ -2937,47 +3508,58 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<decimal?>("BudgetYear")
                         .HasColumnType("numeric")
-                        .HasColumnName("budget_year");
+                        .HasColumnName("budget_year")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("CostCenter")
                         .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
+                        .HasColumnType("character varying(30)")
+                        .HasColumnName("cost_center")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(5);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(6);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(7);
 
                     b.Property<int?>("Headcount")
                         .HasColumnType("integer")
-                        .HasColumnName("headcount");
+                        .HasColumnName("headcount")
+                        .HasColumnOrder(3);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(8);
 
                     b.Property<long>("NodeId")
                         .HasColumnType("bigint")
-                        .HasColumnName("node_id");
+                        .HasColumnName("node_id")
+                        .HasColumnOrder(4);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(9);
 
                     b.HasKey("Id")
                         .HasName("pk_department_details");
@@ -2992,7 +3574,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDatabaseName("ix_department_details_node_id")
                         .HasFilter("is_deleted = false");
 
-                    b.ToTable("department_details");
+                    b.ToTable("department_details", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Organizations.OrgNode", b =>
@@ -3000,53 +3582,64 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(4);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(5);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(6);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(7);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(8);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(1);
 
                     b.Property<long?>("ParentId")
                         .HasColumnType("bigint")
-                        .HasColumnName("parent_id");
+                        .HasColumnName("parent_id")
+                        .HasColumnOrder(2);
 
                     b.Property<int>("Type")
                         .HasColumnType("integer")
-                        .HasColumnName("type");
+                        .HasColumnName("type")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(9);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(10);
 
                     b.HasKey("Id")
                         .HasName("pk_org_nodes");
@@ -3057,7 +3650,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("Type")
                         .HasDatabaseName("ix_org_nodes_type");
 
-                    b.ToTable("org_nodes");
+                    b.ToTable("org_nodes", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Statuses.AssetEventType", b =>
@@ -3065,7 +3658,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
@@ -3073,57 +3667,69 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("code");
+                        .HasColumnName("code")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Color")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("color");
+                        .HasColumnName("color")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(6);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(7);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(8);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(3);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(10);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(4);
 
                     b.Property<int?>("OrderNo")
                         .HasColumnType("integer")
-                        .HasColumnName("order_no");
+                        .HasColumnName("order_no")
+                        .HasColumnOrder(5);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(11);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(12);
 
                     b.HasKey("Id")
                         .HasName("pk_asset_event_types");
@@ -3133,7 +3739,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDatabaseName("ix_asset_event_types_code")
                         .HasFilter("is_deleted = false");
 
-                    b.ToTable("asset_event_types");
+                    b.ToTable("asset_event_types", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Statuses.LifecycleStatus", b =>
@@ -3141,7 +3747,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
@@ -3149,57 +3756,69 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("code");
+                        .HasColumnName("code")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Color")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("color");
+                        .HasColumnName("color")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(6);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(7);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(8);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(3);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(10);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(4);
 
                     b.Property<int?>("OrderNo")
                         .HasColumnType("integer")
-                        .HasColumnName("order_no");
+                        .HasColumnName("order_no")
+                        .HasColumnOrder(5);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(11);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(12);
 
                     b.HasKey("Id")
                         .HasName("pk_lifecycle_statuses");
@@ -3209,7 +3828,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDatabaseName("ix_lifecycle_statuses_code")
                         .HasFilter("is_deleted = false");
 
-                    b.ToTable("lifecycle_statuses");
+                    b.ToTable("lifecycle_statuses", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Statuses.UsageStatus", b =>
@@ -3217,7 +3836,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
@@ -3225,57 +3845,69 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("code");
+                        .HasColumnName("code")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Color")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("color");
+                        .HasColumnName("color")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(6);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(7);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(8);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(3);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(10);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(4);
 
                     b.Property<int?>("OrderNo")
                         .HasColumnType("integer")
-                        .HasColumnName("order_no");
+                        .HasColumnName("order_no")
+                        .HasColumnOrder(5);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(11);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(12);
 
                     b.HasKey("Id")
                         .HasName("pk_usage_statuses");
@@ -3285,7 +3917,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDatabaseName("ix_usage_statuses_code")
                         .HasFilter("is_deleted = false");
 
-                    b.ToTable("usage_statuses");
+                    b.ToTable("usage_statuses", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Storage.UploadSession", b =>
@@ -3293,94 +3925,114 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Checksum")
                         .HasColumnType("text")
-                        .HasColumnName("checksum");
+                        .HasColumnName("checksum")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("ContentType")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("content_type");
+                        .HasColumnName("content_type")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(15);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(16);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(17);
 
                     b.Property<int?>("EntityId")
                         .HasColumnType("integer")
-                        .HasColumnName("entity_id");
+                        .HasColumnName("entity_id")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("EntityType")
                         .HasColumnType("text")
-                        .HasColumnName("entity_type");
+                        .HasColumnName("entity_type")
+                        .HasColumnOrder(4);
 
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at");
+                        .HasColumnName("expires_at")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("file_name");
+                        .HasColumnName("file_name")
+                        .HasColumnOrder(6);
 
                     b.Property<long>("FileSize")
                         .HasColumnType("bigint")
-                        .HasColumnName("file_size");
+                        .HasColumnName("file_size")
+                        .HasColumnOrder(7);
 
                     b.Property<int>("FileType")
                         .HasColumnType("integer")
-                        .HasColumnName("file_type");
+                        .HasColumnName("file_type")
+                        .HasColumnOrder(8);
 
                     b.Property<string>("FinalKey")
                         .HasColumnType("text")
-                        .HasColumnName("final_key");
+                        .HasColumnName("final_key")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("IdempotencyKey")
                         .HasColumnType("text")
-                        .HasColumnName("idempotency_key");
+                        .HasColumnName("idempotency_key")
+                        .HasColumnOrder(10);
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(18);
 
                     b.Property<int>("Status")
                         .HasColumnType("integer")
-                        .HasColumnName("status");
+                        .HasColumnName("status")
+                        .HasColumnOrder(11);
 
                     b.Property<string>("TempKey")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("temp_key");
+                        .HasColumnName("temp_key")
+                        .HasColumnOrder(12);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(19);
 
                     b.Property<string>("UploadId")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("upload_id");
+                        .HasColumnName("upload_id")
+                        .HasColumnOrder(13);
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
-                        .HasColumnName("user_id");
+                        .HasColumnName("user_id")
+                        .HasColumnOrder(14);
 
                     b.HasKey("Id")
                         .HasName("pk_upload_sessions");
 
-                    b.ToTable("upload_sessions");
+                    b.ToTable("upload_sessions", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Suppliers.Supplier", b =>
@@ -3388,480 +4040,619 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AccountManagerEmail")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("account_manager_email")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("AccountManagerName")
                         .HasColumnType("text")
-                        .HasColumnName("account_manager_name");
+                        .HasColumnName("account_manager_name")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("AccountManagerPhone")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("account_manager_phone")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("Address")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("address");
+                        .HasColumnName("address")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("ApprovedBy")
                         .HasColumnType("text")
-                        .HasColumnName("approved_by");
+                        .HasColumnName("approved_by")
+                        .HasColumnOrder(5);
 
                     b.Property<DateTime?>("ApprovedDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("approved_date");
+                        .HasColumnName("approved_date")
+                        .HasColumnOrder(6);
 
                     b.Property<bool>("AutoRenew")
                         .HasColumnType("boolean")
-                        .HasColumnName("auto_renew");
+                        .HasColumnName("auto_renew")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("BankAccountNumber")
                         .HasColumnType("text")
-                        .HasColumnName("bank_account_number");
+                        .HasColumnName("bank_account_number")
+                        .HasColumnOrder(8);
 
                     b.Property<string>("BankName")
                         .HasColumnType("text")
-                        .HasColumnName("bank_name");
+                        .HasColumnName("bank_name")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("BankRoutingNumber")
                         .HasColumnType("text")
-                        .HasColumnName("bank_routing_number");
+                        .HasColumnName("bank_routing_number")
+                        .HasColumnOrder(10);
 
                     b.Property<string>("BondingInformation")
                         .HasColumnType("text")
-                        .HasColumnName("bonding_information");
+                        .HasColumnName("bonding_information")
+                        .HasColumnOrder(11);
 
                     b.Property<string>("BusinessLicenseUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("business_license_url")
+                        .HasColumnOrder(12);
 
                     b.Property<string>("BusinessType")
                         .HasColumnType("text")
-                        .HasColumnName("business_type");
+                        .HasColumnName("business_type")
+                        .HasColumnOrder(13);
 
                     b.Property<string>("CertificateOfInsuranceUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("certificate_of_insurance_url")
+                        .HasColumnOrder(14);
 
                     b.Property<string>("Certifications")
                         .HasColumnType("text")
-                        .HasColumnName("certifications");
+                        .HasColumnName("certifications")
+                        .HasColumnOrder(15);
 
                     b.Property<string>("City")
                         .HasColumnType("text")
-                        .HasColumnName("city");
+                        .HasColumnName("city")
+                        .HasColumnOrder(16);
 
                     b.Property<long?>("CompanyId")
                         .HasColumnType("bigint")
-                        .HasColumnName("company_id");
+                        .HasColumnName("company_id")
+                        .HasColumnOrder(17);
 
                     b.Property<string>("ContactPersonEmail")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("contact_person_email")
+                        .HasColumnOrder(18);
 
                     b.Property<string>("ContactPersonName")
                         .HasColumnType("text")
-                        .HasColumnName("contact_person_name");
+                        .HasColumnName("contact_person_name")
+                        .HasColumnOrder(19);
 
                     b.Property<string>("ContactPersonPhone")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("contact_person_phone")
+                        .HasColumnOrder(20);
 
                     b.Property<string>("ContactPersonTitle")
                         .HasColumnType("text")
-                        .HasColumnName("contact_person_title");
+                        .HasColumnName("contact_person_title")
+                        .HasColumnOrder(21);
 
                     b.Property<string>("ContractDocumentUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("contract_document_url")
+                        .HasColumnOrder(22);
 
                     b.Property<DateTime?>("ContractEndDate")
                         .HasColumnType("date")
-                        .HasColumnName("contract_end_date");
+                        .HasColumnName("contract_end_date")
+                        .HasColumnOrder(23);
 
                     b.Property<string>("ContractNumber")
                         .HasColumnType("text")
-                        .HasColumnName("contract_number");
+                        .HasColumnName("contract_number")
+                        .HasColumnOrder(24);
 
                     b.Property<DateTime?>("ContractStartDate")
                         .HasColumnType("date")
-                        .HasColumnName("contract_start_date");
+                        .HasColumnName("contract_start_date")
+                        .HasColumnOrder(25);
 
                     b.Property<long?>("CountryId")
                         .HasColumnType("bigint")
-                        .HasColumnName("country_id");
+                        .HasColumnName("country_id")
+                        .HasColumnOrder(26);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(110);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(111);
 
                     b.Property<string>("Currency")
                         .HasColumnType("text")
-                        .HasColumnName("currency");
+                        .HasColumnName("currency")
+                        .HasColumnOrder(27);
 
                     b.Property<string>("DUNSNumber")
                         .HasColumnType("text")
-                        .HasColumnName("dunsnumber");
+                        .HasColumnName("dunsnumber")
+                        .HasColumnOrder(28);
 
                     b.Property<int?>("DefectRate")
                         .HasColumnType("integer")
-                        .HasColumnName("defect_rate");
+                        .HasColumnName("defect_rate")
+                        .HasColumnOrder(29);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(112);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(113);
 
                     b.Property<int?>("DeliveryRating")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("delivery_rating")
+                        .HasColumnOrder(30);
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(31);
 
                     b.Property<decimal?>("DiscountRate")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric")
+                        .HasColumnName("discount_rate")
+                        .HasColumnOrder(32);
 
                     b.Property<bool>("DropShipCapable")
                         .HasColumnType("boolean")
-                        .HasColumnName("drop_ship_capable");
+                        .HasColumnName("drop_ship_capable")
+                        .HasColumnOrder(33);
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("email")
+                        .HasColumnOrder(34);
 
                     b.Property<int?>("EmployeeCount")
                         .HasColumnType("integer")
-                        .HasColumnName("employee_count");
+                        .HasColumnName("employee_count")
+                        .HasColumnOrder(35);
 
                     b.Property<DateTime?>("EstablishedDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("established_date");
+                        .HasColumnName("established_date")
+                        .HasColumnOrder(36);
 
                     b.Property<string>("Fax")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("fax")
+                        .HasColumnOrder(37);
 
                     b.Property<string>("GLN")
                         .HasColumnType("text")
-                        .HasColumnName("gln");
+                        .HasColumnName("gln")
+                        .HasColumnOrder(38);
 
                     b.Property<string>("IBAN")
                         .HasColumnType("text")
-                        .HasColumnName("iban");
+                        .HasColumnName("iban")
+                        .HasColumnOrder(39);
 
                     b.Property<string>("ISO14001Certified")
                         .HasColumnType("text")
-                        .HasColumnName("iso14001_certified");
+                        .HasColumnName("iso14001_certified")
+                        .HasColumnOrder(40);
 
                     b.Property<string>("ISO9001Certified")
                         .HasColumnType("text")
-                        .HasColumnName("iso9001_certified");
+                        .HasColumnName("iso9001_certified")
+                        .HasColumnOrder(41);
 
                     b.Property<string>("IndustryType")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("industry_type");
+                        .HasColumnName("industry_type")
+                        .HasColumnOrder(42);
 
                     b.Property<DateTime?>("InsuranceExpiryDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("insurance_expiry_date");
+                        .HasColumnName("insurance_expiry_date")
+                        .HasColumnOrder(43);
 
                     b.Property<string>("InsurancePolicyNumber")
                         .HasColumnType("text")
-                        .HasColumnName("insurance_policy_number");
+                        .HasColumnName("insurance_policy_number")
+                        .HasColumnOrder(44);
 
                     b.Property<string>("InsuranceProvider")
                         .HasColumnType("text")
-                        .HasColumnName("insurance_provider");
+                        .HasColumnName("insurance_provider")
+                        .HasColumnOrder(45);
 
                     b.Property<string>("InternalNotes")
                         .HasColumnType("text")
-                        .HasColumnName("internal_notes");
+                        .HasColumnName("internal_notes")
+                        .HasColumnOrder(46);
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasColumnOrder(47);
 
                     b.Property<bool>("IsApproved")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_approved");
+                        .HasColumnName("is_approved")
+                        .HasColumnOrder(48);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(114);
 
                     b.Property<bool>("IsEnvironmentallyCertified")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_environmentally_certified");
+                        .HasColumnName("is_environmentally_certified")
+                        .HasColumnOrder(49);
 
                     b.Property<bool>("IsMBE")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_mbe");
+                        .HasColumnName("is_mbe")
+                        .HasColumnOrder(50);
 
                     b.Property<bool>("IsMinorityOwned")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_minority_owned");
+                        .HasColumnName("is_minority_owned")
+                        .HasColumnOrder(51);
 
                     b.Property<bool>("IsPreferred")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_preferred");
+                        .HasColumnName("is_preferred")
+                        .HasColumnOrder(52);
 
                     b.Property<bool>("IsSDVOSB")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_sdvosb");
+                        .HasColumnName("is_sdvosb")
+                        .HasColumnOrder(53);
 
                     b.Property<bool>("IsSmallBusiness")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_small_business");
+                        .HasColumnName("is_small_business")
+                        .HasColumnOrder(54);
 
                     b.Property<bool>("IsVeteranOwned")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_veteran_owned");
+                        .HasColumnName("is_veteran_owned")
+                        .HasColumnOrder(55);
 
                     b.Property<bool>("IsWBE")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_wbe");
+                        .HasColumnName("is_wbe")
+                        .HasColumnOrder(56);
 
                     b.Property<bool>("IsWomanOwned")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_woman_owned");
+                        .HasColumnName("is_woman_owned")
+                        .HasColumnOrder(57);
 
                     b.Property<DateTime?>("LastOrderDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_order_date");
+                        .HasColumnName("last_order_date")
+                        .HasColumnOrder(58);
 
                     b.Property<DateTime?>("LastReviewDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_review_date");
+                        .HasColumnName("last_review_date")
+                        .HasColumnOrder(59);
 
                     b.Property<int?>("LeadTimeDays")
                         .HasColumnType("integer")
-                        .HasColumnName("lead_time_days");
+                        .HasColumnName("lead_time_days")
+                        .HasColumnOrder(60);
 
                     b.Property<string>("LegalName")
                         .HasColumnType("text")
-                        .HasColumnName("legal_name");
+                        .HasColumnName("legal_name")
+                        .HasColumnOrder(61);
 
                     b.Property<string>("MinimumOrderCurrency")
                         .HasColumnType("text")
-                        .HasColumnName("minimum_order_currency");
+                        .HasColumnName("minimum_order_currency")
+                        .HasColumnOrder(62);
 
                     b.Property<string>("MobilePhone")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("mobile_phone")
+                        .HasColumnOrder(63);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(64);
 
                     b.Property<int?>("OnTimeDeliveryPercentage")
                         .HasColumnType("integer")
-                        .HasColumnName("on_time_delivery_percentage");
+                        .HasColumnName("on_time_delivery_percentage")
+                        .HasColumnOrder(65);
 
                     b.Property<string>("OurAccountManager")
                         .HasColumnType("text")
-                        .HasColumnName("our_account_manager");
+                        .HasColumnName("our_account_manager")
+                        .HasColumnOrder(66);
 
                     b.Property<DateTime?>("PartnerSince")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("partner_since");
+                        .HasColumnName("partner_since")
+                        .HasColumnOrder(67);
 
                     b.Property<string>("PaymentMethods")
                         .HasColumnType("text")
-                        .HasColumnName("payment_methods");
+                        .HasColumnName("payment_methods")
+                        .HasColumnOrder(68);
 
                     b.Property<string>("PaymentTerms")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("payment_terms");
+                        .HasColumnName("payment_terms")
+                        .HasColumnOrder(69);
 
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("phone")
+                        .HasColumnOrder(70);
 
                     b.Property<string>("PostalCode")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("postal_code")
+                        .HasColumnOrder(71);
 
                     b.Property<int?>("PriceRating")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("price_rating")
+                        .HasColumnOrder(72);
 
                     b.Property<string>("ProcurementNotes")
                         .HasColumnType("text")
-                        .HasColumnName("procurement_notes");
+                        .HasColumnName("procurement_notes")
+                        .HasColumnOrder(73);
 
                     b.Property<string>("ProductCategories")
                         .HasColumnType("text")
-                        .HasColumnName("product_categories");
+                        .HasColumnName("product_categories")
+                        .HasColumnOrder(74);
 
                     b.Property<bool>("Provides24x7Support")
                         .HasColumnType("boolean")
-                        .HasColumnName("provides24x7_support");
+                        .HasColumnName("provides24x7_support")
+                        .HasColumnOrder(75);
 
                     b.Property<int?>("QualityRating")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("quality_rating")
+                        .HasColumnOrder(76);
 
                     b.Property<string>("References")
                         .HasColumnType("text")
-                        .HasColumnName("references");
+                        .HasColumnName("references")
+                        .HasColumnOrder(77);
 
                     b.Property<string>("Region")
                         .HasColumnType("text")
-                        .HasColumnName("region");
+                        .HasColumnName("region")
+                        .HasColumnOrder(78);
 
                     b.Property<string>("RegistrationNumber")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("registration_number");
+                        .HasColumnName("registration_number")
+                        .HasColumnOrder(79);
 
                     b.Property<bool>("RequiresBackgroundCheck")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_background_check");
+                        .HasColumnName("requires_background_check")
+                        .HasColumnOrder(80);
 
                     b.Property<bool>("RequiresInsurance")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_insurance");
+                        .HasColumnName("requires_insurance")
+                        .HasColumnOrder(81);
 
                     b.Property<string>("RevenueCurrency")
                         .HasColumnType("text")
-                        .HasColumnName("revenue_currency");
+                        .HasColumnName("revenue_currency")
+                        .HasColumnOrder(82);
 
                     b.Property<string>("RiskFactors")
                         .HasColumnType("text")
-                        .HasColumnName("risk_factors");
+                        .HasColumnName("risk_factors")
+                        .HasColumnOrder(83);
 
                     b.Property<string>("RiskLevel")
                         .HasColumnType("text")
-                        .HasColumnName("risk_level");
+                        .HasColumnName("risk_level")
+                        .HasColumnOrder(84);
 
                     b.Property<string>("SLADocumentUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("sla_document_url")
+                        .HasColumnOrder(85);
 
                     b.Property<string>("ServiceCategories")
                         .HasColumnType("text")
-                        .HasColumnName("service_categories");
+                        .HasColumnName("service_categories")
+                        .HasColumnOrder(86);
 
                     b.Property<int?>("ServiceRating")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("service_rating")
+                        .HasColumnOrder(87);
 
                     b.Property<string>("ShippingMethods")
                         .HasColumnType("text")
-                        .HasColumnName("shipping_methods");
+                        .HasColumnName("shipping_methods")
+                        .HasColumnOrder(88);
 
                     b.Property<string>("ShippingTerms")
                         .HasColumnType("text")
-                        .HasColumnName("shipping_terms");
+                        .HasColumnName("shipping_terms")
+                        .HasColumnOrder(89);
 
                     b.Property<string>("ShortName")
                         .HasColumnType("text")
-                        .HasColumnName("short_name");
+                        .HasColumnName("short_name")
+                        .HasColumnOrder(90);
 
                     b.Property<string>("Specialization")
                         .HasColumnType("text")
-                        .HasColumnName("specialization");
+                        .HasColumnName("specialization")
+                        .HasColumnOrder(91);
 
                     b.Property<string>("State")
                         .HasColumnType("text")
-                        .HasColumnName("state");
+                        .HasColumnName("state")
+                        .HasColumnOrder(92);
 
                     b.Property<string>("SupplierCode")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("supplier_code");
+                        .HasColumnName("supplier_code")
+                        .HasColumnOrder(93);
 
                     b.Property<string>("SupplierStatus")
                         .HasColumnType("text")
-                        .HasColumnName("supplier_status");
+                        .HasColumnName("supplier_status")
+                        .HasColumnOrder(94);
 
                     b.Property<string>("SupplierType")
                         .HasColumnType("text")
-                        .HasColumnName("supplier_type");
+                        .HasColumnName("supplier_type")
+                        .HasColumnOrder(95);
 
                     b.Property<string>("SupportEmail")
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("support_email")
+                        .HasColumnOrder(96);
 
                     b.Property<string>("SupportHours")
                         .HasColumnType("text")
-                        .HasColumnName("support_hours");
+                        .HasColumnName("support_hours")
+                        .HasColumnOrder(97);
 
                     b.Property<string>("SupportPhone")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("support_phone")
+                        .HasColumnOrder(98);
 
                     b.Property<string>("SustainabilityRating")
                         .HasColumnType("text")
-                        .HasColumnName("sustainability_rating");
+                        .HasColumnName("sustainability_rating")
+                        .HasColumnOrder(99);
 
                     b.Property<string>("SwiftCode")
                         .HasColumnType("text")
-                        .HasColumnName("swift_code");
+                        .HasColumnName("swift_code")
+                        .HasColumnOrder(100);
 
                     b.Property<string>("Tags")
                         .HasColumnType("text")
-                        .HasColumnName("tags");
+                        .HasColumnName("tags")
+                        .HasColumnOrder(101);
 
                     b.Property<string>("TaxCode")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("tax_code");
+                        .HasColumnName("tax_code")
+                        .HasColumnOrder(102);
 
                     b.Property<bool>("TaxExempt")
                         .HasColumnType("boolean")
-                        .HasColumnName("tax_exempt");
+                        .HasColumnName("tax_exempt")
+                        .HasColumnOrder(103);
 
                     b.Property<string>("TaxExemptCertificate")
                         .HasColumnType("text")
-                        .HasColumnName("tax_exempt_certificate");
+                        .HasColumnName("tax_exempt_certificate")
+                        .HasColumnOrder(104);
 
                     b.Property<int?>("TotalOrders")
                         .HasColumnType("integer")
-                        .HasColumnName("total_orders");
+                        .HasColumnName("total_orders")
+                        .HasColumnOrder(105);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(115);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(116);
 
                     b.Property<string>("VATNumber")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("vatnumber");
+                        .HasColumnName("vatnumber")
+                        .HasColumnOrder(106);
 
                     b.Property<string>("W9FormUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("w9form_url")
+                        .HasColumnOrder(107);
 
                     b.Property<string>("WarehouseLocations")
                         .HasColumnType("text")
-                        .HasColumnName("warehouse_locations");
+                        .HasColumnName("warehouse_locations")
+                        .HasColumnOrder(108);
 
                     b.Property<string>("Website")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("website")
+                        .HasColumnOrder(109);
 
                     b.HasKey("Id")
                         .HasName("pk_suppliers");
@@ -3880,7 +4671,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDatabaseName("ix_suppliers_supplier_code")
                         .HasFilter("is_deleted = false AND supplier_code IS NOT NULL");
 
-                    b.ToTable("suppliers");
+                    b.ToTable("suppliers", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Types.AssetType", b =>
@@ -3888,314 +4679,386 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("AccumulatedDepreciationAccountCode")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("accumulated_depreciation_account_code");
+                        .HasColumnName("accumulated_depreciation_account_code")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Aliases")
                         .HasColumnType("text")
-                        .HasColumnName("aliases");
+                        .HasColumnName("aliases")
+                        .HasColumnOrder(2);
 
                     b.Property<string>("ApprovalWorkflow")
                         .HasColumnType("text")
-                        .HasColumnName("approval_workflow");
+                        .HasColumnName("approval_workflow")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("AssetAccountCode")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("asset_account_code");
+                        .HasColumnName("asset_account_code")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("AssetClass")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("asset_class");
+                        .HasColumnName("asset_class")
+                        .HasColumnOrder(5);
 
                     b.Property<int>("AssetCount")
                         .HasColumnType("integer")
-                        .HasColumnName("asset_count");
+                        .HasColumnName("asset_count")
+                        .HasColumnOrder(6);
 
                     b.Property<int?>("AuditIntervalMonths")
                         .HasColumnType("integer")
-                        .HasColumnName("audit_interval_months");
+                        .HasColumnName("audit_interval_months")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("Category")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("category");
+                        .HasColumnName("category")
+                        .HasColumnOrder(8);
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("code");
+                        .HasColumnName("code")
+                        .HasColumnOrder(9);
 
                     b.Property<string>("Color")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("color");
+                        .HasColumnName("color")
+                        .HasColumnOrder(10);
 
                     b.Property<string>("ComplianceStandards")
                         .HasColumnType("text")
-                        .HasColumnName("compliance_standards");
+                        .HasColumnName("compliance_standards")
+                        .HasColumnOrder(11);
 
                     b.Property<string>("CostCenter")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("cost_center");
+                        .HasColumnName("cost_center")
+                        .HasColumnOrder(12);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(64);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(65);
 
                     b.Property<string>("CustomFieldsSchema")
                         .HasColumnType("text")
-                        .HasColumnName("custom_fields_schema");
+                        .HasColumnName("custom_fields_schema")
+                        .HasColumnOrder(13);
 
                     b.Property<string>("DefaultDepreciationMethod")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("default_depreciation_method");
+                        .HasColumnName("default_depreciation_method")
+                        .HasColumnOrder(14);
 
                     b.Property<int?>("DefaultMaintenanceIntervalDays")
                         .HasColumnType("integer")
-                        .HasColumnName("default_maintenance_interval_days");
+                        .HasColumnName("default_maintenance_interval_days")
+                        .HasColumnOrder(15);
 
                     b.Property<string>("DefaultMaintenanceType")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("default_maintenance_type");
+                        .HasColumnName("default_maintenance_type")
+                        .HasColumnOrder(16);
 
                     b.Property<decimal?>("DefaultResidualValuePercentage")
                         .HasColumnType("numeric")
-                        .HasColumnName("default_residual_value_percentage");
+                        .HasColumnName("default_residual_value_percentage")
+                        .HasColumnOrder(17);
 
                     b.Property<string>("DefaultSecurityClassification")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("default_security_classification");
+                        .HasColumnName("default_security_classification")
+                        .HasColumnOrder(18);
 
                     b.Property<int?>("DefaultUsefulLifeMonths")
                         .HasColumnType("integer")
-                        .HasColumnName("default_useful_life_months");
+                        .HasColumnName("default_useful_life_months")
+                        .HasColumnOrder(19);
 
                     b.Property<int?>("DefaultWarrantyMonths")
                         .HasColumnType("integer")
-                        .HasColumnName("default_warranty_months");
+                        .HasColumnName("default_warranty_months")
+                        .HasColumnOrder(20);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(66);
 
                     b.Property<long?>("DeletedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("deleted_by_id");
+                        .HasColumnName("deleted_by_id")
+                        .HasColumnOrder(67);
 
                     b.Property<string>("DepreciationAccountCode")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("depreciation_account_code");
+                        .HasColumnName("depreciation_account_code")
+                        .HasColumnOrder(21);
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasColumnOrder(22);
 
                     b.Property<int>("DisplayOrder")
                         .HasColumnType("integer")
-                        .HasColumnName("display_order");
+                        .HasColumnName("display_order")
+                        .HasColumnOrder(23);
 
                     b.Property<DateTime?>("EffectiveDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("effective_date");
+                        .HasColumnName("effective_date")
+                        .HasColumnOrder(24);
 
                     b.Property<string>("ExpenseAccountCode")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("expense_account_code");
+                        .HasColumnName("expense_account_code")
+                        .HasColumnOrder(25);
 
                     b.Property<DateTime?>("ExpiryDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expiry_date");
+                        .HasColumnName("expiry_date")
+                        .HasColumnOrder(26);
 
                     b.Property<string>("GLAccountCode")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("glaccount_code");
+                        .HasColumnName("glaccount_code")
+                        .HasColumnOrder(27);
 
                     b.Property<string>("IconName")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("icon_name");
+                        .HasColumnName("icon_name")
+                        .HasColumnOrder(28);
 
                     b.Property<string>("IconUrl")
                         .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("icon_url")
+                        .HasColumnOrder(29);
 
                     b.Property<string>("InternalNotes")
                         .HasColumnType("text")
-                        .HasColumnName("internal_notes");
+                        .HasColumnName("internal_notes")
+                        .HasColumnOrder(30);
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasColumnOrder(31);
 
                     b.Property<bool>("IsAssignable")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_assignable");
+                        .HasColumnName("is_assignable")
+                        .HasColumnOrder(32);
 
                     b.Property<bool>("IsCapitalized")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_capitalized");
+                        .HasColumnName("is_capitalized")
+                        .HasColumnOrder(33);
 
                     b.Property<bool>("IsConsumable")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_consumable");
+                        .HasColumnName("is_consumable")
+                        .HasColumnOrder(34);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(68);
 
                     b.Property<bool>("IsDepreciable")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_depreciable");
+                        .HasColumnName("is_depreciable")
+                        .HasColumnOrder(35);
 
                     b.Property<bool>("IsITAsset")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_itasset");
+                        .HasColumnName("is_itasset")
+                        .HasColumnOrder(36);
 
                     b.Property<bool>("IsSystemType")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_system_type");
+                        .HasColumnName("is_system_type")
+                        .HasColumnOrder(37);
 
                     b.Property<bool>("IsTangible")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_tangible");
+                        .HasColumnName("is_tangible")
+                        .HasColumnOrder(38);
 
                     b.Property<int>("Level")
                         .HasColumnType("integer")
-                        .HasColumnName("level");
+                        .HasColumnName("level")
+                        .HasColumnOrder(39);
 
                     b.Property<string>("LongDescription")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)")
-                        .HasColumnName("long_description");
+                        .HasColumnName("long_description")
+                        .HasColumnOrder(40);
 
                     b.Property<decimal?>("MinimumCapitalizationValue")
                         .HasColumnType("numeric")
-                        .HasColumnName("minimum_capitalization_value");
+                        .HasColumnName("minimum_capitalization_value")
+                        .HasColumnOrder(41);
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasColumnOrder(42);
 
                     b.Property<long?>("ParentId")
                         .HasColumnType("bigint")
-                        .HasColumnName("parent_id");
+                        .HasColumnName("parent_id")
+                        .HasColumnOrder(43);
 
                     b.Property<string>("Path")
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)")
-                        .HasColumnName("path");
+                        .HasColumnName("path")
+                        .HasColumnOrder(44);
 
                     b.Property<string>("ProcurementNotes")
                         .HasColumnType("text")
-                        .HasColumnName("procurement_notes");
+                        .HasColumnName("procurement_notes")
+                        .HasColumnOrder(45);
 
                     b.Property<string>("RegulatoryRequirements")
                         .HasColumnType("text")
-                        .HasColumnName("regulatory_requirements");
+                        .HasColumnName("regulatory_requirements")
+                        .HasColumnOrder(46);
 
                     b.Property<string>("RequiredFields")
                         .HasColumnType("text")
-                        .HasColumnName("required_fields");
+                        .HasColumnName("required_fields")
+                        .HasColumnOrder(47);
 
                     b.Property<bool>("RequiresAccessControl")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_access_control");
+                        .HasColumnName("requires_access_control")
+                        .HasColumnOrder(48);
 
                     b.Property<bool>("RequiresApprovalToAcquire")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_approval_to_acquire");
+                        .HasColumnName("requires_approval_to_acquire")
+                        .HasColumnOrder(49);
 
                     b.Property<bool>("RequiresApprovalToDispose")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_approval_to_dispose");
+                        .HasColumnName("requires_approval_to_dispose")
+                        .HasColumnOrder(50);
 
                     b.Property<bool>("RequiresAudit")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_audit");
+                        .HasColumnName("requires_audit")
+                        .HasColumnOrder(51);
 
                     b.Property<bool>("RequiresBackgroundCheck")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_background_check");
+                        .HasColumnName("requires_background_check")
+                        .HasColumnOrder(52);
 
                     b.Property<bool>("RequiresCalibration")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_calibration");
+                        .HasColumnName("requires_calibration")
+                        .HasColumnOrder(53);
 
                     b.Property<bool>("RequiresCompliance")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_compliance");
+                        .HasColumnName("requires_compliance")
+                        .HasColumnOrder(54);
 
                     b.Property<bool>("RequiresInsurance")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_insurance");
+                        .HasColumnName("requires_insurance")
+                        .HasColumnOrder(55);
 
                     b.Property<bool>("RequiresLicense")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_license");
+                        .HasColumnName("requires_license")
+                        .HasColumnOrder(56);
 
                     b.Property<bool>("RequiresMaintenance")
                         .HasColumnType("boolean")
-                        .HasColumnName("requires_maintenance");
+                        .HasColumnName("requires_maintenance")
+                        .HasColumnOrder(57);
 
                     b.Property<string>("SearchKeywords")
                         .HasColumnType("text")
-                        .HasColumnName("search_keywords");
+                        .HasColumnName("search_keywords")
+                        .HasColumnOrder(58);
 
                     b.Property<string>("Subcategory")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("subcategory");
+                        .HasColumnName("subcategory")
+                        .HasColumnOrder(59);
 
                     b.Property<string>("Tags")
                         .HasColumnType("text")
-                        .HasColumnName("tags");
+                        .HasColumnName("tags")
+                        .HasColumnOrder(60);
 
                     b.Property<decimal?>("TotalValue")
                         .HasColumnType("numeric")
-                        .HasColumnName("total_value");
+                        .HasColumnName("total_value")
+                        .HasColumnOrder(61);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(69);
 
                     b.Property<long?>("UpdatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("updated_by_id");
+                        .HasColumnName("updated_by_id")
+                        .HasColumnOrder(70);
 
                     b.Property<string>("ValuationCurrency")
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)")
-                        .HasColumnName("valuation_currency");
+                        .HasColumnName("valuation_currency")
+                        .HasColumnOrder(62);
 
                     b.Property<string>("ValuationMethod")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("valuation_method");
+                        .HasColumnName("valuation_method")
+                        .HasColumnOrder(63);
 
                     b.HasKey("Id")
                         .HasName("pk_asset_types");
@@ -4217,7 +5080,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("ParentId")
                         .HasDatabaseName("ix_asset_types_parent_id");
 
-                    b.ToTable("asset_types");
+                    b.ToTable("asset_types", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Users.Entities.UserDevice", b =>
@@ -4226,109 +5089,132 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id")
+                        .HasColumnOrder(0)
                         .HasDefaultValueSql("gen_random_uuid()");
 
                     b.Property<string>("ActiveAccessTokenJti")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("active_access_token_jti");
+                        .HasColumnName("active_access_token_jti")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Browser")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("browser");
+                        .HasColumnName("browser")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(17);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(18);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(19);
 
                     b.Property<string>("DeviceId")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("device_id");
+                        .HasColumnName("device_id")
+                        .HasColumnOrder(3);
 
                     b.Property<string>("DeviceName")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("device_name");
+                        .HasColumnName("device_name")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("DeviceType")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("device_type");
+                        .HasColumnName("device_type")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("IpAddress")
                         .HasMaxLength(45)
-                        .HasColumnType("character varying(45)");
+                        .HasColumnType("character varying(45)")
+                        .HasColumnName("ip_address")
+                        .HasColumnOrder(6);
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasColumnOrder(7);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(20);
 
                     b.Property<bool>("IsTrusted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_trusted");
+                        .HasColumnName("is_trusted")
+                        .HasColumnOrder(8);
 
                     b.Property<DateTime?>("LastActivityAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_activity_at");
+                        .HasColumnName("last_activity_at")
+                        .HasColumnOrder(9);
 
                     b.Property<DateTime>("LastLoginAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_login_at");
+                        .HasColumnName("last_login_at")
+                        .HasColumnOrder(10);
 
                     b.Property<string>("Location")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("location");
+                        .HasColumnName("location")
+                        .HasColumnOrder(11);
 
                     b.Property<string>("OperatingSystem")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("operating_system");
+                        .HasColumnName("operating_system")
+                        .HasColumnOrder(12);
 
                     b.Property<string>("RefreshToken")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("refresh_token");
+                        .HasColumnName("refresh_token")
+                        .HasColumnOrder(13);
 
                     b.Property<DateTime?>("RefreshTokenExpiresAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("refresh_token_expires_at");
+                        .HasColumnName("refresh_token_expires_at")
+                        .HasColumnOrder(14);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(21);
 
                     b.Property<string>("UserAgent")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)")
-                        .HasColumnName("user_agent");
+                        .HasColumnName("user_agent")
+                        .HasColumnOrder(15);
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint")
-                        .HasColumnName("user_id");
+                        .HasColumnName("user_id")
+                        .HasColumnOrder(16);
 
                     b.HasKey("Id")
                         .HasName("pk_user_devices");
@@ -4350,7 +5236,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasIndex("UserId", "IsActive")
                         .HasDatabaseName("ix_user_devices_user_active");
 
-                    b.ToTable("user_devices");
+                    b.ToTable("user_devices", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Users.Entities.UserTheme", b =>
@@ -4358,73 +5244,87 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<int>("BorderRadius")
                         .HasColumnType("integer")
-                        .HasColumnName("border_radius");
+                        .HasColumnName("border_radius")
+                        .HasColumnOrder(1);
 
                     b.Property<bool>("CompactMode")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("compact_mode");
+                        .HasColumnName("compact_mode")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(9);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(10);
 
                     b.Property<bool>("DarkTheme")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("dark_theme");
+                        .HasColumnName("dark_theme")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(11);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(12);
 
                     b.Property<bool>("PinNavbar")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("pin_navbar");
+                        .HasColumnName("pin_navbar")
+                        .HasColumnOrder(4);
 
                     b.Property<string>("PrimaryColor")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("primary_color");
+                        .HasColumnName("primary_color")
+                        .HasColumnOrder(5);
 
                     b.Property<string>("Theme")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("theme");
+                        .HasColumnName("theme")
+                        .HasColumnOrder(6);
 
                     b.Property<decimal>("Transparency")
                         .HasPrecision(3, 2)
                         .HasColumnType("numeric(3,2)")
-                        .HasColumnName("transparency");
+                        .HasColumnName("transparency")
+                        .HasColumnOrder(7);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(13);
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint")
-                        .HasColumnName("user_id");
+                        .HasColumnName("user_id")
+                        .HasColumnOrder(8);
 
                     b.HasKey("Id")
                         .HasName("pk_user_themes");
@@ -4434,7 +5334,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDatabaseName("ix_user_themes_user_id")
                         .HasFilter("is_deleted = false");
 
-                    b.ToTable("user_themes");
+                    b.ToTable("user_themes", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Users.User", b =>
@@ -4442,159 +5342,199 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnOrder(0);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Avatar")
                         .HasColumnType("text")
-                        .HasColumnName("avatar");
+                        .HasColumnName("avatar")
+                        .HasColumnOrder(1);
 
                     b.Property<string>("Bio")
                         .HasColumnType("text")
-                        .HasColumnName("bio");
+                        .HasColumnName("bio")
+                        .HasColumnOrder(2);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
+                        .HasColumnName("created_at")
+                        .HasColumnOrder(32);
 
                     b.Property<long?>("CreatedById")
                         .HasColumnType("bigint")
-                        .HasColumnName("created_by_id");
+                        .HasColumnName("created_by_id")
+                        .HasColumnOrder(33);
 
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_of_birth");
+                        .HasColumnName("date_of_birth")
+                        .HasColumnOrder(3);
 
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasColumnOrder(34);
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("email")
+                        .HasColumnOrder(4);
 
                     b.Property<DateTime?>("EmailVerifiedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("email_verified_at");
+                        .HasColumnName("email_verified_at")
+                        .HasColumnOrder(5);
 
                     b.Property<int>("FailedLoginAttempts")
                         .HasColumnType("integer")
-                        .HasColumnName("failed_login_attempts");
+                        .HasColumnName("failed_login_attempts")
+                        .HasColumnOrder(6);
 
                     b.Property<string>("FirstName")
                         .HasColumnType("text")
-                        .HasColumnName("first_name");
+                        .HasColumnName("first_name")
+                        .HasColumnOrder(7);
 
                     b.Property<string>("FullName")
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)")
-                        .HasColumnName("full_name");
+                        .HasColumnName("full_name")
+                        .HasColumnOrder(8);
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasColumnOrder(9);
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
+                        .HasColumnName("is_deleted")
+                        .HasColumnOrder(35);
 
                     b.Property<bool>("IsEmailVerified")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_email_verified");
+                        .HasColumnName("is_email_verified")
+                        .HasColumnOrder(10);
 
                     b.Property<bool>("IsPhoneVerified")
                         .HasColumnType("boolean")
-                        .HasColumnName("is_phone_verified");
+                        .HasColumnName("is_phone_verified")
+                        .HasColumnOrder(11);
 
                     b.Property<DateTime?>("LastLoginAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_login_at");
+                        .HasColumnName("last_login_at")
+                        .HasColumnOrder(12);
 
                     b.Property<string>("LastLoginIp")
                         .HasColumnType("text")
-                        .HasColumnName("last_login_ip");
+                        .HasColumnName("last_login_ip")
+                        .HasColumnOrder(13);
 
                     b.Property<string>("LastName")
                         .HasColumnType("text")
-                        .HasColumnName("last_name");
+                        .HasColumnName("last_name")
+                        .HasColumnOrder(14);
 
                     b.Property<DateTime?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("lockout_end");
+                        .HasColumnName("lockout_end")
+                        .HasColumnOrder(15);
 
                     b.Property<DateTime?>("PasswordChangedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("password_changed_at");
+                        .HasColumnName("password_changed_at")
+                        .HasColumnOrder(16);
 
                     b.Property<string>("PasswordResetToken")
                         .HasColumnType("text")
-                        .HasColumnName("password_reset_token");
+                        .HasColumnName("password_reset_token")
+                        .HasColumnOrder(17);
 
                     b.Property<DateTime?>("PasswordResetTokenExpiresAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("password_reset_token_expires_at");
+                        .HasColumnName("password_reset_token_expires_at")
+                        .HasColumnOrder(18);
 
                     b.Property<string>("PendingTwoFactorSecret")
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)")
-                        .HasColumnName("pending_two_factor_secret");
+                        .HasColumnName("pending_two_factor_secret")
+                        .HasColumnOrder(19);
 
                     b.Property<DateTime?>("PendingTwoFactorSecretExpiresAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("pending_two_factor_secret_expires_at");
+                        .HasColumnName("pending_two_factor_secret_expires_at")
+                        .HasColumnOrder(20);
 
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("phone_number")
+                        .HasColumnOrder(21);
 
                     b.Property<DateTime?>("PhoneVerifiedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("phone_verified_at");
+                        .HasColumnName("phone_verified_at")
+                        .HasColumnOrder(22);
 
                     b.Property<string>("PreferredLanguage")
                         .HasColumnType("text")
-                        .HasColumnName("preferred_language");
+                        .HasColumnName("preferred_language")
+                        .HasColumnOrder(23);
 
                     b.Property<bool>("ReceiveMarketingEmails")
                         .HasColumnType("boolean")
-                        .HasColumnName("receive_marketing_emails");
+                        .HasColumnName("receive_marketing_emails")
+                        .HasColumnOrder(24);
 
                     b.Property<bool>("ReceiveNotifications")
                         .HasColumnType("boolean")
-                        .HasColumnName("receive_notifications");
+                        .HasColumnName("receive_notifications")
+                        .HasColumnOrder(25);
 
                     b.Property<string>("TimeZone")
                         .HasColumnType("text")
-                        .HasColumnName("time_zone");
+                        .HasColumnName("time_zone")
+                        .HasColumnOrder(26);
 
                     b.Property<string>("TwoFactorBackupCodes")
                         .HasColumnType("text")
-                        .HasColumnName("two_factor_backup_codes");
+                        .HasColumnName("two_factor_backup_codes")
+                        .HasColumnOrder(27);
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean")
-                        .HasColumnName("two_factor_enabled");
+                        .HasColumnName("two_factor_enabled")
+                        .HasColumnOrder(28);
 
                     b.Property<string>("TwoFactorSecret")
                         .HasColumnType("text")
-                        .HasColumnName("two_factor_secret");
+                        .HasColumnName("two_factor_secret")
+                        .HasColumnOrder(29);
 
                     b.Property<DateTime?>("TwoFactorSetupDate")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("two_factor_setup_date");
+                        .HasColumnName("two_factor_setup_date")
+                        .HasColumnOrder(30);
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
+                        .HasColumnName("updated_at")
+                        .HasColumnOrder(36);
 
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("username")
+                        .HasColumnOrder(31);
 
                     b.HasKey("Id")
                         .HasName("pk_users");
@@ -4609,7 +5549,7 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                         .HasDatabaseName("ix_users_username")
                         .HasFilter("is_deleted = false");
 
-                    b.ToTable("users");
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("FAM.Domain.Assets.Asset", b =>
@@ -4657,7 +5597,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     b.HasOne("FAM.Domain.Locations.Location", null)
                         .WithMany("Assets")
-                        .HasForeignKey("LocationId1");
+                        .HasForeignKey("LocationId1")
+                        .HasConstraintName("fk_assets_locations_location_id1");
 
                     b.HasOne("FAM.Domain.Manufacturers.Manufacturer", "Manufacturer")
                         .WithMany()
@@ -4878,7 +5819,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.HasOne("FAM.Domain.Users.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_finance_entries_users_created_by_id");
 
                     b.HasOne("FAM.Domain.Users.User", "Creator")
                         .WithMany()
@@ -4908,7 +5850,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                     b.HasOne("FAM.Domain.Geography.Country", null)
                         .WithMany("Locations")
-                        .HasForeignKey("CountryId1");
+                        .HasForeignKey("CountryId1")
+                        .HasConstraintName("fk_locations_countries_country_id1");
 
                     b.HasOne("FAM.Domain.Locations.Location", "Parent")
                         .WithMany("Children")
@@ -4973,7 +5916,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.OwnsOne("FAM.Domain.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<long>("CompanyDetailsId")
-                                .HasColumnType("bigint");
+                                .HasColumnType("bigint")
+                                .HasColumnName("company_details_id");
 
                             b1.Property<string>("City")
                                 .IsRequired()
@@ -5013,12 +5957,14 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                                 .HasColumnType("character varying(100)")
                                 .HasColumnName("address_ward");
 
-                            b1.HasKey("CompanyDetailsId");
+                            b1.HasKey("CompanyDetailsId")
+                                .HasName("pk_address");
 
                             b1.ToTable("address");
 
                             b1.WithOwner()
-                                .HasForeignKey("CompanyDetailsId");
+                                .HasForeignKey("CompanyDetailsId")
+                                .HasConstraintName("fk_address_company_details_company_details_id");
                         });
 
                     b.Navigation("Address");
@@ -5060,7 +6006,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.OwnsOne("FAM.Domain.ValueObjects.Money", "AnnualRevenue", b1 =>
                         {
                             b1.Property<long>("SupplierId")
-                                .HasColumnType("bigint");
+                                .HasColumnType("bigint")
+                                .HasColumnName("supplier_id");
 
                             b1.Property<decimal>("Amount")
                                 .HasColumnType("numeric")
@@ -5072,18 +6019,21 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                                 .HasColumnType("character varying(3)")
                                 .HasColumnName("annual_revenue_currency");
 
-                            b1.HasKey("SupplierId");
+                            b1.HasKey("SupplierId")
+                                .HasName("pk_money");
 
                             b1.ToTable("money");
 
                             b1.WithOwner()
-                                .HasForeignKey("SupplierId");
+                                .HasForeignKey("SupplierId")
+                                .HasConstraintName("fk_money_suppliers_supplier_id");
                         });
 
                     b.OwnsOne("FAM.Domain.ValueObjects.Money", "AverageOrderValue", b1 =>
                         {
                             b1.Property<long>("SupplierId")
-                                .HasColumnType("bigint");
+                                .HasColumnType("bigint")
+                                .HasColumnName("id");
 
                             b1.Property<decimal>("Amount")
                                 .HasColumnType("numeric")
@@ -5100,13 +6050,15 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                             b1.ToTable("suppliers");
 
                             b1.WithOwner()
-                                .HasForeignKey("SupplierId");
+                                .HasForeignKey("SupplierId")
+                                .HasConstraintName("fk_suppliers_suppliers_id");
                         });
 
                     b.OwnsOne("FAM.Domain.ValueObjects.Money", "CreditLimit", b1 =>
                         {
                             b1.Property<long>("SupplierId")
-                                .HasColumnType("bigint");
+                                .HasColumnType("bigint")
+                                .HasColumnName("id");
 
                             b1.Property<decimal>("Amount")
                                 .HasColumnType("numeric")
@@ -5123,13 +6075,15 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                             b1.ToTable("suppliers");
 
                             b1.WithOwner()
-                                .HasForeignKey("SupplierId");
+                                .HasForeignKey("SupplierId")
+                                .HasConstraintName("fk_suppliers_suppliers_id");
                         });
 
                     b.OwnsOne("FAM.Domain.ValueObjects.Money", "InsuranceCoverage", b1 =>
                         {
                             b1.Property<long>("SupplierId")
-                                .HasColumnType("bigint");
+                                .HasColumnType("bigint")
+                                .HasColumnName("id");
 
                             b1.Property<decimal>("Amount")
                                 .HasColumnType("numeric")
@@ -5146,13 +6100,15 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                             b1.ToTable("suppliers");
 
                             b1.WithOwner()
-                                .HasForeignKey("SupplierId");
+                                .HasForeignKey("SupplierId")
+                                .HasConstraintName("fk_suppliers_suppliers_id");
                         });
 
                     b.OwnsOne("FAM.Domain.ValueObjects.Money", "MinimumOrderValue", b1 =>
                         {
                             b1.Property<long>("SupplierId")
-                                .HasColumnType("bigint");
+                                .HasColumnType("bigint")
+                                .HasColumnName("id");
 
                             b1.Property<decimal>("Amount")
                                 .HasColumnType("numeric")
@@ -5169,13 +6125,15 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                             b1.ToTable("suppliers");
 
                             b1.WithOwner()
-                                .HasForeignKey("SupplierId");
+                                .HasForeignKey("SupplierId")
+                                .HasConstraintName("fk_suppliers_suppliers_id");
                         });
 
                     b.OwnsOne("FAM.Domain.ValueObjects.Money", "TotalSpent", b1 =>
                         {
                             b1.Property<long>("SupplierId")
-                                .HasColumnType("bigint");
+                                .HasColumnType("bigint")
+                                .HasColumnName("id");
 
                             b1.Property<decimal>("Amount")
                                 .HasColumnType("numeric")
@@ -5192,7 +6150,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                             b1.ToTable("suppliers");
 
                             b1.WithOwner()
-                                .HasForeignKey("SupplierId");
+                                .HasForeignKey("SupplierId")
+                                .HasConstraintName("fk_suppliers_suppliers_id");
                         });
 
                     b.Navigation("AnnualRevenue");
@@ -5250,7 +6209,8 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                     b.OwnsOne("FAM.Domain.ValueObjects.Password", "Password", b1 =>
                         {
                             b1.Property<long>("UserId")
-                                .HasColumnType("bigint");
+                                .HasColumnType("bigint")
+                                .HasColumnName("user_id");
 
                             b1.Property<string>("Hash")
                                 .IsRequired()
@@ -5262,12 +6222,14 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
                                 .HasColumnType("text")
                                 .HasColumnName("password_salt");
 
-                            b1.HasKey("UserId");
+                            b1.HasKey("UserId")
+                                .HasName("pk_password");
 
                             b1.ToTable("password");
 
                             b1.WithOwner()
-                                .HasForeignKey("UserId");
+                                .HasForeignKey("UserId")
+                                .HasConstraintName("fk_password_users_user_id");
                         });
 
                     b.Navigation("Password")

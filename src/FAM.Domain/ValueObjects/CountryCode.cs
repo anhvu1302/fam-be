@@ -55,58 +55,11 @@ public sealed class CountryCode : ValueObject
             "PR", "QA", "RO", "RU", "RW", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SX",
             "SK", "SI", "SB", "SO", "ZA", "SS", "ES", "LK", "SD", "SR", "SE", "CH", "SY", "TW", "TJ",
             "TZ", "TH", "TL", "TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE",
-            "GB", "US", "UY", "UZ", "VU", "VA", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW"
+            "GB", "US", "UY", "UZ", "VU", "VA", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW",
+            "KN", "LC", "VC"
         };
 
         return validCodes.Contains(code);
-    }
-
-    /// <summary>
-    /// Lấy tên quốc gia từ country code (đơn giản hóa)
-    /// </summary>
-    public string GetCountryName()
-    {
-        var countryNames = new Dictionary<string, string>
-        {
-            ["VN"] = "Vietnam",
-            ["US"] = "United States",
-            ["GB"] = "United Kingdom",
-            ["DE"] = "Germany",
-            ["FR"] = "France",
-            ["JP"] = "Japan",
-            ["CN"] = "China",
-            ["KR"] = "South Korea",
-            ["SG"] = "Singapore",
-            ["TH"] = "Thailand",
-            ["MY"] = "Malaysia",
-            ["ID"] = "Indonesia",
-            ["PH"] = "Philippines",
-            ["AU"] = "Australia",
-            ["CA"] = "Canada",
-            ["BR"] = "Brazil",
-            ["MX"] = "Mexico",
-            ["AR"] = "Argentina",
-            ["CL"] = "Chile",
-            ["CO"] = "Colombia",
-            ["PE"] = "Peru",
-            ["VE"] = "Venezuela",
-            ["EC"] = "Ecuador",
-            ["UY"] = "Uruguay",
-            ["PY"] = "Paraguay",
-            ["BO"] = "Bolivia",
-            ["GY"] = "Guyana",
-            ["SR"] = "Suriname",
-            ["FK"] = "Falkland Islands",
-            ["GS"] = "South Georgia and the South Sandwich Islands",
-            ["AQ"] = "Antarctica",
-            ["BV"] = "Bouvet Island",
-            ["HM"] = "Heard Island and McDonald Islands",
-            ["IO"] = "British Indian Ocean Territory",
-            ["TF"] = "French Southern Territories",
-            ["UM"] = "United States Minor Outlying Islands"
-        };
-
-        return countryNames.GetValueOrDefault(Value, "Unknown");
     }
 
     /// <summary>

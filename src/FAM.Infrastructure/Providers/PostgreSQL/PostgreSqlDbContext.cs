@@ -103,7 +103,8 @@ public class PostgreSqlDbContext : DbContext
         {
             // store migrations history table without schema
             npgsqlOptions.MigrationsHistoryTable("__ef_migrations_history");
-        });
+        })
+        .UseSnakeCaseNamingConvention();
 
         if (_options.EnableDetailedErrors)
             optionsBuilder.EnableDetailedErrors();
@@ -1373,5 +1374,47 @@ public class PostgreSqlDbContext : DbContext
             entity.HasIndex(e => e.IsActive).HasDatabaseName("ix_email_templates_is_active");
             entity.HasIndex(e => e.IsSystem).HasDatabaseName("ix_email_templates_is_system");
         });
+
+        // Set audit fields column order to be last (after all entity configurations)
+        foreach (IMutableEntityType entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            // Skip owned types (like Password, Money, Address)
+            if (entityType.IsOwned())
+                continue;
+            
+            // Skip value objects (they don't have audit fields)
+            if (entityType.ClrType.Namespace?.Contains("ValueObjects") == true)
+                continue;
+                
+            // Only process if entity has audit fields
+            var properties = entityType.GetProperties().ToList();
+            if (!properties.Any(p => IsAuditField(p.Name)))
+                continue;
+                
+            var entityBuilder = modelBuilder.Entity(entityType.ClrType);
+            
+            // Set column order: id first, business fields next, audit fields last
+            int orderCounter = 0;
+            
+            // 1. Id column first
+            var idProperty = properties.FirstOrDefault(p => p.Name == "Id");
+            if (idProperty != null)
+                entityBuilder.Property(idProperty.Name).HasColumnOrder(orderCounter++);
+            
+            // 2. Business fields (non-audit fields)
+            foreach (var property in properties.Where(p => p.Name != "Id" && !IsAuditField(p.Name)))
+            {
+                entityBuilder.Property(property.Name).HasColumnOrder(orderCounter++);
+            }
+            
+            // 3. Audit fields last
+            foreach (var property in properties.Where(p => IsAuditField(p.Name)))
+            {
+                entityBuilder.Property(property.Name).HasColumnOrder(orderCounter++);
+            }
+        }
+
+        static bool IsAuditField(string propertyName) =>
+            propertyName is "CreatedAt" or "CreatedById" or "UpdatedAt" or "UpdatedById" or "IsDeleted" or "DeletedAt" or "DeletedById";
     }
 }
