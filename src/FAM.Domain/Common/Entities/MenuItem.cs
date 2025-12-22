@@ -12,19 +12,6 @@ namespace FAM.Domain.Common.Entities;
 public class MenuItem : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasModifier, IHasDeletionTime,
     IHasDeleter
 {
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public long? CreatedById { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public long? UpdatedById { get; set; }
-    public bool IsDeleted { get; set; } = false;
-    public DateTime? DeletedAt { get; set; }
-    public long? DeletedById { get; set; }
-
-    // Navigation properties
-    public User? CreatedBy { get; set; }
-    public User? UpdatedBy { get; set; }
-    public User? DeletedBy { get; set; }
-
     /// <summary>
     /// Unique code for the menu item (e.g., "dashboard", "assets", "settings")
     /// Used for frontend routing and permission mapping
@@ -130,6 +117,19 @@ public class MenuItem : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     /// Additional metadata as JSON
     /// </summary>
     public string? Metadata { get; private set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
+
+    // Navigation properties
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+    public User? DeletedBy { get; set; }
 
     // Required for EF
     private MenuItem()

@@ -10,18 +10,17 @@ namespace FAM.Domain.Organizations;
 /// </summary>
 public class CompanyDetails : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasDeletionTime
 {
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public long? CreatedById { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public bool IsDeleted { get; set; } = false;
-    public DateTime? DeletedAt { get; set; }
-
     public long NodeId { get; private set; }
     public OrgNode Node { get; private set; } = null!;
     public string? TaxCode { get; private set; }
     public string? Domain { get; private set; }
     public Address? Address { get; private set; }
     public DateTime? EstablishedOn { get; private set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
 
     private CompanyDetails()
     {

@@ -16,6 +16,11 @@ public class Role : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
 {
     private readonly List<IDomainEvent> _domainEvents = new();
 
+    public string Code { get; private set; } = null!;
+    public string Name { get; private set; } = string.Empty;
+    public string? Description { get; private set; }
+    public int Rank { get; private set; }
+    public bool IsSystemRole { get; private set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public long? CreatedById { get; set; }
     public DateTime? UpdatedAt { get; set; }
@@ -28,14 +33,6 @@ public class Role : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public User? CreatedBy { get; set; }
     public User? UpdatedBy { get; set; }
     public User? DeletedBy { get; set; }
-
-    public string Code { get; private set; } = null!;
-    public string Name { get; private set; } = string.Empty;
-    public string? Description { get; private set; }
-    public int Rank { get; private set; }
-    public bool IsSystemRole { get; private set; }
-
-    // Navigation properties
     public ICollection<UserNodeRole> UserNodeRoles { get; set; } = new List<UserNodeRole>();
     public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
 

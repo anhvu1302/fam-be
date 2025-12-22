@@ -20,9 +20,9 @@ public class CompanyDetailsTests
 
         // Assert
         details.Should().NotBeNull();
-        string taxCodeValue = details.TaxCode!;
+        var taxCodeValue = details.TaxCode!;
         taxCodeValue.Should().Be("1234567890");
-        string domainValue = details.Domain!;
+        var domainValue = details.Domain!;
         domainValue.Should().Be("example.com");
         var addressValue = details.Address!.ToString();
         addressValue.Should().Be("123 Main St, City, Country, Unknown, VN");
@@ -57,9 +57,9 @@ public class CompanyDetailsTests
         details.Update(taxCode, domain, address, establishedOn);
 
         // Assert
-        string taxCodeValue = details.TaxCode!;
+        var taxCodeValue = details.TaxCode!;
         taxCodeValue.Should().Be("1234567890");
-        string domainValue = details.Domain!;
+        var domainValue = details.Domain!;
         domainValue.Should().Be("example.com");
         var addressValue = details.Address!.ToString();
         addressValue.Should().Be("123 Main St, City, Country, Unknown, VN");

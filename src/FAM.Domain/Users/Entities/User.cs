@@ -14,12 +14,6 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
 {
     private readonly List<IDomainEvent> _domainEvents = new();
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public long? CreatedById { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public bool IsDeleted { get; set; } = false;
-    public DateTime? DeletedAt { get; set; }
-
     // Authentication - Pragmatic DDD: primitives for single-field, VO for complex
     public string Username { get; private set; } = null!;
     public string Email { get; private set; } = null!;
@@ -66,6 +60,12 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public string? TimeZone { get; private set; } = "UTC";
     public bool ReceiveNotifications { get; private set; } = true;
     public bool ReceiveMarketingEmails { get; private set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
 
     // Navigation properties
     /// <summary>

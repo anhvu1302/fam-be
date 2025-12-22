@@ -15,7 +15,7 @@ public static class ModelBuilderExtensions
     {
         foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
         {
-            if (entity.IsOwned()) 
+            if (entity.IsOwned())
                 continue;
 
             // table name

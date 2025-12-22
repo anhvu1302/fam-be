@@ -183,7 +183,6 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     // Navigation properties
     public User? CreatedBy { get; set; }
     public User? UpdatedBy { get; set; }
-
     public User? DeletedBy { get; set; }
 
     // public Companies.Company? Company { get; set; }

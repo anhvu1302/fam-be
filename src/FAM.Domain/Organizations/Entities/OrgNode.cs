@@ -14,6 +14,10 @@ public class OrgNode : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
 {
     private readonly List<IDomainEvent> _domainEvents = new();
 
+    public OrgNodeType Type { get; private set; }
+    public string Name { get; private set; } = string.Empty;
+    public long? ParentId { get; private set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public long? CreatedById { get; set; }
     public DateTime? UpdatedAt { get; set; }
@@ -26,10 +30,6 @@ public class OrgNode : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
     public User? CreatedBy { get; set; }
     public User? UpdatedBy { get; set; }
     public User? DeletedBy { get; set; }
-
-    public OrgNodeType Type { get; private set; }
-    public string Name { get; private set; } = string.Empty;
-    public long? ParentId { get; private set; }
     public OrgNode? Parent { get; private set; }
     public ICollection<OrgNode> Children { get; private set; } = new List<OrgNode>();
 

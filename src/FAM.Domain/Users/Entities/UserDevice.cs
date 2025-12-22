@@ -11,12 +11,6 @@ namespace FAM.Domain.Users.Entities;
 /// </summary>
 public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasModificationTime, IHasDeletionTime
 {
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public long? CreatedById { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public bool IsDeleted { get; set; } = false;
-    public DateTime? DeletedAt { get; set; }
-
     public long UserId { get; private set; }
     public string DeviceId { get; private set; } = string.Empty;
     public string DeviceName { get; private set; } = string.Empty;
@@ -33,6 +27,11 @@ public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasMod
     public string? RefreshToken { get; private set; }
     public DateTime? RefreshTokenExpiresAt { get; private set; }
     public string? ActiveAccessTokenJti { get; private set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
 
     // Navigation property
     public User User { get; set; } = null!;

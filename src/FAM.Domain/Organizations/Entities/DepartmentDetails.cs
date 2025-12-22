@@ -9,17 +9,16 @@ namespace FAM.Domain.Organizations;
 /// </summary>
 public class DepartmentDetails : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationTime, IHasDeletionTime
 {
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public long? CreatedById { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public bool IsDeleted { get; set; } = false;
-    public DateTime? DeletedAt { get; set; }
-
     public long NodeId { get; private set; }
     public OrgNode Node { get; private set; } = null!;
     public string? CostCenter { get; private set; }
     public int? Headcount { get; private set; }
     public decimal? BudgetYear { get; private set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
 
     private DepartmentDetails()
     {

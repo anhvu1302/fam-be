@@ -138,13 +138,13 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public long? DeletedById { get; set; }
 
     // Navigation properties
-    public User? CreatedBy { get; set; }
-    public User? UpdatedBy { get; set; }
-    public User? DeletedBy { get; set; }
     public Manufacturer? Manufacturer { get; set; }
     public AssetCategory? Category { get; set; }
     public AssetType? Type { get; set; }
     public ICollection<Asset> Assets { get; set; } = new List<Asset>();
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+    public User? DeletedBy { get; set; }
 
     private Model()
     {

@@ -89,11 +89,6 @@ public class SystemSetting : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     /// </summary>
     public string? Metadata { get; private set; }
 
-    /// <summary>
-    /// Last modified by user ID
-    /// </summary>
-    public long? LastModifiedBy { get; private set; }
-
     // Audit fields
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public long? CreatedById { get; set; }
@@ -154,10 +149,10 @@ public class SystemSetting : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     /// <summary>
     /// Update setting value
     /// </summary>
-    public void SetValue(string? value, long? modifiedBy = null)
+    public void SetValue(string? value, long? updatedById = null)
     {
         Value = value;
-        LastModifiedBy = modifiedBy;
+        UpdatedById = updatedById;
         UpdatedAt = DateTime.UtcNow;
     }
 

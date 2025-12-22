@@ -134,22 +134,22 @@ public class SystemSettingRepository : ISystemSettingRepository
         return await query.AnyAsync(cancellationToken);
     }
 
-    public async Task UpdateValueAsync(string key, string? value, long? modifiedBy = null,
+    public async Task UpdateValueAsync(string key, string? value, long? updatedById = null,
         CancellationToken cancellationToken = default)
     {
         await _context.SystemSettings
             .Where(s => s.Key == key.ToLowerInvariant() && !s.IsDeleted)
             .ExecuteUpdateAsync(s => s
                     .SetProperty(x => x.Value, value)
-                    .SetProperty(x => x.LastModifiedBy, modifiedBy)
+                    .SetProperty(x => x.UpdatedById, updatedById)
                     .SetProperty(x => x.UpdatedAt, DateTime.UtcNow),
                 cancellationToken);
     }
 
-    public async Task BulkUpdateAsync(Dictionary<string, string?> keyValues, long? modifiedBy = null,
+    public async Task BulkUpdateAsync(Dictionary<string, string?> keyValues, long? updatedById = null,
         CancellationToken cancellationToken = default)
     {
         foreach (KeyValuePair<string, string?> kvp in keyValues)
-            await UpdateValueAsync(kvp.Key, kvp.Value, modifiedBy, cancellationToken);
+            await UpdateValueAsync(kvp.Key, kvp.Value, updatedById, cancellationToken);
     }
 }

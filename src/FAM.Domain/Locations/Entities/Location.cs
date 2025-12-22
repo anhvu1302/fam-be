@@ -16,19 +16,6 @@ public class Location : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
 {
     private readonly List<IDomainEvent> _domainEvents = new();
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public long? CreatedById { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public long? UpdatedById { get; set; }
-    public bool IsDeleted { get; set; } = false;
-    public DateTime? DeletedAt { get; set; }
-    public long? DeletedById { get; set; }
-
-    // Navigation properties
-    public User? CreatedBy { get; set; }
-    public User? UpdatedBy { get; set; }
-    public User? DeletedBy { get; set; }
-
     public string Name { get; private set; } = string.Empty;
     public long? CompanyId { get; private set; }
     public string? Code { get; private set; }
@@ -38,6 +25,13 @@ public class Location : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public string? PathIds { get; private set; }
     public long? CountryId { get; private set; }
     public string? Description { get; private set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public long? CreatedById { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public long? UpdatedById { get; set; }
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
+    public long? DeletedById { get; set; }
 
     // Navigation properties
     public CompanyDetails? Company { get; set; }
@@ -45,6 +39,9 @@ public class Location : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public Location? Parent { get; set; }
     public ICollection<Location> Children { get; set; } = new List<Location>();
     public ICollection<Asset> Assets { get; set; } = new List<Asset>();
+    public User? CreatedBy { get; set; }
+    public User? UpdatedBy { get; set; }
+    public User? DeletedBy { get; set; }
 
     private Location()
     {
