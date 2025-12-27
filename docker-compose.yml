@@ -81,7 +81,7 @@ services:
       - SEQ_FIRSTRUN_ADMINPASSWORD=${SEQ_ADMIN_PASSWORD:-Admin@123}
     ports:
       - "${SEQ_PORT:-5341}:5341"      # Log ingestion port
-      - "${SEQ_UI_PORT:-8081}:80"     # Web UI port
+      - "${SEQ_UI_PORT:-9002}:80"     # Web UI port
     volumes:
       - ./data/seq:/data
     restart: unless-stopped
