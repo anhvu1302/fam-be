@@ -3,20 +3,17 @@ using System;
 using FAM.Infrastructure.Providers.PostgreSQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
+namespace FAM.Infrastructure.Migrations
 {
     [DbContext(typeof(PostgreSqlDbContext))]
-    [Migration("20251222091044_Initiall")]
-    partial class Initiall
+    partial class PostgreSqlDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -5428,14 +5425,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Migrations
 
                             b1.Property<string>("Hash")
                                 .IsRequired()
-                                .HasMaxLength(255)
-                                .HasColumnType("character varying(255)")
+                                .HasColumnType("text")
                                 .HasColumnName("password_hash");
 
                             b1.Property<string>("Salt")
                                 .IsRequired()
-                                .HasMaxLength(255)
-                                .HasColumnType("character varying(255)")
+                                .HasColumnType("text")
                                 .HasColumnName("password_salt");
 
                             b1.HasKey("UserId");
