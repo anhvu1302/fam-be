@@ -10,7 +10,7 @@ DOCKER_IMAGE=fam-api
 DOCKER_TAG=latest
 ENV_FILE=.env.production
 
-# Timestamp for Cache Busting (forces Docker to rebuild source layers)
+# Timestamp for Cache Busting
 NOW := $(shell date +%s)
 
 # Load environment variables
@@ -18,6 +18,9 @@ ifneq (,$(wildcard $(ENV_FILE)))
     include $(ENV_FILE)
     export
 endif
+
+# Default DATA_PATH if not set in .env
+DATA_PATH ?= ./data
 
 .PHONY: help add remove update list seed seed-force docker-clean
 .PHONY: prod-deploy prod-start prod-stop prod-restart prod-logs prod-status prod-health prod-seed prod-db-shell
@@ -53,7 +56,7 @@ help:
 	@echo "  make prod-db-shell     Connect to PostgreSQL"
 	@echo ""
 	@echo "💾 Data Management:"
-	@echo "  make prod-backup       Backup all production data (PostgreSQL, MinIO, Seq)"
+	@echo "  make prod-backup       Backup all production data"
 	@echo "  make prod-restore      List available backups"
 	@echo ""
 
@@ -110,13 +113,14 @@ docker-clean:
 # ============================================
 
 prod-deploy:
-	@echo "🚀 [1/4] Creating data directories..."
-	@mkdir -p data/postgres data/minio data/seq data/redis
+	@echo "🚀 [1/4] Creating data directories at $(DATA_PATH)..."
+	@# FIX: Sử dụng biến DATA_PATH để tạo thư mục đúng chỗ (tránh lỗi permission trong source code)
+	@mkdir -p $(DATA_PATH)/postgres $(DATA_PATH)/minio $(DATA_PATH)/seq $(DATA_PATH)/redis
 	
 	@echo "🚀 [2/4] Building Docker image..."
 	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) build --build-arg CACHEBUST=$(NOW)
 	
-	@echo "🚀 [3/4] Stopping API and starting services (migrations run automatically)..."
+	@echo "🚀 [3/4] Stopping API and starting services..."
 	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) stop fam-api 2>/dev/null || true
 	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) rm -f fam-api 2>/dev/null || true
 	@docker compose -f docker-compose.prod.yml --env-file $(ENV_FILE) up -d
