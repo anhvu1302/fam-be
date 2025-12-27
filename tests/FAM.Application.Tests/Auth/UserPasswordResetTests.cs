@@ -110,14 +110,13 @@ public class UserPasswordResetTests
         user.SetPasswordResetToken("reset-token", 60);
 
         var oldPasswordHash = user.Password.Hash;
-        var newPassword = Password.Create("NewSecurePassword456!");
 
         // Act
-        user.UpdatePassword(newPassword.Hash, newPassword.Salt);
+        user.UpdatePassword("NewSecurePassword456!");
 
         // Assert
         user.Password.Hash.Should().NotBe(oldPasswordHash);
-        user.Password.Hash.Should().Be(newPassword.Hash);
+        user.Password.Verify("NewSecurePassword456!").Should().BeTrue();
         user.PasswordResetToken.Should().BeNull();
         user.PasswordResetTokenExpiresAt.Should().BeNull();
         user.PasswordChangedAt.Should().NotBeNull();

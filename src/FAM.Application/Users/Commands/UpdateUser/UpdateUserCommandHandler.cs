@@ -41,8 +41,7 @@ public sealed class UpdateUserCommandHandler
         // Update password if provided
         if (!string.IsNullOrEmpty(request.Password))
         {
-            var newPassword = Password.Create(request.Password);
-            user.UpdatePassword(newPassword.Hash, newPassword.Salt);
+            user.UpdatePassword(request.Password);
         }
 
         // Update preferences if provided

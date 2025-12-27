@@ -83,7 +83,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     }
 
     // ============ Factory Methods ============
-    public static User Create(string username, string email, string passwordHash, string passwordSalt,
+    public static User Create(string username, string email, string password,
         string? firstName = null, string? lastName = null, string? phoneNumber = null, string? phoneCountryCode = null)
     {
         var user = new User
@@ -98,7 +98,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
 
         user.SetUsername(username);
         user.SetEmail(email);
-        user.SetPassword(passwordHash, passwordSalt);
+        user.SetPassword(password);
         user.SetPhoneNumber(phoneNumber, phoneCountryCode);
         user.UpdateFullName();
 
@@ -111,8 +111,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public static User CreateWithPlainPassword(string username, string email, string plainPassword,
         string? firstName = null, string? lastName = null, string? phoneNumber = null, string? phoneCountryCode = null)
     {
-        var password = Password.Create(plainPassword);
-        return Create(username, email, password.Hash, password.Salt, firstName, lastName, phoneNumber,
+        return Create(username, email, plainPassword, firstName, lastName, phoneNumber,
             phoneCountryCode);
     }
 
@@ -167,7 +166,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
 
         user.SetUsername(username);
         user.SetEmail(email);
-        user.SetPassword(passwordHash, passwordSalt);
+        user.Password = Password.FromHash(passwordHash, passwordSalt);
         if (!string.IsNullOrWhiteSpace(phoneNumber)) user.SetPhoneNumber(phoneNumber, "VN");
 
         return user;
@@ -188,9 +187,10 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
         EmailVerifiedAt = null;
     }
 
-    public void SetPassword(string passwordHash, string passwordSalt)
+    public void SetPassword(string password)
     {
-        Password = Password.FromHash(passwordHash, passwordSalt);
+        var passwordVo = Password.Create(password);
+        Password = passwordVo;
     }
 
     public void SetPhoneNumber(string? phoneNumber, string? countryCode = "VN")
@@ -269,13 +269,13 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
         if (!Password.Verify(currentPassRaw))
             throw new DomainException(ErrorCodes.AUTH_INVALID_OLD_PASSWORD, "Current password is incorrect");
 
-        var newPassVo = Password.Create(newPassRaw);
-        UpdatePassword(newPassVo.Hash, newPassVo.Salt);
+        UpdatePassword(newPassRaw);
     }
 
-    public void UpdatePassword(string newPasswordHash, string newPasswordSalt)
+    public void UpdatePassword(string newPlainPassword)
     {
-        Password = Password.FromHash(newPasswordHash, newPasswordSalt);
+        var newPassVo = Password.Create(newPlainPassword);
+        Password = newPassVo;
         PasswordChangedAt = DateTime.UtcNow;
 
         // Clear any pending reset token

@@ -48,11 +48,6 @@ public static class EmailServiceExtensions
             if (!string.IsNullOrEmpty(envFromName))
                 options.FromName = envFromName;
 
-            // Brevo settings
-            var brevoApiKey = Environment.GetEnvironmentVariable("BREVO_API_KEY");
-            if (!string.IsNullOrEmpty(brevoApiKey))
-                options.Brevo.ApiKey = brevoApiKey;
-
             // SMTP settings
             var smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST");
             if (!string.IsNullOrEmpty(smtpHost))

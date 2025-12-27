@@ -50,11 +50,8 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
                 ErrorMessages.GetMessage(ErrorCodes.AUTH_RESET_TOKEN_EXPIRED));
         }
 
-        // Create new password (Password.Create will throw if invalid)
-        var newPassword = Password.Create(request.NewPassword);
-
         // Update the password (this also clears the reset token)
-        user.UpdatePassword(newPassword.Hash, newPassword.Salt);
+        user.UpdatePassword(request.NewPassword);
 
         // Save changes
         _unitOfWork.Users.Update(user);

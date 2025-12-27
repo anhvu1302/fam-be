@@ -29,7 +29,7 @@ public sealed class CreateUserCommandHandler
         var isEmailTaken = await _unitOfWork.Users.IsEmailTakenAsync(request.Email);
         if (isEmailTaken) return Result<CreateUserResult>.Failure("Email is already taken", ErrorType.Conflict);
 
-        // Create user
+        // Create user (accepts plain password and hashes automatically)
         var user = User.Create(
             request.Username,
             request.Email,
