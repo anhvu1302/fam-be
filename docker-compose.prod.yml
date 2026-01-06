@@ -9,7 +9,7 @@ services:
       POSTGRES_DB: ${DB_NAME}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: always
@@ -42,7 +42,7 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
     ports:
       - "${MINIO_PORT:-9000}:9000"
-      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:-9001}:9001"
     volumes:
       - minio_data:/data
     restart: always
@@ -54,7 +54,7 @@ services:
     networks:
       - fam-network
 
-  # Redis - In-memory cache for token blacklist, OTP, sessions
+  # Redis - In-memory cache
   redis:
     image: redis:7-alpine
     container_name: fam-redis-prod
@@ -68,11 +68,10 @@ services:
       --maxmemory 512mb
       --maxmemory-policy allkeys-lru
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
     restart: always
-    # FIX 2: Sửa lệnh Healthcheck có dùng mật khẩu (-a)
     healthcheck:
       test: ["CMD-SHELL", "redis-cli -a $$REDIS_PASSWORD ping | grep PONG"]
       interval: 10s
@@ -89,7 +88,7 @@ services:
       ACCEPT_EULA: Y
       SEQ_FIRSTRUN_ADMINPASSWORD: ${SEQ_ADMIN_PASSWORD}
     ports:
-      - "${SEQ_UI_PORT:-9002}:80"
+      - "127.0.0.1:${SEQ_UI_PORT:-9002}:80"
     volumes:
       - seq_data:/data
     restart: always
@@ -152,14 +151,12 @@ services:
         condition: service_started
 
     restart: always
-
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 5s
       retries: 3
       start_period: 30s
-
     networks:
       - fam-network
 
