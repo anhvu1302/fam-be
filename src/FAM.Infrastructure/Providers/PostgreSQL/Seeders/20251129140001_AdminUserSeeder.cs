@@ -36,10 +36,10 @@ public class AdminUserSeeder : BaseDataSeeder
             "admin",
             "admin@gmail.com",
             "RlI1JkKTEVI6+RhcU/dLzeKshHhDwe3NpWd6Z3BIFtY=",
-            "6eb1ccfd64a94810bd3398067dff13f5",
             "System",
             "Administrator",
-            "+84:0123456789"
+            "0901234567",
+            "+84"
         );
         admin.VerifyEmail();
         admin.UpdatePersonalInfo(
