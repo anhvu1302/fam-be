@@ -3,21 +3,20 @@ using System.Linq.Expressions;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.Common.Abstractions;
-using FAM.Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
+namespace FAM.Infrastructure.Repositories;
 
 /// <summary>
 /// PostgreSQL implementation of IPermissionRepository
 /// Uses Pragmatic Architecture - directly works with Domain entities
 /// Follows Clean Architecture by depending on IDbContext
 /// </summary>
-public class PermissionRepositoryPostgreSql : BasePostgreSqlRepository<Permission>, IPermissionRepository
+public class PermissionRepository : BaseRepository<Permission>, IPermissionRepository
 {
-    public PermissionRepositoryPostgreSql(IDbContext context) : base(context)
+    public PermissionRepository(IDbContext context) : base(context)
     {
     }
 

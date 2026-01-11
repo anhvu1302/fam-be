@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
 
-using FAM.Application.Abstractions;
+using FAM.Domain.Abstractions.Cache;
 
 using Microsoft.Extensions.Logging;
 

@@ -1,6 +1,6 @@
 using System.Text;
 
-using FAM.Application.Common.Services;
+using FAM.Domain.Abstractions.Email;
 
 using MediatR;
 

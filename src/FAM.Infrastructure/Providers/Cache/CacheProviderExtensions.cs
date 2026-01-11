@@ -1,4 +1,4 @@
-using FAM.Application.Abstractions;
+using FAM.Domain.Abstractions.Cache;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

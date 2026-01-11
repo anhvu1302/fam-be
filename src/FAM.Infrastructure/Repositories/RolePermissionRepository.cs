@@ -6,7 +6,7 @@ using FAM.Infrastructure.Common.Abstractions;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
+namespace FAM.Infrastructure.Repositories;
 
 /// <summary>
 /// PostgreSQL implementation of IRolePermissionRepository using Pragmatic Architecture.

@@ -1,6 +1,7 @@
 using FAM.Application.Auth.Shared;
-using FAM.Application.Common.Services;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Abstractions.Email;
+using FAM.Domain.Abstractions.Services;
 using FAM.Domain.Authorization;
 using FAM.Domain.Common.Base;
 using FAM.Domain.Users;

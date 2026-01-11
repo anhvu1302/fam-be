@@ -100,8 +100,8 @@ public sealed class DisableTwoFactorWithBackupCommandHandler : IRequestHandler<D
             user.DisableTwoFactor();
         }
         else
-        // Still have backup codes - update but keep 2FA disabled for now
-        // User needs to re-enable 2FA to get security back
+            // Still have backup codes - update but keep 2FA disabled for now
+            // User needs to re-enable 2FA to get security back
         {
             user.DisableTwoFactor();
         }

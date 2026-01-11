@@ -76,7 +76,7 @@ public static class ProjectionBinder
 
             // Convert if types don't match
             if (sourceBody.Type != dtoProperty.PropertyType)
-            // Try to convert (e.g., long to int, DateTime to string, etc.)
+                // Try to convert (e.g., long to int, DateTime to string, etc.)
             {
                 if (dtoProperty.PropertyType.IsAssignableFrom(sourceBody.Type))
                 {

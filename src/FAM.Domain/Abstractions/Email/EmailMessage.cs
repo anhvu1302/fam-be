@@ -1,4 +1,4 @@
-namespace FAM.Application.Common.Email;
+namespace FAM.Domain.Abstractions.Email;
 
 /// <summary>
 /// Represents an email message to be sent

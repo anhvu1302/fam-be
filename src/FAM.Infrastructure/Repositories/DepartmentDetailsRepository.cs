@@ -7,7 +7,7 @@ using FAM.Infrastructure.Common.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
+namespace FAM.Infrastructure.Repositories;
 
 /// <summary>
 /// PostgreSQL implementation of IDepartmentDetailsRepository using Pragmatic Architecture.

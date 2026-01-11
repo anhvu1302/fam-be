@@ -1,6 +1,5 @@
-using FAM.Application.Abstractions;
-using FAM.Application.Common.Email;
-using FAM.Application.Common.Services;
+using FAM.Domain.Abstractions.Cache;
+using FAM.Domain.Abstractions.Email;
 using FAM.Infrastructure.Providers.Cache;
 using FAM.Infrastructure.Services.Email.Providers;
 

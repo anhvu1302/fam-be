@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-using FAM.Application.Common.Services;
+using FAM.Domain.Abstractions.Services;
 using FAM.Domain.Geography;
 using FAM.Domain.ValueObjects;
 using FAM.Infrastructure.Services.Dtos;

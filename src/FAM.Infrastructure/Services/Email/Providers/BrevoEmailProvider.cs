@@ -2,7 +2,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-using FAM.Application.Common.Email;
+using FAM.Domain.Abstractions.Email;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

@@ -1,6 +1,6 @@
 using System.Threading.Channels;
 
-using FAM.Application.Common.Email;
+using FAM.Domain.Abstractions.Email;
 
 using Microsoft.Extensions.Logging;
 

@@ -6,7 +6,7 @@ using FAM.Infrastructure.Common.Seeding;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
+namespace FAM.Infrastructure.Repositories;
 
 public class SeedHistoryRepository : ISeedHistoryRepository
 {

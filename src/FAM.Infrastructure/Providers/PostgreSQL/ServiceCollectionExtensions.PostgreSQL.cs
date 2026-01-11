@@ -3,7 +3,6 @@ using FAM.Domain.Abstractions.Repositories;
 using FAM.Infrastructure.Common.Abstractions;
 using FAM.Infrastructure.Common.Options;
 using FAM.Infrastructure.Common.Seeding;
-using FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 using FAM.Infrastructure.Repositories;
 using FAM.Infrastructure.Seeders;
 

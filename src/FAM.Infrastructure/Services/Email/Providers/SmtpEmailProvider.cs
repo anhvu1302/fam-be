@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 
-using FAM.Application.Common.Email;
+using FAM.Domain.Abstractions.Email;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

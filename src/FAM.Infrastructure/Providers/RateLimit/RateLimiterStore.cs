@@ -1,4 +1,5 @@
-using FAM.Application.Abstractions;
+using FAM.Domain.Abstractions.Cache;
+using FAM.Domain.Abstractions.RateLimiting;
 
 using Microsoft.Extensions.Logging;
 

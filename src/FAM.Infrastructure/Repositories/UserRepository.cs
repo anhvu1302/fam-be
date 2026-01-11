@@ -3,12 +3,11 @@ using System.Linq.Expressions;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
 using FAM.Infrastructure.Common.Abstractions;
-using FAM.Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
+namespace FAM.Infrastructure.Repositories;
 
 /// <summary>
 /// PostgreSQL implementation of IUserRepository
@@ -180,7 +179,7 @@ public class UserRepository : BasePagedRepository<User>, IUserRepository
             dataQuery = dataQuery.OrderByDescending(u => u.CreatedAt);
         }
         else
-        // TODO: Implement dynamic sorting based on sort parameter if needed
+            // TODO: Implement dynamic sorting based on sort parameter if needed
         {
             dataQuery = dataQuery.OrderByDescending(u => u.CreatedAt);
         }

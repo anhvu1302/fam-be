@@ -1,7 +1,7 @@
 using System.Text.Json;
 
-using FAM.Application.Abstractions;
-using FAM.Application.Common.Email;
+using FAM.Domain.Abstractions.Cache;
+using FAM.Domain.Abstractions.Email;
 
 using Microsoft.Extensions.Logging;
 

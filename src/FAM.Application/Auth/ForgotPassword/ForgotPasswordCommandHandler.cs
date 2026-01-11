@@ -1,9 +1,9 @@
 using System.Security.Cryptography;
 
 using FAM.Application.Auth.Shared;
-using FAM.Application.Common.Services;
 using FAM.Application.Settings;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Abstractions.Email;
 using FAM.Domain.Users;
 
 using MediatR;

@@ -2,8 +2,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
-using FAM.Application.Abstractions;
-using FAM.Application.Common.Services;
+using FAM.Domain.Abstractions.Cache;
+using FAM.Domain.Abstractions.Services;
 using FAM.Infrastructure.Services.Dtos;
 
 using Microsoft.Extensions.Logging;

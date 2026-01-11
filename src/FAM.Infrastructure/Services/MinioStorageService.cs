@@ -1,6 +1,6 @@
-using FAM.Application.Abstractions;
-using FAM.Application.Settings;
+using FAM.Domain.Abstractions.Storage;
 using FAM.Domain.Common.Enums;
+using FAM.Infrastructure.Common.Options;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,8 +10,6 @@ using Minio.DataModel;
 using Minio.DataModel.Args;
 using Minio.DataModel.Response;
 using Minio.Exceptions;
-
-using FileInfo = FAM.Application.Abstractions.FileInfo;
 
 namespace FAM.Infrastructure.Services;
 
@@ -288,7 +286,7 @@ public class MinioStorageService : IStorageService
         }
     }
 
-    public async Task<FileInfo> GetFileInfoAsync(
+    public async Task<StorageFileInfo> GetFileInfoAsync(
         string filePath,
         CancellationToken cancellationToken = default)
     {
@@ -300,7 +298,7 @@ public class MinioStorageService : IStorageService
 
             ObjectStat? stat = await _minioClient.StatObjectAsync(args, cancellationToken);
 
-            return new FileInfo
+            return new StorageFileInfo
             {
                 FileName = Path.GetFileName(filePath),
                 FilePath = filePath,

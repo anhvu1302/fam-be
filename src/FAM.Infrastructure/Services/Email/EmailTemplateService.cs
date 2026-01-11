@@ -1,5 +1,5 @@
-using FAM.Application.Common.Email;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Abstractions.Email;
 using FAM.Domain.EmailTemplates;
 
 using Microsoft.Extensions.Logging;

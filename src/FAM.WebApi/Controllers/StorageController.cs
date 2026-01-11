@@ -1,8 +1,8 @@
 using System.Security.Claims;
 
-using FAM.Application.Abstractions;
 using FAM.Application.Storage.Commands;
 using FAM.Application.Storage.Shared;
+using FAM.Domain.Abstractions.Storage;
 using FAM.Domain.Common.Enums;
 using FAM.WebApi.Contracts.Common;
 using FAM.WebApi.Contracts.Storage;
@@ -12,7 +12,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using FileInfo = FAM.Application.Abstractions.FileInfo;
 using InitUploadSessionResponse = FAM.Application.Storage.Commands.InitUploadSessionResponse;
 
 namespace FAM.WebApi.Controllers;
@@ -371,7 +370,7 @@ public class StorageController : BaseApiController
             string url = await _storageService.GetPresignedUrlAsync(filePath, 3600);
             DateTime expiresAt = DateTime.UtcNow.AddSeconds(3600);
 
-            FileInfo fileInfo = await _storageService.GetFileInfoAsync(filePath);
+            StorageFileInfo fileInfo = await _storageService.GetFileInfoAsync(filePath);
 
             return OkResponse(new UploadFileResponse(filePath, url, expiresAt, fileInfo.Size),
                 "Upload completed successfully");
@@ -536,7 +535,7 @@ public class StorageController : BaseApiController
     /// <response code="404">Not Found - Returns {success: false, errors: [{message: "File not found", code: "FILE_NOT_FOUND"}]}</response>
     /// <response code="500">Internal Server Error - Returns {success: false, errors: [{message: "An error occurred while getting file information", code: "FILE_INFO_ERROR"}]}</response>
     [HttpGet("info/{*filePath}")]
-    [ProducesResponseType(typeof(ApiSuccessResponse<FileInfo>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiSuccessResponse<StorageFileInfo>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -550,7 +549,7 @@ public class StorageController : BaseApiController
                 return NotFoundResponse("File not found", "FILE_NOT_FOUND");
             }
 
-            FileInfo fileInfo = await _storageService.GetFileInfoAsync(filePath);
+            StorageFileInfo fileInfo = await _storageService.GetFileInfoAsync(filePath);
 
             return OkResponse(fileInfo);
         }

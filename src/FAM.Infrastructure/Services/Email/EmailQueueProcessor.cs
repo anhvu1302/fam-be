@@ -1,4 +1,4 @@
-using FAM.Application.Common.Email;
+using FAM.Domain.Abstractions.Email;
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

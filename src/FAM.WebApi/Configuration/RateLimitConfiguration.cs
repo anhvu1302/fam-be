@@ -1,6 +1,6 @@
 using System.Threading.RateLimiting;
 
-using FAM.Application.Abstractions;
+using FAM.Domain.Abstractions.RateLimiting;
 using FAM.Infrastructure.Providers.RateLimit;
 
 namespace FAM.WebApi.Configuration;

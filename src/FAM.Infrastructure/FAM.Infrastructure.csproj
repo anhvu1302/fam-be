@@ -21,7 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\FAM.Application\FAM.Application.csproj"/>
         <ProjectReference Include="..\FAM.Domain\FAM.Domain.csproj"/>
     </ItemGroup>
 

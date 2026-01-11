@@ -3,11 +3,11 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 
 using FAM.Application.Common.Options;
-using FAM.Application.Common.Services;
 using FAM.Application.Querying.Parsing;
 using FAM.Application.Settings;
 using FAM.Application.Users.Commands.CreateUser;
 using FAM.Domain.Abstractions;
+using FAM.Domain.Abstractions.Services;
 using FAM.Domain.Authorization;
 using FAM.Infrastructure;
 using FAM.Infrastructure.Auth;

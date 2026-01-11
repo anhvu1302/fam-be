@@ -1,7 +1,5 @@
 using System.Linq.Expressions;
 
-using FAM.Application.Querying.Validation;
-
 using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Common.Helpers;
@@ -12,52 +10,6 @@ namespace FAM.Infrastructure.Common.Helpers;
 /// </summary>
 public static class QueryHelper
 {
-    /// <summary>
-    /// Apply dynamic sorting to IQueryable based on field map
-    /// </summary>
-    public static IQueryable<T> ApplyDynamicSort<T>(
-        this IQueryable<T> query,
-        string? sortExpression,
-        FieldMap<T> fieldMap)
-    {
-        if (string.IsNullOrWhiteSpace(sortExpression))
-        {
-            return query;
-        }
-
-        string[] sortParts = sortExpression.Split(',', StringSplitOptions.RemoveEmptyEntries);
-        IOrderedQueryable<T>? orderedQuery = null;
-
-        foreach (string part in sortParts)
-        {
-            string trimmed = part.Trim();
-            bool descending = trimmed.StartsWith('-');
-            string fieldName = descending ? trimmed[1..] : trimmed;
-
-            if (!fieldMap.TryGet(fieldName, out LambdaExpression expression, out _))
-            {
-                continue;
-            }
-
-            Expression<Func<T, object>> typedExpression = (Expression<Func<T, object>>)expression;
-
-            if (orderedQuery == null)
-            {
-                orderedQuery = descending
-                    ? query.OrderByDescending(typedExpression)
-                    : query.OrderBy(typedExpression);
-            }
-            else
-            {
-                orderedQuery = descending
-                    ? orderedQuery.ThenByDescending(typedExpression)
-                    : orderedQuery.ThenBy(typedExpression);
-            }
-        }
-
-        return orderedQuery ?? query;
-    }
-
     /// <summary>
     /// Apply pagination to IQueryable
     /// </summary>

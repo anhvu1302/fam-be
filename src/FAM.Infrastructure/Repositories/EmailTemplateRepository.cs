@@ -3,12 +3,11 @@ using System.Linq.Expressions;
 using FAM.Domain.Abstractions;
 using FAM.Domain.EmailTemplates;
 using FAM.Infrastructure.Common.Abstractions;
-using FAM.Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
+namespace FAM.Infrastructure.Repositories;
 
 /// <summary>
 /// PostgreSQL implementation of IEmailTemplateRepository

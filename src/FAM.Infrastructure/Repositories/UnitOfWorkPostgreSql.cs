@@ -1,6 +1,7 @@
 using FAM.Domain.Abstractions;
+using FAM.Infrastructure.Providers.PostgreSQL;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
+namespace FAM.Infrastructure.Repositories;
 
 /// <summary>
 /// PostgreSQL implementation of IUnitOfWork
