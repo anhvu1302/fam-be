@@ -100,18 +100,26 @@ public class EmailTemplate : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
         bool isSystem = false)
     {
         if (string.IsNullOrWhiteSpace(code))
+        {
             throw new DomainException(ErrorCodes.EMAIL_TEMPLATE_CODE_REQUIRED);
+        }
 
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException(ErrorCodes.EMAIL_TEMPLATE_NAME_REQUIRED);
+        }
 
         if (string.IsNullOrWhiteSpace(subject))
+        {
             throw new DomainException(ErrorCodes.EMAIL_TEMPLATE_SUBJECT_REQUIRED);
+        }
 
         if (string.IsNullOrWhiteSpace(htmlBody))
+        {
             throw new DomainException(ErrorCodes.EMAIL_TEMPLATE_BODY_REQUIRED);
+        }
 
-        var template = new EmailTemplate
+        EmailTemplate template = new()
         {
             Code = code.ToUpperInvariant(),
             Name = name,
@@ -138,16 +146,24 @@ public class EmailTemplate : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
         string? availablePlaceholders = null)
     {
         if (IsSystem)
+        {
             throw new DomainException(ErrorCodes.EMAIL_TEMPLATE_SYSTEM_CANNOT_UPDATE);
+        }
 
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException(ErrorCodes.EMAIL_TEMPLATE_NAME_REQUIRED);
+        }
 
         if (string.IsNullOrWhiteSpace(subject))
+        {
             throw new DomainException(ErrorCodes.EMAIL_TEMPLATE_SUBJECT_REQUIRED);
+        }
 
         if (string.IsNullOrWhiteSpace(htmlBody))
+        {
             throw new DomainException(ErrorCodes.EMAIL_TEMPLATE_BODY_REQUIRED);
+        }
 
         Name = name;
         Subject = subject;
@@ -186,7 +202,9 @@ public class EmailTemplate : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     public void SoftDelete(long? deletedById = null)
     {
         if (IsSystem)
+        {
             throw new DomainException(ErrorCodes.EMAIL_TEMPLATE_SYSTEM_CANNOT_DELETE);
+        }
 
         IsDeleted = true;
         DeletedAt = DateTime.UtcNow;

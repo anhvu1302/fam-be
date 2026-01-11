@@ -16,16 +16,20 @@ public sealed class PrattFilterParser : IFilterParser
     public FilterNode Parse(string filter)
     {
         if (string.IsNullOrWhiteSpace(filter))
+        {
             throw new ArgumentException("Filter cannot be empty", nameof(filter));
+        }
 
-        var tokenizer = new FilterTokenizer(filter);
+        FilterTokenizer tokenizer = new(filter);
         _tokens = tokenizer.Tokenize().ToList();
         _current = 0;
 
         FilterNode result = ParseExpression(0);
 
         if (!IsAtEnd())
+        {
             throw new FormatException($"Unexpected token '{CurrentToken.Value}' at position {CurrentToken.Position}");
+        }
 
         return result;
     }
@@ -34,7 +38,10 @@ public sealed class PrattFilterParser : IFilterParser
     {
         FilterNode left = ParsePrefix();
 
-        while (!IsAtEnd() && precedence < GetPrecedence(CurrentToken)) left = ParseInfix(left);
+        while (!IsAtEnd() && precedence < GetPrecedence(CurrentToken))
+        {
+            left = ParseInfix(left);
+        }
 
         return left;
     }
@@ -77,9 +84,13 @@ public sealed class PrattFilterParser : IFilterParser
         {
             Advance();
             if (token.Value.Contains('.'))
+            {
                 return LiteralNode.Number(double.Parse(token.Value, CultureInfo.InvariantCulture));
+            }
             else
+            {
                 return LiteralNode.Integer(long.Parse(token.Value, CultureInfo.InvariantCulture));
+            }
         }
 
         if (token.Type == FilterTokenType.Boolean)
@@ -102,9 +113,11 @@ public sealed class PrattFilterParser : IFilterParser
         FilterToken token = CurrentToken;
 
         if (token.Type != FilterTokenType.Operator)
+        {
             throw new FormatException($"Expected operator, got '{token.Value}' at position {token.Position}");
+        }
 
-        var op = token.Value.ToLower();
+        string op = token.Value.ToLower();
 
         // Binary logical operators: and, or
         if (op is "and" or "or")
@@ -134,7 +147,10 @@ public sealed class PrattFilterParser : IFilterParser
         }
 
         // Function-like operators: @contains, @startswith, @in, @between, etc.
-        if (op.StartsWith("@")) return ParseCallOperator(left, op);
+        if (op.StartsWith("@"))
+        {
+            return ParseCallOperator(left, op);
+        }
 
         throw new FormatException($"Unknown operator '{op}' at position {token.Position}");
     }
@@ -161,24 +177,33 @@ public sealed class PrattFilterParser : IFilterParser
         };
 
         // Nullary operators: @isnull, @notnull - no arguments needed
-        if (filterOp is FilterOperator.IsNull or FilterOperator.NotNull) return new UnaryNode(filterOp, target);
+        if (filterOp is FilterOperator.IsNull or FilterOperator.NotNull)
+        {
+            return new UnaryNode(filterOp, target);
+        }
 
         // All other operators require parentheses (standard function call syntax)
         Expect(FilterTokenType.LeftParen, $"Expected '(' after {op}. Use {op}('value') for function call syntax.");
 
-        var arguments = new List<FilterNode>();
+        List<FilterNode> arguments = new();
 
         // Parse comma-separated arguments
         if (CurrentToken.Type != FilterTokenType.RightParen)
+        {
             do
             {
                 arguments.Add(ParseExpression(0));
 
                 if (CurrentToken.Type == FilterTokenType.Comma)
+                {
                     Advance();
+                }
                 else
+                {
                     break;
+                }
             } while (CurrentToken.Type != FilterTokenType.RightParen);
+        }
 
         Expect(FilterTokenType.RightParen, "Expected ')'");
 
@@ -188,7 +213,9 @@ public sealed class PrattFilterParser : IFilterParser
     private int GetPrecedence(FilterToken token)
     {
         if (token.Type != FilterTokenType.Operator)
+        {
             return 0;
+        }
 
         return token.Value.ToLower() switch
         {
@@ -212,13 +239,18 @@ public sealed class PrattFilterParser : IFilterParser
     private void Advance()
     {
         if (!IsAtEnd())
+        {
             _current++;
+        }
     }
 
     private void Expect(FilterTokenType type, string message)
     {
         if (CurrentToken.Type != type)
+        {
             throw new FormatException($"{message} at position {CurrentToken.Position}");
+        }
+
         Advance();
     }
 }

@@ -1,4 +1,5 @@
 using FAM.Domain.Authorization;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

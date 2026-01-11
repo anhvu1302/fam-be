@@ -11,11 +11,11 @@ public class CountryTests
     public void Create_WithValidCodeAndName_ShouldCreateCountry()
     {
         // Arrange
-        var code = "VN";
-        var name = "Vietnam";
+        string code = "VN";
+        string name = "Vietnam";
 
         // Act
-        var country = Country.Create(code, name);
+        Country country = Country.Create(code, name);
 
         // Assert
         country.Should().NotBeNull();
@@ -30,13 +30,13 @@ public class CountryTests
     public void Create_WithAllParameters_ShouldCreateCountryWithAllFields()
     {
         // Arrange
-        var code = "US";
-        var name = "United States";
-        var iso3Code = "USA";
-        var numericCode = "840";
+        string code = "US";
+        string name = "United States";
+        string iso3Code = "USA";
+        string numericCode = "840";
 
         // Act
-        var country = Country.Create(code, name, iso3Code, numericCode);
+        Country country = Country.Create(code, name, iso3Code, numericCode);
 
         // Assert
         country.Code.Should().Be(code);
@@ -49,12 +49,12 @@ public class CountryTests
     public void Create_WithLowercaseIso3Code_ShouldConvertToUppercase()
     {
         // Arrange
-        var code = "VN";
-        var name = "Vietnam";
-        var iso3Code = "vnm";
+        string code = "VN";
+        string name = "Vietnam";
+        string iso3Code = "vnm";
 
         // Act
-        var country = Country.Create(code, name, iso3Code);
+        Country country = Country.Create(code, name, iso3Code);
 
         // Assert
         country.Iso3Code.Should().Be("VNM");
@@ -64,7 +64,7 @@ public class CountryTests
     public void UpdateBasicInfo_WithValidData_ShouldUpdateBasicInfo()
     {
         // Arrange
-        var country = Country.Create("VN", "Vietnam");
+        Country country = Country.Create("VN", "Vietnam");
 
         // Act
         country.UpdateBasicInfo("Việt Nam", "Việt Nam", "Cộng hòa Xã hội chủ nghĩa Việt Nam");
@@ -79,7 +79,7 @@ public class CountryTests
     public void UpdateRegionalInfo_WithValidData_ShouldUpdateRegionalInfo()
     {
         // Arrange
-        var country = Country.Create("VN", "Vietnam");
+        Country country = Country.Create("VN", "Vietnam");
 
         // Act
         country.UpdateRegionalInfo("Asia", "South-Eastern Asia", "AS", 14.0583m, 108.2772m);
@@ -96,7 +96,7 @@ public class CountryTests
     public void UpdateCommunication_WithValidData_ShouldUpdateCommunication()
     {
         // Arrange
-        var country = Country.Create("VN", "Vietnam");
+        Country country = Country.Create("VN", "Vietnam");
 
         // Act
         country.UpdateCommunication("+84", ".vn");
@@ -110,7 +110,7 @@ public class CountryTests
     public void UpdateCurrency_WithValidData_ShouldUpdateCurrency()
     {
         // Arrange
-        var country = Country.Create("VN", "Vietnam");
+        Country country = Country.Create("VN", "Vietnam");
 
         // Act
         country.UpdateCurrency("VND", "Vietnamese Dong", "₫");
@@ -125,7 +125,7 @@ public class CountryTests
     public void UpdateLanguage_WithValidData_ShouldUpdateLanguage()
     {
         // Arrange
-        var country = Country.Create("VN", "Vietnam");
+        Country country = Country.Create("VN", "Vietnam");
 
         // Act
         country.UpdateLanguage("vi", "[\"vi\",\"en\"]");
@@ -139,7 +139,7 @@ public class CountryTests
     public void UpdateAdministrative_WithValidData_ShouldUpdateAdministrative()
     {
         // Arrange
-        var country = Country.Create("VN", "Vietnam");
+        Country country = Country.Create("VN", "Vietnam");
 
         // Act
         country.UpdateAdministrative("Hanoi", "Vietnamese", "[\"UTC+07:00\"]");
@@ -154,7 +154,7 @@ public class CountryTests
     public void UpdateStatus_WithValidData_ShouldUpdateStatus()
     {
         // Arrange
-        var country = Country.Create("VN", "Vietnam");
+        Country country = Country.Create("VN", "Vietnam");
 
         // Act
         country.UpdateStatus(false, false, true, true);
@@ -170,7 +170,7 @@ public class CountryTests
     public void UpdateAdditionalInfo_WithValidData_ShouldUpdateAdditionalInfo()
     {
         // Arrange
-        var country = Country.Create("VN", "Vietnam");
+        Country country = Country.Create("VN", "Vietnam");
 
         // Act
         country.UpdateAdditionalInfo("🇻🇳", "https://example.com/coat.png", 97338583, 331212.0m);
@@ -186,7 +186,7 @@ public class CountryTests
     public void Activate_ShouldSetIsActiveToTrue()
     {
         // Arrange
-        var country = Country.Create("VN", "Vietnam");
+        Country country = Country.Create("VN", "Vietnam");
         country.Deactivate();
 
         // Act
@@ -200,7 +200,7 @@ public class CountryTests
     public void Deactivate_ShouldSetIsActiveToFalse()
     {
         // Arrange
-        var country = Country.Create("VN", "Vietnam");
+        Country country = Country.Create("VN", "Vietnam");
 
         // Act
         country.Deactivate();

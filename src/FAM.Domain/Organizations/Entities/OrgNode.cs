@@ -48,9 +48,11 @@ public class OrgNode : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
     public static OrgNode CreateCompany(string name, CompanyDetails details)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("OrgNode name cannot be empty");
+        }
 
-        var node = new OrgNode
+        OrgNode node = new()
         {
             Type = OrgNodeType.Company,
             Name = name.Trim(),
@@ -66,12 +68,16 @@ public class OrgNode : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
     public static OrgNode CreateDepartment(string name, DepartmentDetails details, OrgNode parent)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("OrgNode name cannot be empty");
+        }
 
         if (parent.Type != OrgNodeType.Company)
+        {
             throw new DomainException("Department parent must be a Company");
+        }
 
-        var node = new OrgNode
+        OrgNode node = new()
         {
             Type = OrgNodeType.Department,
             Name = name.Trim(),
@@ -88,7 +94,9 @@ public class OrgNode : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
     public void UpdateName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("OrgNode name cannot be empty");
+        }
 
         Name = name.Trim();
     }

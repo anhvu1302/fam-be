@@ -15,43 +15,55 @@ public static class SortBinder
     public static IQueryable<T> ApplySort<T>(IQueryable<T> query, string? sort, FieldMap<T> fieldMap)
     {
         if (string.IsNullOrWhiteSpace(sort))
+        {
             return query;
+        }
 
-        var sortParts = sort.Split(',', StringSplitOptions.RemoveEmptyEntries);
+        string[] sortParts = sort.Split(',', StringSplitOptions.RemoveEmptyEntries);
         IOrderedQueryable<T>? orderedQuery = null;
 
-        foreach (var sortPart in sortParts)
+        foreach (string sortPart in sortParts)
         {
-            var trimmed = sortPart.Trim();
+            string trimmed = sortPart.Trim();
             if (string.IsNullOrEmpty(trimmed))
+            {
                 continue;
+            }
 
-            var descending = trimmed.StartsWith('-');
-            var fieldName = descending ? trimmed[1..] : trimmed;
+            bool descending = trimmed.StartsWith('-');
+            string fieldName = descending ? trimmed[1..] : trimmed;
 
             // Check if user accidentally put a filter expression in sort parameter
             if (fieldName.Contains(' ') || fieldName.Contains('(') || fieldName.Contains('@'))
+            {
                 throw new InvalidOperationException(
                     $"Invalid sort field '{fieldName}'. " +
                     "Sort parameter should contain field names only (e.g., 'username', '-createdAt'). " +
                     "Did you mean to use the 'filter' parameter instead?");
+            }
 
             if (!fieldMap.TryGet(fieldName, out LambdaExpression expression, out _))
+            {
                 throw new InvalidOperationException($"Field '{fieldName}' not found for sorting");
+            }
 
             if (!fieldMap.CanSort(fieldName))
+            {
                 throw new InvalidOperationException($"Field '{fieldName}' cannot be used for sorting");
+            }
 
             // Cast to Expression<Func<T, object>> for sorting
             ParameterExpression parameter = Expression.Parameter(typeof(T), "x");
-            var visitor = new ParameterReplacerVisitor(expression.Parameters[0], parameter);
+            ParameterReplacerVisitor visitor = new(expression.Parameters[0], parameter);
             Expression body = visitor.Visit(expression.Body);
 
             // Box value types to object for sorting
             if (body.Type.IsValueType)
+            {
                 body = Expression.Convert(body, typeof(object));
+            }
 
-            var lambda = Expression.Lambda<Func<T, object>>(body, parameter);
+            Expression<Func<T, object>> lambda = Expression.Lambda<Func<T, object>>(body, parameter);
 
             orderedQuery = orderedQuery == null
                 ? descending ? query.OrderByDescending(lambda) : query.OrderBy(lambda)

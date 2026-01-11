@@ -26,13 +26,17 @@ public sealed class MACAddress : ValueObject
     public static MACAddress Create(string macAddress)
     {
         if (string.IsNullOrWhiteSpace(macAddress))
+        {
             throw new DomainException(ErrorCodes.VO_MAC_EMPTY);
+        }
 
         macAddress = macAddress.Trim().ToUpperInvariant();
 
         MACAddressFormat format = DetermineFormat(macAddress);
         if (format == MACAddressFormat.Invalid)
+        {
             throw new DomainException(ErrorCodes.VO_MAC_INVALID);
+        }
 
         return new MACAddress(macAddress, format);
     }
@@ -40,24 +44,34 @@ public sealed class MACAddress : ValueObject
     private static MACAddressFormat DetermineFormat(string mac)
     {
         // Remove separators for validation
-        var cleanMac = mac.Replace(":", "").Replace("-", "").Replace(".", "");
+        string cleanMac = mac.Replace(":", "").Replace("-", "").Replace(".", "");
 
         // Must be exactly 12 hexadecimal characters
         if (cleanMac.Length != 12 || !Regex.IsMatch(cleanMac, "^[0-9A-F]{12}$"))
+        {
             return MACAddressFormat.Invalid;
+        }
 
         // Determine format based on separators
         if (mac.Contains(":") && mac.Split(':').Length == 6)
+        {
             return MACAddressFormat.ColonSeparated; // 00:11:22:33:44:55
+        }
 
         if (mac.Contains("-") && mac.Split('-').Length == 6)
+        {
             return MACAddressFormat.HyphenSeparated; // 00-11-22-33-44-55
+        }
 
         if (mac.Contains(".") && mac.Split('.').Length == 3)
+        {
             return MACAddressFormat.DotSeparated; // 0011.2233.4455
+        }
 
         if (!mac.Contains(":") && !mac.Contains("-") && !mac.Contains("."))
+        {
             return MACAddressFormat.NoSeparators; // 001122334455
+        }
 
         return MACAddressFormat.Invalid;
     }
@@ -80,7 +94,7 @@ public sealed class MACAddress : ValueObject
 
     public string GetNormalizedFormat()
     {
-        var clean = Value.Replace(":", "").Replace("-", "").Replace(".", "");
+        string clean = Value.Replace(":", "").Replace("-", "").Replace(".", "");
         return string.Join(":", Enumerable.Range(0, 6).Select(i => clean.Substring(i * 2, 2)));
     }
 

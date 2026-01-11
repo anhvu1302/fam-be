@@ -22,7 +22,10 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
         // Get user
         User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
 
-        if (user == null) throw new KeyNotFoundException($"User with ID {request.UserId} not found");
+        if (user == null)
+        {
+            throw new KeyNotFoundException($"User with ID {request.UserId} not found");
+        }
 
         user.ChangePassword(request.CurrentPassword, request.NewPassword);
 
@@ -30,10 +33,12 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
 
         // Optionally: Logout all devices except current one for security
         if (request.LogoutAllDevices)
+        {
             await _unitOfWork.UserDevices.DeactivateAllUserDevicesAsync(
                 request.UserId,
                 request.CurrentDeviceId,
                 cancellationToken);
+        }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 

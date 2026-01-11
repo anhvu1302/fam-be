@@ -24,15 +24,15 @@ public class JwtService : IJwtService
         _issuer = Environment.GetEnvironmentVariable("JWT_ISSUER") ?? "FAM.API";
         _audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE") ?? "FAM.Client";
 
-        var expiryMinutesStr = Environment.GetEnvironmentVariable("ACCESS_TOKEN_EXPIRATION_MINUTES");
+        string? expiryMinutesStr = Environment.GetEnvironmentVariable("ACCESS_TOKEN_EXPIRATION_MINUTES");
         _accessTokenExpiryMinutes =
-            !string.IsNullOrEmpty(expiryMinutesStr) && int.TryParse(expiryMinutesStr, out var minutes)
+            !string.IsNullOrEmpty(expiryMinutesStr) && int.TryParse(expiryMinutesStr, out int minutes)
                 ? minutes
                 : 60;
 
-        var refreshDaysStr = Environment.GetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_DAYS");
+        string? refreshDaysStr = Environment.GetEnvironmentVariable("REFRESH_TOKEN_EXPIRATION_DAYS");
         _refreshTokenExpiryDays =
-            !string.IsNullOrEmpty(refreshDaysStr) && int.TryParse(refreshDaysStr, out var days)
+            !string.IsNullOrEmpty(refreshDaysStr) && int.TryParse(refreshDaysStr, out int days)
                 ? days
                 : 30;
     }
@@ -54,15 +54,15 @@ public class JwtService : IJwtService
     {
         List<Claim> claims = CreateClaims(userId, username, email, roles);
 
-        var rsa = RSA.Create(); // Don't dispose - key must live until token is written
+        RSA rsa = RSA.Create(); // Don't dispose - key must live until token is written
         rsa.ImportFromPem(privateKeyPem);
 
-        var rsaSecurityKey = new RsaSecurityKey(rsa)
+        RsaSecurityKey rsaSecurityKey = new(rsa)
         {
             KeyId = keyId
         };
 
-        var signingAlgorithm = algorithm switch
+        string? signingAlgorithm = algorithm switch
         {
             "RS256" => SecurityAlgorithms.RsaSha256,
             "RS384" => SecurityAlgorithms.RsaSha384,
@@ -70,9 +70,9 @@ public class JwtService : IJwtService
             _ => SecurityAlgorithms.RsaSha256
         };
 
-        var credentials = new SigningCredentials(rsaSecurityKey, signingAlgorithm);
+        SigningCredentials credentials = new(rsaSecurityKey, signingAlgorithm);
 
-        var tokenHandler = new JwtSecurityTokenHandler();
+        JwtSecurityTokenHandler tokenHandler = new();
         JwtSecurityToken? token = tokenHandler.CreateJwtSecurityToken(
             _issuer,
             _audience,
@@ -91,8 +91,8 @@ public class JwtService : IJwtService
 
     public string GenerateRefreshToken()
     {
-        var randomBytes = new byte[64];
-        using var rng = RandomNumberGenerator.Create();
+        byte[] randomBytes = new byte[64];
+        using RandomNumberGenerator rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
         return Convert.ToBase64String(randomBytes);
     }
@@ -104,13 +104,13 @@ public class JwtService : IJwtService
     {
         try
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler tokenHandler = new();
 
-            using var rsa = RSA.Create();
+            using RSA rsa = RSA.Create();
             rsa.ImportFromPem(publicKeyPem);
-            var rsaSecurityKey = new RsaSecurityKey(rsa);
+            RsaSecurityKey rsaSecurityKey = new(rsa);
 
-            var validationParameters = new TokenValidationParameters
+            TokenValidationParameters validationParameters = new()
             {
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = rsaSecurityKey,
@@ -135,11 +135,14 @@ public class JwtService : IJwtService
     {
         try
         {
-            var handler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler handler = new();
             JwtSecurityToken? jwtToken = handler.ReadJwtToken(token);
-            var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            string? userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            if (long.TryParse(userIdClaim, out var userId)) return userId;
+            if (long.TryParse(userIdClaim, out long userId))
+            {
+                return userId;
+            }
 
             throw new InvalidOperationException("User ID not found in token");
         }
@@ -156,7 +159,7 @@ public class JwtService : IJwtService
     {
         try
         {
-            var handler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler handler = new();
             JwtSecurityToken? jwtToken = handler.ReadJwtToken(token);
             return jwtToken.Header.Kid;
         }
@@ -173,7 +176,7 @@ public class JwtService : IJwtService
     {
         try
         {
-            var handler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler handler = new();
             JwtSecurityToken? jwtToken = handler.ReadJwtToken(token);
             Claim? jtiClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Jti);
             return jtiClaim?.Value;
@@ -188,18 +191,20 @@ public class JwtService : IJwtService
 
     private List<Claim> CreateClaims(long userId, string username, string email, IEnumerable<string> roles)
     {
-        var claims = new List<Claim>
+        List<Claim> claims = new()
         {
-            new(ClaimTypes.NameIdentifier, userId.ToString()),
-            new(ClaimTypes.Name, username),
-            new(ClaimTypes.Email, email),
-            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Name, username),
+            new Claim(ClaimTypes.Email, email),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(),
                 ClaimValueTypes.Integer64)
         };
 
-        foreach (var role in roles)
+        foreach (string role in roles)
+        {
             claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         return claims;
     }

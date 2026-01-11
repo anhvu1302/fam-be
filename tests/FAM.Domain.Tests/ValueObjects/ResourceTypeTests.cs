@@ -11,10 +11,10 @@ public class ResourceTypeTests
     public void Create_WithValidData_ShouldCreateResourceType()
     {
         // Arrange
-        var value = "asset";
+        string value = "asset";
 
         // Act
-        var resourceType = ResourceType.Create(value);
+        ResourceType resourceType = ResourceType.Create(value);
 
         // Assert
         resourceType.Should().NotBeNull();
@@ -25,7 +25,7 @@ public class ResourceTypeTests
     public void Create_WithEmptyString_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "";
+        string value = "";
 
         // Act
         Action act = () => ResourceType.Create(value);
@@ -39,7 +39,7 @@ public class ResourceTypeTests
     public void Create_WithTooLongValue_ShouldThrowDomainException()
     {
         // Arrange
-        var value = new string('A', 51);
+        string value = new('A', 51);
 
         // Act
         Action act = () => ResourceType.Create(value);
@@ -53,7 +53,7 @@ public class ResourceTypeTests
     public void ImplicitOperator_ShouldConvertToString()
     {
         // Arrange
-        var resourceType = ResourceType.Create("asset");
+        ResourceType resourceType = ResourceType.Create("asset");
 
         // Act
         string value = resourceType;
@@ -66,10 +66,10 @@ public class ResourceTypeTests
     public void ExplicitOperator_ShouldConvertFromString()
     {
         // Arrange
-        var value = "asset";
+        string value = "asset";
 
         // Act
-        var resourceType = (ResourceType)value;
+        ResourceType resourceType = (ResourceType)value;
 
         // Assert
         resourceType.Value.Should().Be(value);
@@ -79,10 +79,10 @@ public class ResourceTypeTests
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var resourceType = ResourceType.Create("asset");
+        ResourceType resourceType = ResourceType.Create("asset");
 
         // Act
-        var result = resourceType.ToString();
+        string result = resourceType.ToString();
 
         // Assert
         result.Should().Be("asset");

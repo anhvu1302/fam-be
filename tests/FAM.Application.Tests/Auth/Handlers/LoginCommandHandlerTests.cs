@@ -67,13 +67,13 @@ public class LoginCommandHandlerTests
     public async Task Handle_WithValidCredentialsAndNo2FA_ShouldReturnTokens()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
+        string plainPassword = "SecurePass123!";
         // User.Create with plain password will hash it internally
-        var user = User.CreateWithPlainPassword("testuser", "test@example.com", plainPassword);
+        User user = User.CreateWithPlainPassword("testuser", "test@example.com", plainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
         user.VerifyEmail(); // Ensure email is verified
 
-        var command = new LoginCommand
+        LoginCommand command = new()
         {
             Identity = "testuser",
             Password = plainPassword, // Same plain password will verify correctly
@@ -103,7 +103,7 @@ public class LoginCommandHandlerTests
             .ReturnsAsync(1);
 
         // Mock signing key
-        var mockSigningKey = SigningKey.Create(
+        SigningKey mockSigningKey = SigningKey.Create(
             "test_key_id",
             "-----BEGIN PUBLIC KEY-----\ntest\n-----END PUBLIC KEY-----",
             "-----BEGIN RSA PRIVATE KEY-----\ntest\n-----END RSA PRIVATE KEY-----",
@@ -150,7 +150,7 @@ public class LoginCommandHandlerTests
     public async Task Handle_WithNonExistentUser_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var command = new LoginCommand
+        LoginCommand command = new()
         {
             Identity = "nonexistent",
             Password = "SecurePass123!",
@@ -166,7 +166,7 @@ public class LoginCommandHandlerTests
 
         // Assert
         await act.Should().ThrowAsync<UnauthorizedException>()
-            .WithMessage("Username or email not found");
+            .WithMessage("Invalid credentials");
 
         _mockUserRepository.Verify(x => x.FindByIdentityAsync(command.Identity, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -177,11 +177,11 @@ public class LoginCommandHandlerTests
     public async Task Handle_WithInvalidPassword_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var password = Password.Create("CorrectPass123!");
-        var user = User.Create("testuser", "test@example.com", password.Hash, password.Salt, null, null);
+        Password password = Password.Create("CorrectPass123!");
+        User user = User.Create("testuser", "test@example.com", password.Hash, password.Salt, null, null);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
 
-        var command = new LoginCommand
+        LoginCommand command = new()
         {
             Identity = "testuser",
             Password = "WrongPassword123!",
@@ -204,7 +204,7 @@ public class LoginCommandHandlerTests
 
         // Assert
         await act.Should().ThrowAsync<UnauthorizedException>()
-            .WithMessage("Invalid password");
+            .WithMessage("Invalid credentials");
 
         _mockUserRepository.Verify(x => x.Update(It.IsAny<User>()), Times.Once); // Failed login recorded
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -214,12 +214,12 @@ public class LoginCommandHandlerTests
     public async Task Handle_WithInactiveUser_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var password = Password.Create("SecurePass123!");
-        var user = User.Create("testuser", "test@example.com", password.Hash, password.Salt, null, null);
+        Password password = Password.Create("SecurePass123!");
+        User user = User.Create("testuser", "test@example.com", password.Hash, password.Salt, null, null);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
         user.Deactivate(); // Deactivate user
 
-        var command = new LoginCommand
+        LoginCommand command = new()
         {
             Identity = "testuser",
             Password = "SecurePass123!",
@@ -242,8 +242,8 @@ public class LoginCommandHandlerTests
     public async Task Handle_WithLockedOutUser_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var password = Password.Create("SecurePass123!");
-        var user = User.Create("testuser", "test@example.com", password.Hash, password.Salt, null, null);
+        Password password = Password.Create("SecurePass123!");
+        User user = User.Create("testuser", "test@example.com", password.Hash, password.Salt, null, null);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
 
         // Lock user account
@@ -253,7 +253,7 @@ public class LoginCommandHandlerTests
         user.RecordFailedLogin();
         user.RecordFailedLogin(); // 5 failed attempts -> locked
 
-        var command = new LoginCommand
+        LoginCommand command = new()
         {
             Identity = "testuser",
             Password = "SecurePass123!",
@@ -276,13 +276,13 @@ public class LoginCommandHandlerTests
     public async Task Handle_With2FAEnabled_ShouldReturnSessionToken()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword("testuser", "test@example.com", plainPassword);
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword("testuser", "test@example.com", plainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
         user.VerifyEmail(); // Ensure email is verified
         user.EnableTwoFactor("secret", "{\"codes\":[\"code1\",\"code2\"]}");
 
-        var command = new LoginCommand
+        LoginCommand command = new()
         {
             Identity = "testuser",
             Password = plainPassword,
@@ -294,7 +294,7 @@ public class LoginCommandHandlerTests
             .ReturnsAsync(user);
 
         // Mock signing key
-        var mockSigningKey = SigningKey.Create(
+        SigningKey mockSigningKey = SigningKey.Create(
             "test_key_id",
             "-----BEGIN PUBLIC KEY-----\ntest\n-----END PUBLIC KEY-----",
             "-----BEGIN RSA PRIVATE KEY-----\ntest\n-----END RSA PRIVATE KEY-----",
@@ -333,12 +333,12 @@ public class LoginCommandHandlerTests
     public async Task Handle_WithRememberMe_ShouldSetLongerRefreshTokenExpiry()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword("testuser", "test@example.com", plainPassword);
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword("testuser", "test@example.com", plainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, 1L);
         user.VerifyEmail(); // Ensure email is verified
 
-        var command = new LoginCommand
+        LoginCommand command = new()
         {
             Identity = "testuser",
             Password = plainPassword,
@@ -369,7 +369,7 @@ public class LoginCommandHandlerTests
             .ReturnsAsync(1);
 
         // Mock signing key
-        var mockSigningKey = SigningKey.Create(
+        SigningKey mockSigningKey = SigningKey.Create(
             "test_key_id",
             "-----BEGIN PUBLIC KEY-----\ntest\n-----END PUBLIC KEY-----",
             "-----BEGIN RSA PRIVATE KEY-----\ntest\n-----END RSA PRIVATE KEY-----",

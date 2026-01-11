@@ -32,8 +32,11 @@ public class IpApiLocationService : ILocationService
         try
         {
             // Skip for local/private IPs
-            var ip = IPAddress.Create(ipAddress);
-            if (ip.IsLocalOrPrivate()) return "Local Network";
+            IPAddress ip = IPAddress.Create(ipAddress);
+            if (ip.IsLocalOrPrivate())
+            {
+                return "Local Network";
+            }
 
             LocationInfo? locationInfo = await GetDetailedLocationFromIpAsync(ipAddress);
             return locationInfo?.GetFormattedLocation();
@@ -50,16 +53,18 @@ public class IpApiLocationService : ILocationService
         try
         {
             // Skip for local/private IPs
-            var ip = IPAddress.Create(ipAddress);
+            IPAddress ip = IPAddress.Create(ipAddress);
             if (ip.IsLocalOrPrivate())
+            {
                 return new LocationInfo
                 {
                     Country = "Local",
                     City = "Local Network",
                     Ip = ipAddress
                 };
+            }
 
-            var url =
+            string url =
                 $"{ApiBaseUrl}{ipAddress}.json";
             HttpResponseMessage response = await _httpClient.GetAsync(url);
 
@@ -70,7 +75,7 @@ public class IpApiLocationService : ILocationService
                 return null;
             }
 
-            var json = await response.Content.ReadAsStringAsync();
+            string json = await response.Content.ReadAsStringAsync();
             IpApiResponse? apiResponse = JsonSerializer.Deserialize<IpApiResponse>(json, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true

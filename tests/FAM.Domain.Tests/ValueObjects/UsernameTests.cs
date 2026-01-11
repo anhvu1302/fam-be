@@ -11,10 +11,10 @@ public class UsernameTests
     public void Create_WithValidUsername_ShouldCreateUsername()
     {
         // Arrange
-        var value = "john_doe123";
+        string value = "john_doe123";
 
         // Act
-        var username = Username.Create(value);
+        Username username = Username.Create(value);
 
         // Assert
         username.Should().NotBeNull();
@@ -25,7 +25,7 @@ public class UsernameTests
     public void Create_WithEmptyString_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "";
+        string value = "";
 
         // Act
         Action act = () => Username.Create(value);
@@ -39,7 +39,7 @@ public class UsernameTests
     public void Create_WithWhitespace_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "   ";
+        string value = "   ";
 
         // Act
         Action act = () => Username.Create(value);
@@ -53,7 +53,7 @@ public class UsernameTests
     public void Create_WithTooShortUsername_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "ab";
+        string value = "ab";
 
         // Act
         Action act = () => Username.Create(value);
@@ -67,7 +67,7 @@ public class UsernameTests
     public void Create_WithTooLongUsername_ShouldThrowDomainException()
     {
         // Arrange
-        var value = new string('a', 51);
+        string value = new('a', 51);
 
         // Act
         Action act = () => Username.Create(value);
@@ -81,7 +81,7 @@ public class UsernameTests
     public void Create_WithInvalidCharacters_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "john@doe";
+        string value = "john@doe";
 
         // Act
         Action act = () => Username.Create(value);
@@ -95,10 +95,10 @@ public class UsernameTests
     public void Create_WithWhitespaceInMiddle_ShouldTrimWhitespace()
     {
         // Arrange
-        var value = " john_doe ";
+        string value = " john_doe ";
 
         // Act
-        var username = Username.Create(value);
+        Username username = Username.Create(value);
 
         // Assert
         username.Value.Should().Be("john_doe");
@@ -108,10 +108,10 @@ public class UsernameTests
     public void IsSafeUsername_WithSafeUsername_ShouldReturnTrue()
     {
         // Arrange
-        var username = Username.Create("john_doe");
+        Username username = Username.Create("john_doe");
 
         // Act
-        var result = username.IsSafeUsername();
+        bool result = username.IsSafeUsername();
 
         // Assert
         result.Should().BeTrue();
@@ -121,10 +121,10 @@ public class UsernameTests
     public void IsSafeUsername_WithUnsafeUsername_ShouldReturnFalse()
     {
         // Arrange
-        var username = Username.Create("admin_user");
+        Username username = Username.Create("admin_user");
 
         // Act
-        var result = username.IsSafeUsername();
+        bool result = username.IsSafeUsername();
 
         // Assert
         result.Should().BeFalse();
@@ -134,10 +134,10 @@ public class UsernameTests
     public void IsSafeUsername_WithRootUsername_ShouldReturnFalse()
     {
         // Arrange
-        var username = Username.Create("myroot");
+        Username username = Username.Create("myroot");
 
         // Act
-        var result = username.IsSafeUsername();
+        bool result = username.IsSafeUsername();
 
         // Assert
         result.Should().BeFalse();
@@ -147,7 +147,7 @@ public class UsernameTests
     public void ImplicitOperator_ShouldConvertToString()
     {
         // Arrange
-        var username = Username.Create("john_doe");
+        Username username = Username.Create("john_doe");
 
         // Act
         string value = username;
@@ -160,10 +160,10 @@ public class UsernameTests
     public void ExplicitOperator_ShouldConvertFromString()
     {
         // Arrange
-        var value = "john_doe";
+        string value = "john_doe";
 
         // Act
-        var username = Username.Create(value);
+        Username username = Username.Create(value);
 
         // Assert
         username.Value.Should().Be("john_doe");
@@ -173,10 +173,10 @@ public class UsernameTests
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var username = Username.Create("john_doe");
+        Username username = Username.Create("john_doe");
 
         // Act
-        var result = username.ToString();
+        string result = username.ToString();
 
         // Assert
         result.Should().Be("john_doe");

@@ -10,11 +10,11 @@ public class LifecycleStatusTests
     public void Create_WithValidCodeAndName_ShouldCreateLifecycleStatus()
     {
         // Arrange
-        var code = "DRAFT";
-        var name = "Draft";
+        string code = "DRAFT";
+        string name = "Draft";
 
         // Act
-        var status = LifecycleStatus.Create(code, name);
+        LifecycleStatus status = LifecycleStatus.Create(code, name);
 
         // Assert
         status.Should().NotBeNull();
@@ -26,14 +26,14 @@ public class LifecycleStatusTests
     public void Create_WithAllParameters_ShouldCreateLifecycleStatusWithAllFields()
     {
         // Arrange
-        var code = "ACTIVE";
-        var name = "Active";
-        var description = "Asset is currently in active use";
-        var color = "#28a745";
-        var orderNo = 3;
+        string code = "ACTIVE";
+        string name = "Active";
+        string description = "Asset is currently in active use";
+        string color = "#28a745";
+        int orderNo = 3;
 
         // Act
-        var status = LifecycleStatus.Create(code, name, description, color, orderNo);
+        LifecycleStatus status = LifecycleStatus.Create(code, name, description, color, orderNo);
 
         // Assert
         status.Code.Should().Be(code);
@@ -47,11 +47,11 @@ public class LifecycleStatusTests
     public void Create_WithNullOptionalParameters_ShouldCreateLifecycleStatusWithNullValues()
     {
         // Arrange
-        var code = "RETIRED";
-        var name = "Retired";
+        string code = "RETIRED";
+        string name = "Retired";
 
         // Act
-        var status = LifecycleStatus.Create(code, name, null, null, null);
+        LifecycleStatus status = LifecycleStatus.Create(code, name, null, null, null);
 
         // Assert
         status.Code.Should().Be(code);
@@ -77,9 +77,9 @@ public class LifecycleStatusTests
         };
 
         // Act & Assert
-        foreach (var (code, name) in testCases)
+        foreach ((string code, string name) in testCases)
         {
-            var status = LifecycleStatus.Create(code, name);
+            LifecycleStatus status = LifecycleStatus.Create(code, name);
             status.Code.Should().Be(code);
             status.Name.Should().Be(name);
         }

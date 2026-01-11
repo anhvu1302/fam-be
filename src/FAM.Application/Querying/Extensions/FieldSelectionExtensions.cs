@@ -17,7 +17,7 @@ public static class FieldSelectionExtensions
         this IEnumerable<T> items,
         string[]? fields) where T : class
     {
-        var result = new List<Dictionary<string, object?>>();
+        List<Dictionary<string, object?>> result = new();
 
         if (fields == null || fields.Length == 0)
         {
@@ -26,8 +26,12 @@ public static class FieldSelectionExtensions
 
             foreach (T item in items)
             {
-                var dict = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
-                foreach (PropertyInfo prop in allProperties) dict[ToCamelCase(prop.Name)] = prop.GetValue(item);
+                Dictionary<string, object?> dict = new(StringComparer.OrdinalIgnoreCase);
+                foreach (PropertyInfo prop in allProperties)
+                {
+                    dict[ToCamelCase(prop.Name)] = prop.GetValue(item);
+                }
+
                 result.Add(dict);
             }
 
@@ -92,18 +96,21 @@ public static class FieldSelectionExtensions
     /// </summary>
     private static Dictionary<string, Dictionary<string, Dictionary<string, object?>?>?> ParseFieldTree(string[] fields)
     {
-        var tree =
-            new Dictionary<string, Dictionary<string, Dictionary<string, object?>?>?>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, Dictionary<string, Dictionary<string, object?>?>?> tree =
+            new(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var field in fields)
+        foreach (string field in fields)
         {
-            var parts = field.Split('.', 2);
-            var rootField = parts[0];
+            string[] parts = field.Split('.', 2);
+            string rootField = parts[0];
 
             if (parts.Length == 1)
             {
                 // Simple field
-                if (!tree.ContainsKey(rootField)) tree[rootField] = null;
+                if (!tree.ContainsKey(rootField))
+                {
+                    tree[rootField] = null;
+                }
             }
             else
             {
@@ -117,8 +124,11 @@ public static class FieldSelectionExtensions
 
                 if (nestedFields != null)
                 {
-                    var nestedField = parts[1];
-                    if (!nestedFields.ContainsKey(nestedField)) nestedFields[nestedField] = null;
+                    string nestedField = parts[1];
+                    if (!nestedFields.ContainsKey(nestedField))
+                    {
+                        nestedFields[nestedField] = null;
+                    }
                 }
             }
         }
@@ -133,24 +143,28 @@ public static class FieldSelectionExtensions
         object? obj,
         Dictionary<string, Dictionary<string, Dictionary<string, object?>?>?> fieldTree)
     {
-        var result = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase);
 
         if (obj == null)
+        {
             return result;
+        }
 
         Type type = obj.GetType();
 
         foreach (KeyValuePair<string, Dictionary<string, Dictionary<string, object?>?>?> kvp in fieldTree)
         {
-            var fieldName = kvp.Key;
+            string fieldName = kvp.Key;
             Dictionary<string, Dictionary<string, object?>?>? nestedFields = kvp.Value;
 
             PropertyInfo? prop = type.GetProperty(fieldName,
                 BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
             if (prop == null)
+            {
                 continue;
+            }
 
-            var value = prop.GetValue(obj);
+            object? value = prop.GetValue(obj);
 
             if (nestedFields == null)
             {
@@ -167,13 +181,15 @@ public static class FieldSelectionExtensions
                 else if (value is IEnumerable enumerable && !(value is string))
                 {
                     // Collection - apply to each item
-                    var selectedItems = new List<Dictionary<string, object?>>();
-                    foreach (var item in enumerable)
+                    List<Dictionary<string, object?>> selectedItems = new();
+                    foreach (object? item in enumerable)
+                    {
                         if (item != null)
                         {
                             Dictionary<string, object?> selectedItem = ApplyNestedFieldSelection(item, nestedFields);
                             selectedItems.Add(selectedItem);
                         }
+                    }
 
                     result[ToCamelCase(prop.Name)] = selectedItems;
                 }
@@ -196,14 +212,17 @@ public static class FieldSelectionExtensions
         object obj,
         Dictionary<string, Dictionary<string, object?>?> nestedFields)
     {
-        var result = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+        Dictionary<string, object?> result = new(StringComparer.OrdinalIgnoreCase);
         Type type = obj.GetType();
 
-        foreach (var fieldName in nestedFields.Keys)
+        foreach (string fieldName in nestedFields.Keys)
         {
             PropertyInfo? prop = type.GetProperty(fieldName,
                 BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-            if (prop != null) result[ToCamelCase(prop.Name)] = prop.GetValue(obj);
+            if (prop != null)
+            {
+                result[ToCamelCase(prop.Name)] = prop.GetValue(obj);
+            }
         }
 
         return result;
@@ -212,7 +231,9 @@ public static class FieldSelectionExtensions
     private static string ToCamelCase(string str)
     {
         if (string.IsNullOrEmpty(str) || char.IsLower(str[0]))
+        {
             return str;
+        }
 
         return char.ToLowerInvariant(str[0]) + str.Substring(1);
     }

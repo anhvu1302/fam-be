@@ -24,7 +24,9 @@ public sealed class DateRange : ValueObject
     public static DateRange Create(DateTime startDate, DateTime endDate)
     {
         if (endDate < startDate)
+        {
             throw new DomainException(ErrorCodes.VO_DATE_RANGE_INVALID);
+        }
 
         return new DateRange(startDate, endDate);
     }

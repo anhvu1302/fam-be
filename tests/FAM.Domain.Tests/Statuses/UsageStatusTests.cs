@@ -10,11 +10,11 @@ public class UsageStatusTests
     public void Create_WithValidCodeAndName_ShouldCreateUsageStatus()
     {
         // Arrange
-        var code = "AVAILABLE";
-        var name = "Available";
+        string code = "AVAILABLE";
+        string name = "Available";
 
         // Act
-        var status = UsageStatus.Create(code, name);
+        UsageStatus status = UsageStatus.Create(code, name);
 
         // Assert
         status.Should().NotBeNull();
@@ -26,14 +26,14 @@ public class UsageStatusTests
     public void Create_WithAllParameters_ShouldCreateUsageStatusWithAllFields()
     {
         // Arrange
-        var code = "IN_USE";
-        var name = "In Use";
-        var description = "Asset is currently assigned and in use";
-        var color = "#007bff";
-        var orderNo = 2;
+        string code = "IN_USE";
+        string name = "In Use";
+        string description = "Asset is currently assigned and in use";
+        string color = "#007bff";
+        int orderNo = 2;
 
         // Act
-        var status = UsageStatus.Create(code, name, description, color, orderNo);
+        UsageStatus status = UsageStatus.Create(code, name, description, color, orderNo);
 
         // Assert
         status.Code.Should().Be(code);
@@ -47,11 +47,11 @@ public class UsageStatusTests
     public void Create_WithNullOptionalParameters_ShouldCreateUsageStatusWithNullValues()
     {
         // Arrange
-        var code = "MAINTENANCE";
-        var name = "Under Maintenance";
+        string code = "MAINTENANCE";
+        string name = "Under Maintenance";
 
         // Act
-        var status = UsageStatus.Create(code, name, null, null, null);
+        UsageStatus status = UsageStatus.Create(code, name, null, null, null);
 
         // Assert
         status.Code.Should().Be(code);
@@ -77,9 +77,9 @@ public class UsageStatusTests
         };
 
         // Act & Assert
-        foreach (var (code, name) in testCases)
+        foreach ((string code, string name) in testCases)
         {
-            var status = UsageStatus.Create(code, name);
+            UsageStatus status = UsageStatus.Create(code, name);
             status.Code.Should().Be(code);
             status.Name.Should().Be(name);
         }

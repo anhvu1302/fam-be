@@ -11,11 +11,11 @@ public class AssetTypeTests
     public void Create_WithValidCodeAndName_ShouldCreateAssetType()
     {
         // Arrange
-        var code = "IT";
-        var name = "Information Technology";
+        string code = "IT";
+        string name = "Information Technology";
 
         // Act
-        var assetType = AssetType.Create(code, name);
+        AssetType assetType = AssetType.Create(code, name);
 
         // Assert
         assetType.Should().NotBeNull();
@@ -34,11 +34,11 @@ public class AssetTypeTests
     public void Create_WithLowercaseCode_ShouldConvertToUppercase()
     {
         // Arrange
-        var code = "it";
-        var name = "Information Technology";
+        string code = "it";
+        string name = "Information Technology";
 
         // Act
-        var assetType = AssetType.Create(code, name);
+        AssetType assetType = AssetType.Create(code, name);
 
         // Assert
         assetType.Code.Should().Be("IT");
@@ -66,10 +66,10 @@ public class AssetTypeTests
     public void UpdateBasicInfo_WithValidData_ShouldUpdateAssetType()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Old Name");
-        var newName = "New Name";
-        var newDescription = "New Description";
-        var newLongDescription = "New Long Description";
+        AssetType assetType = AssetType.Create("IT", "Old Name");
+        string newName = "New Name";
+        string newDescription = "New Description";
+        string newLongDescription = "New Long Description";
 
         // Act
         assetType.UpdateBasicInfo(newName, newDescription, newLongDescription);
@@ -84,7 +84,7 @@ public class AssetTypeTests
     public void UpdateBasicInfo_WithNullOrEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => assetType.UpdateBasicInfo(null!, null, null));
@@ -96,7 +96,7 @@ public class AssetTypeTests
     public void UpdateClassification_WithValidData_ShouldUpdateClassification()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateClassification("Fixed Asset", "Hardware", "Computer");
@@ -111,7 +111,7 @@ public class AssetTypeTests
     public void UpdateProperties_WithValidData_ShouldUpdateProperties()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateProperties(
@@ -134,7 +134,7 @@ public class AssetTypeTests
     public void UpdateDepreciationDefaults_WithValidData_ShouldUpdateDefaults()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateDepreciationDefaults("Straight Line", 60, 10.5m, "DEP001", "ACCDEP001");
@@ -151,7 +151,7 @@ public class AssetTypeTests
     public void UpdateDepreciationDefaults_WithNegativeUsefulLife_ShouldThrowDomainException()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => assetType.UpdateDepreciationDefaults("Method", -1, 10, null, null));
@@ -161,7 +161,7 @@ public class AssetTypeTests
     public void UpdateDepreciationDefaults_WithInvalidResidualValuePercentage_ShouldThrowDomainException()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => assetType.UpdateDepreciationDefaults("Method", 60, -1, null, null));
@@ -172,7 +172,7 @@ public class AssetTypeTests
     public void UpdateAccounting_WithValidData_ShouldUpdateAccounting()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateAccounting("GL001", "ASSET001", "EXP001", "CC001");
@@ -188,7 +188,7 @@ public class AssetTypeTests
     public void UpdateLifecycleDefaults_WithValidData_ShouldUpdateLifecycle()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateLifecycleDefaults(24, 365, "Preventive");
@@ -203,7 +203,7 @@ public class AssetTypeTests
     public void UpdateLifecycleDefaults_WithNegativeWarranty_ShouldThrowDomainException()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => assetType.UpdateLifecycleDefaults(-1, 365, "Type"));
@@ -213,7 +213,7 @@ public class AssetTypeTests
     public void UpdateLifecycleDefaults_WithNegativeMaintenanceInterval_ShouldThrowDomainException()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => assetType.UpdateLifecycleDefaults(24, -1, "Type"));
@@ -223,7 +223,7 @@ public class AssetTypeTests
     public void UpdateValuation_WithValidData_ShouldUpdateValuation()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateValuation(1000.50m, "USD", "Cost");
@@ -238,7 +238,7 @@ public class AssetTypeTests
     public void UpdateValuation_WithNegativeMinimumValue_ShouldThrowDomainException()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => assetType.UpdateValuation(-100, "USD", "Cost"));
@@ -248,7 +248,7 @@ public class AssetTypeTests
     public void UpdateCompliance_WithValidData_ShouldUpdateCompliance()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateCompliance(true, "ISO 9001", "Regulatory Req", true, 12);
@@ -265,7 +265,7 @@ public class AssetTypeTests
     public void UpdateCompliance_WithNegativeAuditInterval_ShouldThrowDomainException()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => assetType.UpdateCompliance(true, null, null, true, -1));
@@ -275,7 +275,7 @@ public class AssetTypeTests
     public void UpdateSecurity_WithValidData_ShouldUpdateSecurity()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateSecurity("Confidential", true, true);
@@ -290,7 +290,7 @@ public class AssetTypeTests
     public void UpdateWorkflow_WithValidData_ShouldUpdateWorkflow()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateWorkflow(true, true, "Approval Workflow JSON");
@@ -305,7 +305,7 @@ public class AssetTypeTests
     public void UpdateCustomFields_WithValidData_ShouldUpdateCustomFields()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateCustomFields("Schema JSON", "Required Fields JSON");
@@ -319,7 +319,7 @@ public class AssetTypeTests
     public void UpdateDisplay_WithValidData_ShouldUpdateDisplay()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateDisplay("icon.png", "https://example.com/icon.png", "#FF0000", 5);
@@ -336,7 +336,7 @@ public class AssetTypeTests
     public void UpdateDisplay_WithInvalidUrl_ShouldThrowDomainException()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => assetType.UpdateDisplay("icon", "invalid-url", null, 0));
@@ -346,7 +346,7 @@ public class AssetTypeTests
     public void SetParent_WithValidData_ShouldSetParent()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Child");
+        AssetType assetType = AssetType.Create("IT", "Child");
 
         // Act
         assetType.SetParent(1, 2, "/IT/Hardware");
@@ -361,7 +361,7 @@ public class AssetTypeTests
     public void UpdateSearchTags_WithValidData_ShouldUpdateTags()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateSearchTags("tag1,tag2", "keyword1 keyword2", "alias1,alias2");
@@ -376,7 +376,7 @@ public class AssetTypeTests
     public void AddNotes_WithValidData_ShouldAddNotes()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.AddNotes("Internal notes", "Procurement notes");
@@ -390,7 +390,7 @@ public class AssetTypeTests
     public void Activate_ShouldSetIsActiveToTrue()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
         assetType.Deactivate();
 
         // Act
@@ -404,7 +404,7 @@ public class AssetTypeTests
     public void Deactivate_ShouldSetIsActiveToFalse()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.Deactivate();
@@ -417,7 +417,7 @@ public class AssetTypeTests
     public void MarkAsSystemType_ShouldSetIsSystemTypeToTrue()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.MarkAsSystemType();
@@ -430,7 +430,7 @@ public class AssetTypeTests
     public void UpdateStatistics_WithValidData_ShouldUpdateStatistics()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act
         assetType.UpdateStatistics(10, 10000.50m);
@@ -444,7 +444,7 @@ public class AssetTypeTests
     public void UpdateStatistics_WithNegativeAssetCount_ShouldThrowDomainException()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => assetType.UpdateStatistics(-1, 1000));
@@ -454,7 +454,7 @@ public class AssetTypeTests
     public void UpdateStatistics_WithNegativeTotalValue_ShouldThrowDomainException()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Test");
+        AssetType assetType = AssetType.Create("IT", "Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => assetType.UpdateStatistics(10, -1000));
@@ -464,11 +464,11 @@ public class AssetTypeTests
     public void IsHierarchical_WithParent_ShouldReturnTrue()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Child");
+        AssetType assetType = AssetType.Create("IT", "Child");
         assetType.SetParent(1, 1, "/IT");
 
         // Act
-        var result = assetType.IsHierarchical();
+        bool result = assetType.IsHierarchical();
 
         // Assert
         result.Should().BeTrue();
@@ -478,10 +478,10 @@ public class AssetTypeTests
     public void IsRoot_WithNoParent_ShouldReturnTrue()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Root");
+        AssetType assetType = AssetType.Create("IT", "Root");
 
         // Act
-        var result = assetType.IsRoot();
+        bool result = assetType.IsRoot();
 
         // Assert
         result.Should().BeTrue();
@@ -491,10 +491,10 @@ public class AssetTypeTests
     public void IsLeaf_WithNoChildren_ShouldReturnTrue()
     {
         // Arrange
-        var assetType = AssetType.Create("IT", "Leaf");
+        AssetType assetType = AssetType.Create("IT", "Leaf");
 
         // Act
-        var result = assetType.IsLeaf();
+        bool result = assetType.IsLeaf();
 
         // Assert
         result.Should().BeTrue();

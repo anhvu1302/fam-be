@@ -11,11 +11,11 @@ public class DateRangeTests
     public void Create_WithValidDates_ShouldCreateDateRange()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var endDate = new DateTime(2023, 12, 31);
+        DateTime startDate = new(2023, 1, 1);
+        DateTime endDate = new(2023, 12, 31);
 
         // Act
-        var dateRange = DateRange.Create(startDate, endDate);
+        DateRange dateRange = DateRange.Create(startDate, endDate);
 
         // Assert
         dateRange.Should().NotBeNull();
@@ -27,10 +27,10 @@ public class DateRangeTests
     public void Create_WithSameStartAndEndDate_ShouldCreateDateRange()
     {
         // Arrange
-        var date = new DateTime(2023, 6, 15);
+        DateTime date = new(2023, 6, 15);
 
         // Act
-        var dateRange = DateRange.Create(date, date);
+        DateRange dateRange = DateRange.Create(date, date);
 
         // Assert
         dateRange.StartDate.Should().Be(date);
@@ -41,8 +41,8 @@ public class DateRangeTests
     public void Create_WithEndDateBeforeStartDate_ShouldThrowDomainException()
     {
         // Arrange
-        var startDate = new DateTime(2023, 12, 31);
-        var endDate = new DateTime(2023, 1, 1);
+        DateTime startDate = new(2023, 12, 31);
+        DateTime endDate = new(2023, 1, 1);
 
         // Act & Assert
         Assert.Throws<DomainException>(() => DateRange.Create(startDate, endDate));
@@ -52,11 +52,11 @@ public class DateRangeTests
     public void CreateFromDuration_WithValidData_ShouldCreateDateRange()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var durationInDays = 30;
+        DateTime startDate = new(2023, 1, 1);
+        int durationInDays = 30;
 
         // Act
-        var dateRange = DateRange.CreateFromDuration(startDate, durationInDays);
+        DateRange dateRange = DateRange.CreateFromDuration(startDate, durationInDays);
 
         // Assert
         dateRange.StartDate.Should().Be(startDate);
@@ -67,11 +67,11 @@ public class DateRangeTests
     public void CreateFromDuration_WithZeroDuration_ShouldCreateDateRange()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var durationInDays = 0;
+        DateTime startDate = new(2023, 1, 1);
+        int durationInDays = 0;
 
         // Act
-        var dateRange = DateRange.CreateFromDuration(startDate, durationInDays);
+        DateRange dateRange = DateRange.CreateFromDuration(startDate, durationInDays);
 
         // Assert
         dateRange.StartDate.Should().Be(startDate);
@@ -82,12 +82,12 @@ public class DateRangeTests
     public void GetDurationInDays_WithValidRange_ShouldReturnCorrectDuration()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var endDate = new DateTime(2023, 1, 31);
-        var dateRange = DateRange.Create(startDate, endDate);
+        DateTime startDate = new(2023, 1, 1);
+        DateTime endDate = new(2023, 1, 31);
+        DateRange dateRange = DateRange.Create(startDate, endDate);
 
         // Act
-        var duration = dateRange.GetDurationInDays();
+        int duration = dateRange.GetDurationInDays();
 
         // Assert
         duration.Should().Be(30);
@@ -97,11 +97,11 @@ public class DateRangeTests
     public void GetDurationInDays_WithSameDates_ShouldReturnZero()
     {
         // Arrange
-        var date = new DateTime(2023, 1, 1);
-        var dateRange = DateRange.Create(date, date);
+        DateTime date = new(2023, 1, 1);
+        DateRange dateRange = DateRange.Create(date, date);
 
         // Act
-        var duration = dateRange.GetDurationInDays();
+        int duration = dateRange.GetDurationInDays();
 
         // Assert
         duration.Should().Be(0);
@@ -111,13 +111,13 @@ public class DateRangeTests
     public void Contains_WithDateWithinRange_ShouldReturnTrue()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var endDate = new DateTime(2023, 12, 31);
-        var dateRange = DateRange.Create(startDate, endDate);
-        var testDate = new DateTime(2023, 6, 15);
+        DateTime startDate = new(2023, 1, 1);
+        DateTime endDate = new(2023, 12, 31);
+        DateRange dateRange = DateRange.Create(startDate, endDate);
+        DateTime testDate = new(2023, 6, 15);
 
         // Act
-        var result = dateRange.Contains(testDate);
+        bool result = dateRange.Contains(testDate);
 
         // Assert
         result.Should().BeTrue();
@@ -127,12 +127,12 @@ public class DateRangeTests
     public void Contains_WithDateEqualToStartDate_ShouldReturnTrue()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var endDate = new DateTime(2023, 12, 31);
-        var dateRange = DateRange.Create(startDate, endDate);
+        DateTime startDate = new(2023, 1, 1);
+        DateTime endDate = new(2023, 12, 31);
+        DateRange dateRange = DateRange.Create(startDate, endDate);
 
         // Act
-        var result = dateRange.Contains(startDate);
+        bool result = dateRange.Contains(startDate);
 
         // Assert
         result.Should().BeTrue();
@@ -142,12 +142,12 @@ public class DateRangeTests
     public void Contains_WithDateEqualToEndDate_ShouldReturnTrue()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var endDate = new DateTime(2023, 12, 31);
-        var dateRange = DateRange.Create(startDate, endDate);
+        DateTime startDate = new(2023, 1, 1);
+        DateTime endDate = new(2023, 12, 31);
+        DateRange dateRange = DateRange.Create(startDate, endDate);
 
         // Act
-        var result = dateRange.Contains(endDate);
+        bool result = dateRange.Contains(endDate);
 
         // Assert
         result.Should().BeTrue();
@@ -157,13 +157,13 @@ public class DateRangeTests
     public void Contains_WithDateBeforeStartDate_ShouldReturnFalse()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var endDate = new DateTime(2023, 12, 31);
-        var dateRange = DateRange.Create(startDate, endDate);
-        var testDate = new DateTime(2022, 12, 31);
+        DateTime startDate = new(2023, 1, 1);
+        DateTime endDate = new(2023, 12, 31);
+        DateRange dateRange = DateRange.Create(startDate, endDate);
+        DateTime testDate = new(2022, 12, 31);
 
         // Act
-        var result = dateRange.Contains(testDate);
+        bool result = dateRange.Contains(testDate);
 
         // Assert
         result.Should().BeFalse();
@@ -173,13 +173,13 @@ public class DateRangeTests
     public void Contains_WithDateAfterEndDate_ShouldReturnFalse()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var endDate = new DateTime(2023, 12, 31);
-        var dateRange = DateRange.Create(startDate, endDate);
-        var testDate = new DateTime(2024, 1, 1);
+        DateTime startDate = new(2023, 1, 1);
+        DateTime endDate = new(2023, 12, 31);
+        DateRange dateRange = DateRange.Create(startDate, endDate);
+        DateTime testDate = new(2024, 1, 1);
 
         // Act
-        var result = dateRange.Contains(testDate);
+        bool result = dateRange.Contains(testDate);
 
         // Assert
         result.Should().BeFalse();
@@ -189,11 +189,11 @@ public class DateRangeTests
     public void Overlaps_WithOverlappingRange_ShouldReturnTrue()
     {
         // Arrange
-        var range1 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 6, 30));
-        var range2 = DateRange.Create(new DateTime(2023, 6, 1), new DateTime(2023, 12, 31));
+        DateRange range1 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 6, 30));
+        DateRange range2 = DateRange.Create(new DateTime(2023, 6, 1), new DateTime(2023, 12, 31));
 
         // Act
-        var result = range1.Overlaps(range2);
+        bool result = range1.Overlaps(range2);
 
         // Assert
         result.Should().BeTrue();
@@ -203,11 +203,11 @@ public class DateRangeTests
     public void Overlaps_WithAdjacentRange_ShouldReturnFalse()
     {
         // Arrange
-        var range1 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 6, 30));
-        var range2 = DateRange.Create(new DateTime(2023, 7, 1), new DateTime(2023, 12, 31));
+        DateRange range1 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 6, 30));
+        DateRange range2 = DateRange.Create(new DateTime(2023, 7, 1), new DateTime(2023, 12, 31));
 
         // Act
-        var result = range1.Overlaps(range2);
+        bool result = range1.Overlaps(range2);
 
         // Assert
         result.Should().BeFalse();
@@ -217,11 +217,11 @@ public class DateRangeTests
     public void Overlaps_WithNonOverlappingRange_ShouldReturnFalse()
     {
         // Arrange
-        var range1 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 3, 31));
-        var range2 = DateRange.Create(new DateTime(2023, 7, 1), new DateTime(2023, 12, 31));
+        DateRange range1 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 3, 31));
+        DateRange range2 = DateRange.Create(new DateTime(2023, 7, 1), new DateTime(2023, 12, 31));
 
         // Act
-        var result = range1.Overlaps(range2);
+        bool result = range1.Overlaps(range2);
 
         // Assert
         result.Should().BeFalse();
@@ -231,11 +231,11 @@ public class DateRangeTests
     public void Overlaps_WithSameRange_ShouldReturnTrue()
     {
         // Arrange
-        var range1 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 12, 31));
-        var range2 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 12, 31));
+        DateRange range1 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 12, 31));
+        DateRange range2 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 12, 31));
 
         // Act
-        var result = range1.Overlaps(range2);
+        bool result = range1.Overlaps(range2);
 
         // Assert
         result.Should().BeTrue();
@@ -245,11 +245,11 @@ public class DateRangeTests
     public void Overlaps_WithContainedRange_ShouldReturnTrue()
     {
         // Arrange
-        var range1 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 12, 31));
-        var range2 = DateRange.Create(new DateTime(2023, 3, 1), new DateTime(2023, 10, 31));
+        DateRange range1 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 12, 31));
+        DateRange range2 = DateRange.Create(new DateTime(2023, 3, 1), new DateTime(2023, 10, 31));
 
         // Act
-        var result = range1.Overlaps(range2);
+        bool result = range1.Overlaps(range2);
 
         // Assert
         result.Should().BeTrue();
@@ -259,12 +259,12 @@ public class DateRangeTests
     public void ToString_ShouldReturnFormattedString()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var endDate = new DateTime(2023, 12, 31);
-        var dateRange = DateRange.Create(startDate, endDate);
+        DateTime startDate = new(2023, 1, 1);
+        DateTime endDate = new(2023, 12, 31);
+        DateRange dateRange = DateRange.Create(startDate, endDate);
 
         // Act
-        var result = dateRange.ToString();
+        string result = dateRange.ToString();
 
         // Assert
         result.Should().Be("2023-01-01 to 2023-12-31");
@@ -274,10 +274,10 @@ public class DateRangeTests
     public void Equality_WithSameDates_ShouldBeEqual()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var endDate = new DateTime(2023, 12, 31);
-        var dateRange1 = DateRange.Create(startDate, endDate);
-        var dateRange2 = DateRange.Create(startDate, endDate);
+        DateTime startDate = new(2023, 1, 1);
+        DateTime endDate = new(2023, 12, 31);
+        DateRange dateRange1 = DateRange.Create(startDate, endDate);
+        DateRange dateRange2 = DateRange.Create(startDate, endDate);
 
         // Act & Assert
         dateRange1.Should().Be(dateRange2);
@@ -288,8 +288,8 @@ public class DateRangeTests
     public void Equality_WithDifferentDates_ShouldNotBeEqual()
     {
         // Arrange
-        var dateRange1 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 12, 31));
-        var dateRange2 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 12, 30));
+        DateRange dateRange1 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 12, 31));
+        DateRange dateRange2 = DateRange.Create(new DateTime(2023, 1, 1), new DateTime(2023, 12, 30));
 
         // Act & Assert
         dateRange1.Should().NotBe(dateRange2);

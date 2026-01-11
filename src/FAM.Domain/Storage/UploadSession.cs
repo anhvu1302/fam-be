@@ -107,7 +107,7 @@ public class UploadSession : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
         int ttlHours = 24,
         string? idempotencyKey = null)
     {
-        var session = new UploadSession
+        UploadSession session = new()
         {
             UploadId = uploadId,
             TempKey = tempKey,
@@ -134,7 +134,9 @@ public class UploadSession : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     public void MarkUploaded(string? checksum = null)
     {
         if (Status != UploadSessionStatus.Pending)
+        {
             throw new InvalidOperationException($"Cannot mark uploaded: session is {Status}");
+        }
 
         Status = UploadSessionStatus.Uploaded;
         Checksum = checksum;
@@ -149,12 +151,18 @@ public class UploadSession : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     public void Finalize(string finalKey, int entityId, string entityType, string? checksum = null)
     {
         if (Status != UploadSessionStatus.Uploaded && Status != UploadSessionStatus.Pending)
+        {
             throw new InvalidOperationException($"Cannot finalize: session is {Status}");
+        }
 
         // Verify checksum if provided
         if (!string.IsNullOrEmpty(checksum) && !string.IsNullOrEmpty(Checksum))
+        {
             if (!checksum.Equals(Checksum, StringComparison.OrdinalIgnoreCase))
+            {
                 throw new InvalidOperationException("Checksum mismatch");
+            }
+        }
 
         FinalKey = finalKey;
         EntityId = entityId;
@@ -171,7 +179,9 @@ public class UploadSession : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     public void MarkFailed(string reason)
     {
         if (Status == UploadSessionStatus.Finalized || Status == UploadSessionStatus.CleanedUp)
+        {
             throw new InvalidOperationException($"Cannot mark failed: session is {Status}");
+        }
 
         Status = UploadSessionStatus.Failed;
         UpdatedAt = DateTime.UtcNow;
@@ -185,7 +195,9 @@ public class UploadSession : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     public void MarkExpired()
     {
         if (Status == UploadSessionStatus.Finalized)
+        {
             throw new InvalidOperationException("Cannot expire finalized session");
+        }
 
         Status = UploadSessionStatus.Expired;
         UpdatedAt = DateTime.UtcNow;

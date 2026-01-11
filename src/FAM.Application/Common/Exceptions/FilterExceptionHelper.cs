@@ -17,30 +17,30 @@ public static class FilterExceptionHelper
         string filterSyntax,
         FieldMap<T> fieldMap) where T : class
     {
-        var fieldDescriptions = GetFieldDescriptions(fieldMap);
-        var examples = GetExamples(fieldMap);
+        string fieldDescriptions = GetFieldDescriptions(fieldMap);
+        string examples = GetExamples(fieldMap);
 
-        var message = $"Filter error: {innerException.Message}\n\n" +
-                      $"Filter syntax: {filterSyntax}\n\n" +
-                      $"Available fields:\n{fieldDescriptions}\n\n" +
-                      $"Examples:\n{examples}";
+        string message = $"Filter error: {innerException.Message}\n\n" +
+                         $"Filter syntax: {filterSyntax}\n\n" +
+                         $"Available fields:\n{fieldDescriptions}\n\n" +
+                         $"Examples:\n{examples}";
 
         return new InvalidOperationException(message, innerException);
     }
 
     private static string GetFieldDescriptions<T>(FieldMap<T> fieldMap) where T : class
     {
-        var descriptions = new List<string>();
+        List<string> descriptions = new();
 
         foreach ((string FieldName, LambdaExpression Expression, Type Type) field in fieldMap.GetAllFields())
         {
-            var fieldName = field.FieldName;
+            string fieldName = field.FieldName;
             LambdaExpression expression = field.Expression;
 
             // Determine field type from expression
             Type returnType = expression.ReturnType;
-            var fieldType = GetFieldTypeName(returnType);
-            var operations = GetOperationsForType(returnType);
+            string fieldType = GetFieldTypeName(returnType);
+            string operations = GetOperationsForType(returnType);
 
             descriptions.Add($"  - {fieldName} ({fieldType}): Use {operations}");
         }
@@ -54,21 +54,37 @@ public static class FilterExceptionHelper
         Type underlyingType = Nullable.GetUnderlyingType(type) ?? type;
 
         if (underlyingType == typeof(string))
+        {
             return "string";
+        }
+
         if (underlyingType == typeof(bool))
+        {
             return "boolean";
+        }
+
         if (underlyingType == typeof(int) || underlyingType == typeof(long) ||
             underlyingType == typeof(decimal) || underlyingType == typeof(double) ||
             underlyingType == typeof(float))
+        {
             return "number";
+        }
+
         if (underlyingType == typeof(DateTime) || underlyingType == typeof(DateTimeOffset))
+        {
             return "datetime";
+        }
+
         if (underlyingType == typeof(Guid))
+        {
             return "guid";
+        }
 
         // Handle object type (nullable fields)
         if (type == typeof(object))
+        {
             return "string"; // Most object fields are nullable strings
+        }
 
         return "unknown";
     }
@@ -78,41 +94,58 @@ public static class FilterExceptionHelper
         Type underlyingType = Nullable.GetUnderlyingType(type) ?? type;
 
         if (underlyingType == typeof(string) || type == typeof(object))
+        {
             return "@contains, @startswith, @endswith, ==";
+        }
+
         if (underlyingType == typeof(bool))
+        {
             return "== true or == false";
+        }
+
         if (underlyingType == typeof(int) || underlyingType == typeof(long) ||
             underlyingType == typeof(decimal) || underlyingType == typeof(double) ||
             underlyingType == typeof(float) || underlyingType == typeof(DateTime) ||
             underlyingType == typeof(DateTimeOffset))
+        {
             return "==, !=, >, <, >=, <=";
+        }
+
         if (underlyingType == typeof(Guid))
+        {
             return "==, !=";
+        }
 
         return "==, !=";
     }
 
     private static string GetExamples<T>(FieldMap<T> fieldMap) where T : class
     {
-        var examples = new List<string>();
-        var fields = fieldMap.GetAllFields().ToList();
+        List<string> examples = new();
+        List<(string FieldName, LambdaExpression Expression, Type Type)> fields = fieldMap.GetAllFields().ToList();
 
         // Try to generate smart examples based on available fields
         foreach ((string FieldName, LambdaExpression Expression, Type Type) field in
                  fields.Take(3)) // Take first 3 fields for examples
         {
-            var fieldName = field.FieldName;
+            string fieldName = field.FieldName;
             Type returnType = field.Expression.ReturnType;
             Type underlyingType = Nullable.GetUnderlyingType(returnType) ?? returnType;
 
             if (underlyingType == typeof(string) || returnType == typeof(object))
             {
                 if (fieldName.ToLower().Contains("name"))
+                {
                     examples.Add($"  - {fieldName} @contains 'text'");
+                }
                 else if (fieldName.ToLower().Contains("email"))
+                {
                     examples.Add($"  - {fieldName} @contains '@example.com'");
+                }
                 else
+                {
                     examples.Add($"  - {fieldName} @startswith 'prefix'");
+                }
             }
             else if (underlyingType == typeof(bool))
             {
@@ -131,8 +164,8 @@ public static class FilterExceptionHelper
         // Add a combined example if we have multiple fields
         if (examples.Count >= 2)
         {
-            var firstField = fields[0].FieldName;
-            var secondField = fields[1].FieldName;
+            string firstField = fields[0].FieldName;
+            string secondField = fields[1].FieldName;
             Type firstType = Nullable.GetUnderlyingType(fields[0].Expression.ReturnType) ??
                              fields[0].Expression.ReturnType;
             Type secondType = Nullable.GetUnderlyingType(fields[1].Expression.ReturnType) ??
@@ -140,7 +173,9 @@ public static class FilterExceptionHelper
 
             if (firstType == typeof(bool) &&
                 (secondType == typeof(string) || fields[1].Expression.ReturnType == typeof(object)))
+            {
                 examples.Add($"  - {firstField} == true and {secondField} @contains 'text'");
+            }
         }
 
         return examples.Any() ? string.Join("\n", examples) : "  - No examples available";

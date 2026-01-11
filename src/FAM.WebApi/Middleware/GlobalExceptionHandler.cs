@@ -28,7 +28,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
-        (var statusCode, ApiErrorResponse errorResponse) = exception switch
+        (int statusCode, ApiErrorResponse errorResponse) = exception switch
         {
             ValidationException validationEx => HandleValidationException(validationEx),
             NotFoundException notFoundEx => HandleNotFoundException(notFoundEx),
@@ -44,6 +44,7 @@ public class GlobalExceptionHandler : IExceptionHandler
 
         // Only log server errors (5xx), not client errors (4xx)
         if (statusCode >= 500)
+        {
             using (LogContext.PushProperty("ExceptionType", exception.GetType().Name))
             using (LogContext.PushProperty("StatusCode", statusCode))
             {
@@ -52,6 +53,7 @@ public class GlobalExceptionHandler : IExceptionHandler
                     "Server error: {ExceptionType} - {ExceptionMessage}\nStack Trace: {StackTrace}",
                     exception.GetType().Name, exception.Message, exception.StackTrace);
             }
+        }
 
         httpContext.Response.StatusCode = statusCode;
         httpContext.Response.ContentType = "application/json";
@@ -69,17 +71,23 @@ public class GlobalExceptionHandler : IExceptionHandler
 
     private static (int statusCode, ApiErrorResponse response) HandleValidationException(ValidationException ex)
     {
-        var errors = new List<ApiError>();
+        List<ApiError> errors = new();
 
         if (ex.Errors != null)
-            foreach (var (field, messages) in ex.Errors)
-            foreach (var message in messages)
+        {
+            foreach ((string field, string[] messages) in ex.Errors)
             {
-                var errorMessage = string.IsNullOrEmpty(field) ? message : $"{field}: {message}";
-                errors.Add(new ApiError(errorMessage, ex.ErrorCode));
+                foreach (string message in messages)
+                {
+                    string errorMessage = string.IsNullOrEmpty(field) ? message : $"{field}: {message}";
+                    errors.Add(new ApiError(errorMessage, ex.ErrorCode));
+                }
             }
+        }
         else
+        {
             errors.Add(new ApiError(ex.Message, ex.ErrorCode));
+        }
 
         return (StatusCodes.Status400BadRequest, new ApiErrorResponse(false, errors));
     }

@@ -1,4 +1,5 @@
 using FAM.Domain.EmailTemplates;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

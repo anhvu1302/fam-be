@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
+using FAM.Infrastructure.Common.Abstractions;
 using FAM.Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
@@ -12,114 +13,124 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 /// <summary>
 /// PostgreSQL implementation of IUserRepository
 /// Uses Pragmatic Architecture - directly works with Domain entities
+/// Follows Clean Architecture by depending on IDbContext
 /// </summary>
 public class UserRepository : BasePagedRepository<User>, IUserRepository
 {
-    private readonly PostgreSqlDbContext Context;
+    private readonly IDbContext _context;
+    protected DbSet<User> DbSet => _context.Set<User>();
 
-    public UserRepository(PostgreSqlDbContext context)
+    public UserRepository(IDbContext context)
         : base()
     {
-        Context = context;
+        _context = context;
     }
 
 
     public async Task<User?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await Context.Users.FindAsync(new object[] { id }, cancellationToken);
+        return await DbSet.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public async Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await Context.Users.ToListAsync(cancellationToken);
+        return await DbSet.ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<User>> FindAsync(Expression<Func<User, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        return await Context.Users.Where(predicate).ToListAsync(cancellationToken);
+        return await DbSet.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(User entity, CancellationToken cancellationToken = default)
     {
-        await Context.Users.AddAsync(entity, cancellationToken);
+        await DbSet.AddAsync(entity, cancellationToken);
     }
 
     public void Update(User entity)
     {
-        EntityEntry<User>? trackedEntry = Context.ChangeTracker.Entries<User>()
+        EntityEntry<User>? trackedEntry = _context.ChangeTracker.Entries<User>()
             .FirstOrDefault(e => e.Entity.Id == entity.Id);
 
         if (trackedEntry != null)
         {
-            Context.Entry(trackedEntry.Entity).CurrentValues.SetValues(entity);
+            _context.Entry(trackedEntry.Entity).CurrentValues.SetValues(entity);
         }
         else
         {
-            Context.Users.Attach(entity);
-            Context.Entry(entity).State = EntityState.Modified;
+            DbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
         }
     }
 
     public void Delete(User entity)
     {
-        Context.Users.Remove(entity);
+        DbSet.Remove(entity);
     }
 
     public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await Context.Users.AnyAsync(u => u.Id == id, cancellationToken);
+        return await DbSet.AnyAsync(u => u.Id == id, cancellationToken);
     }
 
     public async Task<User?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default)
     {
-        return await Context.Users
+        return await DbSet
             .FirstOrDefaultAsync(u => u.Username == username, cancellationToken);
     }
 
     public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await Context.Users
+        return await DbSet
             .FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
     }
 
     public async Task<bool> IsUsernameTakenAsync(string username, long? excludeUserId = null,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<User> query = Context.Users.Where(u => u.Username == username);
-        if (excludeUserId.HasValue) query = query.Where(u => u.Id != excludeUserId.Value);
+        IQueryable<User> query = DbSet.Where(u => u.Username == username);
+        if (excludeUserId.HasValue)
+        {
+            query = query.Where(u => u.Id != excludeUserId.Value);
+        }
+
         return await query.AnyAsync(cancellationToken);
     }
 
     public async Task<bool> IsEmailTakenAsync(string email, long? excludeUserId = null,
         CancellationToken cancellationToken = default)
     {
-        var normalizedEmail = email.ToLower();
-        IQueryable<User> query = Context.Users.Where(u => u.Email.ToLower() == normalizedEmail && !u.IsDeleted);
-        if (excludeUserId.HasValue) query = query.Where(u => u.Id != excludeUserId.Value);
+        string normalizedEmail = email.ToLower();
+        IQueryable<User> query = DbSet.Where(u => u.Email.ToLower() == normalizedEmail && !u.IsDeleted);
+        if (excludeUserId.HasValue)
+        {
+            query = query.Where(u => u.Id != excludeUserId.Value);
+        }
+
         return await query.AnyAsync(cancellationToken);
     }
 
     public async Task<User?> FindByUsernameAsync(string username, CancellationToken cancellationToken = default)
     {
-        var normalizedUsername = username.ToLower();
-        return await Context.Users
+        string normalizedUsername = username.ToLower();
+        return await DbSet
             .Include(u => u.UserDevices)
             .FirstOrDefaultAsync(u => u.Username.ToLower() == normalizedUsername && !u.IsDeleted, cancellationToken);
     }
 
     public async Task<User?> FindByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        var normalizedEmail = email.ToLower();
-        return await Context.Users
+        string normalizedEmail = email.ToLower();
+        return await DbSet
             .FirstOrDefaultAsync(u => u.Email.ToLower() == normalizedEmail && !u.IsDeleted, cancellationToken);
     }
 
     public async Task<User?> FindByIdentityAsync(string identity, CancellationToken cancellationToken = default)
     {
-        var normalizedInput = identity.ToLower();
+        string normalizedInput = identity.ToLower();
 
-        return await Context.Users
+        return await DbSet
             .Include(u => u.UserDevices)
             .Where(u => !u.IsDeleted)
             .FirstOrDefaultAsync(u => u.Username.ToLower() == normalizedInput || u.Email.ToLower() == normalizedInput,
@@ -138,18 +149,20 @@ public class UserRepository : BasePagedRepository<User>, IUserRepository
         CancellationToken cancellationToken = default)
     {
         // Build base query for counting (no need Include for count)
-        IQueryable<User> countQuery = Context.Users.AsQueryable();
+        IQueryable<User> countQuery = DbSet.AsQueryable();
 
         // Build query for data
-        IQueryable<User> dataQuery = Context.Users.AsQueryable();
+        IQueryable<User> dataQuery = DbSet.AsQueryable();
 
         // Apply includes dynamically if provided
         if (includes != null && includes.Length > 0)
+        {
             foreach (Expression<Func<User, object>> include in includes)
             {
-                var propertyPath = GetPropertyName(include.Body);
+                string propertyPath = GetPropertyName(include.Body);
                 dataQuery = dataQuery.Include(propertyPath);
             }
+        }
 
         // Apply filter at database level to both queries
         if (filter != null)
@@ -159,14 +172,18 @@ public class UserRepository : BasePagedRepository<User>, IUserRepository
         }
 
         // Get total count from count query
-        var total = await countQuery.CountAsync(cancellationToken);
+        int total = await countQuery.CountAsync(cancellationToken);
 
         // Apply sorting to data query (default to CreatedAt descending if not specified)
         if (string.IsNullOrWhiteSpace(sort))
+        {
             dataQuery = dataQuery.OrderByDescending(u => u.CreatedAt);
+        }
         else
-            // TODO: Implement dynamic sorting based on sort parameter if needed
+        // TODO: Implement dynamic sorting based on sort parameter if needed
+        {
             dataQuery = dataQuery.OrderByDescending(u => u.CreatedAt);
+        }
 
         // Apply pagination and execute
         List<User> users = await dataQuery

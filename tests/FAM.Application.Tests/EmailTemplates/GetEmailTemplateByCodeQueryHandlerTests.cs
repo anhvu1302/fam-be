@@ -25,11 +25,11 @@ public class GetEmailTemplateByCodeQueryHandlerTests
     public async Task Handle_WithExistingCode_ShouldReturnDto()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "OTP_EMAIL", "OTP Email", "Your OTP Code",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
-        var query = new GetEmailTemplateByCodeQuery("OTP_EMAIL");
+        GetEmailTemplateByCodeQuery query = new("OTP_EMAIL");
 
         _repositoryMock.Setup(x => x.GetByCodeAsync(query.Code, default))
             .ReturnsAsync(template);
@@ -49,7 +49,7 @@ public class GetEmailTemplateByCodeQueryHandlerTests
     public async Task Handle_WithNonExistentCode_ShouldReturnNull()
     {
         // Arrange
-        var query = new GetEmailTemplateByCodeQuery("NON_EXISTENT");
+        GetEmailTemplateByCodeQuery query = new("NON_EXISTENT");
 
         _repositoryMock.Setup(x => x.GetByCodeAsync(query.Code, default))
             .ReturnsAsync((EmailTemplate?)null);
@@ -65,11 +65,11 @@ public class GetEmailTemplateByCodeQueryHandlerTests
     public async Task Handle_WithLowercaseCode_ShouldStillWork()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "OTP_EMAIL", "OTP Email", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
-        var query = new GetEmailTemplateByCodeQuery("otp_email");
+        GetEmailTemplateByCodeQuery query = new("otp_email");
 
         _repositoryMock.Setup(x => x.GetByCodeAsync(query.Code, default))
             .ReturnsAsync(template);

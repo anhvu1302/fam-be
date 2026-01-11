@@ -18,7 +18,7 @@ public class EmailTemplateTests
         const EmailTemplateCategory category = EmailTemplateCategory.Authentication;
 
         // Act
-        var template = EmailTemplate.Create(code, name, subject, htmlBody, category);
+        EmailTemplate template = EmailTemplate.Create(code, name, subject, htmlBody, category);
 
         // Assert
         Assert.NotNull(template);
@@ -46,7 +46,7 @@ public class EmailTemplateTests
         const EmailTemplateCategory category = EmailTemplateCategory.Notification;
 
         // Act
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             code, name, subject, htmlBody, category,
             description, plainTextBody, placeholders, true);
 
@@ -142,7 +142,8 @@ public class EmailTemplateTests
         const string htmlBody = "<html></html>";
 
         // Act
-        var template = EmailTemplate.Create(code, name, subject, htmlBody, EmailTemplateCategory.Authentication);
+        EmailTemplate template =
+            EmailTemplate.Create(code, name, subject, htmlBody, EmailTemplateCategory.Authentication);
 
         // Assert
         Assert.Equal("TEST_EMAIL", template.Code);
@@ -156,7 +157,7 @@ public class EmailTemplateTests
     public void Update_WithValidData_ShouldSucceed()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Original", "Original Subject",
             "<html>Original</html>", EmailTemplateCategory.Authentication);
 
@@ -180,7 +181,7 @@ public class EmailTemplateTests
     public void Update_WithOptionalParameters_ShouldSucceed()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Original", "Subject",
             "<html>Original</html>", EmailTemplateCategory.Authentication);
 
@@ -202,7 +203,7 @@ public class EmailTemplateTests
     public void Update_SystemTemplate_ShouldThrowException()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "SYSTEM_EMAIL", "System Template", "Subject",
             "<html>Body</html>", EmailTemplateCategory.System,
             isSystem: true);
@@ -217,7 +218,7 @@ public class EmailTemplateTests
     public void Update_WithEmptyName_ShouldThrowException()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Original", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
@@ -231,7 +232,7 @@ public class EmailTemplateTests
     public void Update_WithEmptySubject_ShouldThrowException()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Name", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
@@ -245,7 +246,7 @@ public class EmailTemplateTests
     public void Update_WithEmptyHtmlBody_ShouldThrowException()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Name", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
@@ -263,7 +264,7 @@ public class EmailTemplateTests
     public void Activate_ShouldSetIsActiveToTrue()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Test", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
         template.Deactivate();
@@ -280,7 +281,7 @@ public class EmailTemplateTests
     public void Deactivate_ShouldSetIsActiveToFalse()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Test", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
@@ -300,7 +301,7 @@ public class EmailTemplateTests
     public void SoftDelete_NonSystemTemplate_ShouldSucceed()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Test", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
@@ -316,7 +317,7 @@ public class EmailTemplateTests
     public void SoftDelete_SystemTemplate_ShouldThrowException()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "SYSTEM_EMAIL", "System Template", "Subject",
             "<html>Body</html>", EmailTemplateCategory.System,
             isSystem: true);
@@ -330,7 +331,7 @@ public class EmailTemplateTests
     public void SoftDelete_WithDeletedById_ShouldSucceed()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Test", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
         const long deletedById = 123;
@@ -355,7 +356,7 @@ public class EmailTemplateTests
     public void Create_WithDifferentCategories_ShouldSucceed(EmailTemplateCategory category)
     {
         // Arrange & Act
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Test", "Subject",
             "<html>Body</html>", category);
 
@@ -371,10 +372,10 @@ public class EmailTemplateTests
     public void Create_WithVeryLongHtmlBody_ShouldSucceed()
     {
         // Arrange
-        var longHtml = new string('x', 100000);
+        string longHtml = new('x', 100000);
 
         // Act
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Test", "Subject",
             longHtml, EmailTemplateCategory.Authentication);
 
@@ -389,7 +390,7 @@ public class EmailTemplateTests
         const string code = "TEST_EMAIL_2024";
 
         // Act
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             code, "Test", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
@@ -401,7 +402,7 @@ public class EmailTemplateTests
     public void Update_ShouldSetUpdatedAtTimestamp()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Original", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 

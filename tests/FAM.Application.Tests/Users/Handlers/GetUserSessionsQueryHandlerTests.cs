@@ -24,8 +24,8 @@ public class GetUserSessionsQueryHandlerTests
     public async Task Handle_WithExistingSessions_ShouldReturnSessionsList()
     {
         // Arrange
-        var userId = 1L;
-        var devices = new List<UserDevice>
+        long userId = 1L;
+        List<UserDevice> devices = new()
         {
             UserDevice.Create(userId, "device1", "Chrome on Windows", "desktop",
                 "Mozilla/5.0...", "192.168.1.1", "New York, US", "Chrome", "Windows 11"),
@@ -37,7 +37,7 @@ public class GetUserSessionsQueryHandlerTests
             .Setup(x => x.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(devices);
 
-        var query = new GetUserSessionsQuery(userId);
+        GetUserSessionsQuery query = new(userId);
 
         // Act
         IReadOnlyList<UserSessionDto> result = await _handler.Handle(query, CancellationToken.None);
@@ -52,12 +52,12 @@ public class GetUserSessionsQueryHandlerTests
     public async Task Handle_WithNoSessions_ShouldReturnEmptyList()
     {
         // Arrange
-        var userId = 1L;
+        long userId = 1L;
         _mockUserDeviceRepository
             .Setup(x => x.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<UserDevice>());
 
-        var query = new GetUserSessionsQuery(userId);
+        GetUserSessionsQuery query = new(userId);
 
         // Act
         IReadOnlyList<UserSessionDto> result = await _handler.Handle(query, CancellationToken.None);

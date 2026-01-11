@@ -22,20 +22,26 @@ public sealed class RefreshToken : ValueObject
     public static RefreshToken Create(string token, DateTime expiresAt)
     {
         if (string.IsNullOrWhiteSpace(token))
+        {
             throw new DomainException("Refresh token cannot be empty");
+        }
 
         if (token.Length < 32)
+        {
             throw new DomainException("Refresh token must be at least 32 characters");
+        }
 
         if (expiresAt <= DateTime.UtcNow)
+        {
             throw new DomainException("Refresh token expiry must be in the future");
+        }
 
         return new RefreshToken(token, expiresAt);
     }
 
     public static RefreshToken Generate(int expiryDays = 7)
     {
-        var token = GenerateSecureToken();
+        string token = GenerateSecureToken();
         DateTime expiresAt = DateTime.UtcNow.AddDays(expiryDays);
         return new RefreshToken(token, expiresAt);
     }
@@ -43,8 +49,8 @@ public sealed class RefreshToken : ValueObject
     private static string GenerateSecureToken()
     {
         // Generate 256-bit random token
-        var randomBytes = new byte[32];
-        using var rng = RandomNumberGenerator.Create();
+        byte[] randomBytes = new byte[32];
+        using RandomNumberGenerator rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
         return Convert.ToBase64String(randomBytes);
     }

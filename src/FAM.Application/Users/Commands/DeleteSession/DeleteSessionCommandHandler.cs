@@ -29,19 +29,25 @@ public class DeleteSessionCommandHandler : IRequestHandler<DeleteSessionCommand,
             await _userDeviceRepository.GetByDeviceIdAsync(request.CurrentDeviceId, cancellationToken);
 
         if (currentDevice == null)
+        {
             throw new DomainException(
                 ErrorCodes.DEVICE_NOT_FOUND,
                 "Current device not found. Please log in again.");
+        }
 
         if (!currentDevice.IsTrustedForDuration(DomainRules.DeviceTrust.MinimumTrustDaysForSensitiveOperations))
+        {
             throw new DomainException(
                 ErrorCodes.DEVICE_NOT_TRUSTED_FOR_OPERATION,
                 $"Device must be trusted for at least {DomainRules.DeviceTrust.MinimumTrustDaysForSensitiveOperations} days to delete other sessions.");
+        }
 
         UserDevice? device = await _userDeviceRepository.GetByIdAsync(request.SessionId, cancellationToken);
 
         if (device == null || device.UserId != request.UserId)
+        {
             throw new DomainException(ErrorCodes.USER_SESSION_NOT_FOUND, "Session not found or access denied.");
+        }
 
         // Blacklist the active access token using stored JTI before deleting the session
         if (!string.IsNullOrEmpty(device.ActiveAccessTokenJti))
@@ -57,10 +63,12 @@ public class DeleteSessionCommandHandler : IRequestHandler<DeleteSessionCommand,
 
         // Also blacklist the current access token if provided (for immediate revocation)
         if (!string.IsNullOrEmpty(request.AccessToken) && request.AccessTokenExpiration.HasValue)
+        {
             await _tokenBlacklistService.BlacklistTokenAsync(
                 request.AccessToken,
                 request.AccessTokenExpiration.Value,
                 cancellationToken);
+        }
 
         // Delete the device session entirely
         _userDeviceRepository.Delete(device);

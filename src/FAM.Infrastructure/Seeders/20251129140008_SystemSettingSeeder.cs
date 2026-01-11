@@ -1,10 +1,11 @@
 using FAM.Domain.Common.Entities;
 using FAM.Infrastructure.Common.Seeding;
+using FAM.Infrastructure.Providers.PostgreSQL;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
+namespace FAM.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds initial system settings for the application
@@ -26,7 +27,7 @@ public class SystemSettingSeeder : BaseDataSeeder
         LogInfo("Checking for existing system settings...");
 
         // Check if settings already exist
-        var hasSettings = await _dbContext.SystemSettings.AnyAsync(s => !s.IsDeleted, cancellationToken);
+        bool hasSettings = await _dbContext.SystemSettings.AnyAsync(s => !s.IsDeleted, cancellationToken);
 
         if (hasSettings)
         {
@@ -36,7 +37,7 @@ public class SystemSettingSeeder : BaseDataSeeder
 
         LogInfo("Seeding initial system settings...");
 
-        var settings = new List<SystemSetting>
+        List<SystemSetting> settings = new()
         {
             // General settings
             CreateSetting("app.general.siteName", "Site Name", "FAM - Fixed Asset Management", group: "general",

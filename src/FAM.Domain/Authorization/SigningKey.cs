@@ -114,11 +114,19 @@ public class SigningKey : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
         string? description = null)
     {
         if (string.IsNullOrWhiteSpace(keyId))
+        {
             throw new DomainException(ErrorCodes.VAL_REQUIRED, "KeyId is required");
+        }
+
         if (string.IsNullOrWhiteSpace(publicKey))
+        {
             throw new DomainException(ErrorCodes.VAL_REQUIRED, "PublicKey is required");
+        }
+
         if (string.IsNullOrWhiteSpace(privateKey))
+        {
             throw new DomainException(ErrorCodes.VAL_REQUIRED, "PrivateKey is required");
+        }
 
         return new SigningKey
         {
@@ -143,9 +151,14 @@ public class SigningKey : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
     public void Activate()
     {
         if (IsRevoked)
+        {
             throw new DomainException(ErrorCodes.KEY_ALREADY_REVOKED, "Cannot activate a revoked key");
+        }
+
         if (ExpiresAt.HasValue && ExpiresAt.Value < DateTime.UtcNow)
+        {
             throw new DomainException(ErrorCodes.KEY_EXPIRED, "Cannot activate an expired key");
+        }
 
         IsActive = true;
         UpdatedAt = DateTime.UtcNow;
@@ -166,7 +179,9 @@ public class SigningKey : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
     public void Revoke(string? reason = null)
     {
         if (IsRevoked)
+        {
             throw new DomainException(ErrorCodes.KEY_ALREADY_REVOKED);
+        }
 
         IsRevoked = true;
         IsActive = false;
@@ -188,9 +203,21 @@ public class SigningKey : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
     /// </summary>
     public bool CanSign()
     {
-        if (!IsActive) return false;
-        if (IsRevoked) return false;
-        if (ExpiresAt.HasValue && ExpiresAt.Value < DateTime.UtcNow) return false;
+        if (!IsActive)
+        {
+            return false;
+        }
+
+        if (IsRevoked)
+        {
+            return false;
+        }
+
+        if (ExpiresAt.HasValue && ExpiresAt.Value < DateTime.UtcNow)
+        {
+            return false;
+        }
+
         return true;
     }
 
@@ -200,7 +227,11 @@ public class SigningKey : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
     public bool CanVerify()
     {
         // Revoked keys cannot be used for verification
-        if (IsRevoked) return false;
+        if (IsRevoked)
+        {
+            return false;
+        }
+
         return true;
     }
 

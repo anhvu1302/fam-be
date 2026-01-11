@@ -24,10 +24,14 @@ public class Result
     protected Result(bool isSuccess, Error? error)
     {
         if (isSuccess && error != null)
+        {
             throw new InvalidOperationException("Successful result cannot have an error");
+        }
 
         if (!isSuccess && error == null)
+        {
             throw new InvalidOperationException("Failed result must have an error");
+        }
 
         IsSuccess = isSuccess;
         Error = error;
@@ -114,7 +118,9 @@ public class Result<T> : Result
         get
         {
             if (IsFailure)
+            {
                 throw new InvalidOperationException("Cannot access value of a failed result");
+            }
 
             return _value!;
         }

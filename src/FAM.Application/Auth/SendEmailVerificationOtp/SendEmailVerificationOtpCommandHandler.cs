@@ -31,8 +31,8 @@ public class SendEmailVerificationOtpCommandHandler
         CancellationToken cancellationToken)
     {
         // Generate 6-digit OTP
-        var otp = GenerateOtp();
-        var otpExpiry = TimeSpan.FromMinutes(10);
+        string otp = GenerateOtp();
+        TimeSpan otpExpiry = TimeSpan.FromMinutes(10);
 
         // Send OTP via email
         try
@@ -53,7 +53,7 @@ public class SendEmailVerificationOtpCommandHandler
         // Create OTP session token 
         // Format: base64(email:expiry)
         DateTime expiryTime = DateTime.UtcNow.AddMinutes(10);
-        var otpSessionToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(
+        string otpSessionToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(
             $"{request.Email}:{expiryTime:O}"));
 
         return new SendEmailVerificationOtpResponse
@@ -70,7 +70,7 @@ public class SendEmailVerificationOtpCommandHandler
     /// </summary>
     private static string GenerateOtp()
     {
-        var random = new Random();
+        Random random = new();
         return random.Next(100000, 999999).ToString();
     }
 
@@ -79,16 +79,21 @@ public class SendEmailVerificationOtpCommandHandler
     /// </summary>
     private static string MaskEmail(string email)
     {
-        var parts = email.Split('@');
-        if (parts.Length != 2) return email;
+        string[] parts = email.Split('@');
+        if (parts.Length != 2)
+        {
+            return email;
+        }
 
-        var localPart = parts[0];
-        var domain = parts[1];
+        string localPart = parts[0];
+        string domain = parts[1];
 
         if (localPart.Length <= 2)
+        {
             return $"{localPart}***@{domain}";
+        }
 
-        var masked = localPart[0] + new string('*', localPart.Length - 2) + localPart[^1];
+        string masked = localPart[0] + new string('*', localPart.Length - 2) + localPart[^1];
         return $"{masked}@{domain}";
     }
 }

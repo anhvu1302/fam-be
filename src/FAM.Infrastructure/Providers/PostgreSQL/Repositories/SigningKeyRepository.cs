@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
+using FAM.Infrastructure.Common.Abstractions;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -11,25 +12,27 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 /// <summary>
 /// PostgreSQL repository for SigningKey
 /// Uses Pragmatic Architecture - directly works with Domain entities
+/// Follows Clean Architecture by depending on IDbContext
 /// </summary>
 public class SigningKeyRepository : ISigningKeyRepository
 {
-    private readonly PostgreSqlDbContext _context;
+    private readonly IDbContext _context;
+    protected DbSet<SigningKey> DbSet => _context.Set<SigningKey>();
 
-    public SigningKeyRepository(PostgreSqlDbContext context)
+    public SigningKeyRepository(IDbContext context)
     {
         _context = context;
     }
 
     public async Task<SigningKey?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _context.SigningKeys
+        return await DbSet
             .FirstOrDefaultAsync(k => k.Id == id && !k.IsDeleted, cancellationToken);
     }
 
     public async Task<IEnumerable<SigningKey>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.SigningKeys
+        return await DbSet
             .Where(k => !k.IsDeleted)
             .ToListAsync(cancellationToken);
     }
@@ -39,12 +42,12 @@ public class SigningKeyRepository : ISigningKeyRepository
         CancellationToken cancellationToken = default)
     {
         // Apply predicate at database level - no need for in-memory filtering
-        return await _context.SigningKeys.Where(predicate).ToListAsync(cancellationToken);
+        return await DbSet.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(SigningKey entity, CancellationToken cancellationToken = default)
     {
-        await _context.SigningKeys.AddAsync(entity, cancellationToken);
+        await DbSet.AddAsync(entity, cancellationToken);
     }
 
     public void Update(SigningKey entity)
@@ -58,14 +61,14 @@ public class SigningKeyRepository : ISigningKeyRepository
         }
         else
         {
-            _context.SigningKeys.Attach(entity);
+            DbSet.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
         }
     }
 
     public void Delete(SigningKey entity)
     {
-        SigningKey? trackedEntity = _context.SigningKeys.Local.FirstOrDefault(k => k.Id == entity.Id);
+        SigningKey? trackedEntity = DbSet.Local.FirstOrDefault(k => k.Id == entity.Id);
         if (trackedEntity != null)
         {
             trackedEntity.IsDeleted = true;
@@ -75,19 +78,19 @@ public class SigningKeyRepository : ISigningKeyRepository
 
     public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _context.SigningKeys
+        return await DbSet
             .AnyAsync(k => k.Id == id && !k.IsDeleted, cancellationToken);
     }
 
     public async Task<SigningKey?> GetByKeyIdAsync(string keyId, CancellationToken cancellationToken = default)
     {
-        return await _context.SigningKeys
+        return await DbSet
             .FirstOrDefaultAsync(k => k.KeyId == keyId && !k.IsDeleted, cancellationToken);
     }
 
     public async Task<SigningKey?> GetActiveKeyAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.SigningKeys
+        return await DbSet
             .Where(k => k.IsActive && !k.IsRevoked && !k.IsDeleted)
             .Where(k => k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow)
             .OrderByDescending(k => k.CreatedAt)
@@ -96,14 +99,14 @@ public class SigningKeyRepository : ISigningKeyRepository
 
     public async Task<IReadOnlyList<SigningKey>> GetVerificationKeysAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.SigningKeys
+        return await DbSet
             .Where(k => !k.IsRevoked && !k.IsDeleted)
             .ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<SigningKey>> GetAllActiveKeysAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.SigningKeys
+        return await DbSet
             .Where(k => !k.IsRevoked && !k.IsDeleted)
             .Where(k => k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow)
             .OrderByDescending(k => k.IsActive)
@@ -113,7 +116,7 @@ public class SigningKeyRepository : ISigningKeyRepository
 
     public async Task DeactivateAllExceptAsync(long keyId, CancellationToken cancellationToken = default)
     {
-        await _context.SigningKeys
+        await DbSet
             .Where(k => k.Id != keyId && k.IsActive && !k.IsDeleted)
             .ExecuteUpdateAsync(s => s
                     .SetProperty(k => k.IsActive, false)
@@ -124,7 +127,7 @@ public class SigningKeyRepository : ISigningKeyRepository
     public async Task<IReadOnlyList<SigningKey>> GetExpiredKeysAsync(CancellationToken cancellationToken = default)
     {
         DateTime now = DateTime.UtcNow;
-        return await _context.SigningKeys
+        return await DbSet
             .Where(k => !k.IsDeleted && k.ExpiresAt != null && k.ExpiresAt < now)
             .ToListAsync(cancellationToken);
     }
@@ -134,7 +137,7 @@ public class SigningKeyRepository : ISigningKeyRepository
     {
         DateTime now = DateTime.UtcNow;
         DateTime expiryThreshold = now.Add(timeSpan);
-        return await _context.SigningKeys
+        return await DbSet
             .Where(k => !k.IsDeleted && !k.IsRevoked && k.ExpiresAt != null)
             .Where(k => k.ExpiresAt > now && k.ExpiresAt <= expiryThreshold)
             .ToListAsync(cancellationToken);

@@ -2,7 +2,6 @@ using FAM.Application.Common;
 using FAM.Application.Users.Shared;
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users;
-using FAM.Domain.ValueObjects;
 
 using MediatR;
 
@@ -24,7 +23,9 @@ public sealed class UpdateUserCommandHandler
     {
         User? user = await _unitOfWork.Users.GetByIdAsync(request.Id, cancellationToken);
         if (user == null)
+        {
             return Result<UpdateUserResult>.Failure($"User with ID {request.Id} not found", ErrorType.NotFound);
+        }
 
         // Update personal info if provided
         user.UpdatePersonalInfo(
@@ -36,7 +37,10 @@ public sealed class UpdateUserCommandHandler
         );
 
         // Update contact info if phone provided
-        if (request.PhoneNumber != null) user.UpdateContactInfo(request.PhoneNumber);
+        if (request.PhoneNumber != null)
+        {
+            user.UpdateContactInfo(request.PhoneNumber);
+        }
 
         // Update password if provided
         if (!string.IsNullOrEmpty(request.Password))
@@ -55,8 +59,8 @@ public sealed class UpdateUserCommandHandler
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var dto = user.ToUserDto();
-        var result = new UpdateUserResult(dto!);
+        UserDto? dto = user.ToUserDto();
+        UpdateUserResult result = new(dto!);
 
         return Result<UpdateUserResult>.Success(result);
     }

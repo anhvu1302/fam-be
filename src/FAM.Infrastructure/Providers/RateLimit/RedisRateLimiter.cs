@@ -55,12 +55,15 @@ public sealed class RedisRateLimiter : RateLimiter
     {
         try
         {
-            var success = await _store.TryAcquireAsync(_partitionKey, _permitLimit, _window, cancellationToken);
+            bool success = await _store.TryAcquireAsync(_partitionKey, _permitLimit, _window, cancellationToken);
 
-            if (success) return new RedisRateLimitLease(true, TimeSpan.Zero);
+            if (success)
+            {
+                return new RedisRateLimitLease(true, TimeSpan.Zero);
+            }
 
             // Calculate retry after
-            var remaining = await _store.GetRemainingAsync(_partitionKey, _permitLimit, cancellationToken);
+            int remaining = await _store.GetRemainingAsync(_partitionKey, _permitLimit, cancellationToken);
             TimeSpan retryAfter = remaining <= 0 ? _window : TimeSpan.FromSeconds(1);
 
             return new RedisRateLimitLease(false, retryAfter);

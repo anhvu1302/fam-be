@@ -11,16 +11,16 @@ public class PermissionTests
     public void Create_WithValidData_ShouldCreatePermission()
     {
         // Arrange
-        var resource = "assets";
-        var action = "view";
+        string resource = "assets";
+        string action = "view";
 
         // Act
-        var permission = Permission.Create(resource, action);
+        Permission permission = Permission.Create(resource, action);
 
         // Assert
         permission.Should().NotBeNull();
-        var resourceValue = permission.Resource;
-        var actionValue = permission.Action;
+        string resourceValue = permission.Resource;
+        string actionValue = permission.Action;
         resourceValue.Should().Be(resource);
         actionValue.Should().Be(action);
     }
@@ -29,12 +29,12 @@ public class PermissionTests
     public void Create_WithAllValidPermissions_ShouldCreatePermission()
     {
         // Arrange & Act & Assert
-        foreach (var (resource, action, _) in Permissions.All)
+        foreach ((string resource, string action, string _) in Permissions.All)
         {
-            var permission = Permission.Create(resource, action);
+            Permission permission = Permission.Create(resource, action);
             permission.Should().NotBeNull();
-            var resourceValue = permission.Resource;
-            var actionValue = permission.Action;
+            string resourceValue = permission.Resource;
+            string actionValue = permission.Action;
             resourceValue.Should().Be(resource);
             actionValue.Should().Be(action);
         }
@@ -44,8 +44,8 @@ public class PermissionTests
     public void Create_WithInvalidPermission_ShouldThrowDomainException()
     {
         // Arrange
-        var resource = "invalid_resource";
-        var action = "invalid_action";
+        string resource = "invalid_resource";
+        string action = "invalid_action";
 
         // Act
         Action act = () => Permission.Create(resource, action);
@@ -59,8 +59,8 @@ public class PermissionTests
     public void Create_WithValidResourceButInvalidAction_ShouldThrowDomainException()
     {
         // Arrange
-        var resource = "assets";
-        var action = "invalid_action";
+        string resource = "assets";
+        string action = "invalid_action";
 
         // Act
         Action act = () => Permission.Create(resource, action);
@@ -74,8 +74,8 @@ public class PermissionTests
     public void Create_WithInvalidResourceButValidAction_ShouldThrowDomainException()
     {
         // Arrange
-        var resource = "invalid_resource";
-        var action = "view";
+        string resource = "invalid_resource";
+        string action = "view";
 
         // Act
         Action act = () => Permission.Create(resource, action);
@@ -89,12 +89,12 @@ public class PermissionTests
     public void Create_WithDescription_ShouldCreatePermissionWithDescription()
     {
         // Arrange
-        var resource = "assets";
-        var action = "view";
-        var description = "View asset information";
+        string resource = "assets";
+        string action = "view";
+        string description = "View asset information";
 
         // Act
-        var permission = Permission.Create(resource, action, description);
+        Permission permission = Permission.Create(resource, action, description);
 
         // Assert
         permission.Should().NotBeNull();
@@ -105,12 +105,12 @@ public class PermissionTests
     public void GetPermissionKey_ShouldReturnCorrectFormat()
     {
         // Arrange
-        var resource = "assets";
-        var action = "view";
-        var permission = Permission.Create(resource, action);
+        string resource = "assets";
+        string action = "view";
+        Permission permission = Permission.Create(resource, action);
 
         // Act
-        var key = permission.GetPermissionKey();
+        string key = permission.GetPermissionKey();
 
         // Assert
         key.Should().Be($"{resource}:{action}");
@@ -120,8 +120,8 @@ public class PermissionTests
     public void Create_WithEmptyResource_ShouldThrowDomainException()
     {
         // Arrange
-        var resource = "";
-        var action = "view";
+        string resource = "";
+        string action = "view";
 
         // Act
         Action act = () => Permission.Create(resource, action);
@@ -134,8 +134,8 @@ public class PermissionTests
     public void Create_WithEmptyAction_ShouldThrowDomainException()
     {
         // Arrange
-        var resource = "assets";
-        var action = "";
+        string resource = "assets";
+        string action = "";
 
         // Act
         Action act = () => Permission.Create(resource, action);

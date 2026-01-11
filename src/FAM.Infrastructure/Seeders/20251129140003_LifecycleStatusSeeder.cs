@@ -1,10 +1,11 @@
 using FAM.Domain.Statuses;
 using FAM.Infrastructure.Common.Seeding;
+using FAM.Infrastructure.Providers.PostgreSQL;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
+namespace FAM.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds initial lifecycle statuses for assets
@@ -25,7 +26,7 @@ public class LifecycleStatusSeeder : BaseDataSeeder
     {
         LogInfo("Checking for existing lifecycle statuses...");
 
-        var hasStatuses = await _dbContext.LifecycleStatuses.AnyAsync(s => !s.IsDeleted, cancellationToken);
+        bool hasStatuses = await _dbContext.LifecycleStatuses.AnyAsync(s => !s.IsDeleted, cancellationToken);
 
         if (hasStatuses)
         {
@@ -35,7 +36,7 @@ public class LifecycleStatusSeeder : BaseDataSeeder
 
         LogInfo("Seeding lifecycle statuses...");
 
-        var statuses = new List<LifecycleStatus>
+        List<LifecycleStatus> statuses = new()
         {
             LifecycleStatus.Create("NEW", "New", "Asset is newly acquired and not yet in use", "#4CAF50", 1),
             LifecycleStatus.Create("ACTIVE", "Active", "Asset is currently in active use", "#2196F3", 2),

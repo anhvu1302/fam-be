@@ -10,7 +10,7 @@ public static class ErrorMessages
     {
         #region Authentication
 
-        [ErrorCodes.AUTH_INVALID_CREDENTIALS] = "Username or email not found",
+        [ErrorCodes.AUTH_INVALID_CREDENTIALS] = "Invalid credentials",
         [ErrorCodes.AUTH_INVALID_PASSWORD] = "Invalid password",
         [ErrorCodes.AUTH_ACCOUNT_LOCKED] = "Your account has been locked. Please try again later",
         [ErrorCodes.AUTH_ACCOUNT_INACTIVE] = "Your account is not active. Please contact support",
@@ -344,7 +344,7 @@ public static class ErrorMessages
     /// </summary>
     public static string GetMessage(string errorCode)
     {
-        return Messages.TryGetValue(errorCode, out var message)
+        return Messages.TryGetValue(errorCode, out string? message)
             ? message
             : errorCode; // Return the input as message (backwards compatible)
     }
@@ -355,7 +355,7 @@ public static class ErrorMessages
     /// </summary>
     public static string GetMessage(string errorCode, params object[] args)
     {
-        var template = GetMessage(errorCode);
+        string template = GetMessage(errorCode);
         return args.Length > 0 ? string.Format(template, args) : template;
     }
 

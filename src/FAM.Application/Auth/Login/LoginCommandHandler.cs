@@ -47,19 +47,26 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
     {
         User? user = await _unitOfWork.Users.FindByIdentityAsync(request.Identity, cancellationToken);
 
+        // Return generic error for both "user not found" and "wrong password" (security: prevent username enumeration)
         if (user == null)
+        {
             throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS,
                 ErrorMessages.GetMessage(ErrorCodes.AUTH_INVALID_CREDENTIALS));
+        }
 
         if (user.IsLockedOut())
+        {
             throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_LOCKED,
                 ErrorMessages.GetMessage(ErrorCodes.AUTH_ACCOUNT_LOCKED));
+        }
 
         if (!user.IsActive)
+        {
             throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE,
                 ErrorMessages.GetMessage(ErrorCodes.AUTH_ACCOUNT_INACTIVE));
+        }
 
-        var isPasswordValid = user.Password.Verify(request.Password);
+        bool isPasswordValid = user.Password.Verify(request.Password);
 
         if (!isPasswordValid)
         {
@@ -67,8 +74,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             _unitOfWork.Users.Update(user);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD,
-                ErrorMessages.GetMessage(ErrorCodes.AUTH_INVALID_PASSWORD));
+            // Return same generic error as user not found (security: prevent password enumeration)
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS,
+                ErrorMessages.GetMessage(ErrorCodes.AUTH_INVALID_CREDENTIALS));
         }
 
         if (!user.IsEmailVerified)
@@ -76,7 +84,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             // Generate OTP using OtpService (which handles storage and rate limiting)
             try
             {
-                var otp = await _otpService.GenerateOtpAsync(
+                string otp = await _otpService.GenerateOtpAsync(
                     user.Id,
                     user.Email,
                     10,
@@ -105,7 +113,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
         if (user.TwoFactorEnabled)
         {
-            var twoFactorSessionToken = await GenerateTwoFactorSessionTokenAsync(user.Id, cancellationToken);
+            string twoFactorSessionToken = await GenerateTwoFactorSessionTokenAsync(user.Id, cancellationToken);
 
             return new LoginResponse
             {
@@ -118,14 +126,14 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
         SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
 
         // TODO: Load user roles from UserNodeRoles properly
-        var roles = new List<string>();
+        List<string> roles = new();
         if (user.Username.Equals("admin", StringComparison.OrdinalIgnoreCase))
         {
             roles.Add("Admin");
             roles.Add("SuperAdmin");
         }
 
-        var accessToken = _jwtService.GenerateAccessTokenWithRsa(
+        string accessToken = _jwtService.GenerateAccessTokenWithRsa(
             user.Id,
             user.Username,
             user.Email,
@@ -134,11 +142,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
             activeKey.PrivateKey,
             activeKey.Algorithm);
 
-        var accessTokenJti = _jwtService.GetJtiFromToken(accessToken);
+        string? accessTokenJti = _jwtService.GetJtiFromToken(accessToken);
 
         // Calculate expiration times from config
         DateTime accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
-        var refreshToken = _jwtService.GenerateRefreshToken();
+        string refreshToken = _jwtService.GenerateRefreshToken();
         // Use shorter expiry if RememberMe is false (7 days vs configured default)
         DateTime refreshTokenExpiresAt =
             DateTime.UtcNow.AddDays(request.RememberMe ? _jwtService.RefreshTokenExpiryDays : 7);

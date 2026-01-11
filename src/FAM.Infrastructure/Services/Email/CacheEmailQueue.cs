@@ -50,11 +50,14 @@ public sealed class CacheEmailQueue : IEmailQueue
 
     public async ValueTask EnqueueAsync(EmailMessage message, CancellationToken cancellationToken = default)
     {
-        if (message == null) throw new ArgumentNullException(nameof(message));
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
 
         try
         {
-            var json = JsonSerializer.Serialize(message, JsonOptions);
+            string json = JsonSerializer.Serialize(message, JsonOptions);
 
             // RPUSH for FIFO queue (add to right, take from left)
             await _cache.ListRightPushAsync(QueueKey, json, cancellationToken);
@@ -75,16 +78,21 @@ public sealed class CacheEmailQueue : IEmailQueue
         try
         {
             // LPOP to get from left (FIFO)
-            var json = await _cache.ListLeftPopAsync(QueueKey, cancellationToken);
+            string? json = await _cache.ListLeftPopAsync(QueueKey, cancellationToken);
 
-            if (string.IsNullOrEmpty(json)) return null;
+            if (string.IsNullOrEmpty(json))
+            {
+                return null;
+            }
 
             EmailMessage? message = JsonSerializer.Deserialize<EmailMessage>(json, JsonOptions);
 
             if (message != null)
+            {
                 _logger.LogDebug(
                     "Email dequeued from cache: {EmailId} to {To}, Queue size: {Count}",
                     message.Id, message.To, Count);
+            }
 
             return message;
         }
@@ -108,7 +116,7 @@ public sealed class CacheEmailQueue : IEmailQueue
                 Error = errorMessage,
                 FailedAt = DateTime.UtcNow
             };
-            var json = JsonSerializer.Serialize(failedMessage, JsonOptions);
+            string json = JsonSerializer.Serialize(failedMessage, JsonOptions);
 
             await _cache.ListRightPushAsync(FailedKey, json);
 
@@ -145,18 +153,21 @@ public sealed class CacheEmailQueue : IEmailQueue
     /// </summary>
     public async Task<int> RetryFailedEmailsAsync()
     {
-        var retried = 0;
+        int retried = 0;
 
         while (true)
         {
-            var json = await _cache.ListLeftPopAsync(FailedKey);
-            if (string.IsNullOrEmpty(json)) break;
+            string? json = await _cache.ListLeftPopAsync(FailedKey);
+            if (string.IsNullOrEmpty(json))
+            {
+                break;
+            }
 
             // Extract just the email part and re-queue
             try
             {
-                using var doc = JsonDocument.Parse(json);
-                var emailJson = doc.RootElement.GetProperty("email").GetRawText();
+                using JsonDocument doc = JsonDocument.Parse(json);
+                string emailJson = doc.RootElement.GetProperty("email").GetRawText();
                 await _cache.ListRightPushAsync(QueueKey, emailJson);
                 retried++;
             }

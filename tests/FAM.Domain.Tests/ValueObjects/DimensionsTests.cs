@@ -11,13 +11,13 @@ public class DimensionsTests
     public void Create_WithValidDimensions_ShouldCreateDimensions()
     {
         // Arrange
-        var length = 100.5m;
-        var width = 50.25m;
-        var height = 30.75m;
-        var unit = "cm";
+        decimal length = 100.5m;
+        decimal width = 50.25m;
+        decimal height = 30.75m;
+        string unit = "cm";
 
         // Act
-        var dimensions = Dimensions.Create(length, width, height, unit);
+        Dimensions dimensions = Dimensions.Create(length, width, height, unit);
 
         // Assert
         dimensions.Should().NotBeNull();
@@ -31,12 +31,12 @@ public class DimensionsTests
     public void Create_WithDefaultUnit_ShouldCreateDimensionsWithCm()
     {
         // Arrange
-        var length = 100m;
-        var width = 50m;
-        var height = 30m;
+        decimal length = 100m;
+        decimal width = 50m;
+        decimal height = 30m;
 
         // Act
-        var dimensions = Dimensions.Create(length, width, height);
+        Dimensions dimensions = Dimensions.Create(length, width, height);
 
         // Assert
         dimensions.Unit.Should().Be("cm");
@@ -81,12 +81,12 @@ public class DimensionsTests
     public void Create_WithValidUnits_ShouldCreateDimensions()
     {
         // Arrange
-        var validUnits = new[] { "cm", "m", "mm", "in", "ft" };
+        string[] validUnits = new[] { "cm", "m", "mm", "in", "ft" };
 
         // Act & Assert
-        foreach (var unit in validUnits)
+        foreach (string unit in validUnits)
         {
-            var dimensions = Dimensions.Create(100, 50, 30, unit);
+            Dimensions dimensions = Dimensions.Create(100, 50, 30, unit);
             dimensions.Unit.Should().Be(unit.ToLower());
         }
     }
@@ -95,10 +95,10 @@ public class DimensionsTests
     public void Create_WithUppercaseUnit_ShouldConvertToLowercase()
     {
         // Arrange
-        var unit = "CM";
+        string unit = "CM";
 
         // Act
-        var dimensions = Dimensions.Create(100, 50, 30, unit);
+        Dimensions dimensions = Dimensions.Create(100, 50, 30, unit);
 
         // Assert
         dimensions.Unit.Should().Be("cm");
@@ -108,10 +108,10 @@ public class DimensionsTests
     public void Parse_WithValidString_ShouldParseDimensions()
     {
         // Arrange
-        var dimensionsString = "100 x 50 x 30 cm";
+        string dimensionsString = "100 x 50 x 30 cm";
 
         // Act
-        var dimensions = Dimensions.Parse(dimensionsString);
+        Dimensions? dimensions = Dimensions.Parse(dimensionsString);
 
         // Assert
         dimensions.Should().NotBeNull();
@@ -125,10 +125,10 @@ public class DimensionsTests
     public void Parse_WithStringWithoutUnit_ShouldUseDefaultUnit()
     {
         // Arrange
-        var dimensionsString = "100 x 50 x 30";
+        string dimensionsString = "100 x 50 x 30";
 
         // Act
-        var dimensions = Dimensions.Parse(dimensionsString);
+        Dimensions? dimensions = Dimensions.Parse(dimensionsString);
 
         // Assert
         dimensions.Should().NotBeNull();
@@ -139,7 +139,7 @@ public class DimensionsTests
     public void Parse_WithDifferentSeparators_ShouldParseCorrectly()
     {
         // Arrange
-        var testCases = new[]
+        string[] testCases = new[]
         {
             "100 x 50 x 30",
             "100 X 50 X 30",
@@ -147,9 +147,9 @@ public class DimensionsTests
         };
 
         // Act & Assert
-        foreach (var dimensionsString in testCases)
+        foreach (string dimensionsString in testCases)
         {
-            var dimensions = Dimensions.Parse(dimensionsString);
+            Dimensions? dimensions = Dimensions.Parse(dimensionsString);
             dimensions.Should().NotBeNull();
             dimensions!.Length.Should().Be(100);
             dimensions.Width.Should().Be(50);
@@ -161,7 +161,7 @@ public class DimensionsTests
     public void Parse_WithInvalidString_ShouldReturnNull()
     {
         // Arrange
-        var invalidStrings = new[]
+        string[] invalidStrings = new[]
         {
             "",
             "   ",
@@ -172,9 +172,9 @@ public class DimensionsTests
         };
 
         // Act & Assert
-        foreach (var dimensionsString in invalidStrings)
+        foreach (string dimensionsString in invalidStrings)
         {
-            var dimensions = Dimensions.Parse(dimensionsString);
+            Dimensions? dimensions = Dimensions.Parse(dimensionsString);
             dimensions.Should().BeNull();
         }
     }
@@ -183,10 +183,10 @@ public class DimensionsTests
     public void Parse_WithNegativeValues_ShouldReturnNull()
     {
         // Arrange
-        var dimensionsString = "100 x -50 x 30";
+        string dimensionsString = "100 x -50 x 30";
 
         // Act
-        var dimensions = Dimensions.Parse(dimensionsString);
+        Dimensions? dimensions = Dimensions.Parse(dimensionsString);
 
         // Assert
         dimensions.Should().BeNull();
@@ -196,10 +196,10 @@ public class DimensionsTests
     public void Volume_ShouldCalculateCorrectly()
     {
         // Arrange
-        var dimensions = Dimensions.Create(10, 5, 2);
+        Dimensions dimensions = Dimensions.Create(10, 5, 2);
 
         // Act
-        var volume = dimensions.Volume();
+        decimal volume = dimensions.Volume();
 
         // Assert
         volume.Should().Be(100); // 10 * 5 * 2
@@ -209,7 +209,7 @@ public class DimensionsTests
     public void ConvertTo_WithSameUnit_ShouldReturnSameDimensions()
     {
         // Arrange
-        var dimensions = Dimensions.Create(100, 50, 30, "cm");
+        Dimensions dimensions = Dimensions.Create(100, 50, 30, "cm");
 
         // Act
         Dimensions converted = dimensions.ConvertTo("cm");
@@ -225,7 +225,7 @@ public class DimensionsTests
     public void ConvertTo_FromCmToM_ShouldConvertCorrectly()
     {
         // Arrange
-        var dimensions = Dimensions.Create(100, 50, 30, "cm");
+        Dimensions dimensions = Dimensions.Create(100, 50, 30, "cm");
 
         // Act
         Dimensions converted = dimensions.ConvertTo("m");
@@ -241,7 +241,7 @@ public class DimensionsTests
     public void ConvertTo_FromMToCm_ShouldConvertCorrectly()
     {
         // Arrange
-        var dimensions = Dimensions.Create(1, 0.5m, 0.3m, "m");
+        Dimensions dimensions = Dimensions.Create(1, 0.5m, 0.3m, "m");
 
         // Act
         Dimensions converted = dimensions.ConvertTo("cm");
@@ -257,7 +257,7 @@ public class DimensionsTests
     public void ConvertTo_FromMmToCm_ShouldConvertCorrectly()
     {
         // Arrange
-        var dimensions = Dimensions.Create(1000, 500, 300, "mm");
+        Dimensions dimensions = Dimensions.Create(1000, 500, 300, "mm");
 
         // Act
         Dimensions converted = dimensions.ConvertTo("cm");
@@ -273,10 +273,10 @@ public class DimensionsTests
     public void ToString_ShouldReturnFormattedString()
     {
         // Arrange
-        var dimensions = Dimensions.Create(100.5m, 50.25m, 30.75m, "cm");
+        Dimensions dimensions = Dimensions.Create(100.5m, 50.25m, 30.75m, "cm");
 
         // Act
-        var result = dimensions.ToString();
+        string result = dimensions.ToString();
 
         // Assert
         result.Should().Be("100.5 x 50.25 x 30.75 cm");
@@ -286,8 +286,8 @@ public class DimensionsTests
     public void Equality_WithSameValues_ShouldBeEqual()
     {
         // Arrange
-        var dimensions1 = Dimensions.Create(100, 50, 30, "cm");
-        var dimensions2 = Dimensions.Create(100, 50, 30, "cm");
+        Dimensions dimensions1 = Dimensions.Create(100, 50, 30, "cm");
+        Dimensions dimensions2 = Dimensions.Create(100, 50, 30, "cm");
 
         // Act & Assert
         dimensions1.Should().Be(dimensions2);
@@ -298,8 +298,8 @@ public class DimensionsTests
     public void Equality_WithDifferentValues_ShouldNotBeEqual()
     {
         // Arrange
-        var dimensions1 = Dimensions.Create(100, 50, 30, "cm");
-        var dimensions2 = Dimensions.Create(100, 50, 30, "m");
+        Dimensions dimensions1 = Dimensions.Create(100, 50, 30, "cm");
+        Dimensions dimensions2 = Dimensions.Create(100, 50, 30, "m");
 
         // Act & Assert
         dimensions1.Should().NotBe(dimensions2);

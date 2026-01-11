@@ -1,4 +1,5 @@
 using FAM.Domain.Manufacturers;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

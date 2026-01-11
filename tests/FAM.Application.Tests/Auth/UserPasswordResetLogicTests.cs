@@ -14,8 +14,8 @@ public class UserPasswordResetLogicTests
     {
         // Arrange
         User user = CreateTestUser();
-        var token = "reset-token-123";
-        var expiryHours = 1;
+        string token = "reset-token-123";
+        int expiryHours = 1;
 
         // Act
         user.SetPasswordResetToken(token, expiryHours);
@@ -35,11 +35,11 @@ public class UserPasswordResetLogicTests
     {
         // Arrange
         User user = CreateTestUser();
-        var token = "reset-token-123";
+        string token = "reset-token-123";
         user.SetPasswordResetToken(token, 1); // 1 hour expiry
 
         // Act
-        var isValid = user.IsPasswordResetTokenValid(token);
+        bool isValid = user.IsPasswordResetTokenValid(token);
 
         // Assert
         isValid.Should().BeTrue();
@@ -50,11 +50,11 @@ public class UserPasswordResetLogicTests
     {
         // Arrange
         User user = CreateTestUser();
-        var token = "reset-token-123";
+        string token = "reset-token-123";
         user.SetPasswordResetToken(token, -1); // Expired 1 hour ago
 
         // Act
-        var isValid = user.IsPasswordResetTokenValid(token);
+        bool isValid = user.IsPasswordResetTokenValid(token);
 
         // Assert
         isValid.Should().BeFalse();
@@ -68,7 +68,7 @@ public class UserPasswordResetLogicTests
         user.SetPasswordResetToken("correct-token", 1);
 
         // Act
-        var isValid = user.IsPasswordResetTokenValid("wrong-token");
+        bool isValid = user.IsPasswordResetTokenValid("wrong-token");
 
         // Assert
         isValid.Should().BeFalse();
@@ -82,7 +82,7 @@ public class UserPasswordResetLogicTests
         // No token set
 
         // Act
-        var isValid = user.IsPasswordResetTokenValid("any-token");
+        bool isValid = user.IsPasswordResetTokenValid("any-token");
 
         // Assert
         isValid.Should().BeFalse();
@@ -123,7 +123,7 @@ public class UserPasswordResetLogicTests
     {
         // Arrange
         User user = CreateTestUser();
-        var resetToken = "reset-token-xyz";
+        string resetToken = "reset-token-xyz";
 
         // Act - Step 1: Generate reset token
         user.SetPasswordResetToken(resetToken, 1);

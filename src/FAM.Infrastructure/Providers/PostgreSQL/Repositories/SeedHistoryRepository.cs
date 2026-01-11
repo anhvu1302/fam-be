@@ -1,6 +1,7 @@
 using System.Data;
 using System.Data.Common;
 
+using FAM.Infrastructure.Common.Abstractions;
 using FAM.Infrastructure.Common.Seeding;
 
 using Microsoft.EntityFrameworkCore;
@@ -9,9 +10,9 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 
 public class SeedHistoryRepository : ISeedHistoryRepository
 {
-    private readonly PostgreSqlDbContext _dbContext;
+    private readonly IDbContext _dbContext;
 
-    public SeedHistoryRepository(PostgreSqlDbContext dbContext)
+    public SeedHistoryRepository(IDbContext dbContext)
     {
         _dbContext = dbContext;
     }
@@ -19,7 +20,7 @@ public class SeedHistoryRepository : ISeedHistoryRepository
     public async Task<bool> HasBeenExecutedAsync(string seederName, CancellationToken cancellationToken = default)
     {
         // Check if table exists
-        var tableExists = await _dbContext.Database
+        bool tableExists = await _dbContext.Database
             .ExecuteSqlAsync($@"
                 SELECT COUNT(*) 
                 FROM information_schema.tables 
@@ -33,7 +34,7 @@ public class SeedHistoryRepository : ISeedHistoryRepository
         }
 
         // Check if seeder has been executed
-        var result = await _dbContext.Database
+        int result = await _dbContext.Database
             .ExecuteSqlAsync($@"
                 SELECT COUNT(*) 
                 FROM __seed_history 
@@ -47,7 +48,9 @@ public class SeedHistoryRepository : ISeedHistoryRepository
     {
         DbConnection connection = _dbContext.Database.GetDbConnection();
         if (connection.State != ConnectionState.Open)
+        {
             await connection.OpenAsync(cancellationToken);
+        }
 
         using DbCommand command = connection.CreateCommand();
         command.CommandText = @"
@@ -85,7 +88,7 @@ public class SeedHistoryRepository : ISeedHistoryRepository
         // Ensure table exists
         await HasBeenExecutedAsync("_init_check_", cancellationToken);
 
-        var histories = new List<SeedHistory>();
+        List<SeedHistory> histories = new();
 
         DbConnection connection = _dbContext.Database.GetDbConnection();
         await connection.OpenAsync(cancellationToken);
@@ -95,6 +98,7 @@ public class SeedHistoryRepository : ISeedHistoryRepository
 
         using DbDataReader reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
+        {
             histories.Add(new SeedHistory
             {
                 Id = reader.GetInt64(0),
@@ -105,8 +109,23 @@ public class SeedHistoryRepository : ISeedHistoryRepository
                 ErrorMessage = reader.IsDBNull(5) ? null : reader.GetString(5),
                 Duration = TimeSpan.FromMilliseconds(reader.GetDouble(6))
             });
+        }
 
         return histories;
+    }
+
+    public async Task ClearHistoryAsync(CancellationToken cancellationToken = default)
+    {
+        DbConnection connection = _dbContext.Database.GetDbConnection();
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync(cancellationToken);
+        }
+
+        using DbCommand command = connection.CreateCommand();
+        command.CommandText = "DELETE FROM __seed_history";
+
+        await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
     private async Task CreateTableAsync(CancellationToken cancellationToken)

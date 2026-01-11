@@ -24,7 +24,9 @@ public sealed class RemoveUsersFromRoleCommandHandler : IRequestHandler<RemoveUs
     public async Task<int> Handle(RemoveUsersFromRoleCommand request, CancellationToken cancellationToken)
     {
         if (!request.UserIds.Any())
+        {
             throw new DomainException(ErrorCodes.ROLE_NO_PERMISSIONS_PROVIDED, "No user IDs provided");
+        }
 
         IEnumerable<UserNodeRole> assignments = await _unitOfWork.UserNodeRoles.FindAsync(
             unr => unr.RoleId == request.RoleId
@@ -39,7 +41,7 @@ public sealed class RemoveUsersFromRoleCommandHandler : IRequestHandler<RemoveUs
             return 0;
         }
 
-        var removedCount = 0;
+        int removedCount = 0;
         foreach (UserNodeRole assignment in assignments)
         {
             _unitOfWork.UserNodeRoles.Delete(assignment);

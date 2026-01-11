@@ -27,11 +27,16 @@ public class DeleteMenuCommandHandler : IRequestHandler<DeleteMenuCommand>
     public async Task Handle(DeleteMenuCommand request, CancellationToken cancellationToken)
     {
         MenuItem? menu = await _repository.GetByIdAsync(request.Id, cancellationToken);
-        if (menu == null) throw new NotFoundException(ErrorCodes.MENU_NOT_FOUND, "MenuItem", request.Id);
+        if (menu == null)
+        {
+            throw new NotFoundException(ErrorCodes.MENU_NOT_FOUND, "MenuItem", request.Id);
+        }
 
         // Check if has children
         if (await _repository.HasChildrenAsync(request.Id, cancellationToken))
+        {
             throw new DomainException(ErrorCodes.MENU_HAS_CHILDREN);
+        }
 
         _repository.Delete(menu);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

@@ -27,7 +27,7 @@ public class CreateSystemSettingCommandHandlerTests
     public async Task Handle_WithValidCommand_ShouldCreateSetting()
     {
         // Arrange
-        var command = new CreateSystemSettingCommand
+        CreateSystemSettingCommand command = new()
         {
             Key = "test_setting",
             DisplayName = "Test Setting",
@@ -55,7 +55,7 @@ public class CreateSystemSettingCommandHandlerTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _handler.Handle(command, default);
+        long result = await _handler.Handle(command, default);
 
         // Assert
         Assert.Equal(1, result);
@@ -67,14 +67,14 @@ public class CreateSystemSettingCommandHandlerTests
     public async Task Handle_WithDuplicateKey_ShouldThrowConflictException()
     {
         // Arrange
-        var command = new CreateSystemSettingCommand
+        CreateSystemSettingCommand command = new()
         {
             Key = "existing_key",
             DisplayName = "Test Setting",
             DataType = SettingDataType.String
         };
 
-        var existingSetting = SystemSetting.Create("existing_key", "Existing Setting");
+        SystemSetting existingSetting = SystemSetting.Create("existing_key", "Existing Setting");
         _repositoryMock.Setup(x => x.GetByKeyAsync(command.Key, default))
             .ReturnsAsync(existingSetting);
 
@@ -90,7 +90,7 @@ public class CreateSystemSettingCommandHandlerTests
     public async Task Handle_WithValidationRulesAndOptions_ShouldCreateSetting()
     {
         // Arrange
-        var command = new CreateSystemSettingCommand
+        CreateSystemSettingCommand command = new()
         {
             Key = "test_setting",
             DisplayName = "Test Setting",
@@ -111,7 +111,7 @@ public class CreateSystemSettingCommandHandlerTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _handler.Handle(command, default);
+        long result = await _handler.Handle(command, default);
 
         // Assert
         Assert.Equal(1, result);
@@ -125,7 +125,7 @@ public class CreateSystemSettingCommandHandlerTests
     public async Task Handle_WithSensitiveSetting_ShouldCreateWithCorrectFlags()
     {
         // Arrange
-        var command = new CreateSystemSettingCommand
+        CreateSystemSettingCommand command = new()
         {
             Key = "api_key",
             DisplayName = "API Key",
@@ -147,7 +147,7 @@ public class CreateSystemSettingCommandHandlerTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _handler.Handle(command, default);
+        long result = await _handler.Handle(command, default);
 
         // Assert
         Assert.Equal(1, result);

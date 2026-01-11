@@ -26,10 +26,14 @@ public sealed class Percentage : ValueObject
     public static Percentage Create(decimal value)
     {
         if (value < 0)
+        {
             throw new DomainException(ErrorCodes.VO_PERCENTAGE_NEGATIVE);
+        }
 
         if (value > 100)
+        {
             throw new DomainException(ErrorCodes.VO_PERCENTAGE_EXCEED);
+        }
 
         // Làm tròn đến 2 chữ số thập phân
         value = Math.Round(value, 2);

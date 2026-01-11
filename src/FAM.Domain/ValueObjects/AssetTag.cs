@@ -26,12 +26,16 @@ public sealed class AssetTag : ValueObject
     public static AssetTag Create(string assetTag)
     {
         if (string.IsNullOrWhiteSpace(assetTag))
+        {
             throw new DomainException(ErrorCodes.VO_ASSET_TAG_EMPTY);
+        }
 
         assetTag = assetTag.Trim();
 
         if (assetTag.Length > 50)
+        {
             throw new DomainException(ErrorCodes.VO_ASSET_TAG_TOO_LONG);
+        }
 
         return new AssetTag(assetTag);
     }

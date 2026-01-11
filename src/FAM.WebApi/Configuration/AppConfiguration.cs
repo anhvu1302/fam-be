@@ -122,29 +122,38 @@ public class AppConfiguration
 
     private string BuildRedisConnectionString()
     {
-        var connectionString = $"{RedisHost}:{RedisPort}";
+        string connectionString = $"{RedisHost}:{RedisPort}";
 
-        if (!string.IsNullOrEmpty(RedisPassword)) connectionString += $",password={RedisPassword}";
+        if (!string.IsNullOrEmpty(RedisPassword))
+        {
+            connectionString += $",password={RedisPassword}";
+        }
 
         return connectionString;
     }
 
     private string BuildMongoDbConnectionString()
     {
-        var escapedUser = !string.IsNullOrEmpty(DbUser) ? Uri.EscapeDataString(DbUser) : "";
-        var escapedPassword = !string.IsNullOrEmpty(DbPassword) ? Uri.EscapeDataString(DbPassword) : "";
+        string escapedUser = !string.IsNullOrEmpty(DbUser) ? Uri.EscapeDataString(DbUser) : "";
+        string escapedPassword = !string.IsNullOrEmpty(DbPassword) ? Uri.EscapeDataString(DbPassword) : "";
 
         if (!string.IsNullOrEmpty(escapedUser) && !string.IsNullOrEmpty(escapedPassword))
+        {
             return $"mongodb://{escapedUser}:{escapedPassword}@{DbHost}:{DbPort}";
+        }
+
         return $"mongodb://{DbHost}:{DbPort}";
     }
 
     private static string GetRequired(string key)
     {
-        var value = System.Environment.GetEnvironmentVariable(key);
+        string? value = System.Environment.GetEnvironmentVariable(key);
         if (string.IsNullOrWhiteSpace(value))
+        {
             throw new InvalidOperationException(
                 $"Required environment variable '{key}' is not set. Check your .env file.");
+        }
+
         return value;
     }
 
@@ -155,32 +164,50 @@ public class AppConfiguration
 
     private static int GetInt(string key, int defaultValue)
     {
-        var value = System.Environment.GetEnvironmentVariable(key);
-        if (string.IsNullOrWhiteSpace(value)) return defaultValue;
-        if (!int.TryParse(value, out var result))
+        string? value = System.Environment.GetEnvironmentVariable(key);
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return defaultValue;
+        }
+
+        if (!int.TryParse(value, out int result))
+        {
             throw new InvalidOperationException($"'{key}' must be a valid integer. Got: '{value}'");
+        }
+
         return result;
     }
 
     private static bool GetBool(string key, bool defaultValue)
     {
-        var value = System.Environment.GetEnvironmentVariable(key);
-        if (string.IsNullOrWhiteSpace(value)) return defaultValue;
-        if (!bool.TryParse(value, out var result))
+        string? value = System.Environment.GetEnvironmentVariable(key);
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return defaultValue;
+        }
+
+        if (!bool.TryParse(value, out bool result))
+        {
             throw new InvalidOperationException($"'{key}' must be 'true' or 'false'. Got: '{value}'");
+        }
+
         return result;
     }
 
     private static void ValidatePort(int port, string portName = "DB_PORT")
     {
         if (port < 1 || port > 65535)
+        {
             throw new InvalidOperationException($"{portName} must be 1-65535. Got: {port}");
+        }
     }
 
     private static void ValidateDatabaseProvider(string provider)
     {
-        var valid = new[] { "PostgreSQL", "MongoDB" };
+        string[] valid = new[] { "PostgreSQL", "MongoDB" };
         if (!valid.Contains(provider, StringComparer.OrdinalIgnoreCase))
+        {
             throw new InvalidOperationException($"DB_PROVIDER must be 'PostgreSQL' or 'MongoDB'. Got: '{provider}'");
+        }
     }
 }

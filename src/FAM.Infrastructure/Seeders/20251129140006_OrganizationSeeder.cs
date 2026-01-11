@@ -1,10 +1,11 @@
 using FAM.Domain.Organizations;
 using FAM.Infrastructure.Common.Seeding;
+using FAM.Infrastructure.Providers.PostgreSQL;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
+namespace FAM.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds initial organization structure (company, departments)
@@ -25,7 +26,7 @@ public class OrganizationSeeder : BaseDataSeeder
     {
         LogInfo("Checking for existing organizations...");
 
-        var hasOrgs = await _dbContext.OrgNodes.AnyAsync(o => !o.IsDeleted, cancellationToken);
+        bool hasOrgs = await _dbContext.OrgNodes.AnyAsync(o => !o.IsDeleted, cancellationToken);
 
         if (hasOrgs)
         {
@@ -36,19 +37,19 @@ public class OrganizationSeeder : BaseDataSeeder
         LogInfo("Seeding organizations...");
 
         // Create root company
-        var companyDetails = CompanyDetails.Create(
+        CompanyDetails companyDetails = CompanyDetails.Create(
             "0123456789",
             "fam-corp.com",
             "123 Business District, Ho Chi Minh City, Vietnam",
             new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc));
 
-        var company = OrgNode.CreateCompany("FAM Corporation", companyDetails);
+        OrgNode company = OrgNode.CreateCompany("FAM Corporation", companyDetails);
 
         await _dbContext.OrgNodes.AddAsync(company, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         // Create departments
-        var departments = new List<OrgNode>
+        List<OrgNode> departments = new()
         {
             CreateDepartment("IT Department", company.Id, "IT-001", 25, 500000),
             CreateDepartment("Human Resources", company.Id, "HR-001", 10, 200000),
@@ -61,7 +62,7 @@ public class OrganizationSeeder : BaseDataSeeder
         await _dbContext.OrgNodes.AddRangeAsync(departments, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        var totalNodes = 1 + departments.Count;
+        int totalNodes = 1 + departments.Count;
         LogInfo($"Created {totalNodes} organization nodes (1 company, {departments.Count} departments)");
     }
 
@@ -70,9 +71,11 @@ public class OrganizationSeeder : BaseDataSeeder
     {
         OrgNode? parent = _dbContext.OrgNodes.Find(parentId);
         if (parent == null)
+        {
             throw new InvalidOperationException($"Parent node with ID {parentId} not found");
+        }
 
-        var details = DepartmentDetails.Create(costCenter, headcount, budgetYear);
+        DepartmentDetails details = DepartmentDetails.Create(costCenter, headcount, budgetYear);
         return OrgNode.CreateDepartment(name, details, parent);
     }
 }

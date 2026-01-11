@@ -157,7 +157,9 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         string? modelNumber = null)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Model name is required");
+        }
 
         return new Model
         {
@@ -180,7 +182,9 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         string? description)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Model name is required");
+        }
 
         Name = name;
         ModelNumber = modelNumber;
@@ -230,7 +234,9 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         string? material)
     {
         if (weight.HasValue && weight.Value < 0)
+        {
             throw new DomainException("Weight cannot be negative");
+        }
 
         Weight = weight;
         WeightUnit = weightUnit;
@@ -248,7 +254,9 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         string? humidity)
     {
         if (powerConsumption.HasValue && powerConsumption.Value < 0)
+        {
             throw new DomainException("Power consumption cannot be negative");
+        }
 
         PowerRequirements = powerRequirements;
         PowerConsumption = powerConsumption;
@@ -275,7 +283,9 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         string? quickStartUrl)
     {
         if (standardWarrantyMonths.HasValue && standardWarrantyMonths.Value < 0)
+        {
             throw new DomainException("Standard warranty months cannot be negative");
+        }
 
         StandardWarrantyMonths = standardWarrantyMonths;
         WarrantyType = warrantyType;
@@ -291,10 +301,14 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         string? costCurrency)
     {
         if (msrp.HasValue && msrp.Value < 0)
+        {
             throw new DomainException("MSRP cannot be negative");
+        }
 
         if (averageCost.HasValue && averageCost.Value < 0)
+        {
             throw new DomainException("Average cost cannot be negative");
+        }
 
         MSRP = msrp;
         MSRPCurrency = msrpCurrency;
@@ -332,11 +346,15 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         decimal? residualValuePercentage)
     {
         if (usefulLifeMonths.HasValue && usefulLifeMonths.Value < 0)
+        {
             throw new DomainException("Useful life months cannot be negative");
+        }
 
         if (residualValuePercentage.HasValue &&
             (residualValuePercentage.Value < 0 || residualValuePercentage.Value > 100))
+        {
             throw new DomainException("Residual value percentage must be between 0 and 100");
+        }
 
         UsefulLifeMonths = usefulLifeMonths;
         DepreciationMethod = depreciationMethod;
@@ -350,10 +368,14 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         int? maxInstallations)
     {
         if (licenseDuration.HasValue && licenseDuration.Value < 0)
+        {
             throw new DomainException("License duration months cannot be negative");
+        }
 
         if (maxInstallations.HasValue && maxInstallations.Value < 0)
+        {
             throw new DomainException("Maximum installations cannot be negative");
+        }
 
         LicenseType = licenseType;
         LicenseDurationMonths = licenseDuration;
@@ -405,10 +427,14 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         DateTime? lastOrderDate)
     {
         if (reorderLevel.HasValue && reorderLevel.Value < 0)
+        {
             throw new DomainException("Reorder level cannot be negative");
+        }
 
         if (currentStock.HasValue && currentStock.Value < 0)
+        {
             throw new DomainException("Current stock cannot be negative");
+        }
 
         ReorderLevel = reorderLevel;
         CurrentStock = currentStock;
@@ -477,9 +503,11 @@ public class Model : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     private string? ValidateUrl(string? url)
     {
         if (string.IsNullOrWhiteSpace(url))
+        {
             return null;
+        }
 
-        var urlVo = Url.Create(url);
+        Url urlVo = Url.Create(url);
         return urlVo.Value;
     }
 }

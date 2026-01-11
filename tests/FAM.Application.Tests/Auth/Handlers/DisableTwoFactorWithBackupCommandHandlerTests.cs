@@ -37,23 +37,23 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
     public async Task Handle_WithValidBackupCode_ShouldDisable2FA()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var backupCode = "12345-67890";
-        var hashedBackupCode = BCrypt.Net.BCrypt.HashPassword(backupCode);
+        string plainPassword = "SecurePass123!";
+        string backupCode = "12345-67890";
+        string? hashedBackupCode = BCrypt.Net.BCrypt.HashPassword(backupCode);
 
-        var user = User.CreateWithPlainPassword(
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
-        var backupCodesJson = JsonSerializer.Serialize(new List<string> { hashedBackupCode });
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
+        string backupCodesJson = JsonSerializer.Serialize(new List<string> { hashedBackupCode });
         user.EnableTwoFactor(base32Secret, backupCodesJson);
 
         _mockUserRepository
             .Setup(x => x.FindByUsernameAsync("testuser", It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new DisableTwoFactorWithBackupCommand
+        DisableTwoFactorWithBackupCommand command = new()
         {
             Username = "testuser",
             Password = plainPassword,
@@ -61,7 +61,7 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        bool result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().BeTrue();
@@ -76,24 +76,24 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
     public async Task Handle_WithInvalidBackupCode_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var correctBackupCode = "12345-67890";
-        var wrongBackupCode = "99999-88888";
-        var hashedBackupCode = BCrypt.Net.BCrypt.HashPassword(correctBackupCode);
+        string plainPassword = "SecurePass123!";
+        string correctBackupCode = "12345-67890";
+        string wrongBackupCode = "99999-88888";
+        string? hashedBackupCode = BCrypt.Net.BCrypt.HashPassword(correctBackupCode);
 
-        var user = User.CreateWithPlainPassword(
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
-        var backupCodesJson = JsonSerializer.Serialize(new List<string> { hashedBackupCode });
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
+        string backupCodesJson = JsonSerializer.Serialize(new List<string> { hashedBackupCode });
         user.EnableTwoFactor(base32Secret, backupCodesJson);
 
         _mockUserRepository
             .Setup(x => x.FindByUsernameAsync("testuser", It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new DisableTwoFactorWithBackupCommand
+        DisableTwoFactorWithBackupCommand command = new()
         {
             Username = "testuser",
             Password = plainPassword,
@@ -112,24 +112,24 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
     public async Task Handle_WithIncorrectPassword_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var wrongPassword = "WrongPassword123!";
-        var backupCode = "12345-67890";
-        var hashedBackupCode = BCrypt.Net.BCrypt.HashPassword(backupCode);
+        string plainPassword = "SecurePass123!";
+        string wrongPassword = "WrongPassword123!";
+        string backupCode = "12345-67890";
+        string? hashedBackupCode = BCrypt.Net.BCrypt.HashPassword(backupCode);
 
-        var user = User.CreateWithPlainPassword(
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
-        var backupCodesJson = JsonSerializer.Serialize(new List<string> { hashedBackupCode });
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
+        string backupCodesJson = JsonSerializer.Serialize(new List<string> { hashedBackupCode });
         user.EnableTwoFactor(base32Secret, backupCodesJson);
 
         _mockUserRepository
             .Setup(x => x.FindByUsernameAsync("testuser", It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new DisableTwoFactorWithBackupCommand
+        DisableTwoFactorWithBackupCommand command = new()
         {
             Username = "testuser",
             Password = wrongPassword,
@@ -152,7 +152,7 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
             .Setup(x => x.FindByUsernameAsync("nonexistent", It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
-        var command = new DisableTwoFactorWithBackupCommand
+        DisableTwoFactorWithBackupCommand command = new()
         {
             Username = "nonexistent",
             Password = "SomePassword123!",
@@ -170,8 +170,8 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
     public async Task Handle_WithUser2FANotEnabled_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
         // User has no 2FA enabled
 
@@ -179,7 +179,7 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
             .Setup(x => x.FindByUsernameAsync("testuser", It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new DisableTwoFactorWithBackupCommand
+        DisableTwoFactorWithBackupCommand command = new()
         {
             Username = "testuser",
             Password = plainPassword,
@@ -197,21 +197,21 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
     public async Task Handle_WithMultipleBackupCodes_ShouldRemoveOnlyUsedCode()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var backupCode1 = "11111-22222";
-        var backupCode2 = "33333-44444";
-        var backupCode3 = "55555-66666";
+        string plainPassword = "SecurePass123!";
+        string backupCode1 = "11111-22222";
+        string backupCode2 = "33333-44444";
+        string backupCode3 = "55555-66666";
 
-        var hashedCode1 = BCrypt.Net.BCrypt.HashPassword(backupCode1);
-        var hashedCode2 = BCrypt.Net.BCrypt.HashPassword(backupCode2);
-        var hashedCode3 = BCrypt.Net.BCrypt.HashPassword(backupCode3);
+        string? hashedCode1 = BCrypt.Net.BCrypt.HashPassword(backupCode1);
+        string? hashedCode2 = BCrypt.Net.BCrypt.HashPassword(backupCode2);
+        string? hashedCode3 = BCrypt.Net.BCrypt.HashPassword(backupCode3);
 
-        var user = User.CreateWithPlainPassword(
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
-        var backupCodesJson =
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
+        string backupCodesJson =
             JsonSerializer.Serialize(new List<string> { hashedCode1, hashedCode2, hashedCode3 });
         user.EnableTwoFactor(base32Secret, backupCodesJson);
 
@@ -219,7 +219,7 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
             .Setup(x => x.FindByUsernameAsync("testuser", It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new DisableTwoFactorWithBackupCommand
+        DisableTwoFactorWithBackupCommand command = new()
         {
             Username = "testuser",
             Password = plainPassword,
@@ -227,7 +227,7 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        bool result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().BeTrue();
@@ -241,19 +241,19 @@ public class DisableTwoFactorWithBackupCommandHandlerTests
     public async Task Handle_WithEmptyBackupCodes_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
         user.EnableTwoFactor(base32Secret, "[]"); // Empty backup codes array
 
         _mockUserRepository
             .Setup(x => x.FindByUsernameAsync("testuser", It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new DisableTwoFactorWithBackupCommand
+        DisableTwoFactorWithBackupCommand command = new()
         {
             Username = "testuser",
             Password = plainPassword,

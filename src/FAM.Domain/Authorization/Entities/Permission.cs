@@ -46,13 +46,15 @@ public class Permission : BaseEntity, IHasCreationTime, IHasCreator, IHasModific
     {
         // Validate against defined permissions
         if (!Permissions.IsValidPermission(resource, action))
+        {
             throw new DomainException(
                 ErrorCodes.PERMISSION_INVALID,
                 $"Invalid permission: {resource}:{action}");
+        }
 
         // Validate resource and action
-        var resourceVo = ResourceType.Create(resource);
-        var actionVo = ResourceAction.Create(action);
+        ResourceType resourceVo = ResourceType.Create(resource);
+        ResourceAction actionVo = ResourceAction.Create(action);
 
         return new Permission
         {

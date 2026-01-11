@@ -19,7 +19,9 @@ public sealed class ActivateEmailTemplateCommandHandler : IRequestHandler<Activa
     {
         EmailTemplate? template = await _unitOfWork.EmailTemplates.GetByIdAsync(request.Id, cancellationToken);
         if (template == null)
+        {
             throw new NotFoundException(ErrorCodes.EMAIL_TEMPLATE_NOT_FOUND, "EmailTemplate", request.Id);
+        }
 
         template.Activate();
         _unitOfWork.EmailTemplates.Update(template);

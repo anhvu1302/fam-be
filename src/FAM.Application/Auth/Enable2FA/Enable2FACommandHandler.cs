@@ -22,14 +22,20 @@ public sealed class Enable2FACommandHandler : IRequestHandler<Enable2FACommand, 
     {
         // Get user by ID
         User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
+        if (user == null)
+        {
+            throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
+        }
 
         // Verify password
-        if (!user.Password.Verify(request.Password)) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD);
+        if (!user.Password.Verify(request.Password))
+        {
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_PASSWORD);
+        }
 
         // Generate new secret key (32 bytes = 256 bits for enhanced security)
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
 
         // Store pending secret for confirmation phase (10 minute expiration)
         user.SetPendingTwoFactorSecret(base32Secret, 10);
@@ -38,13 +44,13 @@ public sealed class Enable2FACommandHandler : IRequestHandler<Enable2FACommand, 
 
         // Create QR code URI for authenticator apps
         // Format: otpauth://totp/{Issuer}:{AccountName}?secret={Secret}&issuer={Issuer}
-        var issuer = "FAM"; // Fixed Asset Management
-        var accountName = user.Email;
-        var qrCodeUri =
+        string issuer = "FAM"; // Fixed Asset Management
+        string accountName = user.Email;
+        string qrCodeUri =
             $"otpauth://totp/{Uri.EscapeDataString(issuer)}:{Uri.EscapeDataString(accountName)}?secret={base32Secret}&issuer={Uri.EscapeDataString(issuer)}";
 
         // Format manual entry key for better readability (groups of 4 characters)
-        var manualEntryKey = FormatSecretKey(base32Secret);
+        string manualEntryKey = FormatSecretKey(base32Secret);
 
         return new Enable2FAResponse
         {
@@ -57,10 +63,14 @@ public sealed class Enable2FACommandHandler : IRequestHandler<Enable2FACommand, 
     private static string FormatSecretKey(string secret)
     {
         // Format: XXXX XXXX XXXX XXXX ...
-        var formatted = "";
-        for (var i = 0; i < secret.Length; i += 4)
+        string formatted = "";
+        for (int i = 0; i < secret.Length; i += 4)
         {
-            if (i > 0) formatted += " ";
+            if (i > 0)
+            {
+                formatted += " ";
+            }
+
             formatted += secret.Substring(i, Math.Min(4, secret.Length - i));
         }
 

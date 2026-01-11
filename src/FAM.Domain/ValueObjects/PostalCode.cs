@@ -28,12 +28,16 @@ public sealed class PostalCode : ValueObject
     public static PostalCode Create(string postalCode)
     {
         if (string.IsNullOrWhiteSpace(postalCode))
+        {
             throw new DomainException(ErrorCodes.VO_POSTAL_CODE_EMPTY);
+        }
 
         postalCode = postalCode.Trim().ToUpperInvariant();
 
         if (!IsValidPostalCode(postalCode))
+        {
             throw new DomainException(ErrorCodes.VO_POSTAL_CODE_INVALID);
+        }
 
         return new PostalCode(postalCode);
     }
@@ -44,7 +48,7 @@ public sealed class PostalCode : ValueObject
     private static bool IsValidPostalCode(string postalCode)
     {
         // Postal code patterns cho các quốc gia khác nhau
-        var patterns = new[]
+        string[] patterns = new[]
         {
             @"^\d{5}$", // US: 12345
             @"^[A-Z]\d[A-Z]\s?\d[A-Z]\d$", // Canada: K1A 1A1

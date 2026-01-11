@@ -19,12 +19,14 @@ public sealed class CreateSystemSettingCommandHandler : IRequestHandler<CreateSy
     {
         SystemSetting? existingSetting = await _unitOfWork.SystemSettings.GetByKeyAsync(request.Key, cancellationToken);
         if (existingSetting != null)
+        {
             throw new ConflictException(
                 ErrorCodes.SETTING_KEY_EXISTS,
                 "SystemSetting",
                 "Key");
+        }
 
-        var setting = SystemSetting.Create(
+        SystemSetting setting = SystemSetting.Create(
             request.Key,
             request.DisplayName,
             request.Value,
@@ -39,13 +41,24 @@ public sealed class CreateSystemSettingCommandHandler : IRequestHandler<CreateSy
 
         // Set additional properties
         if (request.ValidationRules != null)
+        {
             setting.SetValidationRules(request.ValidationRules);
+        }
+
         if (request.Options != null)
+        {
             setting.SetOptions(request.Options);
+        }
+
         if (!request.IsEditable)
+        {
             setting.MakeReadOnly();
+        }
+
         if (!request.IsVisible)
+        {
             setting.Hide();
+        }
 
         await _unitOfWork.SystemSettings.AddAsync(setting, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

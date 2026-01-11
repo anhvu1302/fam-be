@@ -11,12 +11,12 @@ public class UserTests
     public void Create_WithValidUsernameAndEmail_ShouldCreateUser()
     {
         // Arrange
-        var username = "john_doe";
-        var email = "john.doe@example.com";
-        var password = "MySecurePass123!";
+        string username = "john_doe";
+        string email = "john.doe@example.com";
+        string password = "MySecurePass123!";
 
         // Act
-        var user = User.CreateWithPlainPassword(username, email, password);
+        User user = User.CreateWithPlainPassword(username, email, password);
 
         // Assert
         user.Should().NotBeNull();
@@ -31,14 +31,14 @@ public class UserTests
     public void Create_WithUsernameEmailAndFullName_ShouldCreateUserWithFullName()
     {
         // Arrange
-        var username = "jane_smith";
-        var email = "jane.smith@example.com";
-        var password = "MySecurePass123!";
-        var firstName = "Jane";
-        var lastName = "Smith";
+        string username = "jane_smith";
+        string email = "jane.smith@example.com";
+        string password = "MySecurePass123!";
+        string firstName = "Jane";
+        string lastName = "Smith";
 
         // Act
-        var user = User.CreateWithPlainPassword(username, email, password, firstName, lastName, null);
+        User user = User.CreateWithPlainPassword(username, email, password, firstName, lastName, null);
 
         // Assert
         user.Username.Should().Be(username);
@@ -50,12 +50,12 @@ public class UserTests
     public void Create_WithNullFullName_ShouldCreateUserWithUsernameAsFullName()
     {
         // Arrange
-        var username = "test_user";
-        var email = "test@example.com";
-        var password = "MySecurePass123!";
+        string username = "test_user";
+        string email = "test@example.com";
+        string password = "MySecurePass123!";
 
         // Act
-        var user = User.CreateWithPlainPassword(username, email, password, null, null, null);
+        User user = User.CreateWithPlainPassword(username, email, password, null, null, null);
 
         // Assert
         user.FullName.Should().Be(username);
@@ -65,8 +65,8 @@ public class UserTests
     public void Create_WithInvalidUsername_ShouldThrowException()
     {
         // Arrange
-        var invalidUsername = "";
-        var email = "test@example.com";
+        string invalidUsername = "";
+        string email = "test@example.com";
 
         // Act & Assert
         Assert.Throws<DomainException>(() => User.CreateWithPlainPassword(invalidUsername, email, "MySecurePass123!"));
@@ -76,8 +76,8 @@ public class UserTests
     public void Create_WithInvalidEmail_ShouldThrowException()
     {
         // Arrange
-        var username = "test_user";
-        var invalidEmail = "invalid-email";
+        string username = "test_user";
+        string invalidEmail = "invalid-email";
 
         // Act & Assert
         Assert.Throws<DomainException>(() => User.CreateWithPlainPassword(username, invalidEmail, "MySecurePass123!"));

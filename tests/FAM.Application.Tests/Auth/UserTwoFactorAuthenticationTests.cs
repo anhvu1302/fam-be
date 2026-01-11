@@ -15,7 +15,7 @@ public class UserTwoFactorAuthenticationTests
     {
         // Arrange
         User user = CreateTestUser();
-        var secret = "JBSWY3DPEHPK3PXP";
+        string secret = "JBSWY3DPEHPK3PXP";
 
         // Act
         user.EnableTwoFactor(secret);
@@ -78,12 +78,12 @@ public class UserTwoFactorAuthenticationTests
     {
         // Arrange
         User user = CreateTestUser();
-        var deviceId = "device-123";
-        var deviceName = "Chrome on Windows";
-        var deviceType = "browser";
-        var userAgent = "Mozilla/5.0...";
-        var ipAddress = "192.168.1.100";
-        var location = "Hanoi, Vietnam";
+        string deviceId = "device-123";
+        string deviceName = "Chrome on Windows";
+        string deviceType = "browser";
+        string userAgent = "Mozilla/5.0...";
+        string ipAddress = "192.168.1.100";
+        string location = "Hanoi, Vietnam";
 
         // Act
         UserDevice device = user.GetOrCreateDevice(
@@ -111,7 +111,7 @@ public class UserTwoFactorAuthenticationTests
     {
         // Arrange
         User user = CreateTestUser();
-        var deviceId = "device-456";
+        string deviceId = "device-456";
 
         // Create device first time
         UserDevice firstDevice = user.GetOrCreateDevice(
@@ -180,8 +180,8 @@ public class UserTwoFactorAuthenticationTests
     {
         // Arrange
         User user = CreateTestUser();
-        var firstSecret = "FIRST_SECRET_123";
-        var secondSecret = "SECOND_SECRET_456";
+        string firstSecret = "FIRST_SECRET_123";
+        string secondSecret = "SECOND_SECRET_456";
 
         // Act
         user.EnableTwoFactor(firstSecret);

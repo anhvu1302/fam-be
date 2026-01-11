@@ -31,8 +31,8 @@ public class TokenBlacklistService : ITokenBlacklistService
         try
         {
             // Hash the token to avoid storing full JWT in cache
-            var tokenHash = HashToken(token);
-            var cacheKey = $"{TokenBlacklistPrefix}{tokenHash}";
+            string tokenHash = HashToken(token);
+            string cacheKey = $"{TokenBlacklistPrefix}{tokenHash}";
 
             // Calculate TTL - how long until token naturally expires
             TimeSpan ttl = expiryTime - DateTime.UtcNow;
@@ -56,10 +56,10 @@ public class TokenBlacklistService : ITokenBlacklistService
     {
         try
         {
-            var tokenHash = HashToken(token);
-            var cacheKey = $"{TokenBlacklistPrefix}{tokenHash}";
+            string tokenHash = HashToken(token);
+            string cacheKey = $"{TokenBlacklistPrefix}{tokenHash}";
 
-            var value = await _cache.GetAsync(cacheKey, cancellationToken);
+            string? value = await _cache.GetAsync(cacheKey, cancellationToken);
             return !string.IsNullOrEmpty(value);
         }
         catch (Exception ex)
@@ -74,11 +74,11 @@ public class TokenBlacklistService : ITokenBlacklistService
     {
         try
         {
-            var cacheKey = $"{UserBlacklistPrefix}{userId}";
+            string cacheKey = $"{UserBlacklistPrefix}{userId}";
 
             // Store for 24 hours - longer than typical access token lifetime
             // This will invalidate ALL tokens for this user
-            var expiration = TimeSpan.FromHours(24);
+            TimeSpan expiration = TimeSpan.FromHours(24);
             await _cache.SetAsync(cacheKey, DateTime.UtcNow.ToString("O"), expiration, cancellationToken);
         }
         catch (Exception ex)
@@ -92,8 +92,8 @@ public class TokenBlacklistService : ITokenBlacklistService
     {
         try
         {
-            var cacheKey = $"{UserBlacklistPrefix}{userId}";
-            var value = await _cache.GetAsync(cacheKey, cancellationToken);
+            string cacheKey = $"{UserBlacklistPrefix}{userId}";
+            string? value = await _cache.GetAsync(cacheKey, cancellationToken);
             return !string.IsNullOrEmpty(value);
         }
         catch (Exception ex)
@@ -109,7 +109,7 @@ public class TokenBlacklistService : ITokenBlacklistService
     {
         try
         {
-            var cacheKey = $"{TokenBlacklistPrefix}jti:{jti}";
+            string cacheKey = $"{TokenBlacklistPrefix}jti:{jti}";
 
             // Calculate TTL - how long until token naturally expires
             TimeSpan ttl = expiryTime - DateTime.UtcNow;
@@ -133,8 +133,8 @@ public class TokenBlacklistService : ITokenBlacklistService
     {
         try
         {
-            var cacheKey = $"{TokenBlacklistPrefix}jti:{jti}";
-            var value = await _cache.GetAsync(cacheKey, cancellationToken);
+            string cacheKey = $"{TokenBlacklistPrefix}jti:{jti}";
+            string? value = await _cache.GetAsync(cacheKey, cancellationToken);
             return !string.IsNullOrEmpty(value);
         }
         catch (Exception ex)
@@ -150,9 +150,9 @@ public class TokenBlacklistService : ITokenBlacklistService
     /// </summary>
     private static string HashToken(string token)
     {
-        using var sha256 = SHA256.Create();
-        var bytes = Encoding.UTF8.GetBytes(token);
-        var hashBytes = sha256.ComputeHash(bytes);
+        using SHA256 sha256 = SHA256.Create();
+        byte[] bytes = Encoding.UTF8.GetBytes(token);
+        byte[] hashBytes = sha256.ComputeHash(bytes);
         return Convert.ToHexString(hashBytes).ToLowerInvariant();
     }
 }

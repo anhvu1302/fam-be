@@ -25,18 +25,24 @@ public static class ProjectionBinder
     {
         // If no fields specified, return all (will need manual mapping later)
         if (fields == null || fields.Length == 0)
+        {
             throw new InvalidOperationException(
                 "Cannot auto-project without field specification. " +
                 "Either specify fields or use manual mapping.");
+        }
 
         // Validate all requested fields exist and are selectable
-        foreach (var field in fields)
+        foreach (string field in fields)
         {
             if (!fieldMap.TryGet(field, out _, out _))
+            {
                 throw new InvalidOperationException($"Field '{field}' not found");
+            }
 
             if (!fieldMap.CanSelect(field))
+            {
                 throw new InvalidOperationException($"Field '{field}' cannot be selected");
+            }
         }
 
         // Build projection expression dynamically
@@ -44,13 +50,15 @@ public static class ProjectionBinder
         Type dtoType = typeof(TDto);
 
         // Create member bindings for each requested field
-        var bindings = new List<MemberBinding>();
+        List<MemberBinding> bindings = new();
 
-        foreach (var fieldName in fields)
+        foreach (string fieldName in fields)
         {
             // Get source expression from field map
             if (!fieldMap.TryGet(fieldName, out LambdaExpression sourceExpression, out _))
+            {
                 continue;
+            }
 
             // Find matching property in DTO
             PropertyInfo? dtoProperty = dtoType.GetProperty(
@@ -58,24 +66,30 @@ public static class ProjectionBinder
                 BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 
             if (dtoProperty == null || !dtoProperty.CanWrite)
+            {
                 continue;
+            }
 
             // Replace parameter in source expression
-            var visitor = new ParameterReplacerVisitor(sourceExpression.Parameters[0], parameter);
+            ParameterReplacerVisitor visitor = new(sourceExpression.Parameters[0], parameter);
             Expression sourceBody = visitor.Visit(sourceExpression.Body);
 
             // Convert if types don't match
             if (sourceBody.Type != dtoProperty.PropertyType)
-                // Try to convert (e.g., long to int, DateTime to string, etc.)
+            // Try to convert (e.g., long to int, DateTime to string, etc.)
+            {
                 if (dtoProperty.PropertyType.IsAssignableFrom(sourceBody.Type))
+                {
                     sourceBody = Expression.Convert(sourceBody, dtoProperty.PropertyType);
+                }
+            }
 
             bindings.Add(Expression.Bind(dtoProperty, sourceBody));
         }
 
         // Create: x => new TDto { Field1 = x.Field1, Field2 = x.Field2, ... }
         MemberInitExpression memberInit = Expression.MemberInit(Expression.New(dtoType), bindings);
-        var lambda = Expression.Lambda<Func<TSource, TDto>>(memberInit, parameter);
+        Expression<Func<TSource, TDto>> lambda = Expression.Lambda<Func<TSource, TDto>>(memberInit, parameter);
 
         return query.Select(lambda);
     }
@@ -96,23 +110,27 @@ public static class ProjectionBinder
         Type dictType = typeof(Dictionary<string, object?>);
         MethodInfo addMethod = dictType.GetMethod("Add", new[] { typeof(string), typeof(object) })!;
 
-        var bindings = new List<ElementInit>();
+        List<ElementInit> bindings = new();
 
         // Get all available fields from fieldMap if no specific fields requested
-        var fieldsToSelect = fields != null && fields.Length > 0
+        string[] fieldsToSelect = fields != null && fields.Length > 0
             ? fields
             : fieldMap.GetFieldNames().ToArray();
 
-        foreach (var fieldName in fieldsToSelect)
+        foreach (string fieldName in fieldsToSelect)
         {
             if (!fieldMap.TryGet(fieldName, out LambdaExpression sourceExpression, out _))
+            {
                 continue;
+            }
 
             if (!fieldMap.CanSelect(fieldName))
+            {
                 continue;
+            }
 
             // Replace parameter in source expression
-            var visitor = new ParameterReplacerVisitor(sourceExpression.Parameters[0], parameter);
+            ParameterReplacerVisitor visitor = new(sourceExpression.Parameters[0], parameter);
             Expression sourceBody = visitor.Visit(sourceExpression.Body);
 
             // Convert to object
@@ -143,9 +161,11 @@ public static class ProjectionBinder
         FieldMap<TSource> fieldMap)
     {
         if (fields == null || fields.Length == 0)
+        {
             return (true, Array.Empty<string>());
+        }
 
-        var invalidFields = fields
+        string[] invalidFields = fields
             .Where(f => !fieldMap.TryGet(f, out _, out _) || !fieldMap.CanSelect(f))
             .ToArray();
 
@@ -155,7 +175,9 @@ public static class ProjectionBinder
     private static string ToCamelCase(string str)
     {
         if (string.IsNullOrEmpty(str) || char.IsLower(str[0]))
+        {
             return str;
+        }
 
         return char.ToLowerInvariant(str[0]) + str.Substring(1);
     }

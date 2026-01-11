@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
+using FAM.Infrastructure.Common.Abstractions;
 using FAM.Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
@@ -12,33 +13,34 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 /// <summary>
 /// PostgreSQL implementation of IPermissionRepository
 /// Uses Pragmatic Architecture - directly works with Domain entities
+/// Follows Clean Architecture by depending on IDbContext
 /// </summary>
 public class PermissionRepository : BaseRepository<Permission>, IPermissionRepository
 {
-    public PermissionRepository(PostgreSqlDbContext context) : base(context)
+    public PermissionRepository(IDbContext context) : base(context)
     {
     }
 
     public async Task<Permission?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await Context.Permissions.FindAsync(new object[] { id }, cancellationToken);
+        return await DbSet.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public async Task<IEnumerable<Permission>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await Context.Permissions.ToListAsync(cancellationToken);
+        return await DbSet.ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Permission>> FindAsync(Expression<Func<Permission, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
         // Apply predicate at database level - no need for in-memory filtering
-        return await Context.Permissions.Where(predicate).ToListAsync(cancellationToken);
+        return await DbSet.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(Permission entity, CancellationToken cancellationToken = default)
     {
-        await Context.Permissions.AddAsync(entity, cancellationToken);
+        await DbSet.AddAsync(entity, cancellationToken);
     }
 
     public void Update(Permission entity)
@@ -52,26 +54,26 @@ public class PermissionRepository : BaseRepository<Permission>, IPermissionRepos
         }
         else
         {
-            Context.Permissions.Attach(entity);
+            DbSet.Attach(entity);
             Context.Entry(entity).State = EntityState.Modified;
         }
     }
 
     public void Delete(Permission entity)
     {
-        Context.Permissions.Remove(entity);
+        DbSet.Remove(entity);
     }
 
     public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await Context.Permissions.AnyAsync(p => p.Id == id, cancellationToken);
+        return await DbSet.AnyAsync(p => p.Id == id, cancellationToken);
     }
 
     public async Task<Permission?> GetByResourceAndActionAsync(string resource, string action,
         CancellationToken cancellationToken = default)
     {
         // Query using backing fields that EF Core maps
-        return await Context.Permissions
+        return await DbSet
             .Where(p => EF.Property<string>(p, "_resource") == resource &&
                         EF.Property<string>(p, "_action") == action)
             .FirstOrDefaultAsync(cancellationToken);
@@ -80,7 +82,7 @@ public class PermissionRepository : BaseRepository<Permission>, IPermissionRepos
     public async Task<IEnumerable<Permission>> GetByResourceAsync(string resource,
         CancellationToken cancellationToken = default)
     {
-        return await Context.Permissions
+        return await DbSet
             .Where(p => EF.Property<string>(p, "_resource") == resource)
             .ToListAsync(cancellationToken);
     }
@@ -88,7 +90,7 @@ public class PermissionRepository : BaseRepository<Permission>, IPermissionRepos
     public async Task<bool> ExistsByResourceAndActionAsync(string resource, string action,
         CancellationToken cancellationToken = default)
     {
-        return await Context.Permissions
+        return await DbSet
             .AnyAsync(p => EF.Property<string>(p, "_resource") == resource &&
                            EF.Property<string>(p, "_action") == action,
                 cancellationToken);
@@ -103,16 +105,18 @@ public class PermissionRepository : BaseRepository<Permission>, IPermissionRepos
         CancellationToken cancellationToken = default)
     {
         // Build base query
-        IQueryable<Permission> countQuery = Context.Permissions.AsQueryable();
-        IQueryable<Permission> dataQuery = Context.Permissions.AsQueryable();
+        IQueryable<Permission> countQuery = DbSet.AsQueryable();
+        IQueryable<Permission> dataQuery = DbSet.AsQueryable();
 
         // Apply includes if provided
         if (includes != null && includes.Any())
+        {
             foreach (Expression<Func<Permission, object>> include in includes)
             {
-                var propertyPath = GetPropertyName(include.Body);
+                string propertyPath = GetPropertyName(include.Body);
                 dataQuery = dataQuery.Include(propertyPath);
             }
+        }
 
         // Apply filter at database level
         if (filter != null)
@@ -122,7 +126,7 @@ public class PermissionRepository : BaseRepository<Permission>, IPermissionRepos
         }
 
         // Get total count
-        var total = await countQuery.LongCountAsync(cancellationToken);
+        long total = await countQuery.LongCountAsync(cancellationToken);
 
         // Apply sorting
         dataQuery = ApplySort(dataQuery, sort, GetSortExpression, p => p.Id);

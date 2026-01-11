@@ -47,12 +47,14 @@ public class VerifyEmailOtpLoginCommandHandler
         // Find user to get their ID for OTP verification
         User? user = await _unitOfWork.Users.FindByEmailAsync(request.Email, cancellationToken);
         if (user == null)
+        {
             throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_CREDENTIALS, "User not found");
+        }
 
         // Verify OTP using the OTP service
         // The session token would need to be stored somewhere or we can use email as identifier
         // For email verification in login flow, we use email as the session identifier
-        var isValidOtp = await _otpService.VerifyOtpAsync(user.Id, request.Email, request.EmailOtp, cancellationToken);
+        bool isValidOtp = await _otpService.VerifyOtpAsync(user.Id, request.Email, request.EmailOtp, cancellationToken);
 
         if (!isValidOtp)
         {
@@ -75,7 +77,7 @@ public class VerifyEmailOtpLoginCommandHandler
         // Check if 2FA is enabled
         if (user.TwoFactorEnabled)
         {
-            var twoFactorSessionToken = await GenerateTwoFactorSessionTokenAsync(user.Id, cancellationToken);
+            string twoFactorSessionToken = await GenerateTwoFactorSessionTokenAsync(user.Id, cancellationToken);
 
             return new VerifyEmailOtpLoginResponse
             {
@@ -87,9 +89,9 @@ public class VerifyEmailOtpLoginCommandHandler
 
         // Generate tokens
         SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
-        var roles = new List<string>(); // User roles can be loaded separately if needed
+        List<string> roles = new(); // User roles can be loaded separately if needed
 
-        var accessToken = _jwtService.GenerateAccessTokenWithRsa(
+        string accessToken = _jwtService.GenerateAccessTokenWithRsa(
             user.Id,
             user.Username,
             user.Email,
@@ -100,7 +102,7 @@ public class VerifyEmailOtpLoginCommandHandler
 
         // Calculate expiration times from config
         DateTime accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
-        var refreshToken = _jwtService.GenerateRefreshToken();
+        string refreshToken = _jwtService.GenerateRefreshToken();
         DateTime refreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtService.RefreshTokenExpiryDays);
 
         return new VerifyEmailOtpLoginResponse

@@ -23,7 +23,10 @@ public static class PermissionExtensions
     /// </summary>
     public static PermissionDto? ToPermissionDto(this Permission? permission, HashSet<string>? includes = null)
     {
-        if (permission == null) return null;
+        if (permission == null)
+        {
+            return null;
+        }
 
         includes ??= new HashSet<string>();
 

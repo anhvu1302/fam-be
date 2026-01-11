@@ -21,11 +21,15 @@ public abstract class BasePagedRepository<TEntity>
         // Handle Convert expression (when casting to object)
         if (expression is UnaryExpression unaryExpression &&
             unaryExpression.NodeType == ExpressionType.Convert)
+        {
             expression = unaryExpression.Operand;
+        }
 
         // Handle member access
         if (expression is MemberExpression memberExpression)
+        {
             return memberExpression.Member.Name;
+        }
 
         throw new InvalidOperationException($"Cannot extract property name from expression: {expression}");
     }
@@ -38,22 +42,30 @@ public abstract class BasePagedRepository<TEntity>
         Dictionary<string, Expression<Func<TEntity, object>>> allowedIncludes)
     {
         if (string.IsNullOrWhiteSpace(includeString))
+        {
             return Array.Empty<Expression<Func<TEntity, object>>>();
+        }
 
-        var includeNames = includeString
+        List<string> includeNames = includeString
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(x => x.Trim())
             .Where(x => !string.IsNullOrEmpty(x))
             .ToList();
 
-        var expressions = new List<Expression<Func<TEntity, object>>>();
+        List<Expression<Func<TEntity, object>>> expressions = new();
 
-        foreach (var includeName in includeNames)
+        foreach (string includeName in includeNames)
+        {
             if (allowedIncludes.TryGetValue(includeName, out Expression<Func<TEntity, object>>? expression))
+            {
                 expressions.Add(expression);
+            }
             else
+            {
                 throw new InvalidOperationException(
                     $"Include '{includeName}' is not allowed. Allowed includes: {string.Join(", ", allowedIncludes.Keys)}");
+            }
+        }
 
         return expressions.ToArray();
     }

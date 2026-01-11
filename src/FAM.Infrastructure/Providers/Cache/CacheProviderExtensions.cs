@@ -30,42 +30,54 @@ public static class CacheProviderExtensions
             configuration.GetSection(CacheProviderOptions.SectionName).Bind(options);
 
             // Override with environment variables if present
-            var envProvider = Environment.GetEnvironmentVariable("CACHE_PROVIDER");
+            string? envProvider = Environment.GetEnvironmentVariable("CACHE_PROVIDER");
             if (!string.IsNullOrEmpty(envProvider))
+            {
                 options.Provider = envProvider;
+            }
 
             // Redis settings
-            var redisHost = Environment.GetEnvironmentVariable("REDIS_HOST");
+            string? redisHost = Environment.GetEnvironmentVariable("REDIS_HOST");
             if (!string.IsNullOrEmpty(redisHost))
+            {
                 options.Redis.Host = redisHost;
+            }
 
-            var redisPort = Environment.GetEnvironmentVariable("REDIS_PORT");
-            if (!string.IsNullOrEmpty(redisPort) && int.TryParse(redisPort, out var port))
+            string? redisPort = Environment.GetEnvironmentVariable("REDIS_PORT");
+            if (!string.IsNullOrEmpty(redisPort) && int.TryParse(redisPort, out int port))
+            {
                 options.Redis.Port = port;
+            }
 
-            var redisPassword = Environment.GetEnvironmentVariable("REDIS_PASSWORD");
+            string? redisPassword = Environment.GetEnvironmentVariable("REDIS_PASSWORD");
             if (!string.IsNullOrEmpty(redisPassword))
+            {
                 options.Redis.Password = redisPassword;
+            }
 
-            var redisDatabase = Environment.GetEnvironmentVariable("REDIS_DATABASE");
-            if (!string.IsNullOrEmpty(redisDatabase) && int.TryParse(redisDatabase, out var db))
+            string? redisDatabase = Environment.GetEnvironmentVariable("REDIS_DATABASE");
+            if (!string.IsNullOrEmpty(redisDatabase) && int.TryParse(redisDatabase, out int db))
+            {
                 options.Redis.Database = db;
+            }
         });
 
         // Register cache provider
         services.AddSingleton<ICacheProvider>(sp =>
         {
-            var providerName = Environment.GetEnvironmentVariable("CACHE_PROVIDER")
-                               ?? configuration.GetValue<string>($"{CacheProviderOptions.SectionName}:Provider")
-                               ?? "Redis";
+            string providerName = Environment.GetEnvironmentVariable("CACHE_PROVIDER")
+                                  ?? configuration.GetValue<string>($"{CacheProviderOptions.SectionName}:Provider")
+                                  ?? "Redis";
 
             // Validate provider
-            var validProviders = new[] { "redis", "inmemory", "memory" };
+            string[] validProviders = new[] { "redis", "inmemory", "memory" };
             if (!validProviders.Contains(providerName.ToLowerInvariant()))
+            {
                 throw new InvalidOperationException(
                     $"Invalid CACHE_PROVIDER value: '{providerName}'. " +
                     $"Valid values are: 'Redis', 'InMemory'. " +
                     $"Please set CACHE_PROVIDER environment variable or configure Cache:Provider in appsettings.json");
+            }
 
             switch (providerName.ToLowerInvariant())
             {
@@ -94,13 +106,13 @@ public static class CacheProviderExtensions
 
         try
         {
-            var redisHost = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "localhost";
+            string redisHost = Environment.GetEnvironmentVariable("REDIS_HOST") ?? "localhost";
 
-            var redisPort = Environment.GetEnvironmentVariable("REDIS_PORT") ?? "6379";
+            string redisPort = Environment.GetEnvironmentVariable("REDIS_PORT") ?? "6379";
 
-            var redisPassword = Environment.GetEnvironmentVariable("REDIS_PASSWORD") ?? null;
+            string? redisPassword = Environment.GetEnvironmentVariable("REDIS_PASSWORD") ?? null;
 
-            var configOptions = new ConfigurationOptions
+            ConfigurationOptions configOptions = new()
             {
                 EndPoints = { $"{redisHost}:{redisPort}" },
                 AbortOnConnectFail = false,
@@ -109,9 +121,11 @@ public static class CacheProviderExtensions
             };
 
             if (!string.IsNullOrEmpty(redisPassword))
+            {
                 configOptions.Password = redisPassword;
+            }
 
-            var connection = ConnectionMultiplexer.Connect(configOptions);
+            ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(configOptions);
 
             return new RedisCacheProvider(connection, logger);
         }
@@ -136,7 +150,7 @@ public static class CacheProviderExtensions
         {
             ILogger<RedisCacheProvider> logger = sp.GetRequiredService<ILogger<RedisCacheProvider>>();
 
-            var configOptions = new ConfigurationOptions
+            ConfigurationOptions configOptions = new()
             {
                 EndPoints = { $"{host}:{port}" },
                 AbortOnConnectFail = false,
@@ -145,9 +159,11 @@ public static class CacheProviderExtensions
             };
 
             if (!string.IsNullOrEmpty(password))
+            {
                 configOptions.Password = password;
+            }
 
-            var connection = ConnectionMultiplexer.Connect(configOptions);
+            ConnectionMultiplexer connection = ConnectionMultiplexer.Connect(configOptions);
 
             return new RedisCacheProvider(connection, logger);
         });

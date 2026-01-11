@@ -11,10 +11,10 @@ public class RoleCodeTests
     public void Create_WithValidData_ShouldCreateRoleCode()
     {
         // Arrange
-        var value = "admin";
+        string value = "admin";
 
         // Act
-        var roleCode = RoleCode.Create(value);
+        RoleCode roleCode = RoleCode.Create(value);
 
         // Assert
         roleCode.Should().NotBeNull();
@@ -25,7 +25,7 @@ public class RoleCodeTests
     public void Create_WithEmptyString_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "";
+        string value = "";
 
         // Act
         Action act = () => RoleCode.Create(value);
@@ -39,7 +39,7 @@ public class RoleCodeTests
     public void Create_WithTooLongValue_ShouldThrowDomainException()
     {
         // Arrange
-        var value = new string('A', 21);
+        string value = new('A', 21);
 
         // Act
         Action act = () => RoleCode.Create(value);
@@ -53,7 +53,7 @@ public class RoleCodeTests
     public void Create_WithInvalidCharacters_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "admin@123";
+        string value = "admin@123";
 
         // Act
         Action act = () => RoleCode.Create(value);
@@ -67,10 +67,10 @@ public class RoleCodeTests
     public void Create_WithLowercase_ShouldConvertToUppercase()
     {
         // Arrange
-        var value = "admin";
+        string value = "admin";
 
         // Act
-        var roleCode = RoleCode.Create(value);
+        RoleCode roleCode = RoleCode.Create(value);
 
         // Assert
         roleCode.Value.Should().Be("ADMIN");
@@ -80,7 +80,7 @@ public class RoleCodeTests
     public void ImplicitOperator_ShouldConvertToString()
     {
         // Arrange
-        var roleCode = RoleCode.Create("admin");
+        RoleCode roleCode = RoleCode.Create("admin");
 
         // Act
         string value = roleCode;
@@ -93,10 +93,10 @@ public class RoleCodeTests
     public void ExplicitOperator_ShouldConvertFromString()
     {
         // Arrange
-        var value = "admin";
+        string value = "admin";
 
         // Act
-        var roleCode = (RoleCode)value;
+        RoleCode roleCode = (RoleCode)value;
 
         // Assert
         roleCode.Value.Should().Be("ADMIN");
@@ -106,10 +106,10 @@ public class RoleCodeTests
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var roleCode = RoleCode.Create("admin");
+        RoleCode roleCode = RoleCode.Create("admin");
 
         // Act
-        var result = roleCode.ToString();
+        string result = roleCode.ToString();
 
         // Assert
         result.Should().Be("ADMIN");

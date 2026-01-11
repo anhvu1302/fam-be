@@ -19,9 +19,12 @@ public abstract class BaseApiController : ControllerBase
     /// <exception cref="UnauthorizedAccessException">If user ID is not found in token</exception>
     protected long GetCurrentUserId()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out var userId))
+        string? userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !long.TryParse(userIdClaim, out long userId))
+        {
             throw new UnauthorizedAccessException("User ID not found in token");
+        }
+
         return userId;
     }
 
@@ -31,8 +34,8 @@ public abstract class BaseApiController : ControllerBase
     /// <returns>User ID if found and valid, null otherwise</returns>
     protected long? TryGetCurrentUserId()
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        return long.TryParse(userIdClaim, out var userId) ? userId : null;
+        string? userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return long.TryParse(userIdClaim, out long userId) ? userId : null;
     }
 
     /// <summary>
@@ -47,21 +50,27 @@ public abstract class BaseApiController : ControllerBase
         // 3. X-Real-IP (nginx)
         // 4. RemoteIpAddress (direct connection)
 
-        var cfConnectingIp = Request.Headers["CF-Connecting-IP"].FirstOrDefault();
+        string? cfConnectingIp = Request.Headers["CF-Connecting-IP"].FirstOrDefault();
         if (!string.IsNullOrEmpty(cfConnectingIp))
-            return cfConnectingIp;
-
-        var forwardedFor = Request.Headers["X-Forwarded-For"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(forwardedFor))
         {
-            var ips = forwardedFor.Split(',', StringSplitOptions.RemoveEmptyEntries);
-            if (ips.Length > 0)
-                return ips[0].Trim();
+            return cfConnectingIp;
         }
 
-        var realIp = Request.Headers["X-Real-IP"].FirstOrDefault();
+        string? forwardedFor = Request.Headers["X-Forwarded-For"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(forwardedFor))
+        {
+            string[] ips = forwardedFor.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            if (ips.Length > 0)
+            {
+                return ips[0].Trim();
+            }
+        }
+
+        string? realIp = Request.Headers["X-Real-IP"].FirstOrDefault();
         if (!string.IsNullOrEmpty(realIp))
+        {
             return realIp;
+        }
 
         return HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
     }
@@ -82,7 +91,7 @@ public abstract class BaseApiController : ControllerBase
     /// </summary>
     protected OkObjectResult OkResponse<T>(T data, string? message = null)
     {
-        var response = ApiSuccessResponse<T>.Ok(data, message);
+        ApiSuccessResponse<T> response = ApiSuccessResponse<T>.Ok(data, message);
         return Ok(response);
     }
 
@@ -91,7 +100,7 @@ public abstract class BaseApiController : ControllerBase
     /// </summary>
     protected OkObjectResult OkResponse(string? message = null)
     {
-        var response = new ApiSuccessResponse<object>(true, message, null);
+        ApiSuccessResponse<object> response = new(true, message, null);
         return Ok(response);
     }
 
@@ -100,7 +109,7 @@ public abstract class BaseApiController : ControllerBase
     /// </summary>
     protected OkObjectResult OkPaginatedResponse<T>(IEnumerable<T> items, int page, int pageSize, long total)
     {
-        var response = ApiPagedResponse<T>.Ok(items.ToList(), page, pageSize, total);
+        ApiPagedResponse<T> response = ApiPagedResponse<T>.Ok(items.ToList(), page, pageSize, total);
         return Ok(response);
     }
 
@@ -109,7 +118,7 @@ public abstract class BaseApiController : ControllerBase
     /// </summary>
     protected BadRequestObjectResult BadRequestResponse(string message, string code = "BAD_REQUEST")
     {
-        var response = ApiErrorResponse.BadRequest(message, code);
+        ApiErrorResponse response = ApiErrorResponse.BadRequest(message, code);
         return BadRequest(response);
     }
 
@@ -119,7 +128,7 @@ public abstract class BaseApiController : ControllerBase
     protected UnauthorizedObjectResult UnauthorizedResponse(string message = "Unauthorized",
         string code = "UNAUTHORIZED")
     {
-        var response = ApiErrorResponse.Unauthorized(message, code);
+        ApiErrorResponse response = ApiErrorResponse.Unauthorized(message, code);
         return Unauthorized(response);
     }
 
@@ -128,7 +137,7 @@ public abstract class BaseApiController : ControllerBase
     /// </summary>
     protected ObjectResult ForbiddenResponse(string message, string code = "FORBIDDEN")
     {
-        var response = ApiErrorResponse.Forbidden(message, code);
+        ApiErrorResponse response = ApiErrorResponse.Forbidden(message, code);
         return StatusCode(403, response);
     }
 
@@ -137,7 +146,7 @@ public abstract class BaseApiController : ControllerBase
     /// </summary>
     protected NotFoundObjectResult NotFoundResponse(string message, string code = "NOT_FOUND")
     {
-        var response = ApiErrorResponse.NotFound(message, code);
+        ApiErrorResponse response = ApiErrorResponse.NotFound(message, code);
         return NotFound(response);
     }
 
@@ -146,7 +155,7 @@ public abstract class BaseApiController : ControllerBase
     /// </summary>
     protected BadRequestObjectResult ValidationErrorResponse(params ApiError[] errors)
     {
-        var response = ApiErrorResponse.ValidationError(errors);
+        ApiErrorResponse response = ApiErrorResponse.ValidationError(errors);
         return BadRequest(response);
     }
 
@@ -156,7 +165,7 @@ public abstract class BaseApiController : ControllerBase
     protected ObjectResult InternalErrorResponse(string message = "An internal server error occurred",
         string code = "INTERNAL_SERVER_ERROR")
     {
-        var response = ApiErrorResponse.InternalServerError(message, code);
+        ApiErrorResponse response = ApiErrorResponse.InternalServerError(message, code);
         return StatusCode(500, response);
     }
 

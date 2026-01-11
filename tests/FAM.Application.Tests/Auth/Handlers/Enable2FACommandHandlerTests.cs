@@ -30,15 +30,15 @@ public class Enable2FACommandHandlerTests
     public async Task Handle_WithValidPasswordAndUserId_ShouldReturnSecretAndQrCode()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new Enable2FACommand
+        Enable2FACommand command = new()
         {
             UserId = user.Id,
             Password = plainPassword
@@ -61,16 +61,16 @@ public class Enable2FACommandHandlerTests
     public async Task Handle_WithIncorrectPassword_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var wrongPassword = "WrongPassword123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        string wrongPassword = "WrongPassword123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new Enable2FACommand
+        Enable2FACommand command = new()
         {
             UserId = user.Id,
             Password = wrongPassword
@@ -85,13 +85,13 @@ public class Enable2FACommandHandlerTests
     public async Task Handle_WithNonExistentUser_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var nonExistentUserId = 99999L;
+        long nonExistentUserId = 99999L;
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(nonExistentUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
-        var command = new Enable2FACommand
+        Enable2FACommand command = new()
         {
             UserId = nonExistentUserId,
             Password = "SomePassword123!"
@@ -106,15 +106,15 @@ public class Enable2FACommandHandlerTests
     public async Task Handle_MultipleCalls_ShouldGenerateDifferentSecrets()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new Enable2FACommand
+        Enable2FACommand command = new()
         {
             UserId = user.Id,
             Password = plainPassword

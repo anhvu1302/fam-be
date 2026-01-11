@@ -74,13 +74,17 @@ public static class UserExtensions
     /// </summary>
     public static UserDto? ToUserDto(this User? user, HashSet<string>? includes = null)
     {
-        if (user == null) return null;
+        if (user == null)
+        {
+            return null;
+        }
 
         includes ??= new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         // Conditionally include devices
         List<UserDeviceRef>? devices = null;
         if (includes.Contains("devices") || includes.Contains("userdevices"))
+        {
             devices = user.UserDevices?.Select(ud => new UserDeviceRef(
                 ud.Id,
                 ud.DeviceId,
@@ -94,10 +98,12 @@ public static class UserExtensions
                 ud.IsActive,
                 ud.IsTrusted
             )).ToList() ?? new List<UserDeviceRef>();
+        }
 
         // Conditionally include node roles
         List<UserNodeRoleRef>? nodeRoles = null;
         if (includes.Contains("noderoles") || includes.Contains("usernoderoles"))
+        {
             nodeRoles = user.UserNodeRoles?.Select(unr => new UserNodeRoleRef(
                 unr.UserId,
                 unr.NodeId,
@@ -107,6 +113,7 @@ public static class UserExtensions
                 unr.StartAt,
                 unr.EndAt
             )).ToList() ?? new List<UserNodeRoleRef>();
+        }
 
         return new UserDto(
             user.Id,
@@ -144,7 +151,10 @@ public static class UserExtensions
     /// </summary>
     public static UserDto? ToUserDtoMinimal(this User? user)
     {
-        if (user == null) return null;
+        if (user == null)
+        {
+            return null;
+        }
 
         return new UserDto(
             user.Id,

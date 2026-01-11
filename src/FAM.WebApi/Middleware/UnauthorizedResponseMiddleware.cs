@@ -26,7 +26,7 @@ public class UnauthorizedResponseMiddleware
         try
         {
             // Replace response body with a memory stream
-            using var responseBody = new MemoryStream();
+            using MemoryStream responseBody = new();
             context.Response.Body = responseBody;
 
             // Call the next middleware
@@ -37,7 +37,7 @@ public class UnauthorizedResponseMiddleware
             {
                 // Read what the response would have been
                 responseBody.Seek(0, SeekOrigin.Begin);
-                var responseText = await new StreamReader(responseBody).ReadToEndAsync();
+                string responseText = await new StreamReader(responseBody).ReadToEndAsync();
 
                 _logger.LogWarning("401 Unauthorized response detected. Original body: {Body}", responseText);
 
@@ -45,7 +45,7 @@ public class UnauthorizedResponseMiddleware
                 context.Response.Body = originalBodyStream;
                 context.Response.ContentType = "application/json";
 
-                var errorResponse = new ApiErrorResponse(
+                ApiErrorResponse errorResponse = new(
                     false,
                     new List<ApiError>
                     {
@@ -56,7 +56,7 @@ public class UnauthorizedResponseMiddleware
                     }
                 );
 
-                var json = JsonSerializer.Serialize(errorResponse,
+                string json = JsonSerializer.Serialize(errorResponse,
                     new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
                 await context.Response.WriteAsync(json);
                 return;

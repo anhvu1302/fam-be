@@ -24,7 +24,7 @@ public class SigningKeyTests
     public void Create_WithValidParameters_ShouldCreateSigningKey()
     {
         // Act
-        var key = SigningKey.Create(
+        SigningKey key = SigningKey.Create(
             ValidKeyId,
             ValidPublicKey,
             ValidPrivateKey,
@@ -51,7 +51,7 @@ public class SigningKeyTests
     public void Create_WithoutExpiry_ShouldCreateNonExpiringKey()
     {
         // Act
-        var key = SigningKey.Create(
+        SigningKey key = SigningKey.Create(
             ValidKeyId,
             ValidPublicKey,
             ValidPrivateKey);
@@ -149,7 +149,7 @@ public class SigningKeyTests
     public void Activate_WhenExpired_ShouldThrowDomainException()
     {
         // Arrange
-        var key = SigningKey.Create(
+        SigningKey key = SigningKey.Create(
             ValidKeyId,
             ValidPublicKey,
             ValidPrivateKey,
@@ -186,7 +186,7 @@ public class SigningKeyTests
     {
         // Arrange
         SigningKey key = CreateTestKey();
-        var reason = "Security breach";
+        string reason = "Security breach";
 
         // Act
         key.Revoke(reason);
@@ -267,7 +267,7 @@ public class SigningKeyTests
     public void CanSign_WhenExpired_ShouldReturnFalse()
     {
         // Arrange
-        var key = SigningKey.Create(
+        SigningKey key = SigningKey.Create(
             ValidKeyId,
             ValidPublicKey,
             ValidPrivateKey,
@@ -327,7 +327,7 @@ public class SigningKeyTests
     public void IsExpired_WhenExpiryInFuture_ShouldReturnFalse()
     {
         // Arrange
-        var key = SigningKey.Create(
+        SigningKey key = SigningKey.Create(
             ValidKeyId,
             ValidPublicKey,
             ValidPrivateKey,
@@ -341,7 +341,7 @@ public class SigningKeyTests
     public void IsExpired_WhenExpiryInPast_ShouldReturnTrue()
     {
         // Arrange
-        var key = SigningKey.Create(
+        SigningKey key = SigningKey.Create(
             ValidKeyId,
             ValidPublicKey,
             ValidPrivateKey,

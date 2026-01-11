@@ -11,10 +11,10 @@ public class RatingTests
     public void Create_WithValidValue_ShouldCreateRating()
     {
         // Arrange
-        var value = 4;
+        int value = 4;
 
         // Act
-        var rating = Rating.Create(value);
+        Rating rating = Rating.Create(value);
 
         // Assert
         rating.Should().NotBeNull();
@@ -25,10 +25,10 @@ public class RatingTests
     public void Create_WithDecimalValue_ShouldRoundAndCreateRating()
     {
         // Arrange
-        var value = 4.7m;
+        decimal value = 4.7m;
 
         // Act
-        var rating = Rating.Create(value);
+        Rating rating = Rating.Create(value);
 
         // Assert
         rating.Value.Should().Be(5);
@@ -38,7 +38,7 @@ public class RatingTests
     public void Create_WithValueTooLow_ShouldThrowDomainException()
     {
         // Arrange
-        var value = 0;
+        int value = 0;
 
         // Act
         Action act = () => Rating.Create(value);
@@ -52,7 +52,7 @@ public class RatingTests
     public void Create_WithValueTooHigh_ShouldThrowDomainException()
     {
         // Arrange
-        var value = 6;
+        int value = 6;
 
         // Act
         Action act = () => Rating.Create(value);
@@ -96,10 +96,10 @@ public class RatingTests
     public void IsHighRating_WithFourStars_ShouldReturnTrue()
     {
         // Arrange
-        var rating = Rating.Create(4);
+        Rating rating = Rating.Create(4);
 
         // Act
-        var result = rating.IsHighRating();
+        bool result = rating.IsHighRating();
 
         // Assert
         result.Should().BeTrue();
@@ -109,10 +109,10 @@ public class RatingTests
     public void IsHighRating_WithThreeStars_ShouldReturnFalse()
     {
         // Arrange
-        var rating = Rating.Create(3);
+        Rating rating = Rating.Create(3);
 
         // Act
-        var result = rating.IsHighRating();
+        bool result = rating.IsHighRating();
 
         // Assert
         result.Should().BeFalse();
@@ -122,10 +122,10 @@ public class RatingTests
     public void IsLowRating_WithTwoStars_ShouldReturnTrue()
     {
         // Arrange
-        var rating = Rating.Create(2);
+        Rating rating = Rating.Create(2);
 
         // Act
-        var result = rating.IsLowRating();
+        bool result = rating.IsLowRating();
 
         // Assert
         result.Should().BeTrue();
@@ -135,10 +135,10 @@ public class RatingTests
     public void IsLowRating_WithThreeStars_ShouldReturnFalse()
     {
         // Arrange
-        var rating = Rating.Create(3);
+        Rating rating = Rating.Create(3);
 
         // Act
-        var result = rating.IsLowRating();
+        bool result = rating.IsLowRating();
 
         // Assert
         result.Should().BeFalse();
@@ -148,10 +148,10 @@ public class RatingTests
     public void IsAverageRating_WithThreeStars_ShouldReturnTrue()
     {
         // Arrange
-        var rating = Rating.Create(3);
+        Rating rating = Rating.Create(3);
 
         // Act
-        var result = rating.IsAverageRating();
+        bool result = rating.IsAverageRating();
 
         // Assert
         result.Should().BeTrue();
@@ -161,10 +161,10 @@ public class RatingTests
     public void IsAverageRating_WithFourStars_ShouldReturnFalse()
     {
         // Arrange
-        var rating = Rating.Create(4);
+        Rating rating = Rating.Create(4);
 
         // Act
-        var result = rating.IsAverageRating();
+        bool result = rating.IsAverageRating();
 
         // Assert
         result.Should().BeFalse();
@@ -174,10 +174,10 @@ public class RatingTests
     public void GetDescription_WithFiveStars_ShouldReturnExcellent()
     {
         // Arrange
-        var rating = Rating.Create(5);
+        Rating rating = Rating.Create(5);
 
         // Act
-        var result = rating.GetDescription();
+        string result = rating.GetDescription();
 
         // Assert
         result.Should().Be("Excellent");
@@ -187,10 +187,10 @@ public class RatingTests
     public void GetStars_WithThreeStars_ShouldReturnCorrectStars()
     {
         // Arrange
-        var rating = Rating.Create(3);
+        Rating rating = Rating.Create(3);
 
         // Act
-        var result = rating.GetStars();
+        string result = rating.GetStars();
 
         // Assert
         result.Should().Be("★★★☆☆");
@@ -200,11 +200,11 @@ public class RatingTests
     public void CompareTo_WithHigherRating_ShouldReturnNegative()
     {
         // Arrange
-        var rating1 = Rating.Create(3);
-        var rating2 = Rating.Create(4);
+        Rating rating1 = Rating.Create(3);
+        Rating rating2 = Rating.Create(4);
 
         // Act
-        var result = rating1.CompareTo(rating2);
+        int result = rating1.CompareTo(rating2);
 
         // Assert
         result.Should().BeNegative();
@@ -214,8 +214,8 @@ public class RatingTests
     public void AverageWith_ShouldReturnAverageRating()
     {
         // Arrange
-        var rating1 = Rating.Create(3);
-        var rating2 = Rating.Create(5);
+        Rating rating1 = Rating.Create(3);
+        Rating rating2 = Rating.Create(5);
 
         // Act
         Rating result = rating1.AverageWith(rating2);
@@ -228,7 +228,7 @@ public class RatingTests
     public void ImplicitOperator_ShouldConvertToInt()
     {
         // Arrange
-        var rating = Rating.Create(4);
+        Rating rating = Rating.Create(4);
 
         // Act
         int value = rating;
@@ -241,10 +241,10 @@ public class RatingTests
     public void ExplicitOperator_ShouldConvertFromInt()
     {
         // Arrange
-        var value = 4;
+        int value = 4;
 
         // Act
-        var rating = (Rating)value;
+        Rating rating = (Rating)value;
 
         // Assert
         rating.Value.Should().Be(4);
@@ -254,10 +254,10 @@ public class RatingTests
     public void ToString_ShouldReturnFormattedString()
     {
         // Arrange
-        var rating = Rating.Create(4);
+        Rating rating = Rating.Create(4);
 
         // Act
-        var result = rating.ToString();
+        string result = rating.ToString();
 
         // Assert
         result.Should().Be("4/5 stars");

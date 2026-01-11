@@ -20,12 +20,16 @@ public sealed class ResourceAction : ValueObject
     public static ResourceAction Create(string resourceAction)
     {
         if (string.IsNullOrWhiteSpace(resourceAction))
+        {
             throw new DomainException(ErrorCodes.VO_RESOURCE_ACTION_EMPTY);
+        }
 
         resourceAction = resourceAction.Trim();
 
         if (resourceAction.Length > 50)
+        {
             throw new DomainException(ErrorCodes.VO_RESOURCE_ACTION_TOO_LONG);
+        }
 
         return new ResourceAction(resourceAction);
     }

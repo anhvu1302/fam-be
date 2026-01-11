@@ -25,11 +25,11 @@ public class GetEmailTemplateByIdQueryHandlerTests
     public async Task Handle_WithExistingTemplate_ShouldReturnDto()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Test Email", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
-        var query = new GetEmailTemplateByIdQuery(1);
+        GetEmailTemplateByIdQuery query = new(1);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(query.Id, default))
             .ReturnsAsync(template);
@@ -49,7 +49,7 @@ public class GetEmailTemplateByIdQueryHandlerTests
     public async Task Handle_WithNonExistentTemplate_ShouldReturnNull()
     {
         // Arrange
-        var query = new GetEmailTemplateByIdQuery(999);
+        GetEmailTemplateByIdQuery query = new(999);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(query.Id, default))
             .ReturnsAsync((EmailTemplate?)null);

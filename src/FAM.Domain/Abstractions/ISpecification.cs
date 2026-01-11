@@ -54,8 +54,8 @@ internal class AndSpecification<T> : Specification<T>
 
     public override Expression<Func<T, bool>> ToExpression()
     {
-        var leftExpr = _left.ToExpression();
-        var rightExpr = _right.ToExpression();
+        Expression<Func<T, bool>> leftExpr = _left.ToExpression();
+        Expression<Func<T, bool>> rightExpr = _right.ToExpression();
         ParameterExpression param = Expression.Parameter(typeof(T));
         BinaryExpression body = Expression.AndAlso(
             Expression.Invoke(leftExpr, param),
@@ -78,8 +78,8 @@ internal class OrSpecification<T> : Specification<T>
 
     public override Expression<Func<T, bool>> ToExpression()
     {
-        var leftExpr = _left.ToExpression();
-        var rightExpr = _right.ToExpression();
+        Expression<Func<T, bool>> leftExpr = _left.ToExpression();
+        Expression<Func<T, bool>> rightExpr = _right.ToExpression();
         ParameterExpression param = Expression.Parameter(typeof(T));
         BinaryExpression body = Expression.OrElse(
             Expression.Invoke(leftExpr, param),
@@ -100,7 +100,7 @@ internal class NotSpecification<T> : Specification<T>
 
     public override Expression<Func<T, bool>> ToExpression()
     {
-        var expr = _spec.ToExpression();
+        Expression<Func<T, bool>> expr = _spec.ToExpression();
         ParameterExpression param = Expression.Parameter(typeof(T));
         UnaryExpression body = Expression.Not(
             Expression.Invoke(expr, param)

@@ -34,11 +34,14 @@ public sealed class SmtpEmailProvider : IEmailProvider
 
     public Task<bool> IsAvailableAsync(CancellationToken cancellationToken = default)
     {
-        var isConfigured = !string.IsNullOrEmpty(_options.Host)
-                           && !string.IsNullOrEmpty(_options.Username)
-                           && !string.IsNullOrEmpty(_options.Password);
+        bool isConfigured = !string.IsNullOrEmpty(_options.Host)
+                            && !string.IsNullOrEmpty(_options.Username)
+                            && !string.IsNullOrEmpty(_options.Password);
 
-        if (!isConfigured) _logger.LogWarning("SMTP is not properly configured");
+        if (!isConfigured)
+        {
+            _logger.LogWarning("SMTP is not properly configured");
+        }
 
         return Task.FromResult(isConfigured);
     }
@@ -58,17 +61,17 @@ public sealed class SmtpEmailProvider : IEmailProvider
                 return EmailSendResult.Succeeded("dev-mode-skipped");
             }
 
-            using var smtpClient = new SmtpClient(_options.Host, _options.Port)
+            using SmtpClient smtpClient = new(_options.Host, _options.Port)
             {
                 Credentials = new NetworkCredential(_options.Username, _options.Password),
                 EnableSsl = _options.EnableSsl,
                 DeliveryMethod = SmtpDeliveryMethod.Network
             };
 
-            var fromEmail = message.FromEmail ?? _defaultFromEmail;
-            var fromName = message.FromName ?? _defaultFromName;
+            string fromEmail = message.FromEmail ?? _defaultFromEmail;
+            string fromName = message.FromName ?? _defaultFromName;
 
-            using var mailMessage = new MailMessage
+            using MailMessage mailMessage = new()
             {
                 From = new MailAddress(fromEmail, fromName),
                 Subject = message.Subject,

@@ -42,8 +42,8 @@ public class LogoutAllDevicesCommandHandlerTests
     public async Task Handle_WithValidUserId_ShouldDeactivateAllDevices()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
         _mockUserRepository
@@ -54,7 +54,7 @@ public class LogoutAllDevicesCommandHandlerTests
             .Setup(x => x.DeactivateAllUserDevicesAsync(user.Id, null, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var command = new LogoutAllDevicesCommand
+        LogoutAllDevicesCommand command = new()
         {
             UserId = user.Id
         };
@@ -74,10 +74,10 @@ public class LogoutAllDevicesCommandHandlerTests
     public async Task Handle_WithExceptDeviceId_ShouldDeactivateAllExceptSpecified()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
-        var exceptDeviceId = "current-device-123";
+        string exceptDeviceId = "current-device-123";
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
@@ -87,7 +87,7 @@ public class LogoutAllDevicesCommandHandlerTests
             .Setup(x => x.DeactivateAllUserDevicesAsync(user.Id, exceptDeviceId, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var command = new LogoutAllDevicesCommand
+        LogoutAllDevicesCommand command = new()
         {
             UserId = user.Id,
             ExceptDeviceId = exceptDeviceId
@@ -108,13 +108,13 @@ public class LogoutAllDevicesCommandHandlerTests
     public async Task Handle_WithNonExistentUser_ShouldThrowKeyNotFoundException()
     {
         // Arrange
-        var nonExistentUserId = 99999L;
+        long nonExistentUserId = 99999L;
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(nonExistentUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
-        var command = new LogoutAllDevicesCommand
+        LogoutAllDevicesCommand command = new()
         {
             UserId = nonExistentUserId
         };

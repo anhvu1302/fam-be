@@ -27,28 +27,35 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
     {
         // Get user by ID
         User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
-        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
+        if (user == null)
+        {
+            throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
+        }
 
         // Security: Verify the secret matches the pending secret (from Enable2FA)
         if (!user.IsPendingTwoFactorSecretValid(request.Secret))
+        {
             throw new InvalidOperationException(
                 "Invalid or expired 2FA secret. Please generate a new one by calling Enable2FA.");
+        }
 
         // Verify the TOTP code with the provided secret
-        var secretBytes = Base32Encoding.ToBytes(request.Secret);
-        var totp = new Totp(secretBytes);
+        byte[]? secretBytes = Base32Encoding.ToBytes(request.Secret);
+        Totp totp = new(secretBytes);
 
-        var verificationWindow = new VerificationWindow(0, 0);
+        VerificationWindow verificationWindow = new(0, 0);
 
         if (!totp.VerifyTotp(request.Code, out _, verificationWindow))
+        {
             throw new InvalidOperationException("Invalid verification code");
+        }
 
         // Generate backup codes
         List<string> backupCodes = GenerateBackupCodes();
 
         // Hash backup codes before storing (for security)
-        var hashedBackupCodes = backupCodes.Select(code => BCrypt.Net.BCrypt.HashPassword(code)).ToList();
-        var backupCodesJson = JsonSerializer.Serialize(hashedBackupCodes);
+        List<string> hashedBackupCodes = backupCodes.Select(code => BCrypt.Net.BCrypt.HashPassword(code)).ToList();
+        string backupCodesJson = JsonSerializer.Serialize(hashedBackupCodes);
 
         // Code is valid - enable 2FA and save the secret with backup codes
         user.EnableTwoFactor(request.Secret, backupCodesJson);
@@ -67,11 +74,11 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
     /// </summary>
     private static List<string> GenerateBackupCodes()
     {
-        var codes = new List<string>();
+        List<string> codes = new();
 
-        for (var i = 0; i < BackupCodeCount; i++)
+        for (int i = 0; i < BackupCodeCount; i++)
         {
-            var code = GenerateSecureCode(BackupCodeLength);
+            string code = GenerateSecureCode(BackupCodeLength);
             codes.Add(code);
         }
 
@@ -87,12 +94,15 @@ public sealed class Confirm2FACommandHandler : IRequestHandler<Confirm2FACommand
     {
         // Use lowercase hex characters only (like GitHub)
         const string chars = "0123456789abcdef";
-        var result = new char[length];
+        char[] result = new char[length];
 
-        for (var i = 0; i < length; i++) result[i] = chars[RandomNumberGenerator.GetInt32(chars.Length)];
+        for (int i = 0; i < length; i++)
+        {
+            result[i] = chars[RandomNumberGenerator.GetInt32(chars.Length)];
+        }
 
         // Format: xxxxx-xxxxx (5-5 format with dash)
-        var code = new string(result);
+        string code = new(result);
         return $"{code.Substring(0, 5)}-{code.Substring(5, 5)}";
     }
 }

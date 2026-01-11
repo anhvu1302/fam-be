@@ -36,6 +36,7 @@ public sealed class GetPermissionsQueryHandler : IRequestHandler<GetPermissionsQ
 
         Expression<Func<Permission, bool>>? filterExpression = null;
         if (!string.IsNullOrWhiteSpace(queryRequest.Filter))
+        {
             try
             {
                 FilterNode ast = _filterParser.Parse(queryRequest.Filter);
@@ -49,14 +50,15 @@ public sealed class GetPermissionsQueryHandler : IRequestHandler<GetPermissionsQ
             {
                 throw new InvalidOperationException($"Invalid filter syntax: {ex.Message}", ex);
             }
+        }
 
-        var page = queryRequest.GetEffectivePage();
-        var pageSize = queryRequest.GetEffectivePageSize();
+        int page = queryRequest.GetEffectivePage();
+        int pageSize = queryRequest.GetEffectivePageSize();
 
         Expression<Func<Permission, object>>[] includes = fieldMap.ParseIncludes(queryRequest.Include);
         HashSet<string> includeSet = IncludeParser.Parse(queryRequest.Include);
 
-        (IEnumerable<Permission> permissions, var totalCount) = await _permissionRepository.GetPagedAsync(
+        (IEnumerable<Permission> permissions, long totalCount) = await _permissionRepository.GetPagedAsync(
             filterExpression,
             queryRequest.Sort,
             page,
@@ -64,7 +66,7 @@ public sealed class GetPermissionsQueryHandler : IRequestHandler<GetPermissionsQ
             includes,
             cancellationToken);
 
-        var items = permissions.Select(p => p.ToPermissionDto(includeSet)).ToList();
+        List<PermissionDto?> items = permissions.Select(p => p.ToPermissionDto(includeSet)).ToList();
 
         return new PageResult<PermissionDto>(
             items!,

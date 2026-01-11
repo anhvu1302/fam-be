@@ -68,7 +68,7 @@ public static class EfFilterBinder<T>
     private static Expression BindCall(CallNode node, ParameterExpression parameter, FieldMap<T> fieldMap)
     {
         Expression target = BindNode(node.Target, parameter, fieldMap);
-        var args = node.Arguments.Select(a => BindNode(a, parameter, fieldMap)).ToList();
+        List<Expression> args = node.Arguments.Select(a => BindNode(a, parameter, fieldMap)).ToList();
 
         return node.Operator switch
         {
@@ -87,10 +87,12 @@ public static class EfFilterBinder<T>
     private static Expression BindField(FieldNode node, ParameterExpression parameter, FieldMap<T> fieldMap)
     {
         if (!fieldMap.TryGet(node.Name, out LambdaExpression expression, out _))
+        {
             throw new InvalidOperationException($"Field '{node.Name}' not found in field map");
+        }
 
         // Replace parameter in expression
-        var visitor = new ParameterReplacerVisitor(expression.Parameters[0], parameter);
+        ParameterReplacerVisitor visitor = new(expression.Parameters[0], parameter);
         return visitor.Visit(expression.Body);
     }
 
@@ -107,7 +109,9 @@ public static class EfFilterBinder<T>
 
         // Handle nullable types
         if (IsNullableType(left.Type) && right is ConstantExpression { Value: null })
+        {
             return Expression.Equal(left, Expression.Constant(null, left.Type));
+        }
 
         return Expression.Equal(left, right);
     }
@@ -144,15 +148,19 @@ public static class EfFilterBinder<T>
     private static Expression BuildIn(Expression target, List<Expression> values)
     {
         if (values.Count == 0)
+        {
             return Expression.Constant(false);
+        }
 
         Type targetType = target.Type;
-        var convertedValues = values.Select(v => ConvertIfNeeded(v, targetType)).ToList();
+        List<Expression> convertedValues = values.Select(v => ConvertIfNeeded(v, targetType)).ToList();
 
         // Build: target == value1 || target == value2 || ...
         Expression condition = BuildEqual(target, convertedValues[0]);
-        for (var i = 1; i < convertedValues.Count; i++)
+        for (int i = 1; i < convertedValues.Count; i++)
+        {
             condition = Expression.OrElse(condition, BuildEqual(target, convertedValues[i]));
+        }
 
         return condition;
     }
@@ -176,11 +184,16 @@ public static class EfFilterBinder<T>
         if (target.Type == typeof(string))
         {
             if (values.Count == 0)
+            {
                 return Expression.Constant(false);
+            }
 
             Expression condition = BuildStringMethod(target, values[0], nameof(string.Contains));
-            for (var i = 1; i < values.Count; i++)
+            for (int i = 1; i < values.Count; i++)
+            {
                 condition = Expression.OrElse(condition, BuildStringMethod(target, values[i], nameof(string.Contains)));
+            }
+
             return condition;
         }
 
@@ -190,7 +203,9 @@ public static class EfFilterBinder<T>
     private static Expression ConvertIfNeeded(Expression expression, Type targetType)
     {
         if (expression.Type == targetType)
+        {
             return expression;
+        }
 
         // Handle nullable types
         Type underlyingTargetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
@@ -199,10 +214,12 @@ public static class EfFilterBinder<T>
         if (expression is ConstantExpression constant)
         {
             if (constant.Value == null)
+            {
                 return Expression.Constant(null, targetType);
+            }
 
             // Convert constant value
-            var convertedValue = Convert.ChangeType(constant.Value, underlyingTargetType,
+            object convertedValue = Convert.ChangeType(constant.Value, underlyingTargetType,
                 CultureInfo.InvariantCulture);
             return Expression.Constant(convertedValue, targetType);
         }

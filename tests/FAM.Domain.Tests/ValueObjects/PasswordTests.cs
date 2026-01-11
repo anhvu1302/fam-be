@@ -11,10 +11,10 @@ public class PasswordTests
     public void Create_WithValidPassword_ShouldCreatePassword()
     {
         // Arrange
-        var plainPassword = "MySecurePass123!";
+        string plainPassword = "MySecurePass123!";
 
         // Act
-        var password = Password.Create(plainPassword);
+        Password password = Password.Create(plainPassword);
 
         // Assert
         password.Should().NotBeNull();
@@ -27,7 +27,7 @@ public class PasswordTests
     public void Create_WithPasswordTooShort_ShouldThrowException()
     {
         // Arrange
-        var shortPassword = "12345";
+        string shortPassword = "12345";
 
         // Act & Assert
         Assert.Throws<DomainException>(() => Password.Create(shortPassword))
@@ -38,7 +38,7 @@ public class PasswordTests
     public void Create_WithPasswordWithoutUppercase_ShouldThrowException()
     {
         // Arrange
-        var passwordWithoutUppercase = "mysecurepass123!";
+        string passwordWithoutUppercase = "mysecurepass123!";
 
         // Act & Assert
         Assert.Throws<DomainException>(() => Password.Create(passwordWithoutUppercase))
@@ -49,7 +49,7 @@ public class PasswordTests
     public void Create_WithPasswordWithoutLowercase_ShouldThrowException()
     {
         // Arrange
-        var passwordWithoutLowercase = "MYSECUREPASS123!";
+        string passwordWithoutLowercase = "MYSECUREPASS123!";
 
         // Act & Assert
         Assert.Throws<DomainException>(() => Password.Create(passwordWithoutLowercase))
@@ -60,7 +60,7 @@ public class PasswordTests
     public void Create_WithPasswordWithoutNumber_ShouldThrowException()
     {
         // Arrange
-        var passwordWithoutNumber = "MySecurePass!";
+        string passwordWithoutNumber = "MySecurePass!";
 
         // Act & Assert
         Assert.Throws<DomainException>(() => Password.Create(passwordWithoutNumber))
@@ -71,7 +71,7 @@ public class PasswordTests
     public void Create_WithPasswordWithoutSpecialCharacter_ShouldThrowException()
     {
         // Arrange
-        var passwordWithoutSpecialChar = "MySecurePass123";
+        string passwordWithoutSpecialChar = "MySecurePass123";
 
         // Act & Assert
         Assert.Throws<DomainException>(() => Password.Create(passwordWithoutSpecialChar))
@@ -82,7 +82,7 @@ public class PasswordTests
     public void Create_WithEmptyPassword_ShouldThrowException()
     {
         // Arrange
-        var emptyPassword = "";
+        string emptyPassword = "";
 
         // Act & Assert
         Assert.Throws<DomainException>(() => Password.Create(emptyPassword))
@@ -104,11 +104,11 @@ public class PasswordTests
     public void FromHash_WithValidHashAndSalt_ShouldCreatePassword()
     {
         // Arrange
-        var hash = "somehash";
-        var salt = "somesalt";
+        string hash = "somehash";
+        string salt = "somesalt";
 
         // Act
-        var password = Password.FromHash(hash, salt);
+        Password password = Password.FromHash(hash, salt);
 
         // Assert
         password.Should().NotBeNull();
@@ -120,8 +120,8 @@ public class PasswordTests
     public void FromHash_WithEmptyHash_ShouldThrowException()
     {
         // Arrange
-        var emptyHash = "";
-        var salt = "somesalt";
+        string emptyHash = "";
+        string salt = "somesalt";
 
         // Act & Assert
         Assert.Throws<DomainException>(() => Password.FromHash(emptyHash, salt))
@@ -132,8 +132,8 @@ public class PasswordTests
     public void FromHash_WithEmptySalt_ShouldThrowException()
     {
         // Arrange
-        var hash = "somehash";
-        var emptySalt = "";
+        string hash = "somehash";
+        string emptySalt = "";
 
         // Act & Assert
         Assert.Throws<DomainException>(() => Password.FromHash(hash, emptySalt))
@@ -144,11 +144,11 @@ public class PasswordTests
     public void Verify_WithCorrectPassword_ShouldReturnTrue()
     {
         // Arrange
-        var plainPassword = "MySecurePass123!";
-        var password = Password.Create(plainPassword);
+        string plainPassword = "MySecurePass123!";
+        Password password = Password.Create(plainPassword);
 
         // Act
-        var result = password.Verify(plainPassword);
+        bool result = password.Verify(plainPassword);
 
         // Assert
         result.Should().BeTrue();
@@ -158,12 +158,12 @@ public class PasswordTests
     public void Verify_WithIncorrectPassword_ShouldReturnFalse()
     {
         // Arrange
-        var plainPassword = "MySecurePass123!";
-        var wrongPassword = "WrongPassword123!";
-        var password = Password.Create(plainPassword);
+        string plainPassword = "MySecurePass123!";
+        string wrongPassword = "WrongPassword123!";
+        Password password = Password.Create(plainPassword);
 
         // Act
-        var result = password.Verify(wrongPassword);
+        bool result = password.Verify(wrongPassword);
 
         // Assert
         result.Should().BeFalse();
@@ -173,9 +173,9 @@ public class PasswordTests
     public void Update_WithNewPassword_ShouldUpdatePassword()
     {
         // Arrange
-        var oldPassword = "MySecurePass123!";
-        var newPassword = "NewSecurePass456!";
-        var password = Password.Create(oldPassword);
+        string oldPassword = "MySecurePass123!";
+        string newPassword = "NewSecurePass456!";
+        Password password = Password.Create(oldPassword);
 
         // Act
         Password updatedPassword = password.Update(newPassword);
@@ -190,11 +190,11 @@ public class PasswordTests
     public void ToString_ShouldReturnMaskedString()
     {
         // Arrange
-        var plainPassword = "MySecurePass123!";
-        var password = Password.Create(plainPassword);
+        string plainPassword = "MySecurePass123!";
+        Password password = Password.Create(plainPassword);
 
         // Act
-        var result = password.ToString();
+        string result = password.ToString();
 
         // Assert
         result.Should().Be("*****");

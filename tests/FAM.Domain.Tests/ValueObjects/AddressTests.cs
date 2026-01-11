@@ -11,16 +11,16 @@ public class AddressTests
     public void Create_WithValidData_ShouldCreateAddress()
     {
         // Arrange
-        var street = "123 Main Street";
-        var city = "Ho Chi Minh City";
-        var countryCode = "VN";
-        var ward = "Ward 1";
-        var district = "District 1";
-        var province = "Ho Chi Minh";
-        var postalCode = "70000";
+        string street = "123 Main Street";
+        string city = "Ho Chi Minh City";
+        string countryCode = "VN";
+        string ward = "Ward 1";
+        string district = "District 1";
+        string province = "Ho Chi Minh";
+        string postalCode = "70000";
 
         // Act
-        var address = Address.Create(street, city, countryCode, ward, district, province, postalCode);
+        Address address = Address.Create(street, city, countryCode, ward, district, province, postalCode);
 
         // Assert
         address.Should().NotBeNull();
@@ -38,8 +38,8 @@ public class AddressTests
     {
         // Arrange
         string? street = null;
-        var city = "Ho Chi Minh City";
-        var countryCode = "VN";
+        string city = "Ho Chi Minh City";
+        string countryCode = "VN";
 
         // Act
         Action act = () => Address.Create(street!, city, countryCode);
@@ -53,9 +53,9 @@ public class AddressTests
     public void Create_WithEmptyStreet_ShouldThrowDomainException()
     {
         // Arrange
-        var street = string.Empty;
-        var city = "Ho Chi Minh City";
-        var countryCode = "VN";
+        string street = string.Empty;
+        string city = "Ho Chi Minh City";
+        string countryCode = "VN";
 
         // Act
         Action act = () => Address.Create(street, city, countryCode);
@@ -69,9 +69,9 @@ public class AddressTests
     public void Create_WithWhitespaceStreet_ShouldThrowDomainException()
     {
         // Arrange
-        var street = "   ";
-        var city = "Ho Chi Minh City";
-        var countryCode = "VN";
+        string street = "   ";
+        string city = "Ho Chi Minh City";
+        string countryCode = "VN";
 
         // Act
         Action act = () => Address.Create(street, city, countryCode);
@@ -85,9 +85,9 @@ public class AddressTests
     public void Create_WithNullCity_ShouldThrowDomainException()
     {
         // Arrange
-        var street = "123 Main Street";
+        string street = "123 Main Street";
         string? city = null;
-        var countryCode = "VN";
+        string countryCode = "VN";
 
         // Act
         Action act = () => Address.Create(street, city!, countryCode);
@@ -101,9 +101,9 @@ public class AddressTests
     public void Create_WithEmptyCity_ShouldThrowDomainException()
     {
         // Arrange
-        var street = "123 Main Street";
-        var city = string.Empty;
-        var countryCode = "VN";
+        string street = "123 Main Street";
+        string city = string.Empty;
+        string countryCode = "VN";
 
         // Act
         Action act = () => Address.Create(street, city, countryCode);
@@ -117,8 +117,8 @@ public class AddressTests
     public void Create_WithNullCountryCode_ShouldThrowDomainException()
     {
         // Arrange
-        var street = "123 Main Street";
-        var city = "Ho Chi Minh City";
+        string street = "123 Main Street";
+        string city = "Ho Chi Minh City";
         string? countryCode = null;
 
         // Act
@@ -133,9 +133,9 @@ public class AddressTests
     public void Create_WithEmptyCountryCode_ShouldThrowDomainException()
     {
         // Arrange
-        var street = "123 Main Street";
-        var city = "Ho Chi Minh City";
-        var countryCode = string.Empty;
+        string street = "123 Main Street";
+        string city = "Ho Chi Minh City";
+        string countryCode = string.Empty;
 
         // Act
         Action act = () => Address.Create(street, city, countryCode);
@@ -149,12 +149,12 @@ public class AddressTests
     public void Create_WithLowercaseCountryCode_ShouldNormalizeToUppercase()
     {
         // Arrange
-        var street = "123 Main Street";
-        var city = "Ho Chi Minh City";
-        var countryCode = "vn";
+        string street = "123 Main Street";
+        string city = "Ho Chi Minh City";
+        string countryCode = "vn";
 
         // Act
-        var address = Address.Create(street, city, countryCode);
+        Address address = Address.Create(street, city, countryCode);
 
         // Assert
         address.CountryCode.Should().Be("VN");
@@ -164,12 +164,12 @@ public class AddressTests
     public void Create_WithMinimalRequiredFields_ShouldCreateAddress()
     {
         // Arrange
-        var street = "123 Main Street";
-        var city = "Ho Chi Minh City";
-        var countryCode = "VN";
+        string street = "123 Main Street";
+        string city = "Ho Chi Minh City";
+        string countryCode = "VN";
 
         // Act
-        var address = Address.Create(street, city, countryCode);
+        Address address = Address.Create(street, city, countryCode);
 
         // Assert
         address.Should().NotBeNull();
@@ -186,8 +186,8 @@ public class AddressTests
     public void Equality_WithSameAddresses_ShouldBeEqual()
     {
         // Arrange
-        var address1 = Address.Create("123 Main St", "HCMC", "VN", "Ward 1", "District 1", "Province", "70000");
-        var address2 = Address.Create("123 Main St", "HCMC", "VN", "Ward 1", "District 1", "Province", "70000");
+        Address address1 = Address.Create("123 Main St", "HCMC", "VN", "Ward 1", "District 1", "Province", "70000");
+        Address address2 = Address.Create("123 Main St", "HCMC", "VN", "Ward 1", "District 1", "Province", "70000");
 
         // Act & Assert
         address1.Should().Be(address2);
@@ -197,8 +197,8 @@ public class AddressTests
     public void Equality_WithDifferentAddresses_ShouldNotBeEqual()
     {
         // Arrange
-        var address1 = Address.Create("123 Main St", "HCMC", "VN");
-        var address2 = Address.Create("456 Main St", "HCMC", "VN");
+        Address address1 = Address.Create("123 Main St", "HCMC", "VN");
+        Address address2 = Address.Create("456 Main St", "HCMC", "VN");
 
         // Act & Assert
         address1.Should().NotBe(address2);
@@ -208,8 +208,8 @@ public class AddressTests
     public void Equality_WithDifferentCountryCodeCase_ShouldBeEqual()
     {
         // Arrange
-        var address1 = Address.Create("123 Main St", "HCMC", "VN");
-        var address2 = Address.Create("123 Main St", "HCMC", "vn");
+        Address address1 = Address.Create("123 Main St", "HCMC", "VN");
+        Address address2 = Address.Create("123 Main St", "HCMC", "vn");
 
         // Act & Assert
         address1.Should().Be(address2);
@@ -219,11 +219,11 @@ public class AddressTests
     public void ToString_WithAllFields_ShouldReturnFormattedAddress()
     {
         // Arrange
-        var address = Address.Create("123 Main Street", "Ho Chi Minh City", "VN",
+        Address address = Address.Create("123 Main Street", "Ho Chi Minh City", "VN",
             "Ward 1", "District 1", "Ho Chi Minh Province", "70000");
 
         // Act
-        var result = address.ToString();
+        string result = address.ToString();
 
         // Assert
         result.Should().Be("123 Main Street, Ward 1, District 1, Ho Chi Minh City, Ho Chi Minh Province, VN, 70000");
@@ -233,10 +233,10 @@ public class AddressTests
     public void ToString_WithMinimalFields_ShouldReturnFormattedAddress()
     {
         // Arrange
-        var address = Address.Create("123 Main Street", "Ho Chi Minh City", "VN");
+        Address address = Address.Create("123 Main Street", "Ho Chi Minh City", "VN");
 
         // Act
-        var result = address.ToString();
+        string result = address.ToString();
 
         // Assert
         result.Should().Be("123 Main Street, Ho Chi Minh City, VN");
@@ -246,11 +246,11 @@ public class AddressTests
     public void ToString_WithNullOptionalFields_ShouldSkipNullFields()
     {
         // Arrange
-        var address = Address.Create("123 Main Street", "Ho Chi Minh City", "VN",
+        Address address = Address.Create("123 Main Street", "Ho Chi Minh City", "VN",
             null, null, null, null);
 
         // Act
-        var result = address.ToString();
+        string result = address.ToString();
 
         // Assert
         result.Should().Be("123 Main Street, Ho Chi Minh City, VN");

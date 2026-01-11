@@ -51,7 +51,7 @@ public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasMod
         string? browser = null,
         string? operatingSystem = null)
     {
-        var device = new UserDevice
+        UserDevice device = new()
         {
             UserId = userId,
             DeviceId = deviceId,
@@ -67,7 +67,10 @@ public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasMod
             IsTrusted = false
         };
 
-        if (!string.IsNullOrEmpty(ipAddress)) device.IpAddress = IPAddress.Create(ipAddress);
+        if (!string.IsNullOrEmpty(ipAddress))
+        {
+            device.IpAddress = IPAddress.Create(ipAddress);
+        }
 
         return device;
     }
@@ -76,9 +79,14 @@ public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasMod
     {
         LastActivityAt = DateTime.UtcNow;
         if (!string.IsNullOrEmpty(ipAddress))
+        {
             IpAddress = IPAddress.Create(ipAddress);
+        }
+
         if (!string.IsNullOrEmpty(location))
+        {
             Location = location;
+        }
     }
 
     /// <summary>
@@ -89,9 +97,14 @@ public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasMod
         LastLoginAt = DateTime.UtcNow;
         LastActivityAt = DateTime.UtcNow;
         if (!string.IsNullOrEmpty(ipAddress))
+        {
             IpAddress = IPAddress.Create(ipAddress);
+        }
+
         if (!string.IsNullOrEmpty(location))
+        {
             Location = location;
+        }
     }
 
     public void SetRefreshToken(string refreshToken, DateTime expiresAt)
@@ -157,7 +170,10 @@ public class UserDevice : BaseEntityGuid, IHasCreationTime, IHasCreator, IHasMod
     /// <returns>True if device is trusted and has been for the minimum period</returns>
     public bool IsTrustedForDuration(int minimumDays = 3)
     {
-        if (!IsTrusted) return false;
+        if (!IsTrusted)
+        {
+            return false;
+        }
 
         // Device must have been created at least minimumDays ago
         TimeSpan trustDuration = DateTime.UtcNow - CreatedAt;

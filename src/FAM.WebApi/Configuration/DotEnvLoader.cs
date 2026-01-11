@@ -10,7 +10,7 @@ public static class DotEnvLoader
         // If no path specified, try to find .env in solution root
         if (filePath == null)
         {
-            var solutionRoot = FindSolutionRoot(Directory.GetCurrentDirectory());
+            string? solutionRoot = FindSolutionRoot(Directory.GetCurrentDirectory());
             if (solutionRoot == null)
             {
                 Console.WriteLine("Warning: Could not find solution root. Skipping .env file loading.");
@@ -29,29 +29,37 @@ public static class DotEnvLoader
 
         Console.WriteLine($"Loading environment variables from '{filePath}'");
 
-        foreach (var line in File.ReadAllLines(filePath))
+        foreach (string line in File.ReadAllLines(filePath))
         {
-            var trimmedLine = line.Trim();
+            string trimmedLine = line.Trim();
 
             // Skip empty lines and comments
             if (string.IsNullOrWhiteSpace(trimmedLine) || trimmedLine.StartsWith("#"))
+            {
                 continue;
+            }
 
-            var parts = trimmedLine.Split('=', 2, StringSplitOptions.None);
+            string[] parts = trimmedLine.Split('=', 2, StringSplitOptions.None);
             if (parts.Length != 2)
+            {
                 continue;
+            }
 
-            var key = parts[0].Trim();
-            var value = parts[1].Trim();
+            string key = parts[0].Trim();
+            string value = parts[1].Trim();
 
             // Remove quotes if present
             if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
                 (value.StartsWith("'") && value.EndsWith("'")))
+            {
                 value = value[1..^1];
+            }
 
             // Only set if not already set (system env vars take precedence)
             if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(key)))
+            {
                 Environment.SetEnvironmentVariable(key, value);
+            }
         }
 
         Console.WriteLine("Environment variables loaded successfully");
@@ -63,24 +71,29 @@ public static class DotEnvLoader
         Load();
 
         // Then load environment-specific .env file (e.g., .env.development)
-        var solutionRoot = FindSolutionRoot(Directory.GetCurrentDirectory());
+        string? solutionRoot = FindSolutionRoot(Directory.GetCurrentDirectory());
         if (solutionRoot != null)
         {
-            var envFile = Path.Combine(solutionRoot, $".env.{environment.ToLowerInvariant()}");
-            if (File.Exists(envFile)) Load(envFile);
+            string envFile = Path.Combine(solutionRoot, $".env.{environment.ToLowerInvariant()}");
+            if (File.Exists(envFile))
+            {
+                Load(envFile);
+            }
         }
     }
 
     private static string? FindSolutionRoot(string startDirectory)
     {
-        var current = new DirectoryInfo(startDirectory);
+        DirectoryInfo? current = new(startDirectory);
 
         while (current != null)
         {
             // Look for .sln file or docker-compose.yml as indicators of solution root
             if (current.GetFiles("*.sln").Length > 0 ||
                 current.GetFiles("docker-compose.yml").Length > 0)
+            {
                 return current.FullName;
+            }
 
             current = current.Parent;
         }

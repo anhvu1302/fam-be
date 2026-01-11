@@ -33,6 +33,7 @@ public sealed class EmailQueueProcessor : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
+        {
             try
             {
                 EmailMessage? message = await _emailQueue.DequeueAsync(stoppingToken);
@@ -59,6 +60,7 @@ public sealed class EmailQueueProcessor : BackgroundService
                 _logger.LogError(ex, "Error in email queue processor");
                 await Task.Delay(_retryDelay, stoppingToken);
             }
+        }
     }
 
     private async Task ProcessEmailAsync(EmailMessage message, CancellationToken cancellationToken)

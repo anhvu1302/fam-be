@@ -20,16 +20,22 @@ public class FileValidator : IFileValidator
 
     public FileType? DetectFileType(string fileName)
     {
-        var extension = Path.GetExtension(fileName).ToLowerInvariant();
+        string extension = Path.GetExtension(fileName).ToLowerInvariant();
 
         if (_settings.AllowedImageExtensions.Contains(extension))
+        {
             return FileType.Image;
+        }
 
         if (_settings.AllowedMediaExtensions.Contains(extension))
+        {
             return FileType.Media;
+        }
 
         if (_settings.AllowedDocumentExtensions.Contains(extension))
+        {
             return FileType.Document;
+        }
 
         return null;
     }
@@ -39,14 +45,17 @@ public class FileValidator : IFileValidator
         long fileSize)
     {
         // Check empty/invalid size first
-        if (fileSize <= 0) return (false, "File is empty or invalid", null);
+        if (fileSize <= 0)
+        {
+            return (false, "File is empty or invalid", null);
+        }
 
         // Detect file type from extension
         FileType? fileType = DetectFileType(fileName);
 
         if (!fileType.HasValue)
         {
-            var extension = Path.GetExtension(fileName);
+            string extension = Path.GetExtension(fileName);
             return (false,
                 $"File extension '{extension}' is not supported. Allowed: images (.jpg, .png, etc.), media (.mp4, .mp3, etc.), documents (.pdf, .doc, etc.)",
                 null);
@@ -55,7 +64,7 @@ public class FileValidator : IFileValidator
         // Check size
         if (!IsSizeAllowed(fileSize, fileType.Value))
         {
-            var maxSizeMb = GetMaxFileSize(fileType.Value) / (1024.0 * 1024.0);
+            double maxSizeMb = GetMaxFileSize(fileType.Value) / (1024.0 * 1024.0);
             return (false, $"File is too large. Maximum size for {fileType.Value}: {maxSizeMb:F2} MB", fileType);
         }
 
@@ -86,14 +95,14 @@ public class FileValidator : IFileValidator
 
     public bool IsExtensionAllowed(string fileName, FileType fileType)
     {
-        var extension = Path.GetExtension(fileName).ToLowerInvariant();
-        var allowedExtensions = GetAllowedExtensions(fileType);
+        string extension = Path.GetExtension(fileName).ToLowerInvariant();
+        string[] allowedExtensions = GetAllowedExtensions(fileType);
         return allowedExtensions.Contains(extension);
     }
 
     public bool IsSizeAllowed(long fileSize, FileType fileType)
     {
-        var maxSize = GetMaxFileSize(fileType);
+        long maxSize = GetMaxFileSize(fileType);
         return fileSize > 0 && fileSize <= maxSize;
     }
 }

@@ -11,12 +11,12 @@ public class DepreciationInfoTests
     public void Create_WithValidData_ShouldCreateDepreciationInfo()
     {
         // Arrange
-        var method = "StraightLine";
-        var usefulLifeMonths = 60;
-        var residualValue = 1000.00m;
+        string method = "StraightLine";
+        int usefulLifeMonths = 60;
+        decimal residualValue = 1000.00m;
 
         // Act
-        var depreciationInfo = DepreciationInfo.Create(method, usefulLifeMonths, residualValue);
+        DepreciationInfo depreciationInfo = DepreciationInfo.Create(method, usefulLifeMonths, residualValue);
 
         // Assert
         depreciationInfo.Should().NotBeNull();
@@ -60,12 +60,12 @@ public class DepreciationInfoTests
     public void Create_WithZeroResidualValue_ShouldCreateDepreciationInfo()
     {
         // Arrange
-        var method = "StraightLine";
-        var usefulLifeMonths = 60;
-        var residualValue = 0.00m;
+        string method = "StraightLine";
+        int usefulLifeMonths = 60;
+        decimal residualValue = 0.00m;
 
         // Act
-        var depreciationInfo = DepreciationInfo.Create(method, usefulLifeMonths, residualValue);
+        DepreciationInfo depreciationInfo = DepreciationInfo.Create(method, usefulLifeMonths, residualValue);
 
         // Assert
         depreciationInfo.ResidualValue.Should().Be(0.00m);
@@ -75,11 +75,11 @@ public class DepreciationInfoTests
     public void CalculateMonthlyDepreciation_WithStraightLineMethod_ShouldCalculateCorrectly()
     {
         // Arrange
-        var depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
-        var purchaseCost = 10000.00m;
+        DepreciationInfo depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
+        decimal purchaseCost = 10000.00m;
 
         // Act
-        var monthlyDepreciation = depreciationInfo.CalculateMonthlyDepreciation(purchaseCost);
+        decimal monthlyDepreciation = depreciationInfo.CalculateMonthlyDepreciation(purchaseCost);
 
         // Assert
         monthlyDepreciation.Should().Be(150.00m); // (10000 - 1000) / 60
@@ -89,11 +89,11 @@ public class DepreciationInfoTests
     public void CalculateMonthlyDepreciation_WithZeroResidualValue_ShouldCalculateCorrectly()
     {
         // Arrange
-        var depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 0.00m);
-        var purchaseCost = 6000.00m;
+        DepreciationInfo depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 0.00m);
+        decimal purchaseCost = 6000.00m;
 
         // Act
-        var monthlyDepreciation = depreciationInfo.CalculateMonthlyDepreciation(purchaseCost);
+        decimal monthlyDepreciation = depreciationInfo.CalculateMonthlyDepreciation(purchaseCost);
 
         // Assert
         monthlyDepreciation.Should().Be(100.00m); // 6000 / 60
@@ -103,11 +103,11 @@ public class DepreciationInfoTests
     public void CalculateMonthlyDepreciation_WithUnknownMethod_ShouldReturnZero()
     {
         // Arrange
-        var depreciationInfo = DepreciationInfo.Create("DecliningBalance", 60, 1000.00m);
-        var purchaseCost = 10000.00m;
+        DepreciationInfo depreciationInfo = DepreciationInfo.Create("DecliningBalance", 60, 1000.00m);
+        decimal purchaseCost = 10000.00m;
 
         // Act
-        var monthlyDepreciation = depreciationInfo.CalculateMonthlyDepreciation(purchaseCost);
+        decimal monthlyDepreciation = depreciationInfo.CalculateMonthlyDepreciation(purchaseCost);
 
         // Assert
         monthlyDepreciation.Should().Be(0);
@@ -117,11 +117,11 @@ public class DepreciationInfoTests
     public void CalculateCurrentBookValue_WithZeroElapsedMonths_ShouldReturnPurchaseCost()
     {
         // Arrange
-        var depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
-        var purchaseCost = 10000.00m;
+        DepreciationInfo depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
+        decimal purchaseCost = 10000.00m;
 
         // Act
-        var bookValue = depreciationInfo.CalculateCurrentBookValue(purchaseCost, 0);
+        decimal bookValue = depreciationInfo.CalculateCurrentBookValue(purchaseCost, 0);
 
         // Assert
         bookValue.Should().Be(purchaseCost);
@@ -131,11 +131,11 @@ public class DepreciationInfoTests
     public void CalculateCurrentBookValue_WithNegativeElapsedMonths_ShouldReturnPurchaseCost()
     {
         // Arrange
-        var depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
-        var purchaseCost = 10000.00m;
+        DepreciationInfo depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
+        decimal purchaseCost = 10000.00m;
 
         // Act
-        var bookValue = depreciationInfo.CalculateCurrentBookValue(purchaseCost, -1);
+        decimal bookValue = depreciationInfo.CalculateCurrentBookValue(purchaseCost, -1);
 
         // Assert
         bookValue.Should().Be(purchaseCost);
@@ -145,12 +145,12 @@ public class DepreciationInfoTests
     public void CalculateCurrentBookValue_WithPartialDepreciation_ShouldCalculateCorrectly()
     {
         // Arrange
-        var depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
-        var purchaseCost = 10000.00m;
-        var elapsedMonths = 12;
+        DepreciationInfo depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
+        decimal purchaseCost = 10000.00m;
+        int elapsedMonths = 12;
 
         // Act
-        var bookValue = depreciationInfo.CalculateCurrentBookValue(purchaseCost, elapsedMonths);
+        decimal bookValue = depreciationInfo.CalculateCurrentBookValue(purchaseCost, elapsedMonths);
 
         // Assert
         bookValue.Should().Be(8200.00m); // 10000 - (150 * 12) = 10000 - 1800 = 8200
@@ -160,12 +160,12 @@ public class DepreciationInfoTests
     public void CalculateCurrentBookValue_WithFullDepreciation_ShouldReturnResidualValue()
     {
         // Arrange
-        var depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
-        var purchaseCost = 10000.00m;
-        var elapsedMonths = 60;
+        DepreciationInfo depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
+        decimal purchaseCost = 10000.00m;
+        int elapsedMonths = 60;
 
         // Act
-        var bookValue = depreciationInfo.CalculateCurrentBookValue(purchaseCost, elapsedMonths);
+        decimal bookValue = depreciationInfo.CalculateCurrentBookValue(purchaseCost, elapsedMonths);
 
         // Assert
         bookValue.Should().Be(1000.00m); // Residual value
@@ -175,12 +175,12 @@ public class DepreciationInfoTests
     public void CalculateCurrentBookValue_WithOverDepreciation_ShouldReturnResidualValue()
     {
         // Arrange
-        var depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
-        var purchaseCost = 10000.00m;
-        var elapsedMonths = 120; // More than useful life
+        DepreciationInfo depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
+        decimal purchaseCost = 10000.00m;
+        int elapsedMonths = 120; // More than useful life
 
         // Act
-        var bookValue = depreciationInfo.CalculateCurrentBookValue(purchaseCost, elapsedMonths);
+        decimal bookValue = depreciationInfo.CalculateCurrentBookValue(purchaseCost, elapsedMonths);
 
         // Assert
         bookValue.Should().Be(1000.00m); // Residual value
@@ -190,10 +190,10 @@ public class DepreciationInfoTests
     public void ToString_ShouldReturnFormattedString()
     {
         // Arrange
-        var depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
+        DepreciationInfo depreciationInfo = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
 
         // Act
-        var result = depreciationInfo.ToString();
+        string result = depreciationInfo.ToString();
 
         // Assert
         result.Should().Be("StraightLine, 60 months, Residual: 1000.00");
@@ -203,8 +203,8 @@ public class DepreciationInfoTests
     public void Equality_WithSameValues_ShouldBeEqual()
     {
         // Arrange
-        var depreciationInfo1 = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
-        var depreciationInfo2 = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
+        DepreciationInfo depreciationInfo1 = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
+        DepreciationInfo depreciationInfo2 = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
 
         // Act & Assert
         depreciationInfo1.Should().Be(depreciationInfo2);
@@ -215,8 +215,8 @@ public class DepreciationInfoTests
     public void Equality_WithDifferentValues_ShouldNotBeEqual()
     {
         // Arrange
-        var depreciationInfo1 = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
-        var depreciationInfo2 = DepreciationInfo.Create("StraightLine", 48, 1000.00m);
+        DepreciationInfo depreciationInfo1 = DepreciationInfo.Create("StraightLine", 60, 1000.00m);
+        DepreciationInfo depreciationInfo2 = DepreciationInfo.Create("StraightLine", 48, 1000.00m);
 
         // Act & Assert
         depreciationInfo1.Should().NotBe(depreciationInfo2);

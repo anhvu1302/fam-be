@@ -21,30 +21,38 @@ public static class QueryHelper
         FieldMap<T> fieldMap)
     {
         if (string.IsNullOrWhiteSpace(sortExpression))
+        {
             return query;
+        }
 
-        var sortParts = sortExpression.Split(',', StringSplitOptions.RemoveEmptyEntries);
+        string[] sortParts = sortExpression.Split(',', StringSplitOptions.RemoveEmptyEntries);
         IOrderedQueryable<T>? orderedQuery = null;
 
-        foreach (var part in sortParts)
+        foreach (string part in sortParts)
         {
-            var trimmed = part.Trim();
-            var descending = trimmed.StartsWith('-');
-            var fieldName = descending ? trimmed[1..] : trimmed;
+            string trimmed = part.Trim();
+            bool descending = trimmed.StartsWith('-');
+            string fieldName = descending ? trimmed[1..] : trimmed;
 
             if (!fieldMap.TryGet(fieldName, out LambdaExpression expression, out _))
+            {
                 continue;
+            }
 
-            var typedExpression = (Expression<Func<T, object>>)expression;
+            Expression<Func<T, object>> typedExpression = (Expression<Func<T, object>>)expression;
 
             if (orderedQuery == null)
+            {
                 orderedQuery = descending
                     ? query.OrderByDescending(typedExpression)
                     : query.OrderBy(typedExpression);
+            }
             else
+            {
                 orderedQuery = descending
                     ? orderedQuery.ThenByDescending(typedExpression)
                     : orderedQuery.ThenBy(typedExpression);
+            }
         }
 
         return orderedQuery ?? query;
@@ -58,7 +66,7 @@ public static class QueryHelper
         int page,
         int pageSize)
     {
-        var skip = (page - 1) * pageSize;
+        int skip = (page - 1) * pageSize;
         return query.Skip(skip).Take(pageSize);
     }
 
@@ -70,9 +78,14 @@ public static class QueryHelper
         IEnumerable<Expression<Func<T, object>>>? includes) where T : class
     {
         if (includes == null)
+        {
             return query;
+        }
 
-        foreach (Expression<Func<T, object>> include in includes) query = query.Include(include);
+        foreach (Expression<Func<T, object>> include in includes)
+        {
+            query = query.Include(include);
+        }
 
         return query;
     }
@@ -88,7 +101,7 @@ public static class QueryHelper
         CancellationToken cancellationToken = default)
     {
         // Get total count before pagination
-        var total = await query.LongCountAsync(cancellationToken);
+        long total = await query.LongCountAsync(cancellationToken);
 
         // Apply pagination and get items
         List<T> items = await query

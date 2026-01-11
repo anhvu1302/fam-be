@@ -11,10 +11,10 @@ public class ResourceActionTests
     public void Create_WithValidData_ShouldCreateResourceAction()
     {
         // Arrange
-        var value = "read";
+        string value = "read";
 
         // Act
-        var resourceAction = ResourceAction.Create(value);
+        ResourceAction resourceAction = ResourceAction.Create(value);
 
         // Assert
         resourceAction.Should().NotBeNull();
@@ -25,7 +25,7 @@ public class ResourceActionTests
     public void Create_WithEmptyString_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "";
+        string value = "";
 
         // Act
         Action act = () => ResourceAction.Create(value);
@@ -39,7 +39,7 @@ public class ResourceActionTests
     public void Create_WithTooLongValue_ShouldThrowDomainException()
     {
         // Arrange
-        var value = new string('A', 51);
+        string value = new('A', 51);
 
         // Act
         Action act = () => ResourceAction.Create(value);
@@ -53,7 +53,7 @@ public class ResourceActionTests
     public void ImplicitOperator_ShouldConvertToString()
     {
         // Arrange
-        var resourceAction = ResourceAction.Create("read");
+        ResourceAction resourceAction = ResourceAction.Create("read");
 
         // Act
         string value = resourceAction;
@@ -66,10 +66,10 @@ public class ResourceActionTests
     public void ExplicitOperator_ShouldConvertFromString()
     {
         // Arrange
-        var value = "read";
+        string value = "read";
 
         // Act
-        var resourceAction = (ResourceAction)value;
+        ResourceAction resourceAction = (ResourceAction)value;
 
         // Assert
         resourceAction.Value.Should().Be(value);
@@ -79,10 +79,10 @@ public class ResourceActionTests
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var resourceAction = ResourceAction.Create("read");
+        ResourceAction resourceAction = ResourceAction.Create("read");
 
         // Act
-        var result = resourceAction.ToString();
+        string result = resourceAction.ToString();
 
         // Assert
         result.Should().Be("read");

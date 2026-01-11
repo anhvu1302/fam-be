@@ -27,47 +27,55 @@ public class ValidationFilter : IAsyncActionFilter
     {
         // Run FluentValidation manually for each action parameter
         foreach (ParameterDescriptor parameter in context.ActionDescriptor.Parameters)
-            if (context.ActionArguments.TryGetValue(parameter.Name, out var argumentValue) && argumentValue != null)
+        {
+            if (context.ActionArguments.TryGetValue(parameter.Name, out object? argumentValue) && argumentValue != null)
             {
                 Type argumentType = argumentValue.GetType();
 
                 // Try to get a validator for this type
                 Type validatorType = typeof(IValidator<>).MakeGenericType(argumentType);
-                var validator = _serviceProvider.GetService(validatorType) as IValidator;
+                IValidator? validator = _serviceProvider.GetService(validatorType) as IValidator;
 
                 if (validator != null)
                 {
                     // Create validation context
-                    var validationContext = new ValidationContext<object>(argumentValue);
+                    ValidationContext<object> validationContext = new(argumentValue);
 
                     // Validate
                     ValidationResult? validationResult = await validator.ValidateAsync(validationContext);
 
                     if (!validationResult.IsValid)
-                        // Add errors to ModelState
+                    // Add errors to ModelState
+                    {
                         foreach (ValidationFailure? error in validationResult.Errors)
+                        {
                             context.ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                        }
+                    }
                 }
             }
+        }
 
         // Now check ModelState
         if (!context.ModelState.IsValid)
         {
-            var errors = new List<ApiError>();
+            List<ApiError> errors = new();
 
-            foreach ((var key, ModelStateEntry value) in context.ModelState)
+            foreach ((string key, ModelStateEntry value) in context.ModelState)
+            {
                 if (value.Errors.Count > 0)
+                {
                     foreach (ModelError error in value.Errors)
                     {
                         // Extract error code from error message if it starts with [CODE]
                         // or use a generic validation error code
-                        var errorMessage = error.ErrorMessage;
-                        var errorCode = "VALIDATION_ERROR";
+                        string errorMessage = error.ErrorMessage;
+                        string errorCode = "VALIDATION_ERROR";
 
                         // If the error message is in format "[CODE] Message", extract the code
                         if (errorMessage.StartsWith('['))
                         {
-                            var endIndex = errorMessage.IndexOf(']');
+                            int endIndex = errorMessage.IndexOf(']');
                             if (endIndex > 0)
                             {
                                 errorCode = errorMessage[1..endIndex];
@@ -76,14 +84,16 @@ public class ValidationFilter : IAsyncActionFilter
                         }
 
                         // Add field information to error message for better context
-                        var fullMessage = string.IsNullOrEmpty(key)
+                        string fullMessage = string.IsNullOrEmpty(key)
                             ? errorMessage
                             : $"{key}: {errorMessage}";
 
                         errors.Add(new ApiError(fullMessage, errorCode));
                     }
+                }
+            }
 
-            var response = new ApiErrorResponse(false, errors);
+            ApiErrorResponse response = new(false, errors);
 
             context.Result = new BadRequestObjectResult(response);
             return;

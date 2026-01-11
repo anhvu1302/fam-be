@@ -288,7 +288,7 @@ public class SigningKeyServiceTests
     {
         // Arrange
         SigningKey key = CreateTestSigningKey("test_key");
-        var reason = "Security breach";
+        string reason = "Security breach";
 
         _mockRepository
             .Setup(r => r.GetByIdAsync(1L, It.IsAny<CancellationToken>()))
@@ -432,7 +432,7 @@ public class SigningKeyServiceTests
     public async Task GetAllKeysAsync_ShouldReturnAllKeys()
     {
         // Arrange
-        var keys = new List<SigningKey>
+        List<SigningKey> keys = new()
         {
             CreateTestSigningKey("key1"),
             CreateTestSigningKey("key2"),
@@ -484,9 +484,9 @@ public class SigningKeyServiceTests
 
     private static SigningKey CreateTestSigningKey(string keyId, DateTime? expiresAt = null)
     {
-        using var rsa = RSA.Create(2048);
-        var publicKey = rsa.ExportRSAPublicKeyPem();
-        var privateKey = rsa.ExportRSAPrivateKeyPem();
+        using RSA rsa = RSA.Create(2048);
+        string publicKey = rsa.ExportRSAPublicKeyPem();
+        string privateKey = rsa.ExportRSAPrivateKeyPem();
 
         return SigningKey.Create(
             keyId,

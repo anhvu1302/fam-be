@@ -27,27 +27,36 @@ public sealed class ReplaceUserRolesCommandHandler : IRequestHandler<ReplaceUser
     {
         User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
         if (user == null)
+        {
             throw new DomainException(ErrorCodes.USER_NOT_FOUND, "User not found");
+        }
 
         OrgNode? node = await _unitOfWork.OrgNodes.GetByIdAsync(request.NodeId, cancellationToken);
         if (node == null)
+        {
             throw new DomainException(ErrorCodes.NODE_NOT_FOUND, "Organization node not found");
+        }
 
-        foreach (var roleId in request.RoleIds)
+        foreach (long roleId in request.RoleIds)
         {
             Role? role = await _unitOfWork.Roles.GetByIdAsync(roleId, cancellationToken);
             if (role == null)
+            {
                 throw new DomainException(ErrorCodes.ROLE_NOT_FOUND, $"Role {roleId} not found");
+            }
         }
 
         IEnumerable<UserNodeRole> existingAssignments = await _unitOfWork.UserNodeRoles
             .FindAsync(unr => unr.UserId == request.UserId && unr.NodeId == request.NodeId, cancellationToken);
 
-        foreach (UserNodeRole assignment in existingAssignments) _unitOfWork.UserNodeRoles.Delete(assignment);
-
-        foreach (var roleId in request.RoleIds)
+        foreach (UserNodeRole assignment in existingAssignments)
         {
-            var assignment = UserNodeRole.Create(
+            _unitOfWork.UserNodeRoles.Delete(assignment);
+        }
+
+        foreach (long roleId in request.RoleIds)
+        {
+            UserNodeRole assignment = UserNodeRole.Create(
                 request.UserId,
                 request.NodeId,
                 roleId,

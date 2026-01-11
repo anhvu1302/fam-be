@@ -54,13 +54,13 @@ public class UsersController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetUsers([FromQuery] PaginationQueryParameters parameters)
     {
-        var query = new GetUsersQuery(parameters.ToQueryRequest());
+        GetUsersQuery query = new(parameters.ToQueryRequest());
         PageResult<UserDto> result = await _mediator.Send(query);
 
         // Apply field selection if requested
         if (parameters.GetFieldsArray() != null && parameters.GetFieldsArray()!.Length > 0)
         {
-            var selectedResult = result.SelectFieldsToResponse(parameters.GetFieldsArray()!);
+            object selectedResult = result.SelectFieldsToResponse(parameters.GetFieldsArray()!);
             return OkResponse(selectedResult);
         }
 
@@ -84,11 +84,13 @@ public class UsersController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUserById(long id, [FromQuery] string? include = null)
     {
-        var query = new GetUserByIdQuery(id, include);
+        GetUserByIdQuery query = new(id, include);
         UserDto? result = await _mediator.Send(query);
 
         if (result == null)
+        {
             throw new NotFoundException(ErrorCodes.GEN_NOT_FOUND, "User", id);
+        }
 
         return OkResponse(result.ToUserResponse());
     }
@@ -196,7 +198,7 @@ public class UsersController : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteUser(long id)
     {
-        var command = new DeleteUserCommand(id);
+        DeleteUserCommand command = new(id);
         await _mediator.Send(command);
         return NoContent();
     }
@@ -219,7 +221,7 @@ public class UsersController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateAvatar(long id, [FromBody] UpdateAvatarRequest request)
     {
-        var command = new UpdateAvatarCommand
+        UpdateAvatarCommand command = new()
         {
             UserId = id,
             UploadId = request.UploadId
@@ -252,9 +254,11 @@ public class UsersController : BaseApiController
     public async Task<IActionResult> UploadAvatarDirect(long id, IFormFile file)
     {
         if (file == null || file.Length == 0)
+        {
             throw new ValidationException("File is required", ErrorCodes.GEN_INVALID_OPERATION);
+        }
 
-        var command = new UploadAvatarDirectCommand
+        UploadAvatarDirectCommand command = new()
         {
             UserId = id,
             FileStream = file.OpenReadStream(),
@@ -285,9 +289,9 @@ public class UsersController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> ReplaceUserRoles(long id, [FromBody] ReplaceUserRolesRequest request)
     {
-        var currentUserId = GetCurrentUserId();
+        long currentUserId = GetCurrentUserId();
 
-        var command = new ReplaceUserRolesCommand
+        ReplaceUserRolesCommand command = new()
         {
             UserId = id,
             NodeId = request.NodeId,

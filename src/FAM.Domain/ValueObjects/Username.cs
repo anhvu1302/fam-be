@@ -29,36 +29,44 @@ public sealed class Username : ValueObject
     public static Username Create(string username)
     {
         if (string.IsNullOrWhiteSpace(username))
+        {
             throw new DomainException(ErrorCodes.VO_USERNAME_EMPTY, new
             {
                 field = "Username"
             });
+        }
 
         username = username.Trim();
 
         if (username.Length < DomainRules.Username.MinLength)
+        {
             throw new DomainException(ErrorCodes.VO_USERNAME_TOO_SHORT, new
             {
                 field = "Username",
                 minLength = DomainRules.Username.MinLength,
                 actualLength = username.Length
             });
+        }
 
         if (username.Length > DomainRules.Username.MaxLength)
+        {
             throw new DomainException(ErrorCodes.VO_USERNAME_TOO_LONG, new
             {
                 field = "Username",
                 maxLength = DomainRules.Username.MaxLength,
                 actualLength = username.Length
             });
+        }
 
         if (!DomainRules.Username.IsValidFormat(username))
+        {
             throw new DomainException(ErrorCodes.VO_USERNAME_INVALID, new
             {
                 field = "Username",
                 allowedChars = DomainRules.Username.AllowedCharacters,
                 pattern = DomainRules.Username.Pattern
             });
+        }
 
         return new Username(username);
     }
@@ -68,8 +76,8 @@ public sealed class Username : ValueObject
     /// </summary>
     public bool IsSafeUsername()
     {
-        var unsafeWords = new[] { "admin", "root", "system", "superuser", "god" };
-        var lowerUsername = Value.ToLower();
+        string[] unsafeWords = new[] { "admin", "root", "system", "superuser", "god" };
+        string lowerUsername = Value.ToLower();
 
         return !unsafeWords.Any(word => lowerUsername.Contains(word));
     }

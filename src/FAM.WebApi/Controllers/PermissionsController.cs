@@ -62,14 +62,14 @@ public class PermissionsController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetPermissions([FromQuery] PaginationQueryParameters parameters)
     {
-        var query = new GetPermissionsQuery(parameters.ToQueryRequest());
+        GetPermissionsQuery query = new(parameters.ToQueryRequest());
         PageResult<PermissionDto> result = await _mediator.Send(query);
 
         // Apply field selection if requested
-        var fields = parameters.GetFieldsArray();
+        string[]? fields = parameters.GetFieldsArray();
         if (fields != null && fields.Length > 0)
         {
-            var selectedResult = result.SelectFieldsToResponse(fields);
+            object selectedResult = result.SelectFieldsToResponse(fields);
             return OkResponse(selectedResult);
         }
 

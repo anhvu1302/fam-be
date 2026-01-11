@@ -94,14 +94,18 @@ public class DomainException : Exception
     private static IDictionary<string, object> ConvertToDictionary(object obj)
     {
         if (obj is IDictionary<string, object> dict)
+        {
             return dict;
+        }
 
-        var dictionary = new Dictionary<string, object>();
+        Dictionary<string, object> dictionary = new();
         foreach (PropertyInfo prop in obj.GetType().GetProperties())
         {
-            var value = prop.GetValue(obj);
+            object? value = prop.GetValue(obj);
             if (value != null)
+            {
                 dictionary[ToCamelCase(prop.Name)] = value;
+            }
         }
 
         return dictionary;
@@ -113,7 +117,10 @@ public class DomainException : Exception
     private static string ToCamelCase(string str)
     {
         if (string.IsNullOrEmpty(str) || char.IsLower(str[0]))
+        {
             return str;
+        }
+
         return char.ToLower(str[0]) + str.Substring(1);
     }
 }

@@ -1,10 +1,11 @@
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.Common.Seeding;
+using FAM.Infrastructure.Providers.PostgreSQL;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
+namespace FAM.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds initial roles data for PostgreSQL

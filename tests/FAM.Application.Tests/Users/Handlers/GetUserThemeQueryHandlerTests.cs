@@ -23,14 +23,14 @@ public class GetUserThemeQueryHandlerTests
     public async Task Handle_WithExistingTheme_ShouldReturnTheme()
     {
         // Arrange
-        var userId = 1L;
-        var theme = UserTheme.Create(userId, "Dark", "#FF5733", 0.8m, 12, true, true, false);
+        long userId = 1L;
+        UserTheme theme = UserTheme.Create(userId, "Dark", "#FF5733", 0.8m, 12, true, true, false);
 
         _mockUserThemeRepository
             .Setup(x => x.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(theme);
 
-        var query = new GetUserThemeQuery(userId);
+        GetUserThemeQuery query = new(userId);
 
         // Act
         GetUserThemeResponse? result = await _handler.Handle(query, CancellationToken.None);
@@ -51,12 +51,12 @@ public class GetUserThemeQueryHandlerTests
     public async Task Handle_WithNoTheme_ShouldReturnNull()
     {
         // Arrange
-        var userId = 1L;
+        long userId = 1L;
         _mockUserThemeRepository
             .Setup(x => x.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserTheme?)null);
 
-        var query = new GetUserThemeQuery(userId);
+        GetUserThemeQuery query = new(userId);
 
         // Act
         GetUserThemeResponse? result = await _handler.Handle(query, CancellationToken.None);

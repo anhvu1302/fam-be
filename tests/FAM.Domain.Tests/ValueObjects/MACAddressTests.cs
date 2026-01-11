@@ -11,10 +11,10 @@ public class MACAddressTests
     public void Create_WithColonSeparatedFormat_ShouldCreateMACAddress()
     {
         // Arrange
-        var value = "00:11:22:33:44:55";
+        string value = "00:11:22:33:44:55";
 
         // Act
-        var macAddress = MACAddress.Create(value);
+        MACAddress macAddress = MACAddress.Create(value);
 
         // Assert
         macAddress.Should().NotBeNull();
@@ -26,10 +26,10 @@ public class MACAddressTests
     public void Create_WithHyphenSeparatedFormat_ShouldCreateMACAddress()
     {
         // Arrange
-        var value = "00-11-22-33-44-55";
+        string value = "00-11-22-33-44-55";
 
         // Act
-        var macAddress = MACAddress.Create(value);
+        MACAddress macAddress = MACAddress.Create(value);
 
         // Assert
         macAddress.Should().NotBeNull();
@@ -41,10 +41,10 @@ public class MACAddressTests
     public void Create_WithDotSeparatedFormat_ShouldCreateMACAddress()
     {
         // Arrange
-        var value = "0011.2233.4455";
+        string value = "0011.2233.4455";
 
         // Act
-        var macAddress = MACAddress.Create(value);
+        MACAddress macAddress = MACAddress.Create(value);
 
         // Assert
         macAddress.Should().NotBeNull();
@@ -56,10 +56,10 @@ public class MACAddressTests
     public void Create_WithNoSeparatorsFormat_ShouldCreateMACAddress()
     {
         // Arrange
-        var value = "001122334455";
+        string value = "001122334455";
 
         // Act
-        var macAddress = MACAddress.Create(value);
+        MACAddress macAddress = MACAddress.Create(value);
 
         // Assert
         macAddress.Should().NotBeNull();
@@ -71,7 +71,7 @@ public class MACAddressTests
     public void Create_WithEmptyString_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "";
+        string value = "";
 
         // Act
         Action act = () => MACAddress.Create(value);
@@ -85,7 +85,7 @@ public class MACAddressTests
     public void Create_WithInvalidLength_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "00:11:22:33:44";
+        string value = "00:11:22:33:44";
 
         // Act
         Action act = () => MACAddress.Create(value);
@@ -99,7 +99,7 @@ public class MACAddressTests
     public void Create_WithInvalidCharacters_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "ZZ:11:22:33:44:55";
+        string value = "ZZ:11:22:33:44:55";
 
         // Act
         Action act = () => MACAddress.Create(value);
@@ -113,10 +113,10 @@ public class MACAddressTests
     public void IsMulticast_WithMulticastAddress_ShouldReturnTrue()
     {
         // Arrange
-        var macAddress = MACAddress.Create("01:11:22:33:44:55");
+        MACAddress macAddress = MACAddress.Create("01:11:22:33:44:55");
 
         // Act
-        var result = macAddress.IsMulticast();
+        bool result = macAddress.IsMulticast();
 
         // Assert
         result.Should().BeTrue();
@@ -126,10 +126,10 @@ public class MACAddressTests
     public void IsMulticast_WithUnicastAddress_ShouldReturnFalse()
     {
         // Arrange
-        var macAddress = MACAddress.Create("00:11:22:33:44:55");
+        MACAddress macAddress = MACAddress.Create("00:11:22:33:44:55");
 
         // Act
-        var result = macAddress.IsMulticast();
+        bool result = macAddress.IsMulticast();
 
         // Assert
         result.Should().BeFalse();
@@ -139,10 +139,10 @@ public class MACAddressTests
     public void IsUnicast_WithUnicastAddress_ShouldReturnTrue()
     {
         // Arrange
-        var macAddress = MACAddress.Create("00:11:22:33:44:55");
+        MACAddress macAddress = MACAddress.Create("00:11:22:33:44:55");
 
         // Act
-        var result = macAddress.IsUnicast();
+        bool result = macAddress.IsUnicast();
 
         // Assert
         result.Should().BeTrue();
@@ -152,10 +152,10 @@ public class MACAddressTests
     public void IsLocallyAdministered_WithLocallyAdministeredAddress_ShouldReturnTrue()
     {
         // Arrange
-        var macAddress = MACAddress.Create("02:11:22:33:44:55");
+        MACAddress macAddress = MACAddress.Create("02:11:22:33:44:55");
 
         // Act
-        var result = macAddress.IsLocallyAdministered();
+        bool result = macAddress.IsLocallyAdministered();
 
         // Assert
         result.Should().BeTrue();
@@ -165,10 +165,10 @@ public class MACAddressTests
     public void GetNormalizedFormat_ShouldReturnColonSeparatedFormat()
     {
         // Arrange
-        var macAddress = MACAddress.Create("001122334455");
+        MACAddress macAddress = MACAddress.Create("001122334455");
 
         // Act
-        var result = macAddress.GetNormalizedFormat();
+        string result = macAddress.GetNormalizedFormat();
 
         // Assert
         result.Should().Be("00:11:22:33:44:55");
@@ -178,7 +178,7 @@ public class MACAddressTests
     public void ImplicitOperator_ShouldConvertToString()
     {
         // Arrange
-        var macAddress = MACAddress.Create("00:11:22:33:44:55");
+        MACAddress macAddress = MACAddress.Create("00:11:22:33:44:55");
 
         // Act
         string value = macAddress;
@@ -191,10 +191,10 @@ public class MACAddressTests
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var macAddress = MACAddress.Create("00:11:22:33:44:55");
+        MACAddress macAddress = MACAddress.Create("00:11:22:33:44:55");
 
         // Act
-        var result = macAddress.ToString();
+        string result = macAddress.ToString();
 
         // Assert
         result.Should().Be("00:11:22:33:44:55");

@@ -14,7 +14,9 @@ public static class IncludeHelper
     public static List<string> ParseIncludes(string? includeParam, IncludeOptions? options = null)
     {
         if (string.IsNullOrWhiteSpace(includeParam))
+        {
             return new List<string>();
+        }
 
         IncludeOptions opts = options ?? new IncludeOptions();
 
@@ -37,25 +39,35 @@ public static class IncludeHelper
         IncludeOptions? options = null)
     {
         if (string.IsNullOrWhiteSpace(includeParam))
+        {
             return (true, null);
+        }
 
         IncludeOptions opts = options ?? new IncludeOptions();
-        var includes = includeParam.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
+        List<string> includes = includeParam.Split(',').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s))
+            .ToList();
 
         // Check count
         if (includes.Count > opts.MaxIncludesCount)
+        {
             return (false, $"Too many includes. Maximum allowed: {opts.MaxIncludesCount}");
+        }
 
         // Check each include
-        foreach (var include in includes)
+        foreach (string include in includes)
         {
             // Check depth
-            var depth = GetDepth(include);
-            if (depth > opts.MaxDepth) return (false, $"Include '{include}' exceeds max depth of {opts.MaxDepth}");
+            int depth = GetDepth(include);
+            if (depth > opts.MaxDepth)
+            {
+                return (false, $"Include '{include}' exceeds max depth of {opts.MaxDepth}");
+            }
 
             // Check if allowed
             if (opts.AllowedIncludes.Count > 0 && !IsAllowed(include, opts))
+            {
                 return (false, $"Include '{include}' is not allowed");
+            }
         }
 
         return (true, null);
@@ -76,7 +88,9 @@ public static class IncludeHelper
     {
         // If no whitelist is configured, allow all
         if (options.AllowedIncludes.Count == 0)
+        {
             return true;
+        }
 
         // Check exact match or prefix match (to support nested includes)
         return options.AllowedIncludes.Contains(includePath) ||

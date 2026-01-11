@@ -19,7 +19,9 @@ public sealed class GetEmailTemplateByIdQueryHandler : IRequestHandler<GetEmailT
     {
         EmailTemplate? template = await _unitOfWork.EmailTemplates.GetByIdAsync(request.Id, cancellationToken);
         if (template == null)
+        {
             return null;
+        }
 
         return MapToDto(template);
     }

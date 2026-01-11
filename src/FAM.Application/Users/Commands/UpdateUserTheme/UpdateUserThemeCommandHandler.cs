@@ -26,8 +26,11 @@ public class UpdateUserThemeCommandHandler : IRequestHandler<UpdateUserThemeComm
         CancellationToken cancellationToken)
     {
         // Verify user exists
-        var userExists = await _userRepository.ExistsAsync(request.UserId, cancellationToken);
-        if (!userExists) throw new DomainException(ErrorCodes.USER_NOT_FOUND, "User not found.");
+        bool userExists = await _userRepository.ExistsAsync(request.UserId, cancellationToken);
+        if (!userExists)
+        {
+            throw new DomainException(ErrorCodes.USER_NOT_FOUND, "User not found.");
+        }
 
         // Get or create theme
         UserTheme? theme = await _userThemeRepository.GetByUserIdAsync(request.UserId, cancellationToken);

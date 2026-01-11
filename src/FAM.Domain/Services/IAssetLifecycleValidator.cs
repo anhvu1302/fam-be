@@ -28,15 +28,17 @@ public class AssetLifecycleValidator : IAssetLifecycleValidator
     public bool CanTransitionTo(Asset asset, string newLifecycleCode)
     {
         if (string.IsNullOrEmpty(asset.LifecycleCode))
+        {
             return newLifecycleCode == "draft";
+        }
 
-        return _allowedTransitions.TryGetValue(asset.LifecycleCode, out var allowed) &&
+        return _allowedTransitions.TryGetValue(asset.LifecycleCode, out string[]? allowed) &&
                allowed.Contains(newLifecycleCode);
     }
 
     public IEnumerable<string> GetAllowedTransitions(string currentLifecycleCode)
     {
-        return _allowedTransitions.TryGetValue(currentLifecycleCode, out var allowed)
+        return _allowedTransitions.TryGetValue(currentLifecycleCode, out string[]? allowed)
             ? allowed
             : Array.Empty<string>();
     }
@@ -44,17 +46,25 @@ public class AssetLifecycleValidator : IAssetLifecycleValidator
     public string? ValidateTransition(Asset asset, string newLifecycleCode)
     {
         if (asset.IsDeleted)
+        {
             return "Cannot change lifecycle of deleted asset";
+        }
 
         if (!CanTransitionTo(asset, newLifecycleCode))
+        {
             return $"Cannot transition from {asset.LifecycleCode} to {newLifecycleCode}";
+        }
 
         // Additional business rules
         if (newLifecycleCode == "active" && !asset.PurchaseDate.HasValue)
+        {
             return "Asset must have purchase date before activation";
+        }
 
         if (newLifecycleCode == "active" && !asset.LocationId.HasValue)
+        {
             return "Asset must have location before activation";
+        }
 
         return null; // Valid
     }

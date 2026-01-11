@@ -43,8 +43,8 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         User? user = await _unitOfWork.Users.FindByEmailAsync(request.Email, cancellationToken);
 
         // Always return success message (for security - don't reveal if email exists)
-        var maskedEmail = MaskEmail(request.Email);
-        var response = new ForgotPasswordResponse
+        string maskedEmail = MaskEmail(request.Email);
+        ForgotPasswordResponse response = new()
         {
             MaskedEmail = maskedEmail
         };
@@ -62,7 +62,7 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         }
 
         // Generate reset token
-        var resetToken = GenerateSecureToken();
+        string resetToken = GenerateSecureToken();
 
         // Save reset token (expires based on configuration, default 15 minutes)
         user.SetPasswordResetToken(resetToken, _frontendOptions.PasswordResetTokenExpiryMinutes);
@@ -73,7 +73,7 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
         try
         {
             // Get reset URL from configuration
-            var resetUrl = _frontendOptions.GetResetPasswordUrl();
+            string resetUrl = _frontendOptions.GetResetPasswordUrl();
 
             await _emailService.SendPasswordResetEmailAsync(
                 user.Email,
@@ -95,8 +95,8 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
     private static string GenerateSecureToken()
     {
         // Generate a cryptographically secure random token
-        var randomBytes = new byte[32];
-        using var rng = RandomNumberGenerator.Create();
+        byte[] randomBytes = new byte[32];
+        using RandomNumberGenerator rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
         return Convert.ToBase64String(randomBytes)
             .Replace("+", "-")
@@ -107,20 +107,26 @@ public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordComman
     private static string MaskEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
+        {
             return string.Empty;
+        }
 
-        var parts = email.Split('@');
+        string[] parts = email.Split('@');
         if (parts.Length != 2)
+        {
             return email;
+        }
 
-        var localPart = parts[0];
-        var domain = parts[1];
+        string localPart = parts[0];
+        string domain = parts[1];
 
         if (localPart.Length <= 2)
+        {
             return $"{localPart[0]}***@{domain}";
+        }
 
-        var visibleChars = Math.Min(2, localPart.Length / 2);
-        var maskedPart = localPart.Substring(0, visibleChars) + "***";
+        int visibleChars = Math.Min(2, localPart.Length / 2);
+        string maskedPart = localPart.Substring(0, visibleChars) + "***";
 
         return $"{maskedPart}@{domain}";
     }

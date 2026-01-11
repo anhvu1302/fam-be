@@ -12,17 +12,17 @@ public class RoleTests
     public void Create_WithValidData_ShouldCreateRole()
     {
         // Arrange
-        var code = "admin";
-        var name = "Administrator";
-        var description = "System administrator role";
-        var rank = 1;
+        string code = "admin";
+        string name = "Administrator";
+        string description = "System administrator role";
+        int rank = 1;
 
         // Act
-        var role = Role.Create(code, name, rank, description);
+        Role role = Role.Create(code, name, rank, description);
 
         // Assert
         role.Should().NotBeNull();
-        var codeValue = role.Code;
+        string codeValue = role.Code;
         codeValue.Should().Be("ADMIN");
         role.Name.Should().Be(name);
         role.Description.Should().Be(description);
@@ -34,12 +34,12 @@ public class RoleTests
     public void Create_WithSystemRoleFlag_ShouldCreateSystemRole()
     {
         // Arrange
-        var code = "admin";
-        var name = "Administrator";
-        var rank = 1;
+        string code = "admin";
+        string name = "Administrator";
+        int rank = 1;
 
         // Act
-        var role = Role.Create(code, name, rank, isSystemRole: true);
+        Role role = Role.Create(code, name, rank, isSystemRole: true);
 
         // Assert
         role.Should().NotBeNull();
@@ -50,18 +50,18 @@ public class RoleTests
     public void Create_ShouldRaiseDomainEvent()
     {
         // Arrange
-        var code = "admin";
-        var name = "Administrator";
-        var rank = 1;
+        string code = "admin";
+        string name = "Administrator";
+        int rank = 1;
 
         // Act
-        var role = Role.Create(code, name, rank);
+        Role role = Role.Create(code, name, rank);
 
         // Assert
         role.DomainEvents.Should().HaveCount(1);
         IDomainEvent domainEvent = role.DomainEvents.First();
         domainEvent.Should().BeOfType<RoleCreated>();
-        var roleCreatedEvent = (RoleCreated)domainEvent;
+        RoleCreated roleCreatedEvent = (RoleCreated)domainEvent;
         roleCreatedEvent.RoleId.Should().Be(role.Id);
         roleCreatedEvent.Code.Should().Be(code); // Event stores original input code
         roleCreatedEvent.Name.Should().Be(name);
@@ -72,9 +72,9 @@ public class RoleTests
     public void Create_WithEmptyCode_ShouldThrowDomainException()
     {
         // Arrange
-        var code = "";
-        var name = "Administrator";
-        var rank = 1;
+        string code = "";
+        string name = "Administrator";
+        int rank = 1;
 
         // Act
         Action act = () => Role.Create(code, name, rank);
@@ -88,9 +88,9 @@ public class RoleTests
     public void Create_WithEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var code = "admin";
-        var name = "";
-        var rank = 1;
+        string code = "admin";
+        string name = "";
+        int rank = 1;
 
         // Act
         Action act = () => Role.Create(code, name, rank);
@@ -104,9 +104,9 @@ public class RoleTests
     public void Create_WithNegativeRank_ShouldThrowDomainException()
     {
         // Arrange
-        var code = "admin";
-        var name = "Administrator";
-        var rank = -1;
+        string code = "admin";
+        string name = "Administrator";
+        int rank = -1;
 
         // Act
         Action act = () => Role.Create(code, name, rank);
@@ -120,10 +120,10 @@ public class RoleTests
     public void Update_WithValidData_ShouldUpdateRole()
     {
         // Arrange
-        var role = Role.Create("admin", "Administrator", 1);
-        var newName = "Super Admin";
-        var newDescription = "Super administrator role";
-        var newRank = 2;
+        Role role = Role.Create("admin", "Administrator", 1);
+        string newName = "Super Admin";
+        string newDescription = "Super administrator role";
+        int newRank = 2;
 
         // Act
         role.Update(newName, newRank, newDescription);
@@ -139,10 +139,10 @@ public class RoleTests
     public void Update_ShouldRaiseDomainEvent()
     {
         // Arrange
-        var role = Role.Create("admin", "Administrator", 1);
+        Role role = Role.Create("admin", "Administrator", 1);
         role.ClearDomainEvents();
-        var newName = "Super Admin";
-        var newRank = 2;
+        string newName = "Super Admin";
+        int newRank = 2;
 
         // Act
         role.Update(newName, newRank);
@@ -151,7 +151,7 @@ public class RoleTests
         role.DomainEvents.Should().HaveCount(1);
         IDomainEvent domainEvent = role.DomainEvents.First();
         domainEvent.Should().BeOfType<RoleUpdated>();
-        var roleUpdatedEvent = (RoleUpdated)domainEvent;
+        RoleUpdated roleUpdatedEvent = (RoleUpdated)domainEvent;
         roleUpdatedEvent.RoleId.Should().Be(role.Id);
         roleUpdatedEvent.Name.Should().Be(newName);
         roleUpdatedEvent.Rank.Should().Be(newRank);
@@ -161,9 +161,9 @@ public class RoleTests
     public void Update_WithEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var role = Role.Create("admin", "Administrator", 1);
-        var newName = "";
-        var newRank = 2;
+        Role role = Role.Create("admin", "Administrator", 1);
+        string newName = "";
+        int newRank = 2;
 
         // Act
         Action act = () => role.Update(newName, newRank);
@@ -177,9 +177,9 @@ public class RoleTests
     public void Update_SystemRole_ShouldThrowDomainException()
     {
         // Arrange
-        var role = Role.Create("admin", "Administrator", 1, isSystemRole: true);
-        var newName = "Super Admin";
-        var newRank = 2;
+        Role role = Role.Create("admin", "Administrator", 1, isSystemRole: true);
+        string newName = "Super Admin";
+        int newRank = 2;
 
         // Act
         Action act = () => role.Update(newName, newRank);
@@ -193,9 +193,9 @@ public class RoleTests
     public void Update_WithNegativeRank_ShouldThrowDomainException()
     {
         // Arrange
-        var role = Role.Create("admin", "Administrator", 1);
-        var newName = "Super Admin";
-        var newRank = -1;
+        Role role = Role.Create("admin", "Administrator", 1);
+        string newName = "Super Admin";
+        int newRank = -1;
 
         // Act
         Action act = () => role.Update(newName, newRank);
@@ -209,7 +209,7 @@ public class RoleTests
     public void ValidateCanDelete_WithNonSystemRole_ShouldNotThrowException()
     {
         // Arrange
-        var role = Role.Create("custom", "Custom Role", 50);
+        Role role = Role.Create("custom", "Custom Role", 50);
 
         // Act
         Action act = () => role.ValidateCanDelete();
@@ -222,7 +222,7 @@ public class RoleTests
     public void ValidateCanDelete_WithSystemRole_ShouldThrowDomainException()
     {
         // Arrange
-        var role = Role.Create("admin", "Administrator", 1, isSystemRole: true);
+        Role role = Role.Create("admin", "Administrator", 1, isSystemRole: true);
 
         // Act
         Action act = () => role.ValidateCanDelete();
@@ -236,9 +236,9 @@ public class RoleTests
     public void AssignPermissions_WithValidPermissions_ShouldRaiseDomainEvent()
     {
         // Arrange
-        var role = Role.Create("admin", "Administrator", 1);
+        Role role = Role.Create("admin", "Administrator", 1);
         role.ClearDomainEvents();
-        var permissions = new List<Permission>
+        List<Permission> permissions = new()
         {
             Permission.Create("assets", "view"),
             Permission.Create("assets", "create")
@@ -251,7 +251,7 @@ public class RoleTests
         role.DomainEvents.Should().HaveCount(1);
         IDomainEvent domainEvent = role.DomainEvents.First();
         domainEvent.Should().BeOfType<PermissionsAssignedToRole>();
-        var assignedEvent = (PermissionsAssignedToRole)domainEvent;
+        PermissionsAssignedToRole assignedEvent = (PermissionsAssignedToRole)domainEvent;
         assignedEvent.RoleId.Should().Be(role.Id);
         assignedEvent.PermissionIds.Should().HaveCount(2);
     }
@@ -260,8 +260,8 @@ public class RoleTests
     public void AssignPermissions_WithEmptyList_ShouldThrowDomainException()
     {
         // Arrange
-        var role = Role.Create("admin", "Administrator", 1);
-        var permissions = new List<Permission>();
+        Role role = Role.Create("admin", "Administrator", 1);
+        List<Permission> permissions = new();
 
         // Act
         Action act = () => role.AssignPermissions(permissions);
@@ -275,9 +275,9 @@ public class RoleTests
     public void RevokePermissions_WithValidIds_ShouldRaiseDomainEvent()
     {
         // Arrange
-        var role = Role.Create("admin", "Administrator", 1);
+        Role role = Role.Create("admin", "Administrator", 1);
         role.ClearDomainEvents();
-        var permissionIds = new List<long> { 1, 2, 3 };
+        List<long> permissionIds = new() { 1, 2, 3 };
 
         // Act
         role.RevokePermissions(permissionIds);
@@ -286,7 +286,7 @@ public class RoleTests
         role.DomainEvents.Should().HaveCount(1);
         IDomainEvent domainEvent = role.DomainEvents.First();
         domainEvent.Should().BeOfType<PermissionsRevokedFromRole>();
-        var revokedEvent = (PermissionsRevokedFromRole)domainEvent;
+        PermissionsRevokedFromRole revokedEvent = (PermissionsRevokedFromRole)domainEvent;
         revokedEvent.RoleId.Should().Be(role.Id);
         revokedEvent.PermissionIds.Should().BeEquivalentTo(permissionIds);
     }
@@ -295,8 +295,8 @@ public class RoleTests
     public void RevokePermissions_WithEmptyList_ShouldThrowDomainException()
     {
         // Arrange
-        var role = Role.Create("admin", "Administrator", 1);
-        var permissionIds = new List<long>();
+        Role role = Role.Create("admin", "Administrator", 1);
+        List<long> permissionIds = new();
 
         // Act
         Action act = () => role.RevokePermissions(permissionIds);

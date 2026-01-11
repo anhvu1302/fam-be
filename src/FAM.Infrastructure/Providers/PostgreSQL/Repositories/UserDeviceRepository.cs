@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users.Entities;
+using FAM.Infrastructure.Common.Abstractions;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -11,35 +12,37 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 /// <summary>
 /// PostgreSQL implementation of IUserDeviceRepository
 /// Uses Pragmatic Architecture - directly works with Domain entities
+/// Follows Clean Architecture by depending on IDbContext
 /// </summary>
 public class UserDeviceRepository : IUserDeviceRepository
 {
-    private readonly PostgreSqlDbContext _context;
+    private readonly IDbContext _context;
+    protected DbSet<UserDevice> DbSet => _context.Set<UserDevice>();
 
-    public UserDeviceRepository(PostgreSqlDbContext context)
+    public UserDeviceRepository(IDbContext context)
     {
         _context = context;
     }
 
     public async Task<UserDevice?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.UserDevices.FindAsync(new object[] { id }, cancellationToken);
+        return await DbSet.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public async Task<IEnumerable<UserDevice>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.UserDevices.ToListAsync(cancellationToken);
+        return await DbSet.ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<UserDevice>> FindAsync(Expression<Func<UserDevice, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        return await _context.UserDevices.Where(predicate).ToListAsync(cancellationToken);
+        return await DbSet.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(UserDevice entity, CancellationToken cancellationToken = default)
     {
-        await _context.UserDevices.AddAsync(entity, cancellationToken);
+        await DbSet.AddAsync(entity, cancellationToken);
     }
 
     public void Update(UserDevice entity)
@@ -55,31 +58,31 @@ public class UserDeviceRepository : IUserDeviceRepository
         }
         else
         {
-            _context.UserDevices.Attach(entity);
+            DbSet.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
         }
     }
 
     public void Delete(UserDevice entity)
     {
-        _context.UserDevices.Remove(entity);
+        DbSet.Remove(entity);
     }
 
     public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        return await _context.UserDevices.AnyAsync(d => d.Id == id, cancellationToken);
+        return await DbSet.AnyAsync(d => d.Id == id, cancellationToken);
     }
 
     public async Task<UserDevice?> GetByDeviceIdAsync(string deviceId, CancellationToken cancellationToken = default)
     {
-        return await _context.UserDevices
+        return await DbSet
             .FirstOrDefaultAsync(d => d.DeviceId == deviceId, cancellationToken);
     }
 
     public async Task<IEnumerable<UserDevice>> GetByUserIdAsync(long userId,
         CancellationToken cancellationToken = default)
     {
-        return await _context.UserDevices
+        return await DbSet
             .Where(d => d.UserId == userId)
             .ToListAsync(cancellationToken);
     }
@@ -87,7 +90,7 @@ public class UserDeviceRepository : IUserDeviceRepository
     public async Task<IEnumerable<UserDevice>> GetActiveDevicesByUserIdAsync(long userId,
         CancellationToken cancellationToken = default)
     {
-        return await _context.UserDevices
+        return await DbSet
             .Where(d => d.UserId == userId && d.IsActive)
             .ToListAsync(cancellationToken);
     }
@@ -95,41 +98,51 @@ public class UserDeviceRepository : IUserDeviceRepository
     public async Task<bool> IsDeviceIdTakenAsync(string deviceId, Guid? excludeDeviceId = null,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<UserDevice> query = _context.UserDevices.Where(d => d.DeviceId == deviceId);
-        if (excludeDeviceId.HasValue) query = query.Where(d => d.Id != excludeDeviceId.Value);
+        IQueryable<UserDevice> query = DbSet.Where(d => d.DeviceId == deviceId);
+        if (excludeDeviceId.HasValue)
+        {
+            query = query.Where(d => d.Id != excludeDeviceId.Value);
+        }
+
         return await query.AnyAsync(cancellationToken);
     }
 
     public async Task DeactivateDeviceAsync(Guid deviceId, CancellationToken cancellationToken = default)
     {
-        UserDevice? entity = await _context.UserDevices.FindAsync(new object[] { deviceId }, cancellationToken);
+        UserDevice? entity = await DbSet.FindAsync(new object[] { deviceId }, cancellationToken);
         if (entity != null)
         {
             entity.Deactivate();
-            _context.UserDevices.Update(entity);
+            DbSet.Update(entity);
         }
     }
 
     public async Task DeactivateAllUserDevicesAsync(long userId, string? excludeDeviceId = null,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<UserDevice> query = _context.UserDevices
+        IQueryable<UserDevice> query = DbSet
             .Where(d => d.UserId == userId && !d.IsDeleted);
 
         // Exclude device by DeviceId (fingerprint string), not by Guid ID
-        if (!string.IsNullOrEmpty(excludeDeviceId)) query = query.Where(d => d.DeviceId != excludeDeviceId);
+        if (!string.IsNullOrEmpty(excludeDeviceId))
+        {
+            query = query.Where(d => d.DeviceId != excludeDeviceId);
+        }
 
         List<UserDevice> entities = await query.ToListAsync(cancellationToken);
 
-        foreach (UserDevice entity in entities) entity.Deactivate();
+        foreach (UserDevice entity in entities)
+        {
+            entity.Deactivate();
+        }
 
-        _context.UserDevices.UpdateRange(entities);
+        DbSet.UpdateRange(entities);
     }
 
     public async Task<UserDevice?> FindByRefreshTokenAsync(string refreshToken,
         CancellationToken cancellationToken = default)
     {
-        return await _context.UserDevices
+        return await DbSet
             .Include(d => d.User)
             .FirstOrDefaultAsync(d => d.RefreshToken == refreshToken && !d.IsDeleted, cancellationToken);
     }
@@ -139,7 +152,7 @@ public class UserDeviceRepository : IUserDeviceRepository
     /// </summary>
     public IQueryable<UserDevice> GetQueryable()
     {
-        return _context.UserDevices.AsNoTracking();
+        return DbSet.AsNoTracking();
     }
 
     /// <summary>
@@ -148,11 +161,13 @@ public class UserDeviceRepository : IUserDeviceRepository
     public async Task<bool> UpdateLastActivityAsync(string deviceId, string? ipAddress = null,
         CancellationToken cancellationToken = default)
     {
-        UserDevice? entity = await _context.UserDevices
+        UserDevice? entity = await DbSet
             .FirstOrDefaultAsync(d => d.DeviceId == deviceId && d.IsActive && !d.IsDeleted, cancellationToken);
 
         if (entity == null)
+        {
             return false;
+        }
 
         entity.UpdateActivity(ipAddress);
         entity.UpdatedAt = DateTime.UtcNow;

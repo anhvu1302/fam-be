@@ -1,6 +1,8 @@
 using System.Linq.Expressions;
 
-using FAM.Infrastructure.Providers.PostgreSQL;
+using FAM.Infrastructure.Common.Abstractions;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace FAM.Infrastructure.Repositories;
 
@@ -8,13 +10,15 @@ namespace FAM.Infrastructure.Repositories;
 /// Base repository for EF Core
 /// Pragmatic Architecture - uses single Domain entity
 /// Provider-agnostic (can work with any EF Core provider)
+/// Follows Clean Architecture by depending on IDbContext abstraction
 /// </summary>
 public abstract class BaseRepository<TEntity> : BasePagedRepository<TEntity>
     where TEntity : class
 {
-    protected readonly PostgreSqlDbContext Context;
+    protected readonly IDbContext Context;
+    protected DbSet<TEntity> DbSet => Context.Set<TEntity>();
 
-    protected BaseRepository(PostgreSqlDbContext context) : base()
+    protected BaseRepository(IDbContext context) : base()
     {
         Context = context;
     }
@@ -29,31 +33,40 @@ public abstract class BaseRepository<TEntity> : BasePagedRepository<TEntity>
         Expression<Func<TEntity, object>> defaultSort)
     {
         if (string.IsNullOrWhiteSpace(sort))
+        {
             return query.OrderBy(defaultSort);
+        }
 
-        var sortParts = sort.Split(',', StringSplitOptions.RemoveEmptyEntries);
+        string[] sortParts = sort.Split(',', StringSplitOptions.RemoveEmptyEntries);
         IOrderedQueryable<TEntity>? orderedQuery = null;
 
-        foreach (var sortPart in sortParts)
+        foreach (string sortPart in sortParts)
         {
-            var trimmed = sortPart.Trim();
-            if (string.IsNullOrEmpty(trimmed)) continue;
+            string trimmed = sortPart.Trim();
+            if (string.IsNullOrEmpty(trimmed))
+            {
+                continue;
+            }
 
-            var descending = trimmed.StartsWith('-');
-            var fieldName = descending ? trimmed[1..] : trimmed;
+            bool descending = trimmed.StartsWith('-');
+            string fieldName = descending ? trimmed[1..] : trimmed;
 
             try
             {
                 Expression<Func<TEntity, object>> expression = getFieldExpression(fieldName.ToLowerInvariant());
 
                 if (orderedQuery == null)
+                {
                     orderedQuery = descending
                         ? query.OrderByDescending(expression)
                         : query.OrderBy(expression);
+                }
                 else
+                {
                     orderedQuery = descending
                         ? orderedQuery.ThenByDescending(expression)
                         : orderedQuery.ThenBy(expression);
+                }
             }
             catch (Exception)
             {

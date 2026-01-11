@@ -73,7 +73,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         _mockOtpService.Setup(x => x.RemoveOtpAsync(userId, email, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var signingKey = SigningKey.Create("key1", "public_key", "private_key", "RS256", 2048);
+        SigningKey signingKey = SigningKey.Create("key1", "public_key", "private_key", "RS256", 2048);
 
         _mockSigningKeyService.Setup(x => x.GetOrCreateActiveKeyAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(signingKey);
@@ -86,7 +86,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         _mockJwtService.Setup(x => x.GenerateRefreshToken())
             .Returns("refresh_token");
 
-        var command = new VerifyEmailOtpLoginCommand { Email = email, EmailOtp = otp };
+        VerifyEmailOtpLoginCommand command = new() { Email = email, EmailOtp = otp };
 
         // Act
         VerifyEmailOtpLoginResponse result = await _handler.Handle(command, CancellationToken.None);
@@ -128,7 +128,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         _mockOtpService.Setup(x => x.RemoveOtpAsync(userId, email, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var signingKey = SigningKey.Create("key1", "public_key", "private_key", "RS256", 2048);
+        SigningKey signingKey = SigningKey.Create("key1", "public_key", "private_key", "RS256", 2048);
 
         _mockSigningKeyService.Setup(x => x.GetOrCreateActiveKeyAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(signingKey);
@@ -141,7 +141,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         _mockJwtService.Setup(x => x.GenerateRefreshToken())
             .Returns("refresh_token");
 
-        var command = new VerifyEmailOtpLoginCommand { Email = email, EmailOtp = otp };
+        VerifyEmailOtpLoginCommand command = new() { Email = email, EmailOtp = otp };
 
         // Act
         VerifyEmailOtpLoginResponse result = await _handler.Handle(command, CancellationToken.None);
@@ -174,7 +174,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         _mockOtpService.Setup(x => x.RemoveOtpAsync(userId, email, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var signingKey = SigningKey.Create("key1", "public_key", "private_key", "RS256", 2048);
+        SigningKey signingKey = SigningKey.Create("key1", "public_key", "private_key", "RS256", 2048);
 
         _mockSigningKeyService.Setup(x => x.GetOrCreateActiveKeyAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(signingKey);
@@ -184,7 +184,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
                 signingKey.KeyId, signingKey.PrivateKey, signingKey.Algorithm))
             .Returns("session_token");
 
-        var command = new VerifyEmailOtpLoginCommand { Email = email, EmailOtp = otp };
+        VerifyEmailOtpLoginCommand command = new() { Email = email, EmailOtp = otp };
 
         // Act
         VerifyEmailOtpLoginResponse result = await _handler.Handle(command, CancellationToken.None);
@@ -213,7 +213,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         _mockOtpService.Setup(x => x.VerifyOtpAsync(userId, email, invalidOtp, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
-        var command = new VerifyEmailOtpLoginCommand { Email = email, EmailOtp = invalidOtp };
+        VerifyEmailOtpLoginCommand command = new() { Email = email, EmailOtp = invalidOtp };
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedException>(() => _handler.Handle(command, CancellationToken.None));
@@ -233,7 +233,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         _mockUserRepository.Setup(x => x.FindByEmailAsync(email, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
-        var command = new VerifyEmailOtpLoginCommand { Email = email, EmailOtp = otp };
+        VerifyEmailOtpLoginCommand command = new() { Email = email, EmailOtp = otp };
 
         // Act & Assert
         await Assert.ThrowsAsync<UnauthorizedException>(() => _handler.Handle(command, CancellationToken.None));
@@ -250,7 +250,7 @@ public class VerifyEmailOtpLoginCommandHandlerTests
         bool isEmailVerified = true,
         bool twoFactorEnabled = false)
     {
-        var user = User.CreateWithPlainPassword(
+        User user = User.CreateWithPlainPassword(
             $"testuser{id}",
             email,
             "Password123!",
@@ -258,10 +258,16 @@ public class VerifyEmailOtpLoginCommandHandlerTests
             "User");
 
         // Use reflection to set IsEmailVerified if needed
-        if (!isEmailVerified) typeof(User).GetProperty("IsEmailVerified")?.SetValue(user, false);
+        if (!isEmailVerified)
+        {
+            typeof(User).GetProperty("IsEmailVerified")?.SetValue(user, false);
+        }
 
         // Use reflection to set TwoFactorEnabled if needed
-        if (twoFactorEnabled) typeof(User).GetProperty("TwoFactorEnabled")?.SetValue(user, true);
+        if (twoFactorEnabled)
+        {
+            typeof(User).GetProperty("TwoFactorEnabled")?.SetValue(user, true);
+        }
 
         // Use reflection to set ID
         typeof(User).GetProperty("Id")?.SetValue(user, id);

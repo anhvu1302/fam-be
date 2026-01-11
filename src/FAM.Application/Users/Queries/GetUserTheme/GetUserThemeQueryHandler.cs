@@ -19,7 +19,9 @@ public class GetUserThemeQueryHandler : IRequestHandler<GetUserThemeQuery, GetUs
         UserTheme? theme = await _userThemeRepository.GetByUserIdAsync(request.UserId, cancellationToken);
 
         if (theme == null)
+        {
             return null;
+        }
 
         return new GetUserThemeResponse(
             theme.Id,

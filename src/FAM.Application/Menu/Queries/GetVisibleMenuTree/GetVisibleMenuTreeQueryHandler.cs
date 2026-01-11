@@ -19,7 +19,7 @@ public class GetVisibleMenuTreeQueryHandler : IRequestHandler<GetVisibleMenuTree
     public async Task<IEnumerable<MenuItemResponse>> Handle(GetVisibleMenuTreeQuery request,
         CancellationToken cancellationToken)
     {
-        var maxDepth = Math.Min(request.MaxDepth, MaxMenuDepth);
+        int maxDepth = Math.Min(request.MaxDepth, MaxMenuDepth);
         IReadOnlyList<MenuItem> menus = await _repository.GetVisibleMenuTreeAsync(
             request.UserPermissions,
             request.UserRoles,

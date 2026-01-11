@@ -58,20 +58,26 @@ public class VerifyResetTokenCommandHandler : IRequestHandler<VerifyResetTokenCo
     private static string MaskEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
+        {
             return string.Empty;
+        }
 
-        var parts = email.Split('@');
+        string[] parts = email.Split('@');
         if (parts.Length != 2)
+        {
             return email;
+        }
 
-        var localPart = parts[0];
-        var domain = parts[1];
+        string localPart = parts[0];
+        string domain = parts[1];
 
         if (localPart.Length <= 2)
+        {
             return $"{localPart[0]}***@{domain}";
+        }
 
-        var visibleChars = Math.Min(2, localPart.Length / 2);
-        var maskedPart = localPart.Substring(0, visibleChars) + "***";
+        int visibleChars = Math.Min(2, localPart.Length / 2);
+        string maskedPart = localPart.Substring(0, visibleChars) + "***";
 
         return $"{maskedPart}@{domain}";
     }

@@ -48,16 +48,23 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
         CancellationToken cancellationToken)
     {
         // Validate 2FA session token
-        var userId =
+        long userId =
             await _twoFactorSessionService.ValidateAndGetUserIdAsync(request.TwoFactorSessionToken, cancellationToken);
         if (userId == 0)
+        {
             throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_TOKEN);
+        }
 
         User? user = await _userRepository.GetByIdAsync(userId, cancellationToken);
-        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
+        if (user == null)
+        {
+            throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
+        }
 
         if (!user.TwoFactorEnabled || string.IsNullOrEmpty(user.TwoFactorSecret))
+        {
             throw new UnauthorizedException(ErrorCodes.AUTH_2FA_REQUIRED);
+        }
 
         if (!VerifyTwoFactorCode(user.TwoFactorSecret, request.TwoFactorCode))
         {
@@ -75,8 +82,8 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
         );
 
         SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
-        var roles = new List<string>();
-        var accessToken = _jwtService.GenerateAccessTokenWithRsa(
+        List<string> roles = new();
+        string accessToken = _jwtService.GenerateAccessTokenWithRsa(
             user.Id,
             user.Username,
             user.Email,
@@ -85,11 +92,11 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
             activeKey.PrivateKey,
             activeKey.Algorithm);
 
-        var accessTokenJti = _jwtService.GetJtiFromToken(accessToken);
+        string? accessTokenJti = _jwtService.GetJtiFromToken(accessToken);
 
         // Calculate expiration times from config
         DateTime accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
-        var refreshToken = _jwtService.GenerateRefreshToken();
+        string refreshToken = _jwtService.GenerateRefreshToken();
         DateTime refreshTokenExpiresAt =
             DateTime.UtcNow.AddDays(request.RememberMe ? _jwtService.RefreshTokenExpiryDays : 7);
 
@@ -145,17 +152,19 @@ public class VerifyTwoFactorCommandHandler : IRequestHandler<VerifyTwoFactorComm
     private bool VerifyTwoFactorCode(string secret, string code)
     {
         if (string.IsNullOrEmpty(secret) || string.IsNullOrEmpty(code))
+        {
             return false;
+        }
 
         try
         {
             // Decode base32 secret
-            var secretBytes = Base32Encoding.ToBytes(secret);
-            var totp = new Totp(secretBytes);
+            byte[]? secretBytes = Base32Encoding.ToBytes(secret);
+            Totp totp = new(secretBytes);
 
             // Verify code with time window tolerance (1 step = 30 seconds)
             // This allows for slight clock skew between server and client
-            var verificationWindow = new VerificationWindow(1, 1);
+            VerificationWindow verificationWindow = new(1, 1);
 
             return totp.VerifyTotp(code, out _, verificationWindow);
         }

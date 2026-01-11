@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 
 using FAM.Domain.Abstractions;
 using FAM.Domain.EmailTemplates;
+using FAM.Infrastructure.Common.Abstractions;
 using FAM.Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
@@ -12,11 +13,12 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 /// <summary>
 /// PostgreSQL implementation of IEmailTemplateRepository
 /// Uses Pragmatic Architecture - directly works with Domain entities
+/// Follows Clean Architecture by depending on IDbContext
 /// </summary>
 public class EmailTemplateRepository : BaseRepository<EmailTemplate>,
     IEmailTemplateRepository
 {
-    public EmailTemplateRepository(PostgreSqlDbContext context)
+    public EmailTemplateRepository(IDbContext context)
         : base(context)
     {
     }
@@ -24,12 +26,12 @@ public class EmailTemplateRepository : BaseRepository<EmailTemplate>,
 
     public async Task<EmailTemplate?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await Context.EmailTemplates.FindAsync(new object[] { id }, cancellationToken);
+        return await DbSet.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public async Task<IEnumerable<EmailTemplate>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await Context.EmailTemplates.ToListAsync(cancellationToken);
+        return await DbSet.ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<EmailTemplate>> FindAsync(
@@ -37,12 +39,12 @@ public class EmailTemplateRepository : BaseRepository<EmailTemplate>,
         CancellationToken cancellationToken = default)
     {
         // Apply predicate at database level - no need for in-memory filtering
-        return await Context.EmailTemplates.Where(predicate).ToListAsync(cancellationToken);
+        return await DbSet.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(EmailTemplate entity, CancellationToken cancellationToken = default)
     {
-        await Context.EmailTemplates.AddAsync(entity, cancellationToken);
+        await DbSet.AddAsync(entity, cancellationToken);
     }
 
     public void Update(EmailTemplate entity)
@@ -56,31 +58,31 @@ public class EmailTemplateRepository : BaseRepository<EmailTemplate>,
         }
         else
         {
-            Context.EmailTemplates.Attach(entity);
+            DbSet.Attach(entity);
             Context.Entry(entity).State = EntityState.Modified;
         }
     }
 
     public void Delete(EmailTemplate entity)
     {
-        Context.EmailTemplates.Remove(entity);
+        DbSet.Remove(entity);
     }
 
     public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await Context.EmailTemplates.AnyAsync(e => e.Id == id, cancellationToken);
+        return await DbSet.AnyAsync(e => e.Id == id, cancellationToken);
     }
 
     public async Task<EmailTemplate?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
-        return await Context.EmailTemplates
+        return await DbSet
             .FirstOrDefaultAsync(e => e.Code == code.ToUpper(), cancellationToken);
     }
 
     public async Task<IReadOnlyList<EmailTemplate>> GetActiveTemplatesAsync(
         CancellationToken cancellationToken = default)
     {
-        return await Context.EmailTemplates
+        return await DbSet
             .Where(e => e.IsActive)
             .ToListAsync(cancellationToken);
     }
@@ -89,7 +91,7 @@ public class EmailTemplateRepository : BaseRepository<EmailTemplate>,
         EmailTemplateCategory category,
         CancellationToken cancellationToken = default)
     {
-        return await Context.EmailTemplates
+        return await DbSet
             .Where(e => e.Category == category)
             .ToListAsync(cancellationToken);
     }
@@ -97,10 +99,12 @@ public class EmailTemplateRepository : BaseRepository<EmailTemplate>,
     public async Task<bool> CodeExistsAsync(string code, long? excludeId = null,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<EmailTemplate> query = Context.EmailTemplates.Where(e => e.Code == code.ToUpper());
+        IQueryable<EmailTemplate> query = DbSet.Where(e => e.Code == code.ToUpper());
 
         if (excludeId.HasValue)
+        {
             query = query.Where(e => e.Id != excludeId.Value);
+        }
 
         return await query.AnyAsync(cancellationToken);
     }
@@ -114,16 +118,18 @@ public class EmailTemplateRepository : BaseRepository<EmailTemplate>,
         CancellationToken cancellationToken = default)
     {
         // Build base query
-        IQueryable<EmailTemplate> countQuery = Context.EmailTemplates.AsQueryable();
-        IQueryable<EmailTemplate> dataQuery = Context.EmailTemplates.AsQueryable();
+        IQueryable<EmailTemplate> countQuery = DbSet.AsQueryable();
+        IQueryable<EmailTemplate> dataQuery = DbSet.AsQueryable();
 
         // Apply includes if provided
         if (includes != null && includes.Any())
+        {
             foreach (Expression<Func<EmailTemplate, object>> include in includes)
             {
-                var propertyPath = GetPropertyName(include.Body);
+                string propertyPath = GetPropertyName(include.Body);
                 dataQuery = dataQuery.Include(propertyPath);
             }
+        }
 
         // Apply filter at database level
         if (filter != null)
@@ -133,7 +139,7 @@ public class EmailTemplateRepository : BaseRepository<EmailTemplate>,
         }
 
         // Get total count
-        var total = await countQuery.LongCountAsync(cancellationToken);
+        long total = await countQuery.LongCountAsync(cancellationToken);
 
         // Apply sorting
         dataQuery = ApplySort(dataQuery, sort, GetSortExpression, t => t.Id);

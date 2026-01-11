@@ -56,6 +56,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Unit>
 
         // Blacklist the access token to invalidate it immediately
         if (!string.IsNullOrEmpty(request.AccessToken) && request.AccessTokenExpiration.HasValue)
+        {
             try
             {
                 await _tokenBlacklistService.BlacklistTokenAsync(
@@ -68,6 +69,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Unit>
                 _logger.LogWarning(ex, "Failed to blacklist access token during logout");
                 // Continue with logout even if blacklisting fails
             }
+        }
 
         // TODO: Raise UserLoggedOutEvent
         // var logoutEvent = new UserLoggedOutEvent(device.UserId, device.DeviceId, request.IpAddress, DateTime.UtcNow);

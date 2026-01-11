@@ -34,6 +34,7 @@ public sealed class GetRolesQueryHandler : IRequestHandler<GetRolesQuery, PageRe
 
         Expression<Func<Role, bool>>? filterExpression = null;
         if (!string.IsNullOrWhiteSpace(queryRequest.Filter))
+        {
             try
             {
                 FilterNode ast = _filterParser.Parse(queryRequest.Filter);
@@ -47,14 +48,15 @@ public sealed class GetRolesQueryHandler : IRequestHandler<GetRolesQuery, PageRe
             {
                 throw new InvalidOperationException($"Invalid filter syntax: {ex.Message}", ex);
             }
+        }
 
-        var page = queryRequest.GetEffectivePage();
-        var pageSize = queryRequest.GetEffectivePageSize();
+        int page = queryRequest.GetEffectivePage();
+        int pageSize = queryRequest.GetEffectivePageSize();
 
         Expression<Func<Role, object>>[] includes = fieldMap.ParseIncludes(queryRequest.Include);
         HashSet<string> includeSet = IncludeParser.Parse(queryRequest.Include);
 
-        (IEnumerable<Role> roles, var totalCount) = await _roleRepository.GetPagedAsync(
+        (IEnumerable<Role> roles, long totalCount) = await _roleRepository.GetPagedAsync(
             filterExpression,
             queryRequest.Sort,
             page,
@@ -62,7 +64,7 @@ public sealed class GetRolesQueryHandler : IRequestHandler<GetRolesQuery, PageRe
             includes,
             cancellationToken);
 
-        var items = roles.Select(r => r.ToRoleDto(includeSet)).ToList();
+        List<RoleDto?> items = roles.Select(r => r.ToRoleDto(includeSet)).ToList();
 
         return new PageResult<RoleDto>(
             items!,

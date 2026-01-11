@@ -11,10 +11,10 @@ public class ModelTests
     public void Create_WithValidName_ShouldCreateModel()
     {
         // Arrange
-        var name = "MacBook Pro 16-inch";
+        string name = "MacBook Pro 16-inch";
 
         // Act
-        var model = Model.Create(name);
+        Model model = Model.Create(name);
 
         // Assert
         model.Name.Should().Be(name);
@@ -28,13 +28,13 @@ public class ModelTests
     public void Create_WithAllParameters_ShouldCreateModel()
     {
         // Arrange
-        var name = "MacBook Pro 16-inch";
-        var manufacturerId = 1;
-        var categoryId = 2;
-        var modelNumber = "MBP16-2023";
+        string name = "MacBook Pro 16-inch";
+        int manufacturerId = 1;
+        int categoryId = 2;
+        string modelNumber = "MBP16-2023";
 
         // Act
-        var model = Model.Create(name, manufacturerId, categoryId, modelNumber);
+        Model model = Model.Create(name, manufacturerId, categoryId, modelNumber);
 
         // Assert
         model.Name.Should().Be(name);
@@ -61,7 +61,7 @@ public class ModelTests
     public void Create_WithEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var emptyName = string.Empty;
+        string emptyName = string.Empty;
 
         // Act
         Action act = () => Model.Create(emptyName);
@@ -75,12 +75,12 @@ public class ModelTests
     public void UpdateBasicInfo_WithValidData_ShouldUpdateModel()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var newName = "Updated Model";
-        var modelNumber = "UPD-001";
-        var sku = "SKU001";
-        var partNumber = "PN001";
-        var description = "Updated description";
+        Model model = Model.Create("Test Model");
+        string newName = "Updated Model";
+        string modelNumber = "UPD-001";
+        string sku = "SKU001";
+        string partNumber = "PN001";
+        string description = "Updated description";
 
         // Act
         model.UpdateBasicInfo(newName, modelNumber, sku, partNumber, description);
@@ -97,7 +97,7 @@ public class ModelTests
     public void UpdateBasicInfo_WithNullName_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
+        Model model = Model.Create("Test Model");
         string? nullName = null;
 
         // Act
@@ -112,8 +112,8 @@ public class ModelTests
     public void UpdatePhysicalSpecs_WithNegativeWeight_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var negativeWeight = -5.5m;
+        Model model = Model.Create("Test Model");
+        decimal negativeWeight = -5.5m;
 
         // Act
         Action act = () => model.UpdatePhysicalSpecs(negativeWeight, "kg", "30x20x5", "cm", "Black", "Plastic");
@@ -127,8 +127,8 @@ public class ModelTests
     public void UpdatePowerEnvironmental_WithNegativePowerConsumption_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var negativePowerConsumption = -100m;
+        Model model = Model.Create("Test Model");
+        decimal negativePowerConsumption = -100m;
 
         // Act
         Action act = () =>
@@ -143,8 +143,8 @@ public class ModelTests
     public void UpdatePricing_WithNegativeMSRP_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var negativeMSRP = -1999.99m;
+        Model model = Model.Create("Test Model");
+        decimal negativeMSRP = -1999.99m;
 
         // Act
         Action act = () => model.UpdatePricing(negativeMSRP, "USD", 1500m, "USD");
@@ -158,8 +158,8 @@ public class ModelTests
     public void UpdatePricing_WithNegativeAverageCost_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var negativeAverageCost = -1200m;
+        Model model = Model.Create("Test Model");
+        decimal negativeAverageCost = -1200m;
 
         // Act
         Action act = () => model.UpdatePricing(1999.99m, "USD", negativeAverageCost, "USD");
@@ -173,8 +173,8 @@ public class ModelTests
     public void UpdateDepreciation_WithNegativeUsefulLifeMonths_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var negativeUsefulLifeMonths = -60;
+        Model model = Model.Create("Test Model");
+        int negativeUsefulLifeMonths = -60;
 
         // Act
         Action act = () => model.UpdateDepreciation(negativeUsefulLifeMonths, "Straight Line", 10m);
@@ -188,8 +188,8 @@ public class ModelTests
     public void UpdateDepreciation_WithResidualValuePercentageOver100_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var residualValuePercentageOver100 = 150m;
+        Model model = Model.Create("Test Model");
+        decimal residualValuePercentageOver100 = 150m;
 
         // Act
         Action act = () => model.UpdateDepreciation(60, "Straight Line", residualValuePercentageOver100);
@@ -203,8 +203,8 @@ public class ModelTests
     public void UpdateDepreciation_WithNegativeResidualValuePercentage_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var negativeResidualValuePercentage = -10m;
+        Model model = Model.Create("Test Model");
+        decimal negativeResidualValuePercentage = -10m;
 
         // Act
         Action act = () => model.UpdateDepreciation(60, "Straight Line", negativeResidualValuePercentage);
@@ -218,8 +218,8 @@ public class ModelTests
     public void UpdateSoftwareLicensing_WithNegativeLicenseDurationMonths_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var negativeLicenseDurationMonths = -12;
+        Model model = Model.Create("Test Model");
+        int negativeLicenseDurationMonths = -12;
 
         // Act
         Action act = () => model.UpdateSoftwareLicensing("Subscription", negativeLicenseDurationMonths, true, 5);
@@ -233,8 +233,8 @@ public class ModelTests
     public void UpdateSoftwareLicensing_WithNegativeMaxInstallations_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var negativeMaxInstallations = -5;
+        Model model = Model.Create("Test Model");
+        int negativeMaxInstallations = -5;
 
         // Act
         Action act = () => model.UpdateSoftwareLicensing("Subscription", 12, true, negativeMaxInstallations);
@@ -248,8 +248,8 @@ public class ModelTests
     public void UpdateInventory_WithNegativeReorderLevel_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var negativeReorderLevel = -10;
+        Model model = Model.Create("Test Model");
+        int negativeReorderLevel = -10;
 
         // Act
         Action act = () => model.UpdateInventory(negativeReorderLevel, 100, DateTime.UtcNow);
@@ -263,8 +263,8 @@ public class ModelTests
     public void UpdateInventory_WithNegativeCurrentStock_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var negativeCurrentStock = -50;
+        Model model = Model.Create("Test Model");
+        int negativeCurrentStock = -50;
 
         // Act
         Action act = () => model.UpdateInventory(10, negativeCurrentStock, DateTime.UtcNow);
@@ -278,12 +278,12 @@ public class ModelTests
     public void UpdateMedia_WithValidUrls_ShouldUpdateMedia()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var imageUrl = "https://example.com/image.jpg";
-        var thumbnailUrl = "https://example.com/thumb.jpg";
-        var productPageUrl = "https://example.com/product";
-        var datasheetUrl = "https://example.com/datasheet.pdf";
-        var videoUrl = "https://example.com/video.mp4";
+        Model model = Model.Create("Test Model");
+        string imageUrl = "https://example.com/image.jpg";
+        string thumbnailUrl = "https://example.com/thumb.jpg";
+        string productPageUrl = "https://example.com/product";
+        string datasheetUrl = "https://example.com/datasheet.pdf";
+        string videoUrl = "https://example.com/video.mp4";
 
         // Act
         model.UpdateMedia(imageUrl, thumbnailUrl, productPageUrl, datasheetUrl, videoUrl);
@@ -305,8 +305,8 @@ public class ModelTests
     public void UpdateMedia_WithInvalidImageUrl_ShouldThrowDomainException()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var invalidImageUrl = "not-a-url";
+        Model model = Model.Create("Test Model");
+        string invalidImageUrl = "not-a-url";
 
         // Act
         Action act = () => model.UpdateMedia(invalidImageUrl, null, null, null, null);
@@ -320,7 +320,7 @@ public class ModelTests
     public void Activate_ShouldSetIsActiveToTrue()
     {
         // Arrange
-        var model = Model.Create("Test Model");
+        Model model = Model.Create("Test Model");
         model.Deactivate();
 
         // Act
@@ -334,7 +334,7 @@ public class ModelTests
     public void Deactivate_ShouldSetIsActiveToFalse()
     {
         // Arrange
-        var model = Model.Create("Test Model");
+        Model model = Model.Create("Test Model");
 
         // Act
         model.Deactivate();
@@ -347,8 +347,8 @@ public class ModelTests
     public void Discontinue_ShouldSetIsAvailableToFalseAndUpdateStatus()
     {
         // Arrange
-        var model = Model.Create("Test Model");
-        var discontinuedDate = new DateTime(2024, 12, 31);
+        Model model = Model.Create("Test Model");
+        DateTime discontinuedDate = new(2024, 12, 31);
 
         // Act
         model.Discontinue(discontinuedDate);
@@ -363,11 +363,11 @@ public class ModelTests
     public void IsEndOfLife_WithDiscontinuedStatus_ShouldReturnTrue()
     {
         // Arrange
-        var model = Model.Create("Test Model");
+        Model model = Model.Create("Test Model");
         model.Discontinue();
 
         // Act
-        var isEndOfLife = model.IsEndOfLife();
+        bool isEndOfLife = model.IsEndOfLife();
 
         // Assert
         isEndOfLife.Should().BeTrue();
@@ -377,11 +377,11 @@ public class ModelTests
     public void IsEndOfLife_WithEOLStatus_ShouldReturnTrue()
     {
         // Arrange
-        var model = Model.Create("Test Model");
+        Model model = Model.Create("Test Model");
         model.UpdateProductInfo(null, null, null, null, "EOL");
 
         // Act
-        var isEndOfLife = model.IsEndOfLife();
+        bool isEndOfLife = model.IsEndOfLife();
 
         // Assert
         isEndOfLife.Should().BeTrue();
@@ -391,11 +391,11 @@ public class ModelTests
     public void NeedsReorder_WithStockBelowReorderLevel_ShouldReturnTrue()
     {
         // Arrange
-        var model = Model.Create("Test Model");
+        Model model = Model.Create("Test Model");
         model.UpdateInventory(10, 5, null); // Reorder level: 10, Current stock: 5
 
         // Act
-        var needsReorder = model.NeedsReorder();
+        bool needsReorder = model.NeedsReorder();
 
         // Assert
         needsReorder.Should().BeTrue();
@@ -405,11 +405,11 @@ public class ModelTests
     public void NeedsReorder_WithStockAboveReorderLevel_ShouldReturnFalse()
     {
         // Arrange
-        var model = Model.Create("Test Model");
+        Model model = Model.Create("Test Model");
         model.UpdateInventory(10, 15, null); // Reorder level: 10, Current stock: 15
 
         // Act
-        var needsReorder = model.NeedsReorder();
+        bool needsReorder = model.NeedsReorder();
 
         // Assert
         needsReorder.Should().BeFalse();

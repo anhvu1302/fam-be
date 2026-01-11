@@ -50,7 +50,9 @@ public class Location : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public static Location Create(string name, string? code = null, int? companyId = null, int? parentId = null)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Location name cannot be empty");
+        }
 
         return new Location
         {

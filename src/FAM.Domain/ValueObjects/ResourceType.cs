@@ -26,12 +26,16 @@ public sealed class ResourceType : ValueObject
     public static ResourceType Create(string resourceType)
     {
         if (string.IsNullOrWhiteSpace(resourceType))
+        {
             throw new DomainException(ErrorCodes.VO_RESOURCE_TYPE_EMPTY);
+        }
 
         resourceType = resourceType.Trim();
 
         if (resourceType.Length > 50)
+        {
             throw new DomainException(ErrorCodes.VO_RESOURCE_TYPE_TOO_LONG);
+        }
 
         return new ResourceType(resourceType);
     }

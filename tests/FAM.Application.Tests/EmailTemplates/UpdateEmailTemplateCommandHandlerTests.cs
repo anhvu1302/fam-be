@@ -25,11 +25,11 @@ public class UpdateEmailTemplateCommandHandlerTests
     public async Task Handle_WithValidCommand_ShouldUpdateTemplate()
     {
         // Arrange
-        var existingTemplate = EmailTemplate.Create(
+        EmailTemplate existingTemplate = EmailTemplate.Create(
             "TEST_EMAIL", "Original Name", "Original Subject",
             "<html>Original</html>", EmailTemplateCategory.Authentication);
 
-        var command = new UpdateEmailTemplateCommand
+        UpdateEmailTemplateCommand command = new()
         {
             Id = 1,
             Name = "Updated Name",
@@ -55,7 +55,7 @@ public class UpdateEmailTemplateCommandHandlerTests
     public async Task Handle_WithNonExistentTemplate_ShouldThrowNotFoundException()
     {
         // Arrange
-        var command = new UpdateEmailTemplateCommand
+        UpdateEmailTemplateCommand command = new()
         {
             Id = 999,
             Name = "Updated Name",
@@ -79,12 +79,12 @@ public class UpdateEmailTemplateCommandHandlerTests
     public async Task Handle_WithSystemTemplate_ShouldThrowDomainException()
     {
         // Arrange
-        var existingTemplate = EmailTemplate.Create(
+        EmailTemplate existingTemplate = EmailTemplate.Create(
             "SYSTEM_EMAIL", "System Template", "Subject",
             "<html>Body</html>", EmailTemplateCategory.System,
             isSystem: true);
 
-        var command = new UpdateEmailTemplateCommand
+        UpdateEmailTemplateCommand command = new()
         {
             Id = 1,
             Name = "Updated Name",
@@ -106,11 +106,11 @@ public class UpdateEmailTemplateCommandHandlerTests
     public async Task Handle_WithAllOptionalParameters_ShouldUpdateAll()
     {
         // Arrange
-        var existingTemplate = EmailTemplate.Create(
+        EmailTemplate existingTemplate = EmailTemplate.Create(
             "TEST_EMAIL", "Original", "Subject",
             "<html>Original</html>", EmailTemplateCategory.Authentication);
 
-        var command = new UpdateEmailTemplateCommand
+        UpdateEmailTemplateCommand command = new()
         {
             Id = 1,
             Name = "Updated Name",

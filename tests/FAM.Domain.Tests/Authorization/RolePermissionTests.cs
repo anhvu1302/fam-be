@@ -10,11 +10,11 @@ public class RolePermissionTests
     public void Create_WithValidData_ShouldCreateRolePermission()
     {
         // Arrange
-        var role = Role.Create("admin", "Administrator", 1);
-        var permission = Permission.Create("assets", "view");
+        Role role = Role.Create("admin", "Administrator", 1);
+        Permission permission = Permission.Create("assets", "view");
 
         // Act
-        var rolePermission = RolePermission.Create(role, permission);
+        RolePermission rolePermission = RolePermission.Create(role, permission);
 
         // Assert
         rolePermission.Should().NotBeNull();

@@ -1,10 +1,11 @@
 using FAM.Domain.Common.Entities;
 using FAM.Infrastructure.Common.Seeding;
+using FAM.Infrastructure.Providers.PostgreSQL;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
+namespace FAM.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds initial menu items for the application
@@ -26,7 +27,7 @@ public class MenuSeeder : BaseDataSeeder
         LogInfo("Checking for existing menu items...");
 
         // Check if menus already exist
-        var hasMenus = await _dbContext.MenuItems.AnyAsync(m => !m.IsDeleted, cancellationToken);
+        bool hasMenus = await _dbContext.MenuItems.AnyAsync(m => !m.IsDeleted, cancellationToken);
 
         if (hasMenus)
         {
@@ -36,7 +37,7 @@ public class MenuSeeder : BaseDataSeeder
 
         LogInfo("Seeding initial menu items...");
 
-        var menus = new List<MenuItem>();
+        List<MenuItem> menus = new();
 
         // Dashboard
         MenuItem dashboard = CreateMenu("dashboard", "Dashboard", "dashboard", "/dashboard", sortOrder: 0);
@@ -59,7 +60,7 @@ public class MenuSeeder : BaseDataSeeder
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         // Now add children with proper parent IDs
-        var childMenus = new List<MenuItem>();
+        List<MenuItem> childMenus = new();
 
         // Asset Management children
         childMenus.Add(CreateMenu("assets.list", "All Assets", "list", "/assets", assets.Id, 0, 1));

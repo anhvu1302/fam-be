@@ -35,12 +35,12 @@ public class ChangePasswordCommandHandlerTests
     public async Task Handle_WithValidCurrentPassword_ShouldChangePassword()
     {
         // Arrange
-        var userId = 1L;
-        var currentPlainPassword = "OldPass123!";
-        var user = User.CreateWithPlainPassword("testuser", "test@example.com", currentPlainPassword);
+        long userId = 1L;
+        string currentPlainPassword = "OldPass123!";
+        User user = User.CreateWithPlainPassword("testuser", "test@example.com", currentPlainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
-        var command = new ChangePasswordCommand
+        ChangePasswordCommand command = new()
         {
             UserId = userId,
             CurrentPassword = currentPlainPassword, // Use same plain password
@@ -77,8 +77,8 @@ public class ChangePasswordCommandHandlerTests
     public async Task Handle_WithNonExistentUser_ShouldThrowKeyNotFoundException()
     {
         // Arrange
-        var userId = 999L;
-        var command = new ChangePasswordCommand
+        long userId = 999L;
+        ChangePasswordCommand command = new()
         {
             UserId = userId,
             CurrentPassword = "OldPass123!",
@@ -104,12 +104,12 @@ public class ChangePasswordCommandHandlerTests
     public async Task Handle_WithIncorrectCurrentPassword_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var userId = 1L;
-        var currentPassword = Password.Create("CorrectOldPass123!");
-        var user = User.Create("testuser", "test@example.com", currentPassword.Hash, currentPassword.Salt, null, null);
+        long userId = 1L;
+        Password currentPassword = Password.Create("CorrectOldPass123!");
+        User user = User.Create("testuser", "test@example.com", currentPassword.Hash, currentPassword.Salt, null, null);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
-        var command = new ChangePasswordCommand
+        ChangePasswordCommand command = new()
         {
             UserId = userId,
             CurrentPassword = "WrongOldPass123!", // Wrong password
@@ -134,13 +134,13 @@ public class ChangePasswordCommandHandlerTests
     public async Task Handle_WithLogoutAllDevices_ShouldDeactivateDevices()
     {
         // Arrange
-        var userId = 1L;
-        var currentDeviceId = "device123";
-        var currentPlainPassword = "OldPass123!";
-        var user = User.CreateWithPlainPassword("testuser", "test@example.com", currentPlainPassword);
+        long userId = 1L;
+        string currentDeviceId = "device123";
+        string currentPlainPassword = "OldPass123!";
+        User user = User.CreateWithPlainPassword("testuser", "test@example.com", currentPlainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
-        var command = new ChangePasswordCommand
+        ChangePasswordCommand command = new()
         {
             UserId = userId,
             CurrentPassword = currentPlainPassword,
@@ -180,12 +180,12 @@ public class ChangePasswordCommandHandlerTests
     public async Task Handle_WithWeakNewPassword_ShouldThrowDomainException()
     {
         // Arrange
-        var userId = 1L;
-        var currentPlainPassword = "OldPass123!";
-        var user = User.CreateWithPlainPassword("testuser", "test@example.com", currentPlainPassword);
+        long userId = 1L;
+        string currentPlainPassword = "OldPass123!";
+        User user = User.CreateWithPlainPassword("testuser", "test@example.com", currentPlainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
-        var command = new ChangePasswordCommand
+        ChangePasswordCommand command = new()
         {
             UserId = userId,
             CurrentPassword = currentPlainPassword,
@@ -210,12 +210,12 @@ public class ChangePasswordCommandHandlerTests
     public async Task Handle_WithSamePasswordAsOld_ShouldStillSucceed()
     {
         // Arrange
-        var userId = 1L;
-        var samePlainPassword = "SamePass123!";
-        var user = User.CreateWithPlainPassword("testuser", "test@example.com", samePlainPassword);
+        long userId = 1L;
+        string samePlainPassword = "SamePass123!";
+        User user = User.CreateWithPlainPassword("testuser", "test@example.com", samePlainPassword);
         typeof(User).GetProperty("Id")?.SetValue(user, userId);
 
-        var command = new ChangePasswordCommand
+        ChangePasswordCommand command = new()
         {
             UserId = userId,
             CurrentPassword = samePlainPassword,

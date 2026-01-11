@@ -11,10 +11,10 @@ public class CountryCodeTests
     public void Create_WithValidCountryCode_ShouldCreateCountryCode()
     {
         // Arrange
-        var code = "VN";
+        string code = "VN";
 
         // Act
-        var countryCode = CountryCode.Create(code);
+        CountryCode countryCode = CountryCode.Create(code);
 
         // Assert
         countryCode.Should().NotBeNull();
@@ -25,10 +25,10 @@ public class CountryCodeTests
     public void Create_WithLowercaseCode_ShouldConvertToUppercase()
     {
         // Arrange
-        var code = "vn";
+        string code = "vn";
 
         // Act
-        var countryCode = CountryCode.Create(code);
+        CountryCode countryCode = CountryCode.Create(code);
 
         // Assert
         countryCode.Value.Should().Be("VN");
@@ -38,10 +38,10 @@ public class CountryCodeTests
     public void Create_WithCodeWithWhitespace_ShouldTrimAndConvertToUppercase()
     {
         // Arrange
-        var code = " vn ";
+        string code = " vn ";
 
         // Act
-        var countryCode = CountryCode.Create(code);
+        CountryCode countryCode = CountryCode.Create(code);
 
         // Assert
         countryCode.Value.Should().Be("VN");
@@ -77,12 +77,12 @@ public class CountryCodeTests
     public void Create_WithValidCountryCodes_ShouldCreateSuccessfully()
     {
         // Arrange
-        var validCodes = new[] { "VN", "US", "GB", "DE", "FR", "JP", "CN", "KR", "SG", "TH" };
+        string[] validCodes = new[] { "VN", "US", "GB", "DE", "FR", "JP", "CN", "KR", "SG", "TH" };
 
         // Act & Assert
-        foreach (var code in validCodes)
+        foreach (string code in validCodes)
         {
-            var countryCode = CountryCode.Create(code);
+            CountryCode countryCode = CountryCode.Create(code);
             countryCode.Value.Should().Be(code);
         }
     }
@@ -91,12 +91,12 @@ public class CountryCodeTests
     public void IsAsian_WithAsianCountry_ShouldReturnTrue()
     {
         // Arrange
-        var asianCodes = new[] { "VN", "CN", "JP", "KR", "SG", "TH" };
+        string[] asianCodes = new[] { "VN", "CN", "JP", "KR", "SG", "TH" };
 
         // Act & Assert
-        foreach (var code in asianCodes)
+        foreach (string code in asianCodes)
         {
-            var countryCode = CountryCode.Create(code);
+            CountryCode countryCode = CountryCode.Create(code);
             countryCode.IsAsian().Should().BeTrue();
         }
     }
@@ -105,10 +105,10 @@ public class CountryCodeTests
     public void IsAsian_WithNonAsianCountry_ShouldReturnFalse()
     {
         // Arrange
-        var countryCode = CountryCode.Create("US");
+        CountryCode countryCode = CountryCode.Create("US");
 
         // Act
-        var result = countryCode.IsAsian();
+        bool result = countryCode.IsAsian();
 
         // Assert
         result.Should().BeFalse();
@@ -118,12 +118,12 @@ public class CountryCodeTests
     public void IsEuropean_WithEuropeanCountry_ShouldReturnTrue()
     {
         // Arrange
-        var europeanCodes = new[] { "GB", "DE", "FR", "IT", "ES" };
+        string[] europeanCodes = new[] { "GB", "DE", "FR", "IT", "ES" };
 
         // Act & Assert
-        foreach (var code in europeanCodes)
+        foreach (string code in europeanCodes)
         {
-            var countryCode = CountryCode.Create(code);
+            CountryCode countryCode = CountryCode.Create(code);
             countryCode.IsEuropean().Should().BeTrue();
         }
     }
@@ -132,10 +132,10 @@ public class CountryCodeTests
     public void IsEuropean_WithNonEuropeanCountry_ShouldReturnFalse()
     {
         // Arrange
-        var countryCode = CountryCode.Create("VN");
+        CountryCode countryCode = CountryCode.Create("VN");
 
         // Act
-        var result = countryCode.IsEuropean();
+        bool result = countryCode.IsEuropean();
 
         // Assert
         result.Should().BeFalse();
@@ -145,12 +145,12 @@ public class CountryCodeTests
     public void IsAmerican_WithAmericanCountry_ShouldReturnTrue()
     {
         // Arrange
-        var americanCodes = new[] { "US", "CA", "MX", "BR" };
+        string[] americanCodes = new[] { "US", "CA", "MX", "BR" };
 
         // Act & Assert
-        foreach (var code in americanCodes)
+        foreach (string code in americanCodes)
         {
-            var countryCode = CountryCode.Create(code);
+            CountryCode countryCode = CountryCode.Create(code);
             countryCode.IsAmerican().Should().BeTrue();
         }
     }
@@ -159,10 +159,10 @@ public class CountryCodeTests
     public void IsAmerican_WithNonAmericanCountry_ShouldReturnFalse()
     {
         // Arrange
-        var countryCode = CountryCode.Create("VN");
+        CountryCode countryCode = CountryCode.Create("VN");
 
         // Act
-        var result = countryCode.IsAmerican();
+        bool result = countryCode.IsAmerican();
 
         // Assert
         result.Should().BeFalse();
@@ -172,7 +172,7 @@ public class CountryCodeTests
     public void ImplicitOperatorString_ShouldReturnValue()
     {
         // Arrange
-        var countryCode = CountryCode.Create("VN");
+        CountryCode countryCode = CountryCode.Create("VN");
 
         // Act
         string value = countryCode;
@@ -185,10 +185,10 @@ public class CountryCodeTests
     public void ExplicitOperatorCountryCode_ShouldCreateCountryCode()
     {
         // Arrange
-        var code = "VN";
+        string code = "VN";
 
         // Act
-        var countryCode = (CountryCode)code;
+        CountryCode countryCode = (CountryCode)code;
 
         // Assert
         countryCode.Value.Should().Be("VN");
@@ -198,10 +198,10 @@ public class CountryCodeTests
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var countryCode = CountryCode.Create("VN");
+        CountryCode countryCode = CountryCode.Create("VN");
 
         // Act
-        var result = countryCode.ToString();
+        string result = countryCode.ToString();
 
         // Assert
         result.Should().Be("VN");
@@ -211,8 +211,8 @@ public class CountryCodeTests
     public void Equality_WithSameValue_ShouldBeEqual()
     {
         // Arrange
-        var countryCode1 = CountryCode.Create("VN");
-        var countryCode2 = CountryCode.Create("VN");
+        CountryCode countryCode1 = CountryCode.Create("VN");
+        CountryCode countryCode2 = CountryCode.Create("VN");
 
         // Act & Assert
         countryCode1.Should().Be(countryCode2);
@@ -223,8 +223,8 @@ public class CountryCodeTests
     public void Equality_WithDifferentValue_ShouldNotBeEqual()
     {
         // Arrange
-        var countryCode1 = CountryCode.Create("VN");
-        var countryCode2 = CountryCode.Create("US");
+        CountryCode countryCode1 = CountryCode.Create("VN");
+        CountryCode countryCode2 = CountryCode.Create("US");
 
         // Act & Assert
         countryCode1.Should().NotBe(countryCode2);

@@ -196,12 +196,16 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         string? assetTag = null)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Asset name cannot be empty");
+        }
 
         if (createdById <= 0)
+        {
             throw new DomainException("CreatedBy must be a positive number");
+        }
 
-        var asset = new Asset
+        Asset asset = new()
         {
             Name = name.Trim(),
             CompanyId = companyId,
@@ -228,10 +232,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public void UpdateBasicInfo(string name, string? notes, long updatedById)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Asset name cannot be empty");
+        }
 
         if (updatedById <= 0)
+        {
             throw new DomainException("UpdatedBy must be a positive number");
+        }
 
         Name = name.Trim();
         Notes = notes;
@@ -244,10 +252,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public void SetPurchaseInfo(DateTime? purchaseDate, decimal? purchaseCost, int? supplierId, long updatedById)
     {
         if (updatedById <= 0)
+        {
             throw new DomainException("UpdatedById must be a positive number");
+        }
 
         if (purchaseCost.HasValue && purchaseCost.Value < 0)
+        {
             throw new DomainException("Purchase cost cannot be negative");
+        }
 
         PurchaseDate = purchaseDate;
         PurchaseCost = purchaseCost;
@@ -261,7 +273,9 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public void SetLocation(int? locationId, string? locationCode, int? countryId, long updatedById)
     {
         if (updatedById <= 0)
+        {
             throw new DomainException("UpdatedById must be a positive number");
+        }
 
         LocationId = locationId;
         LocationCode = locationCode;
@@ -275,10 +289,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public void Assign(string assigneeType, int assigneeId, long byUserId)
     {
         if (byUserId <= 0)
+        {
             throw new DomainException("ByUserId must be a positive number");
+        }
 
         if (string.IsNullOrWhiteSpace(assigneeType))
+        {
             throw new DomainException("AssigneeType cannot be empty");
+        }
 
         UsageCode = "in_use";
         UpdatedAt = DateTime.UtcNow;
@@ -296,7 +314,9 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public void Release(int assignmentId, long byUserId)
     {
         if (byUserId <= 0)
+        {
             throw new DomainException("ByUserId must be a positive number");
+        }
 
         UsageCode = "available";
         UpdatedAt = DateTime.UtcNow;
@@ -313,12 +333,16 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public void ChangeLifecycleStatus(string newStatus, long updatedById)
     {
         if (updatedById <= 0)
+        {
             throw new DomainException("UpdatedById must be a positive number");
+        }
 
         if (string.IsNullOrWhiteSpace(newStatus))
+        {
             throw new DomainException("New status cannot be empty");
+        }
 
-        var oldStatus = LifecycleCode;
+        string oldStatus = LifecycleCode;
         LifecycleCode = newStatus;
         UpdatedAt = DateTime.UtcNow;
         UpdatedById = updatedById;
@@ -329,10 +353,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public void Delete(string reason, long deletedById)
     {
         if (deletedById <= 0)
+        {
             throw new DomainException("DeletedById must be a positive number");
+        }
 
         if (string.IsNullOrWhiteSpace(reason))
+        {
             throw new DomainException("Deletion reason cannot be empty");
+        }
 
         SoftDelete(deletedById);
         UpdatedAt = DateTime.UtcNow;
@@ -348,7 +376,9 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public void RestoreAsset(long restoredById)
     {
         if (restoredById <= 0)
+        {
             throw new DomainException("RestoredById must be a positive number");
+        }
 
         Restore();
         UpdatedAt = DateTime.UtcNow;
@@ -370,16 +400,23 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         string? rfidTag = null)
     {
         if (updatedById <= 0)
+        {
             throw new DomainException("UpdatedById must be a positive number");
+        }
 
         // Validate Barcode
         if (barcode != null)
         {
             barcode = barcode.Trim();
             if (string.IsNullOrEmpty(barcode))
+            {
                 throw new DomainException("Barcode cannot be empty");
+            }
+
             if (barcode.Length > 50)
+            {
                 throw new DomainException("Barcode cannot exceed 50 characters");
+            }
         }
 
         // Validate QRCode
@@ -387,9 +424,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         {
             qrCode = qrCode.Trim();
             if (string.IsNullOrEmpty(qrCode))
+            {
                 throw new DomainException("QR code cannot be empty");
+            }
+
             if (qrCode.Length > 100)
+            {
                 throw new DomainException("QR code cannot exceed 100 characters");
+            }
         }
 
         // Validate RFIDTag
@@ -397,9 +439,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         {
             rfidTag = rfidTag.Trim();
             if (string.IsNullOrEmpty(rfidTag))
+            {
                 throw new DomainException("RFID tag cannot be empty");
+            }
+
             if (rfidTag.Length > 50)
+            {
                 throw new DomainException("RFID tag cannot exceed 50 characters");
+            }
         }
 
         SerialNo = ValidateSerialNumber(serialNo);
@@ -421,19 +468,28 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         long updatedById)
     {
         if (updatedById <= 0)
+        {
             throw new DomainException("UpdatedById must be a positive number");
+        }
 
         if (warrantyMonths.HasValue && warrantyMonths.Value < 0)
+        {
             throw new DomainException("Warranty months cannot be negative");
+        }
 
         // Validate PurchaseOrderNo
         if (purchaseOrderNo != null)
         {
             purchaseOrderNo = purchaseOrderNo.Trim();
             if (string.IsNullOrEmpty(purchaseOrderNo))
+            {
                 throw new DomainException("Purchase order number cannot be empty");
+            }
+
             if (purchaseOrderNo.Length > 50)
+            {
                 throw new DomainException("Purchase order number cannot exceed 50 characters");
+            }
         }
 
         // Validate InvoiceNo
@@ -441,9 +497,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         {
             invoiceNo = invoiceNo.Trim();
             if (string.IsNullOrEmpty(invoiceNo))
+            {
                 throw new DomainException("Invoice number cannot be empty");
+            }
+
             if (invoiceNo.Length > 50)
+            {
                 throw new DomainException("Invoice number cannot exceed 50 characters");
+            }
         }
 
         PurchaseOrderNo = purchaseOrderNo;
@@ -452,7 +513,9 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         WarrantyTerms = warrantyTerms;
 
         if (warrantyMonths.HasValue && PurchaseDate.HasValue)
+        {
             WarrantyUntil = PurchaseDate.Value.AddMonths(warrantyMonths.Value);
+        }
 
         UpdatedAt = DateTime.UtcNow;
         UpdatedById = updatedById;
@@ -466,16 +529,23 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         long updatedById)
     {
         if (updatedById <= 0)
+        {
             throw new DomainException("UpdatedById must be a positive number");
+        }
 
         // Validate AccountingCode
         if (accountingCode != null)
         {
             accountingCode = accountingCode.Trim();
             if (string.IsNullOrEmpty(accountingCode))
+            {
                 throw new DomainException("Accounting code cannot be empty");
+            }
+
             if (accountingCode.Length > 30)
+            {
                 throw new DomainException("Accounting code cannot exceed 30 characters");
+            }
         }
 
         // Validate CostCenter
@@ -483,9 +553,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         {
             costCenter = costCenter.Trim();
             if (string.IsNullOrEmpty(costCenter))
+            {
                 throw new DomainException("Cost center cannot be empty");
+            }
+
             if (costCenter.Length > 30)
+            {
                 throw new DomainException("Cost center cannot exceed 30 characters");
+            }
         }
 
         // Validate GLAccount
@@ -493,9 +568,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         {
             glAccount = glAccount.Trim();
             if (string.IsNullOrEmpty(glAccount))
+            {
                 throw new DomainException("GL account cannot be empty");
+            }
+
             if (glAccount.Length > 30)
+            {
                 throw new DomainException("GL account cannot exceed 30 characters");
+            }
         }
 
         AccountingCode = accountingCode;
@@ -511,13 +591,19 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         long updatedById)
     {
         if (updatedById <= 0)
+        {
             throw new DomainException("UpdatedById must be a positive number");
+        }
 
         if (currentBookValue < 0)
+        {
             throw new DomainException("Current book value cannot be negative");
+        }
 
         if (accumulatedDepreciation < 0)
+        {
             throw new DomainException("Accumulated depreciation cannot be negative");
+        }
 
         CurrentBookValue = currentBookValue;
         AccumulatedDepreciation = accumulatedDepreciation;
@@ -529,7 +615,9 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public bool IsFullyDepreciated()
     {
         if (!CurrentBookValue.HasValue || !ResidualValue.HasValue)
+        {
             return false;
+        }
 
         return CurrentBookValue.Value <= ResidualValue.Value;
     }
@@ -542,16 +630,23 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         long updatedById)
     {
         if (updatedById <= 0)
+        {
             throw new DomainException("UpdatedById must be a positive number");
+        }
 
         // Validate PolicyNo
         if (policyNo != null)
         {
             policyNo = policyNo.Trim();
             if (string.IsNullOrEmpty(policyNo))
+            {
                 throw new DomainException("Insurance policy number cannot be empty");
+            }
+
             if (policyNo.Length > 50)
+            {
                 throw new DomainException("Insurance policy number cannot exceed 50 characters");
+            }
         }
 
         InsurancePolicyNo = policyNo;
@@ -577,10 +672,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public void SetRiskLevel(string riskLevel, long updatedById)
     {
         if (updatedById <= 0)
+        {
             throw new DomainException("UpdatedById must be a positive number");
+        }
 
         if (!IsValidRiskLevel(riskLevel))
+        {
             throw new DomainException($"Invalid risk level: {riskLevel}. Must be Low, Medium, High, or Critical.");
+        }
 
         RiskLevel = riskLevel;
         UpdatedAt = DateTime.UtcNow;
@@ -605,19 +704,28 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         string? contractNo = null)
     {
         if (updatedById <= 0)
+        {
             throw new DomainException("UpdatedById must be a positive number");
+        }
 
         if (intervalDays <= 0)
+        {
             throw new DomainException("Maintenance interval must be positive");
+        }
 
         // Validate ContractNo
         if (contractNo != null)
         {
             contractNo = contractNo.Trim();
             if (string.IsNullOrEmpty(contractNo))
+            {
                 throw new DomainException("Maintenance contract number cannot be empty");
+            }
+
             if (contractNo.Length > 50)
+            {
                 throw new DomainException("Maintenance contract number cannot exceed 50 characters");
+            }
         }
 
         MaintenanceIntervalDays = intervalDays;
@@ -630,15 +738,21 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public void RecordMaintenance(DateTime maintenanceDate, long updatedById)
     {
         if (updatedById <= 0)
+        {
             throw new DomainException("UpdatedById must be a positive number");
+        }
 
         if (maintenanceDate > DateTime.UtcNow)
+        {
             throw new DomainException("Maintenance date cannot be in the future");
+        }
 
         LastMaintenanceDate = maintenanceDate;
 
         if (MaintenanceIntervalDays.HasValue)
+        {
             NextMaintenanceDate = maintenanceDate.AddDays(MaintenanceIntervalDays.Value);
+        }
 
         UpdatedAt = DateTime.UtcNow;
         UpdatedById = updatedById;
@@ -652,7 +766,9 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     public bool IsMaintenanceOverdue()
     {
         if (!NextMaintenanceDate.HasValue)
+        {
             return false;
+        }
 
         return NextMaintenanceDate.Value < DateTime.UtcNow;
     }
@@ -671,8 +787,10 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         long? updatedById = null)
     {
         if (serviceLevel != null && !IsValidServiceLevel(serviceLevel))
+        {
             throw new DomainException(
                 $"Invalid service level: {serviceLevel}. Must be Bronze, Silver, Gold, or Platinum.");
+        }
 
         ServiceLevel = serviceLevel;
         SupportExpiryDate = supportExpiryDate;
@@ -703,11 +821,19 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         {
             hostname = hostname.Trim();
             if (string.IsNullOrEmpty(hostname))
+            {
                 throw new DomainException("Hostname cannot be empty");
+            }
+
             if (hostname.Length > 100)
+            {
                 throw new DomainException("Hostname cannot exceed 100 characters");
+            }
+
             if (hostname.Contains(" "))
+            {
                 throw new DomainException("Hostname cannot contain spaces");
+            }
         }
 
         IPAddress = ipAddress != null ? IPAddress.Create(ipAddress) : null;
@@ -726,16 +852,23 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         long? updatedById = null)
     {
         if (licenseCount.HasValue && licenseCount.Value < 0)
+        {
             throw new DomainException("License count cannot be negative");
+        }
 
         // Validate LicenseKey
         if (licenseKey != null)
         {
             licenseKey = licenseKey.Trim();
             if (string.IsNullOrEmpty(licenseKey))
+            {
                 throw new DomainException("License key cannot be empty");
+            }
+
             if (licenseKey.Length > 100)
+            {
                 throw new DomainException("License key cannot exceed 100 characters");
+            }
         }
 
         SoftwareVersion = version;
@@ -767,7 +900,9 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         long? updatedById = null)
     {
         if (weight.HasValue && weight.Value < 0)
+        {
             throw new DomainException("Weight cannot be negative");
+        }
 
         Weight = weight;
         Dimensions = dimensions;
@@ -785,7 +920,9 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         long? updatedById = null)
     {
         if (powerConsumption.HasValue && powerConsumption.Value < 0)
+        {
             throw new DomainException("Power consumption cannot be negative");
+        }
 
         PowerConsumption = powerConsumption;
         EnergyRating = energyRating;
@@ -800,10 +937,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         long? updatedById = null)
     {
         if (string.IsNullOrWhiteSpace(disposalMethod))
+        {
             throw new DomainException("Disposal method cannot be empty");
+        }
 
         if (endOfLifeDate < DateTime.UtcNow.AddYears(-10) || endOfLifeDate > DateTime.UtcNow.AddYears(50))
+        {
             throw new DomainException("End of life date seems unreasonable");
+        }
 
         EndOfLifeDate = endOfLifeDate;
         DisposalMethod = disposalMethod;
@@ -867,9 +1008,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         {
             projectCode = projectCode.Trim();
             if (string.IsNullOrEmpty(projectCode))
+            {
                 throw new DomainException("Project code cannot be empty");
+            }
+
             if (projectCode.Length > 30)
+            {
                 throw new DomainException("Project code cannot exceed 30 characters");
+            }
         }
 
         // Validate CampaignCode
@@ -877,9 +1023,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         {
             campaignCode = campaignCode.Trim();
             if (string.IsNullOrEmpty(campaignCode))
+            {
                 throw new DomainException("Campaign code cannot be empty");
+            }
+
             if (campaignCode.Length > 30)
+            {
                 throw new DomainException("Campaign code cannot exceed 30 characters");
+            }
         }
 
         ProjectCode = projectCode;
@@ -896,10 +1047,14 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
         long? updatedById = null)
     {
         if (replacementCost.HasValue && replacementCost.Value < 0)
+        {
             throw new DomainException("Replacement cost cannot be negative");
+        }
 
         if (estimatedRemainingLifeMonths.HasValue && estimatedRemainingLifeMonths.Value < 0)
+        {
             throw new DomainException("Estimated remaining life months cannot be negative");
+        }
 
         ReplacementCost = replacementCost;
         EstimatedRemainingLifeMonths = estimatedRemainingLifeMonths;
@@ -922,34 +1077,52 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     // Comprehensive Status Check
     public AssetHealthStatus GetHealthStatus()
     {
-        var issues = new List<string>();
+        List<string> issues = new();
 
         if (IsMaintenanceOverdue())
+        {
             issues.Add("Maintenance overdue");
+        }
 
         if (IsWarrantyExpired())
+        {
             issues.Add("Warranty expired");
+        }
 
         if (IsInsuranceExpired())
+        {
             issues.Add("Insurance expired");
+        }
 
         if (IsLicenseExpired())
+        {
             issues.Add("License expired");
+        }
 
         if (IsSupportExpired())
+        {
             issues.Add("Support expired");
+        }
 
         if (IsAuditDue())
+        {
             issues.Add("Audit due");
+        }
 
         if (IsReplacementDue())
+        {
             issues.Add("Replacement due");
+        }
 
         if (issues.Count == 0)
+        {
             return AssetHealthStatus.Healthy;
+        }
 
         if (issues.Count <= 2)
+        {
             return AssetHealthStatus.NeedsAttention;
+        }
 
         return AssetHealthStatus.Critical;
     }
@@ -1004,18 +1177,22 @@ public class Asset : BaseEntity, IHasCreationTime, IHasCreator, IHasModification
     private string? ValidateAssetTag(string? assetTag)
     {
         if (string.IsNullOrWhiteSpace(assetTag))
+        {
             return null;
+        }
 
-        var assetTagVo = ValueObjects.AssetTag.Create(assetTag);
+        AssetTag assetTagVo = ValueObjects.AssetTag.Create(assetTag);
         return assetTagVo.Value;
     }
 
     private string? ValidateSerialNumber(string? serialNumber)
     {
         if (string.IsNullOrWhiteSpace(serialNumber))
+        {
             return null;
+        }
 
-        var serialNumberVo = SerialNumber.Create(serialNumber);
+        SerialNumber serialNumberVo = SerialNumber.Create(serialNumber);
         return serialNumberVo.Value;
     }
 }

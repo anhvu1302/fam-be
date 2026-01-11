@@ -22,7 +22,7 @@ endif
 # Default DATA_PATH if not set in .env
 DATA_PATH ?= ./data
 
-.PHONY: help add remove update list seed seed-force docker-clean
+.PHONY: help add remove update list seed seed-force seed-resync seed-history seed-list create-seeder docker-clean
 .PHONY: prod-deploy prod-start prod-stop prod-restart prod-logs prod-status prod-health prod-seed prod-db-shell
 .PHONY: prod-backup prod-restore
 
@@ -38,8 +38,12 @@ help:
 	@echo "  make list              List migrations"
 	@echo ""
 	@echo "🌱 Seed Data (Development):"
-	@echo "  make seed              Seed database"
+	@echo "  make seed              Seed database (run pending seeds)"
 	@echo "  make seed-force        Force re-run all seeds"
+	@echo "  make seed-resync       Clear history and resync (IDs restart from 1)"
+	@echo "  make seed-history      Show seed execution history"
+	@echo "  make seed-list         List all available seeders"
+	@echo "  make create-seeder NAME=<name>  Create new seeder template"
 	@echo ""
 	@echo "🧹 Docker:"
 	@echo "  make docker-clean      Remove old images"
@@ -97,6 +101,29 @@ seed-force:
 	@echo "🌱 Force seeding database..."
 	dotnet run --project "$(CLI_PROJECT)" seed --force
 	@echo "✅ Force seed complete!"
+
+seed-resync:
+	@echo "🌱 Resyncing database..."
+	dotnet run --project "$(CLI_PROJECT)" seed --resync
+	@echo "✅ Resync complete!"
+
+seed-history:
+	@echo "📋 Seed execution history..."
+	dotnet run --project "$(CLI_PROJECT)" seed:history
+
+seed-list:
+	@echo "📋 Available seeders..."
+	dotnet run --project "$(CLI_PROJECT)" seed:list
+
+create-seeder:
+	@if [ -z "$(NAME)" ]; then \
+		echo "❌ Error: NAME is required"; \
+		echo "Usage: make create-seeder NAME=MySeederName"; \
+		exit 1; \
+	fi
+	@echo "🔨 Creating seeder: $(NAME)..."
+	dotnet run --project "$(CLI_PROJECT)" create-seeder $(NAME)
+	@echo "✅ Seeder created!"
 
 # ============================================
 # Docker Cleanup

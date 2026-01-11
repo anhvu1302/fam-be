@@ -25,8 +25,8 @@ public class DeleteSystemSettingCommandHandlerTests
     public async Task Handle_WithExistingSetting_ShouldDeleteSetting()
     {
         // Arrange
-        var setting = SystemSetting.Create("test_key", "Test Setting");
-        var command = new DeleteSystemSettingCommand(1);
+        SystemSetting setting = SystemSetting.Create("test_key", "Test Setting");
+        DeleteSystemSettingCommand command = new(1);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(command.Id, default))
             .ReturnsAsync(setting);
@@ -43,7 +43,7 @@ public class DeleteSystemSettingCommandHandlerTests
     public async Task Handle_WithNonExistentSetting_ShouldThrowNotFoundException()
     {
         // Arrange
-        var command = new DeleteSystemSettingCommand(999);
+        DeleteSystemSettingCommand command = new(999);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(command.Id, default))
             .ReturnsAsync((SystemSetting?)null);

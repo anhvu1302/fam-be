@@ -28,7 +28,11 @@ public class PaginationSettings
     /// </summary>
     public static int ClampPageSize(int pageSize)
     {
-        if (pageSize <= 0) return DefaultPageSize;
+        if (pageSize <= 0)
+        {
+            return DefaultPageSize;
+        }
+
         return Math.Clamp(pageSize, MinPageSize, MaxPageSize);
     }
 

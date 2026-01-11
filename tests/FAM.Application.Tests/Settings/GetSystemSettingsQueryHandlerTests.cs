@@ -28,14 +28,14 @@ public class GetSystemSettingsQueryHandlerTests
     public async Task Handle_WithoutFilter_ShouldReturnPagedResults()
     {
         // Arrange
-        var settings = new List<SystemSetting>
+        List<SystemSetting> settings = new()
         {
             SystemSetting.Create("setting1", "Setting 1"),
             SystemSetting.Create("setting2", "Setting 2")
         };
 
-        var queryRequest = new QueryRequest { Page = 1, PageSize = 10 };
-        var query = new GetSystemSettingsQuery(queryRequest);
+        QueryRequest queryRequest = new() { Page = 1, PageSize = 10 };
+        GetSystemSettingsQuery query = new(queryRequest);
 
         _repositoryMock.Setup(x => x.GetPagedAsync(
                 null,
@@ -61,14 +61,14 @@ public class GetSystemSettingsQueryHandlerTests
     public async Task Handle_WithPagination_ShouldReturnCorrectPage()
     {
         // Arrange
-        var settings = new List<SystemSetting>
+        List<SystemSetting> settings = new()
         {
             SystemSetting.Create("setting3", "Setting 3"),
             SystemSetting.Create("setting4", "Setting 4")
         };
 
-        var queryRequest = new QueryRequest { Page = 2, PageSize = 2 };
-        var query = new GetSystemSettingsQuery(queryRequest);
+        QueryRequest queryRequest = new() { Page = 2, PageSize = 2 };
+        GetSystemSettingsQuery query = new(queryRequest);
 
         _repositoryMock.Setup(x => x.GetPagedAsync(
                 null,
@@ -93,8 +93,8 @@ public class GetSystemSettingsQueryHandlerTests
     public async Task Handle_WithEmptyResult_ShouldReturnEmptyPage()
     {
         // Arrange
-        var queryRequest = new QueryRequest { Page = 1, PageSize = 10 };
-        var query = new GetSystemSettingsQuery(queryRequest);
+        QueryRequest queryRequest = new() { Page = 1, PageSize = 10 };
+        GetSystemSettingsQuery query = new(queryRequest);
 
         _repositoryMock.Setup(x => x.GetPagedAsync(
                 null,

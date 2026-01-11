@@ -33,11 +33,11 @@ using Serilog;
 using Serilog.Events;
 
 // Load environment variables from .env file
-var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 DotEnvLoader.LoadForEnvironment(environment);
 
 // Load and validate configuration
-var appConfig = new AppConfiguration();
+AppConfiguration appConfig = new();
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -206,7 +206,7 @@ builder.Services.AddAuthentication(options =>
 
                 try
                 {
-                    var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                    string token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
                     // Get signing key repository from request scope
                     ISigningKeyRepository repository = context.HttpContext.RequestServices
@@ -215,15 +215,16 @@ builder.Services.AddAuthentication(options =>
                     // Get active keys from database
                     IEnumerable<SigningKey> signingKeys =
                         await repository.GetAllAsync(context.HttpContext.RequestAborted);
-                    var activeKeys = signingKeys.Where(k => k.IsActive && !k.IsRevoked && !k.IsExpired())
+                    List<SigningKey> activeKeys = signingKeys.Where(k => k.IsActive && !k.IsRevoked && !k.IsExpired())
                         .ToList();
 
                     // Convert to SecurityKeys
-                    var keys = new List<SecurityKey>();
+                    List<SecurityKey> keys = new();
                     foreach (SigningKey key in activeKeys)
+                    {
                         if (key.Algorithm == "RSA")
                         {
-                            var rsa = RSA.Create(); // Don't use 'using' - key needs to live longer
+                            RSA rsa = RSA.Create(); // Don't use 'using' - key needs to live longer
                             rsa.ImportParameters(new RSAParameters
                             {
                                 Modulus = Base64UrlEncoder
@@ -232,6 +233,7 @@ builder.Services.AddAuthentication(options =>
                             });
                             keys.Add(new RsaSecurityKey(rsa) { KeyId = key.KeyId });
                         }
+                    }
 
                     // Set the signing keys for this request
                     context.Options.TokenValidationParameters.IssuerSigningKeys = keys;
@@ -247,33 +249,41 @@ builder.Services.AddAuthentication(options =>
                 logger.LogError(context.Exception, "JWT Authentication failed: {Message}", context.Exception.Message);
 
                 if (context.Exception is SecurityTokenExpiredException)
+                {
                     logger.LogWarning("Token expired at {Expires}",
                         ((SecurityTokenExpiredException)context.Exception).Expires);
+                }
                 else if (context.Exception is SecurityTokenInvalidSignatureException)
+                {
                     logger.LogError("Invalid token signature - key mismatch");
+                }
                 else if (context.Exception is SecurityTokenInvalidIssuerException)
+                {
                     logger.LogError("Invalid issuer in token");
+                }
                 else if (context.Exception is SecurityTokenInvalidAudienceException)
+                {
                     logger.LogError("Invalid audience in token");
+                }
 
                 return Task.CompletedTask;
             },
             OnTokenValidated = async context =>
             {
                 ILogger<Program> logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
-                var userId = context.Principal?.FindFirst("user_id")?.Value ??
-                             context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var jti = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+                string? userId = context.Principal?.FindFirst("user_id")?.Value ??
+                                 context.Principal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                string? jti = context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
 
                 // Check if token is blacklisted
-                var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                string token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 if (!string.IsNullOrEmpty(token))
                 {
                     ITokenBlacklistService blacklistService = context.HttpContext.RequestServices
                         .GetRequiredService<ITokenBlacklistService>();
 
                     // Check individual token blacklist (by full token hash)
-                    var isBlacklisted = await blacklistService.IsTokenBlacklistedAsync(token);
+                    bool isBlacklisted = await blacklistService.IsTokenBlacklistedAsync(token);
                     if (isBlacklisted)
                     {
                         logger.LogWarning("Blacklisted token attempted for user: {UserId}", userId ?? "Unknown");
@@ -284,7 +294,7 @@ builder.Services.AddAuthentication(options =>
                     // Check if token is blacklisted by JTI (more efficient for session-based revocation)
                     if (!string.IsNullOrEmpty(jti))
                     {
-                        var isJtiBlacklisted = await blacklistService.IsTokenBlacklistedByJtiAsync(jti);
+                        bool isJtiBlacklisted = await blacklistService.IsTokenBlacklistedByJtiAsync(jti);
                         if (isJtiBlacklisted)
                         {
                             logger.LogWarning("Token with JTI {JTI} is blacklisted for user: {UserId}", jti,
@@ -295,9 +305,9 @@ builder.Services.AddAuthentication(options =>
                     }
 
                     // Check if all user tokens are blacklisted (logout all scenario)
-                    if (!string.IsNullOrEmpty(userId) && long.TryParse(userId, out var userIdLong))
+                    if (!string.IsNullOrEmpty(userId) && long.TryParse(userId, out long userIdLong))
                     {
-                        var userBlacklisted = await blacklistService.AreUserTokensBlacklistedAsync(userIdLong);
+                        bool userBlacklisted = await blacklistService.AreUserTokensBlacklistedAsync(userIdLong);
                         if (userBlacklisted)
                         {
                             logger.LogWarning("User {UserId} tokens are blacklisted (logged out from all devices)",
@@ -351,7 +361,7 @@ builder.Services.Configure<FrontendOptions>(options =>
     builder.Configuration.GetSection(FrontendOptions.SectionName).Bind(options);
 
     // Override with environment variables if present
-    var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL");
+    string? frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL");
     if (!string.IsNullOrEmpty(frontendUrl))
     {
         // If URL contains port, split it
@@ -359,9 +369,13 @@ builder.Services.Configure<FrontendOptions>(options =>
         {
             options.BaseUrl = $"{uri.Scheme}://{uri.Host}";
             if (uri.Port != 80 && uri.Port != 443)
+            {
                 options.Port = uri.Port;
+            }
             else
+            {
                 options.Port = null; // Default ports
+            }
         }
         else
         {
@@ -371,8 +385,11 @@ builder.Services.Configure<FrontendOptions>(options =>
     }
 
     // Override port separately if specified
-    var frontendPort = Environment.GetEnvironmentVariable("FRONTEND_PORT");
-    if (!string.IsNullOrEmpty(frontendPort) && int.TryParse(frontendPort, out var port)) options.Port = port;
+    string? frontendPort = Environment.GetEnvironmentVariable("FRONTEND_PORT");
+    if (!string.IsNullOrEmpty(frontendPort) && int.TryParse(frontendPort, out int port))
+    {
+        options.Port = port;
+    }
 });
 builder.Services.AddSingleton(sp =>
     sp.GetRequiredService<IOptions<FrontendOptions>>().Value);
@@ -437,10 +454,16 @@ app.UseSerilogRequestLogging(options =>
     options.GetLevel = (httpContext, elapsed, ex) =>
     {
         if (ex != null || httpContext.Response.StatusCode >= 500)
+        {
             return LogEventLevel.Error;
+        }
+
         // Don't log 4xx responses (client errors) - they are expected business logic errors
         if (httpContext.Response.StatusCode >= 400)
+        {
             return LogEventLevel.Debug; // Changed from Warning to Debug so they don't appear in console
+        }
+
         return LogEventLevel.Information;
     };
 
@@ -452,10 +475,12 @@ app.UseSerilogRequestLogging(options =>
         diagnosticContext.Set("ClientIp", httpContext.Items["RealClientIp"]?.ToString()
                                           ?? httpContext.Connection.RemoteIpAddress?.ToString());
 
-        var userId = httpContext.User.FindFirst("sub")?.Value
-                     ?? httpContext.User.FindFirst("userId")?.Value;
+        string? userId = httpContext.User.FindFirst("sub")?.Value
+                         ?? httpContext.User.FindFirst("userId")?.Value;
         if (!string.IsNullOrEmpty(userId))
+        {
             diagnosticContext.Set("UserId", userId);
+        }
     };
 });
 

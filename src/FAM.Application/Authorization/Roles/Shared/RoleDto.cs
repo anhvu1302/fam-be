@@ -61,7 +61,10 @@ public static class RoleExtensions
     /// </summary>
     public static RoleDto? ToRoleDto(this Role? role, HashSet<string>? includes = null)
     {
-        if (role == null) return null;
+        if (role == null)
+        {
+            return null;
+        }
 
         includes ??= new HashSet<string>();
 

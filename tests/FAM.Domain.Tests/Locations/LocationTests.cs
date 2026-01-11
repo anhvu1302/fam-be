@@ -11,10 +11,10 @@ public class LocationTests
     public void Create_WithValidName_ShouldCreateLocation()
     {
         // Arrange
-        var name = "Main Office";
+        string name = "Main Office";
 
         // Act
-        var location = Location.Create(name);
+        Location location = Location.Create(name);
 
         // Assert
         location.Should().NotBeNull();
@@ -25,13 +25,13 @@ public class LocationTests
     public void Create_WithNameCodeCompanyIdAndParentId_ShouldCreateLocationWithAllFields()
     {
         // Arrange
-        var name = "Branch Office";
-        var code = "BO001";
-        var companyId = 1;
-        var parentId = 2;
+        string name = "Branch Office";
+        string code = "BO001";
+        int companyId = 1;
+        int parentId = 2;
 
         // Act
-        var location = Location.Create(name, code, companyId, parentId);
+        Location location = Location.Create(name, code, companyId, parentId);
 
         // Assert
         location.Name.Should().Be(name);
@@ -53,10 +53,10 @@ public class LocationTests
     public void Update_WithValidData_ShouldUpdateLocation()
     {
         // Arrange
-        var location = Location.Create("Old Name");
-        var newName = "New Name";
-        var newDescription = "New Description";
-        var newCountryId = 1;
+        Location location = Location.Create("Old Name");
+        string newName = "New Name";
+        string newDescription = "New Description";
+        int newCountryId = 1;
 
         // Act
         location.Update(newName, newDescription, newCountryId);
@@ -71,7 +71,7 @@ public class LocationTests
     public void Update_WithNullValues_ShouldUpdateLocation()
     {
         // Arrange
-        var location = Location.Create("Test Location", "CODE", 1, 2);
+        Location location = Location.Create("Test Location", "CODE", 1, 2);
 
         // Act
         location.Update("Updated Name", null, null);
@@ -86,7 +86,7 @@ public class LocationTests
     public void SetParent_WithValidParentId_ShouldSetParent()
     {
         // Arrange
-        var location = Location.Create("Child Location");
+        Location location = Location.Create("Child Location");
 
         // Act
         location.SetParent(5);
@@ -99,7 +99,7 @@ public class LocationTests
     public void SetParent_WithNullParentId_ShouldSetParentToNull()
     {
         // Arrange
-        var location = Location.Create("Root Location", null, null, 1);
+        Location location = Location.Create("Root Location", null, null, 1);
 
         // Act
         location.SetParent(null);
@@ -112,7 +112,7 @@ public class LocationTests
     public void BuildPath_WithValidData_ShouldBuildPath()
     {
         // Arrange
-        var location = Location.Create("Location");
+        Location location = Location.Create("Location");
 
         // Act
         location.BuildPath("/Company/Main Office/Branch", "1,2,3");

@@ -27,31 +27,40 @@ public sealed class AssignUsersToRoleCommandHandler : IRequestHandler<AssignUser
     {
         Role? role = await _unitOfWork.Roles.GetByIdAsync(request.RoleId, cancellationToken);
         if (role == null)
+        {
             throw new DomainException(ErrorCodes.ROLE_NOT_FOUND, "Role not found");
+        }
 
         OrgNode? node = await _unitOfWork.OrgNodes.GetByIdAsync(request.NodeId, cancellationToken);
         if (node == null)
+        {
             throw new DomainException(ErrorCodes.NODE_NOT_FOUND, "Organization node not found");
+        }
 
         IEnumerable<UserNodeRole> existingAssignments = await _unitOfWork.UserNodeRoles
             .FindAsync(unr => unr.RoleId == request.RoleId && unr.NodeId == request.NodeId, cancellationToken);
 
-        var existingUserIds = existingAssignments.Select(unr => unr.UserId).ToHashSet();
-        var newUserIds = request.UserIds.Where(uid => !existingUserIds.Contains(uid)).ToList();
+        HashSet<long> existingUserIds = existingAssignments.Select(unr => unr.UserId).ToHashSet();
+        List<long> newUserIds = request.UserIds.Where(uid => !existingUserIds.Contains(uid)).ToList();
 
-        if (!newUserIds.Any()) return 0;
+        if (!newUserIds.Any())
+        {
+            return 0;
+        }
 
-        foreach (var userId in newUserIds)
+        foreach (long userId in newUserIds)
         {
             User? user = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken);
             if (user == null)
+            {
                 throw new DomainException(ErrorCodes.USER_NOT_FOUND, $"User {userId} not found");
+            }
         }
 
-        var addedCount = 0;
-        foreach (var userId in newUserIds)
+        int addedCount = 0;
+        foreach (long userId in newUserIds)
         {
-            var assignment = UserNodeRole.Create(
+            UserNodeRole assignment = UserNodeRole.Create(
                 userId,
                 request.NodeId,
                 request.RoleId,

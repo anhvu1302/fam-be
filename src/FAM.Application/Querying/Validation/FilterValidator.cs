@@ -15,12 +15,16 @@ public static class FilterValidator
     {
         // Check depth
         if (node.Depth > MaxDepth)
+        {
             throw new InvalidOperationException($"Filter expression is too deep (max {MaxDepth} levels)");
+        }
 
         // Check node count
-        var nodeCount = CountNodes(node);
+        int nodeCount = CountNodes(node);
         if (nodeCount > MaxNodes)
+        {
             throw new InvalidOperationException($"Filter expression is too complex (max {MaxNodes} nodes)");
+        }
 
         // Validate fields and operators
         ValidateNode(node, fieldMap);
@@ -44,7 +48,10 @@ public static class FilterValidator
             case CallNode call:
                 ValidateNode(call.Target, fieldMap);
                 foreach (FilterNode arg in call.Arguments)
+                {
                     ValidateNode(arg, fieldMap);
+                }
+
                 ValidateCallOperator(call, fieldMap);
                 break;
 
@@ -68,24 +75,32 @@ public static class FilterValidator
     private static void ValidateField<T>(FieldNode field, FieldMap<T> fieldMap)
     {
         if (!fieldMap.ContainsField(field.Name))
+        {
             throw new InvalidOperationException($"Field '{field.Name}' is not allowed for filtering");
+        }
 
         if (!fieldMap.CanFilter(field.Name))
+        {
             throw new InvalidOperationException($"Field '{field.Name}' cannot be used in filters");
+        }
     }
 
     private static void ValidateBinaryOperator<T>(BinaryNode node, FieldMap<T> fieldMap)
     {
         // Logic operators (and, or) don't need type checking
         if (node.Operator is FilterOperator.And or FilterOperator.Or)
+        {
             return;
+        }
 
         // Comparison operators need compatible types
         Type? leftType = GetNodeType(node.Left, fieldMap);
         Type? rightType = GetNodeType(node.Right, fieldMap);
 
         if (leftType == null || rightType == null)
+        {
             return; // Can't validate without type info
+        }
 
         // Check operator is valid for type
         ValidateOperatorForType(node.Operator, leftType);
@@ -94,18 +109,24 @@ public static class FilterValidator
     private static void ValidateUnaryOperator<T>(UnaryNode node, FieldMap<T> fieldMap)
     {
         if (node.Operator == FilterOperator.Not)
+        {
             return; // NOT can be applied to any boolean expression
+        }
 
         Type? operandType = GetNodeType(node.Operand, fieldMap);
         if (operandType != null)
+        {
             ValidateOperatorForType(node.Operator, operandType);
+        }
     }
 
     private static void ValidateCallOperator<T>(CallNode node, FieldMap<T> fieldMap)
     {
         Type? targetType = GetNodeType(node.Target, fieldMap);
         if (targetType == null)
+        {
             return;
+        }
 
         ValidateOperatorForType(node.Operator, targetType);
     }
@@ -122,10 +143,10 @@ public static class FilterValidator
 
     private static void ValidateOperatorForType(FilterOperator op, Type type)
     {
-        var isString = type == typeof(string);
-        var isNumeric = IsNumericType(type);
-        var isDateTime = type == typeof(DateTime) || type == typeof(DateTime?);
-        var isBool = type == typeof(bool) || type == typeof(bool?);
+        bool isString = type == typeof(string);
+        bool isNumeric = IsNumericType(type);
+        bool isDateTime = type == typeof(DateTime) || type == typeof(DateTime?);
+        bool isBool = type == typeof(bool) || type == typeof(bool?);
 
         switch (op)
         {
@@ -134,7 +155,10 @@ public static class FilterValidator
             case FilterOperator.StartsWith:
             case FilterOperator.EndsWith:
                 if (!isString)
+                {
                     throw new InvalidOperationException($"Operator '{op}' can only be used with string fields");
+                }
+
                 break;
 
             case FilterOperator.GreaterThan:
@@ -143,8 +167,11 @@ public static class FilterValidator
             case FilterOperator.LessThanOrEqual:
             case FilterOperator.Between:
                 if (!isNumeric && !isDateTime)
+                {
                     throw new InvalidOperationException(
                         $"Operator '{op}' can only be used with numeric or date fields");
+                }
+
                 break;
 
             case FilterOperator.Equal:

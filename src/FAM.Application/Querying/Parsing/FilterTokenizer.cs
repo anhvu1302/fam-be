@@ -23,9 +23,11 @@ public sealed class FilterTokenizer
             SkipWhitespace();
 
             if (_position >= _input.Length)
+            {
                 break;
+            }
 
-            var ch = _input[_position];
+            char ch = _input[_position];
 
             // Operators và special characters
             if (ch == '(')
@@ -83,15 +85,17 @@ public sealed class FilterTokenizer
     private void SkipWhitespace()
     {
         while (_position < _input.Length && char.IsWhiteSpace(_input[_position]))
+        {
             _position++;
+        }
     }
 
     private FilterToken ReadString(char quote)
     {
-        var start = _position;
+        int start = _position;
         _position++; // Skip opening quote
 
-        var value = new StringBuilder();
+        StringBuilder value = new();
         while (_position < _input.Length && _input[_position] != quote)
         {
             if (_input[_position] == '\\' && _position + 1 < _input.Length)
@@ -108,7 +112,9 @@ public sealed class FilterTokenizer
         }
 
         if (_position >= _input.Length)
+        {
             throw new FormatException($"Unterminated string at position {start}");
+        }
 
         _position++; // Skip closing quote
         return FilterToken.String(value.ToString(), start);
@@ -116,33 +122,40 @@ public sealed class FilterTokenizer
 
     private FilterToken ReadNumber()
     {
-        var start = _position;
+        int start = _position;
         if (_input[_position] == '-')
+        {
             _position++;
+        }
 
         while (_position < _input.Length && (char.IsDigit(_input[_position]) || _input[_position] == '.'))
+        {
             _position++;
+        }
 
         return FilterToken.Number(_input[start.._position], start);
     }
 
     private FilterToken ReadOperator()
     {
-        var start = _position;
+        int start = _position;
 
         // @ operators (@contains, @startswith, etc.)
         if (_input[_position] == '@')
         {
             _position++;
             while (_position < _input.Length && char.IsLetter(_input[_position]))
+            {
                 _position++;
+            }
+
             return FilterToken.Operator(_input[start.._position], start);
         }
 
         // Two-character operators: ==, !=, >=, <=
         if (_position + 1 < _input.Length)
         {
-            var twoChar = _input.Substring(_position, 2);
+            string twoChar = _input.Substring(_position, 2);
             if (twoChar is "==" or "!=" or ">=" or "<=")
             {
                 _position += 2;
@@ -151,18 +164,23 @@ public sealed class FilterTokenizer
         }
 
         // Single character operators: >, <
-        if (_input[_position] is '>' or '<') return FilterToken.Operator(_input[_position++].ToString(), start);
+        if (_input[_position] is '>' or '<')
+        {
+            return FilterToken.Operator(_input[_position++].ToString(), start);
+        }
 
         throw new FormatException($"Invalid operator at position {_position}");
     }
 
     private FilterToken ReadIdentifierOrKeyword()
     {
-        var start = _position;
+        int start = _position;
         while (_position < _input.Length && (char.IsLetterOrDigit(_input[_position]) || _input[_position] == '_'))
+        {
             _position++;
+        }
 
-        var value = _input[start.._position];
+        string value = _input[start.._position];
 
         // Keywords
         return value.ToLower() switch

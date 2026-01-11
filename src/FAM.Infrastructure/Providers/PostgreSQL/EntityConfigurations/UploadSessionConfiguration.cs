@@ -1,4 +1,5 @@
 using FAM.Domain.Storage;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,7 +10,7 @@ public class UploadSessionConfiguration : IEntityTypeConfiguration<UploadSession
     public void Configure(EntityTypeBuilder<UploadSession> entity)
     {
         entity.HasKey(us => us.Id);
-        
+
         entity.Property(us => us.UploadId).IsRequired().HasMaxLength(100);
         entity.Property(us => us.TempKey).IsRequired().HasMaxLength(500);
         entity.Property(us => us.FileName).IsRequired().HasMaxLength(500);
@@ -24,7 +25,7 @@ public class UploadSessionConfiguration : IEntityTypeConfiguration<UploadSession
         entity.Property(us => us.Checksum).HasMaxLength(128);
         entity.Property(us => us.UserId).IsRequired();
         entity.Property(us => us.IdempotencyKey).HasMaxLength(100);
-        
+
         // Audit fields
         entity.Property(us => us.CreatedAt).IsRequired();
         entity.Property(us => us.CreatedById);

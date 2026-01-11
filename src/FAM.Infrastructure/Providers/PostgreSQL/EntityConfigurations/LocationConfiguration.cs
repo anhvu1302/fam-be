@@ -1,4 +1,5 @@
 using FAM.Domain.Locations;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

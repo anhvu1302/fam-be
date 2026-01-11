@@ -31,14 +31,18 @@ public class DeleteAllSessionsCommandHandler : IRequestHandler<DeleteAllSessions
                 await _userDeviceRepository.GetByDeviceIdAsync(request.ExcludeDeviceId, cancellationToken);
 
             if (currentDevice == null)
+            {
                 throw new DomainException(
                     ErrorCodes.DEVICE_NOT_FOUND,
                     "Current device not found. Please log in again.");
+            }
 
             if (!currentDevice.IsTrustedForDuration(DomainRules.DeviceTrust.MinimumTrustDaysForSensitiveOperations))
+            {
                 throw new DomainException(
                     ErrorCodes.DEVICE_NOT_TRUSTED_FOR_OPERATION,
                     $"Device must be trusted for at least {DomainRules.DeviceTrust.MinimumTrustDaysForSensitiveOperations} days to delete other sessions.");
+            }
         }
 
         // Get all active devices to blacklist their access tokens
@@ -53,14 +57,18 @@ public class DeleteAllSessionsCommandHandler : IRequestHandler<DeleteAllSessions
         {
             // Skip current device if specified
             if (!string.IsNullOrEmpty(request.ExcludeDeviceId) && device.DeviceId == request.ExcludeDeviceId)
+            {
                 continue;
+            }
 
             // Blacklist the stored active access token JTI
             if (!string.IsNullOrEmpty(device.ActiveAccessTokenJti))
+            {
                 await _tokenBlacklistService.BlacklistTokenByJtiAsync(
                     device.ActiveAccessTokenJti,
                     tokenExpiryTime,
                     cancellationToken);
+            }
         }
 
         // Deactivate all devices (except current if specified)

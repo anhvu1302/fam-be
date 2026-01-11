@@ -1,4 +1,5 @@
 using FAM.Domain.Organizations;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

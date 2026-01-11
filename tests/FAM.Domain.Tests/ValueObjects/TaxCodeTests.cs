@@ -11,10 +11,10 @@ public class TaxCodeTests
     public void Create_WithValidData_ShouldCreateTaxCode()
     {
         // Arrange
-        var value = "1234567890";
+        string value = "1234567890";
 
         // Act
-        var taxCode = TaxCode.Create(value);
+        TaxCode taxCode = TaxCode.Create(value);
 
         // Assert
         taxCode.Should().NotBeNull();
@@ -25,7 +25,7 @@ public class TaxCodeTests
     public void Create_WithEmptyString_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "";
+        string value = "";
 
         // Act
         Action act = () => TaxCode.Create(value);
@@ -39,7 +39,7 @@ public class TaxCodeTests
     public void Create_WithTooShortValue_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "1234567";
+        string value = "1234567";
 
         // Act
         Action act = () => TaxCode.Create(value);
@@ -53,7 +53,7 @@ public class TaxCodeTests
     public void Create_WithTooLongValue_ShouldThrowDomainException()
     {
         // Arrange
-        var value = new string('1', 16);
+        string value = new('1', 16);
 
         // Act
         Action act = () => TaxCode.Create(value);
@@ -67,7 +67,7 @@ public class TaxCodeTests
     public void Create_WithInvalidCharacters_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "123456789@";
+        string value = "123456789@";
 
         // Act
         Action act = () => TaxCode.Create(value);
@@ -81,10 +81,10 @@ public class TaxCodeTests
     public void Create_WithLowercase_ShouldConvertToUppercase()
     {
         // Arrange
-        var value = "1234567890";
+        string value = "1234567890";
 
         // Act
-        var taxCode = TaxCode.Create(value);
+        TaxCode taxCode = TaxCode.Create(value);
 
         // Assert
         taxCode.Value.Should().Be("1234567890");
@@ -94,7 +94,7 @@ public class TaxCodeTests
     public void ImplicitOperator_ShouldConvertToString()
     {
         // Arrange
-        var taxCode = TaxCode.Create("1234567890");
+        TaxCode taxCode = TaxCode.Create("1234567890");
 
         // Act
         string value = taxCode!;
@@ -107,10 +107,10 @@ public class TaxCodeTests
     public void ExplicitOperator_ShouldConvertFromString()
     {
         // Arrange
-        var value = "1234567890";
+        string value = "1234567890";
 
         // Act
-        var taxCode = (TaxCode)value;
+        TaxCode taxCode = (TaxCode)value;
 
         // Assert
         taxCode.Value.Should().Be("1234567890");
@@ -120,10 +120,10 @@ public class TaxCodeTests
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var taxCode = TaxCode.Create("1234567890");
+        TaxCode taxCode = TaxCode.Create("1234567890");
 
         // Act
-        var result = taxCode.ToString();
+        string result = taxCode.ToString();
 
         // Assert
         result.Should().Be("1234567890");

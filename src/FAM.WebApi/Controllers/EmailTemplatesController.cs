@@ -66,14 +66,14 @@ public class EmailTemplatesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetEmailTemplates([FromQuery] PaginationQueryParameters parameters)
     {
-        var query = new GetEmailTemplatesQuery(parameters.ToQueryRequest());
+        GetEmailTemplatesQuery query = new(parameters.ToQueryRequest());
         PageResult<EmailTemplateDto> result = await _mediator.Send(query);
 
         // Apply field selection if requested
-        var fields = parameters.GetFieldsArray();
+        string[]? fields = parameters.GetFieldsArray();
         if (fields != null && fields.Length > 0)
         {
-            var selectedResult = result.SelectFieldsToResponse(fields);
+            object selectedResult = result.SelectFieldsToResponse(fields);
             return OkResponse(selectedResult);
         }
 
@@ -100,13 +100,15 @@ public class EmailTemplatesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<EmailTemplateResponse>> GetTemplateById(long id)
     {
-        var query = new GetEmailTemplateByIdQuery(id);
+        GetEmailTemplateByIdQuery query = new(id);
         EmailTemplateDto? dto = await _mediator.Send(query);
 
         if (dto == null)
+        {
             throw new NotFoundException(ErrorCodes.GEN_NOT_FOUND, "EmailTemplate", id);
+        }
 
-        var response = new EmailTemplateResponse(
+        EmailTemplateResponse response = new(
             dto.Id,
             dto.Code,
             dto.Name,
@@ -146,13 +148,15 @@ public class EmailTemplatesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<EmailTemplateResponse>> GetTemplateByCode(string code)
     {
-        var query = new GetEmailTemplateByCodeQuery(code);
+        GetEmailTemplateByCodeQuery query = new(code);
         EmailTemplateDto? dto = await _mediator.Send(query);
 
         if (dto == null)
+        {
             throw new NotFoundException(ErrorCodes.GEN_NOT_FOUND, "EmailTemplate", code);
+        }
 
-        var response = new EmailTemplateResponse(
+        EmailTemplateResponse response = new(
             dto.Id,
             dto.Code,
             dto.Name,
@@ -209,9 +213,11 @@ public class EmailTemplatesController : BaseApiController
     public async Task<ActionResult<long>> CreateTemplate([FromBody] CreateEmailTemplateRequest request)
     {
         if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
+        }
 
-        var command = new CreateEmailTemplateCommand
+        CreateEmailTemplateCommand command = new()
         {
             Code = request.Code,
             Name = request.Name,
@@ -224,7 +230,7 @@ public class EmailTemplatesController : BaseApiController
             IsSystem = false // Only seeder can create system templates
         };
 
-        var templateId = await _mediator.Send(command);
+        long templateId = await _mediator.Send(command);
 
         return CreatedAtAction(nameof(GetTemplateById), new { id = templateId }, templateId);
     }
@@ -267,9 +273,11 @@ public class EmailTemplatesController : BaseApiController
     public async Task<ActionResult> UpdateTemplate(long id, [FromBody] UpdateEmailTemplateRequest request)
     {
         if (!ModelState.IsValid)
+        {
             return BadRequest(ModelState);
+        }
 
-        var command = new UpdateEmailTemplateCommand
+        UpdateEmailTemplateCommand command = new()
         {
             Id = id,
             Name = request.Name,
@@ -310,7 +318,7 @@ public class EmailTemplatesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DeleteTemplate(long id)
     {
-        var command = new DeleteEmailTemplateCommand(id);
+        DeleteEmailTemplateCommand command = new(id);
         await _mediator.Send(command);
 
         return NoContent();
@@ -337,7 +345,7 @@ public class EmailTemplatesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> ActivateTemplate(long id)
     {
-        var command = new ActivateEmailTemplateCommand(id);
+        ActivateEmailTemplateCommand command = new(id);
         await _mediator.Send(command);
 
         return OkResponse();
@@ -364,7 +372,7 @@ public class EmailTemplatesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DeactivateTemplate(long id)
     {
-        var command = new DeactivateEmailTemplateCommand(id);
+        DeactivateEmailTemplateCommand command = new(id);
         await _mediator.Send(command);
 
         return OkResponse();

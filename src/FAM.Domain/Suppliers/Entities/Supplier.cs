@@ -199,7 +199,9 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         int? countryId = null)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Supplier name is required");
+        }
 
         return new Supplier
         {
@@ -221,7 +223,9 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         string? supplierCode)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Supplier name is required");
+        }
 
         Name = name;
         LegalName = legalName;
@@ -265,7 +269,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         if (!string.IsNullOrWhiteSpace(postalCode))
         {
-            var postalCodeVo = ValueObjects.PostalCode.Create(postalCode);
+            PostalCode postalCodeVo = ValueObjects.PostalCode.Create(postalCode);
             PostalCode = postalCodeVo.Value;
         }
         else
@@ -278,7 +282,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         if (!string.IsNullOrWhiteSpace(website))
         {
-            var websiteVo = Url.Create(website);
+            Url websiteVo = Url.Create(website);
             Website = websiteVo.Value;
         }
         else
@@ -291,7 +295,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         if (!string.IsNullOrWhiteSpace(email))
         {
-            var emailVo = ValueObjects.Email.Create(email);
+            Email emailVo = ValueObjects.Email.Create(email);
             Email = emailVo.Value;
         }
         else
@@ -304,7 +308,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         if (!string.IsNullOrWhiteSpace(phone))
         {
-            var phoneVo = PhoneNumber.Create(phone);
+            PhoneNumber phoneVo = PhoneNumber.Create(phone);
             Phone = phoneVo.Value;
         }
         else
@@ -317,7 +321,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         if (!string.IsNullOrWhiteSpace(fax))
         {
-            var phoneVo = PhoneNumber.Create(fax);
+            PhoneNumber phoneVo = PhoneNumber.Create(fax);
             Fax = phoneVo.Value;
         }
         else
@@ -330,7 +334,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         if (!string.IsNullOrWhiteSpace(mobile))
         {
-            var phoneVo = PhoneNumber.Create(mobile);
+            PhoneNumber phoneVo = PhoneNumber.Create(mobile);
             MobilePhone = phoneVo.Value;
         }
         else
@@ -343,7 +347,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         if (!string.IsNullOrWhiteSpace(email))
         {
-            var emailVo = ValueObjects.Email.Create(email);
+            Email emailVo = ValueObjects.Email.Create(email);
             ContactPersonEmail = emailVo.Value;
         }
         else
@@ -356,7 +360,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         if (!string.IsNullOrWhiteSpace(phone))
         {
-            var phoneVo = PhoneNumber.Create(phone);
+            PhoneNumber phoneVo = PhoneNumber.Create(phone);
             ContactPersonPhone = phoneVo.Value;
         }
         else
@@ -369,7 +373,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         if (!string.IsNullOrWhiteSpace(email))
         {
-            var emailVo = ValueObjects.Email.Create(email);
+            Email emailVo = ValueObjects.Email.Create(email);
             AccountManagerEmail = emailVo.Value;
         }
         else
@@ -382,7 +386,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         if (!string.IsNullOrWhiteSpace(phone))
         {
-            var phoneVo = PhoneNumber.Create(phone);
+            PhoneNumber phoneVo = PhoneNumber.Create(phone);
             AccountManagerPhone = phoneVo.Value;
         }
         else
@@ -395,7 +399,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         if (discountRate.HasValue)
         {
-            var percentageVo = Percentage.Create(discountRate.Value);
+            Percentage percentageVo = Percentage.Create(discountRate.Value);
             DiscountRate = percentageVo.Value;
         }
         else
@@ -407,9 +411,11 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     private string? ValidateUrl(string? url)
     {
         if (string.IsNullOrWhiteSpace(url))
+        {
             return null;
+        }
 
-        var urlVo = Url.Create(url);
+        Url urlVo = Url.Create(url);
         return urlVo.Value;
     }
 
@@ -457,7 +463,9 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         int? employeeCount)
     {
         if (employeeCount.HasValue && employeeCount.Value < 0)
+        {
             throw new DomainException("Employee count cannot be negative");
+        }
 
         SupplierType = supplierType;
         IndustryType = industryType;
@@ -500,10 +508,14 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         if (onTimeDeliveryPercentage.HasValue &&
             (onTimeDeliveryPercentage.Value < 0 || onTimeDeliveryPercentage.Value > 100))
+        {
             throw new DomainException("On-time delivery percentage must be between 0 and 100");
+        }
 
         if (defectRate.HasValue && (defectRate.Value < 0 || defectRate.Value > 100))
+        {
             throw new DomainException("Defect rate must be between 0 and 100");
+        }
 
         OnTimeDeliveryPercentage = onTimeDeliveryPercentage;
         DefectRate = defectRate;
@@ -565,7 +577,9 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     {
         IsPreferred = false;
         if (SupplierStatus == "Preferred")
+        {
             SupplierStatus = "Active";
+        }
     }
 
     public void Activate()
@@ -580,7 +594,7 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
 
     public decimal GetAverageRating()
     {
-        var ratings = new[] { QualityRating, DeliveryRating, ServiceRating, PriceRating }
+        List<decimal> ratings = new[] { QualityRating, DeliveryRating, ServiceRating, PriceRating }
             .Where(r => r != null)
             .Select(r => (decimal)r!.Value)
             .ToList();
@@ -591,7 +605,9 @@ public class Supplier : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public bool IsContractExpiring(int daysThreshold = 30)
     {
         if (!ContractEndDate.HasValue)
+        {
             return false;
+        }
 
         return ContractEndDate.Value <= DateTime.UtcNow.AddDays(daysThreshold) &&
                ContractEndDate.Value > DateTime.UtcNow;

@@ -84,13 +84,13 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var ipAddress = GetClientIpAddress();
-            var location = await _locationService.GetLocationFromIpAsync(ipAddress);
+            string ipAddress = GetClientIpAddress();
+            string? location = await _locationService.GetLocationFromIpAsync(ipAddress);
 
             // Generate device ID and store in cookie for future reference (logout, etc.)
-            var deviceId = GenerateDeviceId();
+            string deviceId = GenerateDeviceId();
 
-            var command = new LoginCommand
+            LoginCommand command = new()
             {
                 Identity = request.Identity,
                 Password = request.Password,
@@ -136,10 +136,10 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var ipAddress = GetClientIpAddress();
-            var location = await _locationService.GetLocationFromIpAsync(ipAddress);
+            string ipAddress = GetClientIpAddress();
+            string? location = await _locationService.GetLocationFromIpAsync(ipAddress);
 
-            var command = new VerifyTwoFactorCommand
+            VerifyTwoFactorCommand command = new()
             {
                 TwoFactorSessionToken = request.TwoFactorSessionToken,
                 TwoFactorCode = request.TwoFactorCode,
@@ -189,7 +189,7 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var command = new RefreshTokenCommand
+            RefreshTokenCommand command = new()
             {
                 RefreshToken = request.RefreshToken,
                 IpAddress = GetClientIpAddress(),
@@ -228,12 +228,12 @@ public class AuthController : BaseApiController
         try
         {
             // Extract access token from Authorization header
-            var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            string accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
             // Extract token expiration from JWT
             DateTime? expirationTime = ExtractTokenExpiration(accessToken);
 
-            var deviceId = GetDeviceId();
+            string deviceId = GetDeviceId();
 
             // This is a fallback - client should ideally store and send device_id
             if (string.IsNullOrEmpty(deviceId))
@@ -243,7 +243,7 @@ public class AuthController : BaseApiController
                 deviceId = GenerateDeviceId();
             }
 
-            var command = new LogoutCommand
+            LogoutCommand command = new()
             {
                 RefreshToken = null, // Will be handled by deviceId
                 DeviceId = deviceId,
@@ -274,10 +274,10 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var userId = GetCurrentUserId();
-            var currentDeviceId = GenerateDeviceId();
+            long userId = GetCurrentUserId();
+            string currentDeviceId = GenerateDeviceId();
 
-            var command = new LogoutAllDevicesCommand
+            LogoutAllDevicesCommand command = new()
             {
                 UserId = userId,
                 ExceptDeviceId = request?.ExceptCurrentDevice == true ? currentDeviceId : null
@@ -305,9 +305,9 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var userId = GetCurrentUserId();
+            long userId = GetCurrentUserId();
 
-            var command = new ChangePasswordCommand
+            ChangePasswordCommand command = new()
             {
                 UserId = userId,
                 CurrentPassword = request.CurrentPassword,
@@ -345,8 +345,8 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var userId = GetCurrentUserId();
-            var query = new GetAuthenticationMethodsQuery { UserId = userId };
+            long userId = GetCurrentUserId();
+            GetAuthenticationMethodsQuery query = new() { UserId = userId };
             AuthenticationMethodsResponse response = await _mediator.Send(query);
             return OkResponse(response);
         }
@@ -372,7 +372,7 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var command = new SelectAuthenticationMethodCommand
+            SelectAuthenticationMethodCommand command = new()
             {
                 TwoFactorSessionToken = request.TwoFactorSessionToken,
                 SelectedMethod = request.SelectedMethod
@@ -419,7 +419,7 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var command = new VerifyEmailOtpLoginCommand
+            VerifyEmailOtpLoginCommand command = new()
             {
                 EmailOtp = request.EmailOtp,
                 Email = request.Email
@@ -452,10 +452,10 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var ipAddress = GetClientIpAddress();
-            var location = await _locationService.GetLocationFromIpAsync(ipAddress);
+            string ipAddress = GetClientIpAddress();
+            string? location = await _locationService.GetLocationFromIpAsync(ipAddress);
 
-            var command = new VerifyRecoveryCodeCommand
+            VerifyRecoveryCodeCommand command = new()
             {
                 TwoFactorSessionToken = request.TwoFactorSessionToken,
                 RecoveryCode = request.RecoveryCode,
@@ -499,7 +499,7 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var command = new ForgotPasswordCommand { Email = request.Email };
+            ForgotPasswordCommand command = new() { Email = request.Email };
             ForgotPasswordResponse response = await _mediator.Send(command);
             return OkResponse(response, ErrorMessages.GetMessage(ErrorCodes.AUTH_RESET_EMAIL_SENT));
         }
@@ -524,7 +524,7 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var command = new VerifyResetTokenCommand
+            VerifyResetTokenCommand command = new()
             {
                 Email = request.Email,
                 ResetToken = request.ResetToken
@@ -553,7 +553,7 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var command = new ResetPasswordCommand
+            ResetPasswordCommand command = new()
             {
                 Email = request.Email,
                 ResetToken = request.ResetToken,
@@ -585,9 +585,9 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var userId = GetCurrentUserId();
+            long userId = GetCurrentUserId();
 
-            var command = new Enable2FACommand
+            Enable2FACommand command = new()
             {
                 UserId = userId,
                 Password = request.Password
@@ -623,9 +623,9 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var userId = GetCurrentUserId();
+            long userId = GetCurrentUserId();
 
-            var command = new Confirm2FACommand
+            Confirm2FACommand command = new()
             {
                 UserId = userId,
                 Secret = request.Secret,
@@ -662,9 +662,9 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var userId = GetCurrentUserId();
+            long userId = GetCurrentUserId();
 
-            var command = new Disable2FACommand
+            Disable2FACommand command = new()
             {
                 UserId = userId,
                 Password = request.Password
@@ -702,7 +702,7 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var command = new DisableTwoFactorWithBackupCommand
+            DisableTwoFactorWithBackupCommand command = new()
             {
                 Username = request.Username,
                 Password = request.Password,
@@ -740,9 +740,9 @@ public class AuthController : BaseApiController
     [RequireDeviceId]
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
-        var userId = GetCurrentUserId();
-        var deviceId = GetDeviceId();
-        var ipAddress = GetClientIpAddress();
+        long userId = GetCurrentUserId();
+        string deviceId = GetDeviceId();
+        string ipAddress = GetClientIpAddress();
 
         // Update last activity for current device
         if (!string.IsNullOrEmpty(deviceId))
@@ -751,10 +751,13 @@ public class AuthController : BaseApiController
             await _unitOfWork.SaveChangesAsync();
         }
 
-        var query = new GetUserByIdQuery(userId);
+        GetUserByIdQuery query = new(userId);
         UserDto? user = await _mediator.Send(query);
 
-        if (user == null) return NotFoundResponse("User not found", "USER_NOT_FOUND");
+        if (user == null)
+        {
+            return NotFoundResponse("User not found", "USER_NOT_FOUND");
+        }
 
         return OkResponse(user, "User profile retrieved successfully");
     }
@@ -772,44 +775,66 @@ public class AuthController : BaseApiController
         // 6. RemoteIpAddress (Direct connection)
 
         // Cloudflare header (most reliable when using Cloudflare)
-        var cfConnectingIp = Request.Headers["CF-Connecting-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(cfConnectingIp)) return cfConnectingIp.Trim();
+        string? cfConnectingIp = Request.Headers["CF-Connecting-IP"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(cfConnectingIp))
+        {
+            return cfConnectingIp.Trim();
+        }
 
         // Cloudflare Enterprise header
-        var trueClientIp = Request.Headers["True-Client-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(trueClientIp)) return trueClientIp.Trim();
+        string? trueClientIp = Request.Headers["True-Client-IP"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(trueClientIp))
+        {
+            return trueClientIp.Trim();
+        }
 
         // X-Real-IP from Nginx or other reverse proxy
-        var realIp = Request.Headers["X-Real-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(realIp)) return realIp.Trim();
+        string? realIp = Request.Headers["X-Real-IP"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(realIp))
+        {
+            return realIp.Trim();
+        }
 
         // X-Forwarded-For (can contain multiple IPs: client, proxy1, proxy2)
         // Take the first IP which is the original client
-        var forwardedFor = Request.Headers["X-Forwarded-For"].FirstOrDefault();
+        string? forwardedFor = Request.Headers["X-Forwarded-For"].FirstOrDefault();
         if (!string.IsNullOrEmpty(forwardedFor))
         {
-            var ips = forwardedFor.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            string[] ips = forwardedFor.Split(',',
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             if (ips.Length > 0)
             {
-                var clientIp = ips[0];
+                string clientIp = ips[0];
                 // Validate it's a proper IP address
-                if (IPAddress.TryParse(clientIp, out _)) return clientIp;
+                if (IPAddress.TryParse(clientIp, out _))
+                {
+                    return clientIp;
+                }
             }
         }
 
         // X-Client-IP header
-        var clientIp2 = Request.Headers["X-Client-IP"].FirstOrDefault();
-        if (!string.IsNullOrEmpty(clientIp2)) return clientIp2.Trim();
+        string? clientIp2 = Request.Headers["X-Client-IP"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(clientIp2))
+        {
+            return clientIp2.Trim();
+        }
 
         // Fallback to RemoteIpAddress (direct connection, no proxy)
         IPAddress? remoteIp = HttpContext.Connection.RemoteIpAddress;
         if (remoteIp != null)
         {
             // Handle IPv6 loopback (::1) and map it to IPv4
-            if (remoteIp.IsIPv4MappedToIPv6) remoteIp = remoteIp.MapToIPv4();
+            if (remoteIp.IsIPv4MappedToIPv6)
+            {
+                remoteIp = remoteIp.MapToIPv4();
+            }
 
             // Convert IPv6 loopback to IPv4
-            if (remoteIp.ToString() == "::1") return "127.0.0.1";
+            if (remoteIp.ToString() == "::1")
+            {
+                return "127.0.0.1";
+            }
 
             return remoteIp.ToString();
         }
@@ -820,9 +845,9 @@ public class AuthController : BaseApiController
     private string GenerateDeviceId()
     {
         // Generate a unique device ID based on user agent and IP
-        var userAgent = Request.Headers["User-Agent"].ToString();
-        var ip = GetClientIpAddress();
-        var hash = SHA256.HashData(
+        string userAgent = Request.Headers["User-Agent"].ToString();
+        string ip = GetClientIpAddress();
+        byte[] hash = SHA256.HashData(
             Encoding.UTF8.GetBytes($"{userAgent}_{ip}_{DateTime.UtcNow.Ticks}"));
         return Convert.ToBase64String(hash)[..32];
     }
@@ -833,9 +858,11 @@ public class AuthController : BaseApiController
     /// </summary>
     private string GetDeviceId()
     {
-        var deviceId = Request.Headers["x-device-id"].ToString();
+        string deviceId = Request.Headers["x-device-id"].ToString();
         if (!string.IsNullOrEmpty(deviceId))
+        {
             return deviceId;
+        }
 
         return string.Empty;
     }
@@ -843,11 +870,13 @@ public class AuthController : BaseApiController
     private DateTime? ExtractTokenExpiration(string? accessToken)
     {
         if (string.IsNullOrEmpty(accessToken))
+        {
             return null;
+        }
 
         try
         {
-            var handler = new JwtSecurityTokenHandler();
+            JwtSecurityTokenHandler handler = new();
             JwtSecurityToken? jwtToken = handler.ReadJwtToken(accessToken);
             return jwtToken.ValidTo;
         }
@@ -859,34 +888,56 @@ public class AuthController : BaseApiController
 
     private string GetDeviceName()
     {
-        var userAgent = Request.Headers["User-Agent"].ToString();
+        string userAgent = Request.Headers["User-Agent"].ToString();
 
         // Simple device name extraction from User-Agent
         if (userAgent.Contains("Chrome") && !userAgent.Contains("Edg"))
+        {
             return "Chrome Browser";
+        }
+
         if (userAgent.Contains("Firefox"))
+        {
             return "Firefox Browser";
+        }
+
         if (userAgent.Contains("Safari") && !userAgent.Contains("Chrome"))
+        {
             return "Safari Browser";
+        }
+
         if (userAgent.Contains("Edg"))
+        {
             return "Edge Browser";
+        }
+
         if (userAgent.Contains("Postman"))
+        {
             return "Postman";
+        }
+
         if (userAgent.Contains("curl"))
+        {
             return "curl";
+        }
 
         return "Unknown Device";
     }
 
     private string GetDeviceType()
     {
-        var userAgent = Request.Headers["User-Agent"].ToString();
+        string userAgent = Request.Headers["User-Agent"].ToString();
 
         // Determine device type from User-Agent
         if (userAgent.Contains("Mobile") || userAgent.Contains("Android") || userAgent.Contains("iPhone"))
+        {
             return "mobile";
+        }
+
         if (userAgent.Contains("Tablet") || userAgent.Contains("iPad"))
+        {
             return "tablet";
+        }
 
         return "desktop";
     }
@@ -905,8 +956,8 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetMySessions()
     {
-        var userId = GetCurrentUserId();
-        var query = new GetUserSessionsQuery(userId);
+        long userId = GetCurrentUserId();
+        GetUserSessionsQuery query = new(userId);
         IReadOnlyList<UserSessionDto> result = await _mediator.Send(query);
 
         return OkResponse(result);
@@ -926,14 +977,14 @@ public class AuthController : BaseApiController
     {
         try
         {
-            var userId = GetCurrentUserId();
-            var currentDeviceId = GetDeviceId();
+            long userId = GetCurrentUserId();
+            string currentDeviceId = GetDeviceId();
 
             // Extract access token from Authorization header
-            var accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            string accessToken = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             DateTime? expirationTime = ExtractTokenExpiration(accessToken);
 
-            var command = new DeleteSessionCommand(userId, sessionId, currentDeviceId, accessToken, expirationTime);
+            DeleteSessionCommand command = new(userId, sessionId, currentDeviceId, accessToken, expirationTime);
             await _mediator.Send(command);
 
             return NoContent();
@@ -965,10 +1016,10 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteAllSessions()
     {
-        var userId = GetCurrentUserId();
-        var currentDeviceId = GetDeviceId();
+        long userId = GetCurrentUserId();
+        string currentDeviceId = GetDeviceId();
 
-        var command = new DeleteAllSessionsCommand(userId, currentDeviceId);
+        DeleteAllSessionsCommand command = new(userId, currentDeviceId);
         await _mediator.Send(command);
 
         return NoContent();
@@ -985,14 +1036,16 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetMyTheme()
     {
-        var userId = GetCurrentUserId();
-        var query = new GetUserThemeQuery(userId);
+        long userId = GetCurrentUserId();
+        GetUserThemeQuery query = new(userId);
         GetUserThemeResponse? result = await _mediator.Send(query);
 
         if (result == null)
+        {
             return NotFoundResponse("Theme not found. Using default theme.");
+        }
 
-        var response = new UserThemeResponse(
+        UserThemeResponse response = new(
             result.Id,
             result.UserId,
             result.Theme,
@@ -1018,8 +1071,8 @@ public class AuthController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateMyTheme([FromBody] UpdateUserThemeRequest request)
     {
-        var userId = GetCurrentUserId();
-        var command = new UpdateUserThemeCommand(
+        long userId = GetCurrentUserId();
+        UpdateUserThemeCommand command = new(
             userId,
             request.Theme,
             request.PrimaryColor,
@@ -1032,7 +1085,7 @@ public class AuthController : BaseApiController
 
         UpdateUserThemeResponse result = await _mediator.Send(command);
 
-        var response = new UserThemeResponse(
+        UserThemeResponse response = new(
             result.Id,
             result.UserId,
             result.Theme,

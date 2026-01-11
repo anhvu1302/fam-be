@@ -9,7 +9,10 @@ public static class SystemSettingResponseMappers
     /// </summary>
     public static SystemSettingDto? ToDto(this SystemSetting? setting)
     {
-        if (setting == null) return null;
+        if (setting == null)
+        {
+            return null;
+        }
 
         return new SystemSettingDto
         {
@@ -39,7 +42,10 @@ public static class SystemSettingResponseMappers
     /// </summary>
     public static PublicSettingDto? ToPublicDto(this SystemSetting? setting)
     {
-        if (setting == null || setting.IsSensitive) return null;
+        if (setting == null || setting.IsSensitive)
+        {
+            return null;
+        }
 
         return new PublicSettingDto
         {

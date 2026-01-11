@@ -133,9 +133,14 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
     public static AssetType Create(string code, string name, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(code))
+        {
             throw new DomainException("Asset type code is required");
+        }
+
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Asset type name is required");
+        }
 
         return new AssetType
         {
@@ -158,7 +163,9 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
         string? longDescription)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Asset type name is required");
+        }
 
         Name = name;
         Description = description;
@@ -207,11 +214,15 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
         string? accumulatedDepreciationAccountCode)
     {
         if (usefulLifeMonths.HasValue && usefulLifeMonths.Value < 0)
+        {
             throw new DomainException("Default useful life months cannot be negative");
+        }
 
         if (residualValuePercentage.HasValue &&
             (residualValuePercentage.Value < 0 || residualValuePercentage.Value > 100))
+        {
             throw new DomainException("Default residual value percentage must be between 0 and 100");
+        }
 
         DefaultDepreciationMethod = method;
         DefaultUsefulLifeMonths = usefulLifeMonths;
@@ -238,10 +249,14 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
         string? maintenanceType)
     {
         if (warrantyMonths.HasValue && warrantyMonths.Value < 0)
+        {
             throw new DomainException("Default warranty months cannot be negative");
+        }
 
         if (maintenanceIntervalDays.HasValue && maintenanceIntervalDays.Value < 0)
+        {
             throw new DomainException("Default maintenance interval days cannot be negative");
+        }
 
         DefaultWarrantyMonths = warrantyMonths;
         DefaultMaintenanceIntervalDays = maintenanceIntervalDays;
@@ -254,7 +269,9 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
         string? valuationMethod)
     {
         if (minCapitalizationValue.HasValue && minCapitalizationValue.Value < 0)
+        {
             throw new DomainException("Minimum capitalization value cannot be negative");
+        }
 
         MinimumCapitalizationValue = minCapitalizationValue;
         ValuationCurrency = currency;
@@ -269,7 +286,9 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
         int? auditIntervalMonths)
     {
         if (auditIntervalMonths.HasValue && auditIntervalMonths.Value < 0)
+        {
             throw new DomainException("Audit interval months cannot be negative");
+        }
 
         RequiresCompliance = requiresCompliance;
         ComplianceStandards = complianceStandards;
@@ -359,10 +378,14 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
     public void UpdateStatistics(int assetCount, decimal? totalValue)
     {
         if (assetCount < 0)
+        {
             throw new DomainException("Asset count cannot be negative");
+        }
 
         if (totalValue.HasValue && totalValue.Value < 0)
+        {
             throw new DomainException("Total value cannot be negative");
+        }
 
         AssetCount = assetCount;
         TotalValue = totalValue;
@@ -404,9 +427,11 @@ public class AssetType : BaseEntity, IHasCreationTime, IHasCreator, IHasModifica
     private string? ValidateUrl(string? url)
     {
         if (string.IsNullOrWhiteSpace(url))
+        {
             return null;
+        }
 
-        var urlVo = Url.Create(url);
+        Url urlVo = Url.Create(url);
         return urlVo.Value;
     }
 }

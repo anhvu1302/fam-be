@@ -46,8 +46,8 @@ public class LogoutCommandHandlerTests
     public async Task Handle_WithValidRefreshToken_ShouldDeactivateDevice()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
         UserDevice device = user.GetOrCreateDevice(
@@ -59,7 +59,7 @@ public class LogoutCommandHandlerTests
             "Hanoi, Vietnam"
         );
 
-        var refreshToken = "valid-refresh-token";
+        string refreshToken = "valid-refresh-token";
         DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
 
@@ -71,7 +71,7 @@ public class LogoutCommandHandlerTests
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new LogoutCommand
+        LogoutCommand command = new()
         {
             RefreshToken = refreshToken,
             IpAddress = "192.168.1.1"
@@ -94,11 +94,11 @@ public class LogoutCommandHandlerTests
     public async Task Handle_WithValidDeviceId_ShouldDeactivateDevice()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
-        var deviceId = "device-123";
+        string deviceId = "device-123";
         UserDevice device = user.GetOrCreateDevice(
             deviceId,
             "Test Device",
@@ -116,7 +116,7 @@ public class LogoutCommandHandlerTests
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new LogoutCommand
+        LogoutCommand command = new()
         {
             DeviceId = deviceId,
             IpAddress = "192.168.1.1"
@@ -137,13 +137,13 @@ public class LogoutCommandHandlerTests
     public async Task Handle_WithInvalidRefreshToken_ShouldReturnSuccessWithoutError()
     {
         // Arrange
-        var invalidRefreshToken = "invalid-token";
+        string invalidRefreshToken = "invalid-token";
 
         _mockUserDeviceRepository
             .Setup(x => x.FindByRefreshTokenAsync(invalidRefreshToken, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserDevice?)null);
 
-        var command = new LogoutCommand
+        LogoutCommand command = new()
         {
             RefreshToken = invalidRefreshToken,
             IpAddress = "192.168.1.1"
@@ -161,13 +161,13 @@ public class LogoutCommandHandlerTests
     public async Task Handle_WithInvalidDeviceId_ShouldReturnSuccessWithoutError()
     {
         // Arrange
-        var invalidDeviceId = "invalid-device";
+        string invalidDeviceId = "invalid-device";
 
         _mockUserDeviceRepository
             .Setup(x => x.GetByDeviceIdAsync(invalidDeviceId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserDevice?)null);
 
-        var command = new LogoutCommand
+        LogoutCommand command = new()
         {
             DeviceId = invalidDeviceId,
             IpAddress = "192.168.1.1"
@@ -185,7 +185,7 @@ public class LogoutCommandHandlerTests
     public async Task Handle_WithNoTokenOrDeviceId_ShouldReturnSuccessWithoutError()
     {
         // Arrange
-        var command = new LogoutCommand
+        LogoutCommand command = new()
         {
             IpAddress = "192.168.1.1"
         };

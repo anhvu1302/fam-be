@@ -21,7 +21,7 @@ public class GetUserSessionsQueryHandler : IRequestHandler<GetUserSessionsQuery,
         IEnumerable<UserDevice> devices =
             await _userDeviceRepository.GetByUserIdAsync(request.UserId, cancellationToken);
 
-        var sessions = devices
+        List<UserSessionDto> sessions = devices
             .OrderByDescending(d => d.LastLoginAt)
             .Select(d => new UserSessionDto(
                 d.Id,

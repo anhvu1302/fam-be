@@ -35,6 +35,7 @@ public sealed class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, PageRe
         // Parse filter expression
         Expression<Func<User, bool>>? filterExpression = null;
         if (!string.IsNullOrWhiteSpace(queryRequest.Filter))
+        {
             try
             {
                 FilterNode ast = _filterParser.Parse(queryRequest.Filter);
@@ -44,17 +45,18 @@ public sealed class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, PageRe
             {
                 throw new InvalidOperationException($"Invalid filter syntax: {ex.Message}", ex);
             }
+        }
 
         // Get page settings
-        var page = queryRequest.Page > 0 ? queryRequest.Page : 1;
-        var pageSize = queryRequest.PageSize > 0 ? Math.Min(queryRequest.PageSize, 100) : 10;
+        int page = queryRequest.Page > 0 ? queryRequest.Page : 1;
+        int pageSize = queryRequest.PageSize > 0 ? Math.Min(queryRequest.PageSize, 100) : 10;
 
         // Parse includes
         Expression<Func<User, object>>[] includes = fieldMap.ParseIncludes(queryRequest.Include);
         HashSet<string> includeSet = IncludeParser.Parse(queryRequest.Include);
 
         // Call repository
-        (IEnumerable<User> items, var total) = await _userRepository.GetPagedAsync(
+        (IEnumerable<User> items, long total) = await _userRepository.GetPagedAsync(
             filterExpression,
             queryRequest.Sort,
             page,
@@ -63,7 +65,7 @@ public sealed class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, PageRe
             cancellationToken);
 
         // Map to DTOs using extension method
-        var dtos = items
+        List<UserDto> dtos = items
             .Select(u => u.ToUserDto(includeSet))
             .Where(dto => dto != null)
             .Cast<UserDto>()

@@ -35,6 +35,7 @@ public sealed class
 
         Expression<Func<SystemSetting, bool>>? filterExpression = null;
         if (!string.IsNullOrWhiteSpace(queryRequest.Filter))
+        {
             try
             {
                 FilterNode ast = _filterParser.Parse(queryRequest.Filter);
@@ -48,13 +49,14 @@ public sealed class
             {
                 throw new InvalidOperationException($"Invalid filter syntax: {ex.Message}", ex);
             }
+        }
 
-        var page = queryRequest.GetEffectivePage();
-        var pageSize = queryRequest.GetEffectivePageSize();
+        int page = queryRequest.GetEffectivePage();
+        int pageSize = queryRequest.GetEffectivePageSize();
 
         Expression<Func<SystemSetting, object>>[] includes = fieldMap.ParseIncludes(queryRequest.Include);
 
-        (IEnumerable<SystemSetting> settings, var totalCount) = await _systemSettingRepository.GetPagedAsync(
+        (IEnumerable<SystemSetting> settings, long totalCount) = await _systemSettingRepository.GetPagedAsync(
             filterExpression,
             queryRequest.Sort,
             page,
@@ -62,7 +64,7 @@ public sealed class
             includes,
             cancellationToken);
 
-        var items = settings.Select(s => s.ToDto()!).ToList();
+        List<SystemSettingDto> items = settings.Select(s => s.ToDto()!).ToList();
 
         return new PageResult<SystemSettingDto>(
             items,

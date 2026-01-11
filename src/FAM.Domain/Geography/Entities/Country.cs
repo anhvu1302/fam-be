@@ -91,7 +91,7 @@ public class Country : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
         string? numericCode = null)
     {
         // Validate country code
-        var countryCodeVo = CountryCode.Create(code);
+        CountryCode countryCodeVo = CountryCode.Create(code);
 
         return new Country
         {
@@ -217,9 +217,11 @@ public class Country : BaseEntity, IHasCreationTime, IHasCreator, IHasModificati
     private string? ValidateUrl(string? url)
     {
         if (string.IsNullOrWhiteSpace(url))
+        {
             return null;
+        }
 
-        var urlVo = Url.Create(url);
+        Url urlVo = Url.Create(url);
         return urlVo.Value;
     }
 }

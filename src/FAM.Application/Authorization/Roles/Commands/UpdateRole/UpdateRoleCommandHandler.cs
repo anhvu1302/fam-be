@@ -19,7 +19,9 @@ public sealed class UpdateRoleCommandHandler : IRequestHandler<UpdateRoleCommand
     {
         Role? role = await _unitOfWork.Roles.GetByIdAsync(request.Id, cancellationToken);
         if (role == null)
+        {
             throw new NotFoundException(ErrorCodes.ROLE_NOT_FOUND, $"Role with ID {request.Id} not found");
+        }
 
         role.Update(request.Name, request.Rank, request.Description);
 

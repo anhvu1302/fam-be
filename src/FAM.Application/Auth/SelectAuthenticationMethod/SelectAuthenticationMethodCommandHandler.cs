@@ -45,26 +45,32 @@ public class
         CancellationToken cancellationToken)
     {
         // Validate and extract userId từ 2FA session token
-        var userId = await ValidateAndExtractUserIdAsync(request.TwoFactorSessionToken, cancellationToken);
+        long userId = await ValidateAndExtractUserIdAsync(request.TwoFactorSessionToken, cancellationToken);
         if (userId == 0)
+        {
             throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_TOKEN);
+        }
 
         User? user = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken);
         if (user == null)
+        {
             throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
+        }
 
-        var response = new SelectAuthenticationMethodResponse();
+        SelectAuthenticationMethodResponse response = new();
 
         switch (request.SelectedMethod.ToLowerInvariant())
         {
             case "email_otp":
                 if (!user.IsEmailVerified)
+                {
                     throw new InvalidOperationException(
                         "Email authentication is not available. Please verify your email first.");
+                }
 
                 // Generate và gửi OTP qua email
                 // SECURITY: Bind OTP với session token
-                var otpCode =
+                string otpCode =
                     await _otpService.GenerateOtpAsync(userId, request.TwoFactorSessionToken, 10, cancellationToken);
                 await _emailService.SendOtpEmailAsync(user.Email, otpCode, user.Username,
                     cancellationToken);
@@ -76,8 +82,10 @@ public class
 
             case "authenticator_app":
                 if (!user.TwoFactorEnabled)
+                {
                     throw new InvalidOperationException(
                         "Authenticator app is not configured. Please set up 2FA first.");
+                }
 
                 response.SelectedMethod = "authenticator_app";
                 response.AdditionalInfo = "Enter 6-digit code from your authenticator app";
@@ -85,7 +93,9 @@ public class
 
             case "recovery_code":
                 if (string.IsNullOrWhiteSpace(user.TwoFactorBackupCodes))
+                {
                     throw new InvalidOperationException("Recovery codes are not available. Please contact support.");
+                }
 
                 response.SelectedMethod = "recovery_code";
                 response.AdditionalInfo = "Enter your backup recovery code";
@@ -101,27 +111,33 @@ public class
     private async Task<long> ValidateAndExtractUserIdAsync(string token, CancellationToken cancellationToken)
     {
         // Use the 2FA session service instead of JWT parsing
-        var userId = await _twoFactorSessionService.ValidateAndGetUserIdAsync(token, cancellationToken);
+        long userId = await _twoFactorSessionService.ValidateAndGetUserIdAsync(token, cancellationToken);
         return userId;
     }
 
     private static string MaskEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
+        {
             return string.Empty;
+        }
 
-        var parts = email.Split('@');
+        string[] parts = email.Split('@');
         if (parts.Length != 2)
+        {
             return email;
+        }
 
-        var localPart = parts[0];
-        var domain = parts[1];
+        string localPart = parts[0];
+        string domain = parts[1];
 
         if (localPart.Length <= 2)
+        {
             return $"{localPart[0]}***@{domain}";
+        }
 
-        var visibleChars = Math.Min(2, localPart.Length / 2);
-        var maskedPart = localPart.Substring(0, visibleChars) + "***";
+        int visibleChars = Math.Min(2, localPart.Length / 2);
+        string maskedPart = localPart.Substring(0, visibleChars) + "***";
 
         return $"{maskedPart}@{domain}";
     }

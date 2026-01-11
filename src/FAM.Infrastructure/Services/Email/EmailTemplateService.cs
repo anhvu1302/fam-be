@@ -38,7 +38,7 @@ public sealed class EmailTemplateService : IEmailTemplateService
             return CreateFallbackOtpEmail(toEmail, userName, otpCode);
         }
 
-        var placeholders = new Dictionary<string, string>
+        Dictionary<string, string> placeholders = new()
         {
             { "userName", userName },
             { "otpCode", otpCode },
@@ -77,9 +77,9 @@ public sealed class EmailTemplateService : IEmailTemplateService
             return CreateFallbackPasswordResetEmail(toEmail, userName, resetToken, resetUrl, expiryMinutes);
         }
 
-        var resetLink = $"{resetUrl}?token={Uri.EscapeDataString(resetToken)}&email={Uri.EscapeDataString(toEmail)}";
+        string resetLink = $"{resetUrl}?token={Uri.EscapeDataString(resetToken)}&email={Uri.EscapeDataString(toEmail)}";
 
-        var placeholders = new Dictionary<string, string>
+        Dictionary<string, string> placeholders = new()
         {
             { "userName", userName },
             { "resetLink", resetLink },
@@ -119,7 +119,7 @@ public sealed class EmailTemplateService : IEmailTemplateService
             return CreateFallbackPasswordChangedEmail(toEmail, userName);
         }
 
-        var placeholders = new Dictionary<string, string>
+        Dictionary<string, string> placeholders = new()
         {
             { "userName", userName },
             { "changeTime", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") },
@@ -156,7 +156,7 @@ public sealed class EmailTemplateService : IEmailTemplateService
             return CreateFallbackWelcomeEmail(toEmail, userName);
         }
 
-        var placeholders = new Dictionary<string, string>
+        Dictionary<string, string> placeholders = new()
         {
             { "userName", userName },
             { "appName", "FAM System" },
@@ -192,7 +192,7 @@ public sealed class EmailTemplateService : IEmailTemplateService
             return CreateFallbackAccountLockedEmail(toEmail, userName, reason);
         }
 
-        var placeholders = new Dictionary<string, string>
+        Dictionary<string, string> placeholders = new()
         {
             { "userName", userName },
             { "reason", reason },
@@ -230,9 +230,9 @@ public sealed class EmailTemplateService : IEmailTemplateService
     /// </summary>
     private static string ReplacePlaceholders(string template, Dictionary<string, string> placeholders)
     {
-        var result = template;
+        string result = template;
 
-        foreach (var (key, value) in placeholders)
+        foreach ((string key, string value) in placeholders)
         {
             // Replace {{key}} format (from database templates)
             result = result.Replace($"{{{{{key}}}}}", value);
@@ -269,7 +269,7 @@ public sealed class EmailTemplateService : IEmailTemplateService
     private EmailMessage CreateFallbackPasswordResetEmail(string toEmail, string userName, string resetToken,
         string resetUrl, int expiryMinutes)
     {
-        var resetLink = $"{resetUrl}?token={Uri.EscapeDataString(resetToken)}&email={Uri.EscapeDataString(toEmail)}";
+        string resetLink = $"{resetUrl}?token={Uri.EscapeDataString(resetToken)}&email={Uri.EscapeDataString(toEmail)}";
 
         return new EmailMessage
         {

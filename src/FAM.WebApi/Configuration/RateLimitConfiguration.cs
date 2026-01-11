@@ -28,8 +28,8 @@ public static class RateLimitConfiguration
                 IServiceProvider serviceProvider = context.RequestServices;
                 IRateLimiterStore store = serviceProvider.GetRequiredService<IRateLimiterStore>();
                 ILogger<RedisRateLimiter> logger = serviceProvider.GetRequiredService<ILogger<RedisRateLimiter>>();
-                var ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-                var partitionKey = $"ratelimit:global:{ipAddress}";
+                string ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                string partitionKey = $"ratelimit:global:{ipAddress}";
 
                 return RateLimitPartition.Get(partitionKey, _ =>
                     new RedisRateLimiter(store, partitionKey, 100, TimeSpan.FromMinutes(1), 10, logger));
@@ -42,8 +42,8 @@ public static class RateLimitConfiguration
                 IServiceProvider serviceProvider = context.RequestServices;
                 IRateLimiterStore store = serviceProvider.GetRequiredService<IRateLimiterStore>();
                 ILogger<RedisRateLimiter> logger = serviceProvider.GetRequiredService<ILogger<RedisRateLimiter>>();
-                var ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-                var partitionKey = $"ratelimit:auth:{ipAddress}";
+                string ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                string partitionKey = $"ratelimit:auth:{ipAddress}";
 
                 return RateLimitPartition.Get(partitionKey, _ =>
                     new RedisRateLimiter(store, partitionKey, 10, TimeSpan.FromMinutes(15), 2, logger));
@@ -56,8 +56,8 @@ public static class RateLimitConfiguration
                 IServiceProvider serviceProvider = context.RequestServices;
                 IRateLimiterStore store = serviceProvider.GetRequiredService<IRateLimiterStore>();
                 ILogger<RedisRateLimiter> logger = serviceProvider.GetRequiredService<ILogger<RedisRateLimiter>>();
-                var ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-                var partitionKey = $"ratelimit:sensitive:{ipAddress}";
+                string ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                string partitionKey = $"ratelimit:sensitive:{ipAddress}";
 
                 return RateLimitPartition.Get(partitionKey, _ =>
                     new RedisRateLimiter(store, partitionKey, 5, TimeSpan.FromMinutes(15), 0, logger));
@@ -97,8 +97,8 @@ public static class RateLimitConfiguration
                 IServiceProvider serviceProvider = context.RequestServices;
                 IRateLimiterStore store = serviceProvider.GetRequiredService<IRateLimiterStore>();
                 ILogger<RedisRateLimiter> logger = serviceProvider.GetRequiredService<ILogger<RedisRateLimiter>>();
-                var ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
-                var partitionKey = $"ratelimit:global-limiter:{ipAddress}";
+                string ipAddress = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+                string partitionKey = $"ratelimit:global-limiter:{ipAddress}";
 
                 return RateLimitPartition.Get(partitionKey, _ =>
                     new RedisRateLimiter(store, partitionKey, 1000, TimeSpan.FromMinutes(1), 50, logger));

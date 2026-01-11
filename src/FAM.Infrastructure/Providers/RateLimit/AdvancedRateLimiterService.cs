@@ -31,9 +31,9 @@ public sealed class AdvancedRateLimiterService
         CancellationToken cancellationToken = default)
     {
         TimeSpan actualWindow = window ?? TimeSpan.FromHours(1);
-        var key = $"user:{userId}";
+        string key = $"user:{userId}";
 
-        var allowed = await _store.TryAcquireAsync(
+        bool allowed = await _store.TryAcquireAsync(
             key,
             permitLimit,
             actualWindow,
@@ -41,8 +41,8 @@ public sealed class AdvancedRateLimiterService
 
         if (!allowed)
         {
-            var remaining = await _store.GetRemainingAsync(key, permitLimit, cancellationToken);
-            var retryAfter = await _store.GetRetryAfterSecondsAsync(key, cancellationToken);
+            int remaining = await _store.GetRemainingAsync(key, permitLimit, cancellationToken);
+            int retryAfter = await _store.GetRetryAfterSecondsAsync(key, cancellationToken);
 
             _logger.LogWarning(
                 "User {UserId} rate limit exceeded. Limit: {Limit}, RetryAfter: {RetryAfter}s",
@@ -51,7 +51,7 @@ public sealed class AdvancedRateLimiterService
             return RateLimitResult.Exceeded(retryAfter);
         }
 
-        var count = await _store.GetCountAsync(key, cancellationToken);
+        int count = await _store.GetCountAsync(key, cancellationToken);
         return RateLimitResult.Allowed(permitLimit - count);
     }
 
@@ -67,9 +67,9 @@ public sealed class AdvancedRateLimiterService
         CancellationToken cancellationToken = default)
     {
         TimeSpan actualWindow = window ?? TimeSpan.FromHours(24);
-        var key = $"endpoint:{endpoint}:user:{userId}";
+        string key = $"endpoint:{endpoint}:user:{userId}";
 
-        var allowed = await _store.TryAcquireAsync(
+        bool allowed = await _store.TryAcquireAsync(
             key,
             permitLimit,
             actualWindow,
@@ -77,8 +77,8 @@ public sealed class AdvancedRateLimiterService
 
         if (!allowed)
         {
-            var remaining = await _store.GetRemainingAsync(key, permitLimit, cancellationToken);
-            var retryAfter = await _store.GetRetryAfterSecondsAsync(key, cancellationToken);
+            int remaining = await _store.GetRemainingAsync(key, permitLimit, cancellationToken);
+            int retryAfter = await _store.GetRetryAfterSecondsAsync(key, cancellationToken);
 
             _logger.LogWarning(
                 "User {UserId} exceeded limit for endpoint {Endpoint}. Limit: {Limit}, RetryAfter: {RetryAfter}s",
@@ -87,7 +87,7 @@ public sealed class AdvancedRateLimiterService
             return RateLimitResult.Exceeded(retryAfter);
         }
 
-        var count = await _store.GetCountAsync(key, cancellationToken);
+        int count = await _store.GetCountAsync(key, cancellationToken);
         return RateLimitResult.Allowed(permitLimit - count);
     }
 
@@ -102,9 +102,9 @@ public sealed class AdvancedRateLimiterService
         CancellationToken cancellationToken = default)
     {
         TimeSpan actualWindow = window ?? TimeSpan.FromMinutes(15);
-        var key = $"sensitive:{operation}:{identifier}";
+        string key = $"sensitive:{operation}:{identifier}";
 
-        var allowed = await _store.TryAcquireAsync(
+        bool allowed = await _store.TryAcquireAsync(
             key,
             permitLimit,
             actualWindow,
@@ -112,8 +112,8 @@ public sealed class AdvancedRateLimiterService
 
         if (!allowed)
         {
-            var remaining = await _store.GetRemainingAsync(key, permitLimit, cancellationToken);
-            var retryAfter = await _store.GetRetryAfterSecondsAsync(key, cancellationToken);
+            int remaining = await _store.GetRemainingAsync(key, permitLimit, cancellationToken);
+            int retryAfter = await _store.GetRetryAfterSecondsAsync(key, cancellationToken);
 
             _logger.LogWarning(
                 "Sensitive operation {Operation} rate limit exceeded for {Identifier}. " +
@@ -123,7 +123,7 @@ public sealed class AdvancedRateLimiterService
             return RateLimitResult.Exceeded(retryAfter);
         }
 
-        var count = await _store.GetCountAsync(key, cancellationToken);
+        int count = await _store.GetCountAsync(key, cancellationToken);
         return RateLimitResult.Allowed(permitLimit - count);
     }
 
@@ -139,9 +139,9 @@ public sealed class AdvancedRateLimiterService
         CancellationToken cancellationToken = default)
     {
         TimeSpan actualWindow = window ?? TimeSpan.FromHours(1);
-        var baseKey = $"cumulative:{identifier}";
+        string baseKey = $"cumulative:{identifier}";
 
-        var allowed = await _store.TryAcquireAsync(
+        bool allowed = await _store.TryAcquireAsync(
             baseKey,
             permitLimit,
             actualWindow,
@@ -149,8 +149,8 @@ public sealed class AdvancedRateLimiterService
 
         if (!allowed)
         {
-            var remaining = await _store.GetRemainingAsync(baseKey, permitLimit, cancellationToken);
-            var retryAfter = await _store.GetRetryAfterSecondsAsync(baseKey, cancellationToken);
+            int remaining = await _store.GetRemainingAsync(baseKey, permitLimit, cancellationToken);
+            int retryAfter = await _store.GetRetryAfterSecondsAsync(baseKey, cancellationToken);
 
             _logger.LogWarning(
                 "Cumulative rate limit exceeded for {Identifier} on operations: {Operations}. " +
@@ -160,7 +160,7 @@ public sealed class AdvancedRateLimiterService
             return RateLimitResult.Exceeded(retryAfter);
         }
 
-        var count = await _store.GetCountAsync(baseKey, cancellationToken);
+        int count = await _store.GetCountAsync(baseKey, cancellationToken);
         return RateLimitResult.Allowed(permitLimit - count);
     }
 
@@ -173,10 +173,10 @@ public sealed class AdvancedRateLimiterService
         TimeSpan duration,
         CancellationToken cancellationToken = default)
     {
-        var key = $"whitelist:{identifier}";
+        string key = $"whitelist:{identifier}";
         // Using TryAcquireAsync internally since we only have IRateLimiterStore
         // Store whitelist with large permitLimit and short window
-        var allowed = await _store.TryAcquireAsync(key, int.MaxValue, duration, cancellationToken);
+        bool allowed = await _store.TryAcquireAsync(key, int.MaxValue, duration, cancellationToken);
         return allowed;
     }
 
@@ -187,8 +187,8 @@ public sealed class AdvancedRateLimiterService
         string identifier,
         CancellationToken cancellationToken = default)
     {
-        var key = $"whitelist:{identifier}";
-        var count = await _store.GetCountAsync(key, cancellationToken);
+        string key = $"whitelist:{identifier}";
+        int count = await _store.GetCountAsync(key, cancellationToken);
         return count > 0; // If it has a count, it was whitelisted
     }
 
@@ -210,9 +210,9 @@ public sealed class AdvancedRateLimiterService
         int permitLimit,
         CancellationToken cancellationToken = default)
     {
-        var count = await _store.GetCountAsync(key, cancellationToken);
-        var remaining = await _store.GetRemainingAsync(key, permitLimit, cancellationToken);
-        var retryAfter = await _store.GetRetryAfterSecondsAsync(key, cancellationToken);
+        int count = await _store.GetCountAsync(key, cancellationToken);
+        int remaining = await _store.GetRemainingAsync(key, permitLimit, cancellationToken);
+        int retryAfter = await _store.GetRetryAfterSecondsAsync(key, cancellationToken);
 
         return new RateLimitUsage
         {

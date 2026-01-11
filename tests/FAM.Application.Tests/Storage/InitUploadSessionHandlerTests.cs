@@ -12,8 +12,6 @@ using Microsoft.Extensions.Logging;
 
 using Moq;
 
-using Xunit;
-
 namespace FAM.Application.Tests.Storage;
 
 public class InitUploadSessionHandlerTests
@@ -45,7 +43,7 @@ public class InitUploadSessionHandlerTests
     public async Task Handle_WithValidRequest_ShouldCreateSessionAndReturnResponse()
     {
         // Arrange
-        var command = new InitUploadSessionCommand
+        InitUploadSessionCommand command = new()
         {
             FileName = "test-document.pdf",
             ContentType = "application/pdf",
@@ -71,7 +69,7 @@ public class InitUploadSessionHandlerTests
             .ReturnsAsync(1);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        InitUploadSessionResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -82,7 +80,7 @@ public class InitUploadSessionHandlerTests
         result.ExpiresAt.Should().BeCloseTo(DateTime.UtcNow.AddHours(1), TimeSpan.FromMinutes(1));
 
         _mockSessionRepository.Verify(x => x.AddAsync(
-            It.Is<UploadSession>(s => 
+            It.Is<UploadSession>(s =>
                 s.FileName == command.FileName &&
                 s.FileSize == command.FileSize &&
                 s.ContentType == command.ContentType &&
@@ -97,8 +95,8 @@ public class InitUploadSessionHandlerTests
     public async Task Handle_WithIdempotencyKey_WhenSessionExists_ShouldReturnExistingSession()
     {
         // Arrange
-        var idempotencyKey = "test-idempotency-key";
-        var existingSession = UploadSession.Create(
+        string idempotencyKey = "test-idempotency-key";
+        UploadSession existingSession = UploadSession.Create(
             Guid.NewGuid().ToString("N"),
             "tmp/existing",
             "existing.pdf",
@@ -109,7 +107,7 @@ public class InitUploadSessionHandlerTests
             24,
             idempotencyKey);
 
-        var command = new InitUploadSessionCommand
+        InitUploadSessionCommand command = new()
         {
             FileName = "test-document.pdf",
             ContentType = "application/pdf",
@@ -131,7 +129,7 @@ public class InitUploadSessionHandlerTests
             .ReturnsAsync("https://presigned-url.example.com/upload");
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        InitUploadSessionResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -149,7 +147,7 @@ public class InitUploadSessionHandlerTests
     public async Task Handle_WithInvalidFile_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var command = new InitUploadSessionCommand
+        InitUploadSessionCommand command = new()
         {
             FileName = "malicious.exe",
             ContentType = "application/x-msdownload",
@@ -162,7 +160,7 @@ public class InitUploadSessionHandlerTests
             .Returns((false, "File type not allowed", (FileType?)null));
 
         // Act
-        var act = async () => await _handler.Handle(command, CancellationToken.None);
+        Func<Task<InitUploadSessionResponse>> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>()
@@ -177,7 +175,7 @@ public class InitUploadSessionHandlerTests
     public async Task Handle_WithOversizedFile_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var command = new InitUploadSessionCommand
+        InitUploadSessionCommand command = new()
         {
             FileName = "large-file.pdf",
             ContentType = "application/pdf",
@@ -190,7 +188,7 @@ public class InitUploadSessionHandlerTests
             .Returns((false, "File size exceeds maximum allowed (100 MB)", (FileType?)null));
 
         // Act
-        var act = async () => await _handler.Handle(command, CancellationToken.None);
+        Func<Task<InitUploadSessionResponse>> act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<InvalidOperationException>()
@@ -207,7 +205,7 @@ public class InitUploadSessionHandlerTests
         FileType expectedFileType)
     {
         // Arrange
-        var command = new InitUploadSessionCommand
+        InitUploadSessionCommand command = new()
         {
             FileName = fileName,
             ContentType = contentType,
@@ -232,7 +230,7 @@ public class InitUploadSessionHandlerTests
             .ReturnsAsync(1);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        InitUploadSessionResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
@@ -247,7 +245,7 @@ public class InitUploadSessionHandlerTests
     public async Task Handle_ShouldGenerateUniqueUploadIdAndTempKey()
     {
         // Arrange
-        var command = new InitUploadSessionCommand
+        InitUploadSessionCommand command = new()
         {
             FileName = "test.pdf",
             ContentType = "application/pdf",
@@ -272,8 +270,8 @@ public class InitUploadSessionHandlerTests
             .ReturnsAsync(1);
 
         // Act
-        var result1 = await _handler.Handle(command, CancellationToken.None);
-        var result2 = await _handler.Handle(command, CancellationToken.None);
+        InitUploadSessionResponse result1 = await _handler.Handle(command, CancellationToken.None);
+        InitUploadSessionResponse result2 = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result1.UploadId.Should().NotBe(result2.UploadId);

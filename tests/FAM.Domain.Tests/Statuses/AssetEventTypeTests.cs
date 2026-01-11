@@ -10,11 +10,11 @@ public class AssetEventTypeTests
     public void Create_WithValidCodeAndName_ShouldCreateAssetEventType()
     {
         // Arrange
-        var code = "CREATED";
-        var name = "Asset Created";
+        string code = "CREATED";
+        string name = "Asset Created";
 
         // Act
-        var eventType = AssetEventType.Create(code, name);
+        AssetEventType eventType = AssetEventType.Create(code, name);
 
         // Assert
         eventType.Should().NotBeNull();
@@ -26,14 +26,14 @@ public class AssetEventTypeTests
     public void Create_WithAllParameters_ShouldCreateAssetEventTypeWithAllFields()
     {
         // Arrange
-        var code = "APPROVED";
-        var name = "Asset Approved";
-        var description = "Asset has been approved for use";
-        var color = "#28a745";
-        var orderNo = 2;
+        string code = "APPROVED";
+        string name = "Asset Approved";
+        string description = "Asset has been approved for use";
+        string color = "#28a745";
+        int orderNo = 2;
 
         // Act
-        var eventType = AssetEventType.Create(code, name, description, color, orderNo);
+        AssetEventType eventType = AssetEventType.Create(code, name, description, color, orderNo);
 
         // Assert
         eventType.Code.Should().Be(code);
@@ -47,11 +47,11 @@ public class AssetEventTypeTests
     public void Create_WithNullOptionalParameters_ShouldCreateAssetEventTypeWithNullValues()
     {
         // Arrange
-        var code = "TRANSFERRED";
-        var name = "Asset Transferred";
+        string code = "TRANSFERRED";
+        string name = "Asset Transferred";
 
         // Act
-        var eventType = AssetEventType.Create(code, name, null, null, null);
+        AssetEventType eventType = AssetEventType.Create(code, name, null, null, null);
 
         // Assert
         eventType.Code.Should().Be(code);
@@ -76,9 +76,9 @@ public class AssetEventTypeTests
         };
 
         // Act & Assert
-        foreach (var (code, name) in testCases)
+        foreach ((string code, string name) in testCases)
         {
-            var eventType = AssetEventType.Create(code, name);
+            AssetEventType eventType = AssetEventType.Create(code, name);
             eventType.Code.Should().Be(code);
             eventType.Name.Should().Be(name);
         }

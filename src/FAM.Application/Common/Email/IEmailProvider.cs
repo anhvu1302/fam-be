@@ -29,7 +29,7 @@ public interface IEmailProvider
         IEnumerable<EmailMessage> messages,
         CancellationToken cancellationToken = default)
     {
-        var results = new List<EmailSendResult>();
+        List<EmailSendResult> results = new();
         foreach (EmailMessage message in messages)
         {
             EmailSendResult result = await SendAsync(message, cancellationToken);

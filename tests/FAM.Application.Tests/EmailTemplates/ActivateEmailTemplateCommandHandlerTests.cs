@@ -25,12 +25,12 @@ public class ActivateEmailTemplateCommandHandlerTests
     public async Task Handle_WithValidTemplate_ShouldActivate()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Test", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
         template.Deactivate(); // Deactivate first
 
-        var command = new ActivateEmailTemplateCommand(1);
+        ActivateEmailTemplateCommand command = new(1);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(command.Id, default))
             .ReturnsAsync(template);
@@ -47,7 +47,7 @@ public class ActivateEmailTemplateCommandHandlerTests
     public async Task Handle_WithNonExistentTemplate_ShouldThrowNotFoundException()
     {
         // Arrange
-        var command = new ActivateEmailTemplateCommand(999);
+        ActivateEmailTemplateCommand command = new(999);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(command.Id, default))
             .ReturnsAsync((EmailTemplate?)null);
@@ -64,12 +64,12 @@ public class ActivateEmailTemplateCommandHandlerTests
     public async Task Handle_WithAlreadyActiveTemplate_ShouldStillSucceed()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Test", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
         // Template is active by default
 
-        var command = new ActivateEmailTemplateCommand(1);
+        ActivateEmailTemplateCommand command = new(1);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(command.Id, default))
             .ReturnsAsync(template);

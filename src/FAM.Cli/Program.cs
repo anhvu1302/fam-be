@@ -24,14 +24,15 @@ internal class Program
                 return 1;
             }
 
-            var command = args[0].ToLower();
-            var flags = args.Skip(1).ToArray();
+            string command = args[0].ToLower();
+            string[] flags = args.Skip(1).ToArray();
 
             return command switch
             {
                 "seed" => await RunSeedCommand(host, flags),
                 "seed:history" or "history" => await ShowSeedHistory(host),
                 "seed:list" or "list" => await ListAvailableSeeders(host),
+                "create-seeder" => CreateNewSeeder(args.Skip(1).FirstOrDefault()),
                 "help" or "--help" or "-h" => ShowHelp(),
                 _ => InvalidCommand(command)
             };
@@ -54,18 +55,22 @@ internal class Program
         Console.WriteLine("Usage: FAM.Cli <command> [options]");
         Console.WriteLine();
         Console.WriteLine("Commands:");
-        Console.WriteLine("  seed              Seed the database with initial data");
-        Console.WriteLine("  seed:history      Show seed execution history");
-        Console.WriteLine("  seed:list         List all available seeders");
-        Console.WriteLine("  help              Show this help message");
+        Console.WriteLine("  seed                Seed the database with initial data");
+        Console.WriteLine("  seed:history        Show seed execution history");
+        Console.WriteLine("  seed:list           List all available seeders");
+        Console.WriteLine("  create-seeder       Create a new seeder template file");
+        Console.WriteLine("  help                Show this help message");
         Console.WriteLine();
         Console.WriteLine("Options:");
-        Console.WriteLine("  --force           Force re-run all seeders (ignore history)");
+        Console.WriteLine("  --force             Force re-run all seeders (ignore history)");
+        Console.WriteLine("  --resync            Delete all data and resync (IDs restart from 1)");
         Console.WriteLine();
         Console.WriteLine("Examples:");
-        Console.WriteLine("  FAM.Cli seed                # Run pending seeds only");
-        Console.WriteLine("  FAM.Cli seed --force        # Re-run all seeds");
-        Console.WriteLine("  FAM.Cli seed:history        # View execution history");
+        Console.WriteLine("  FAM.Cli seed                          # Run pending seeds only");
+        Console.WriteLine("  FAM.Cli seed --force                  # Re-run all seeds");
+        Console.WriteLine("  FAM.Cli seed --resync                 # Delete all data and resync");
+        Console.WriteLine("  FAM.Cli seed:history                  # View execution history");
+        Console.WriteLine("  FAM.Cli create-seeder MyNewSeeder     # Create new seeder template");
         Console.WriteLine();
         return 0;
     }
@@ -99,8 +104,8 @@ internal class Program
     private static void LoadDotEnv()
     {
         // Find the solution root directory (where .env is located)
-        var currentDir = Directory.GetCurrentDirectory();
-        var solutionRoot = FindSolutionRoot(currentDir);
+        string currentDir = Directory.GetCurrentDirectory();
+        string? solutionRoot = FindSolutionRoot(currentDir);
 
         if (solutionRoot == null)
         {
@@ -108,7 +113,7 @@ internal class Program
             return;
         }
 
-        var envFile = Path.Combine(solutionRoot, ".env");
+        string envFile = Path.Combine(solutionRoot, ".env");
 
         if (!File.Exists(envFile))
         {
@@ -116,42 +121,52 @@ internal class Program
             return;
         }
 
-        foreach (var line in File.ReadAllLines(envFile))
+        foreach (string line in File.ReadAllLines(envFile))
         {
-            var trimmedLine = line.Trim();
+            string trimmedLine = line.Trim();
 
             // Skip empty lines and comments
             if (string.IsNullOrWhiteSpace(trimmedLine) || trimmedLine.StartsWith("#"))
+            {
                 continue;
+            }
 
-            var parts = trimmedLine.Split('=', 2, StringSplitOptions.None);
+            string[] parts = trimmedLine.Split('=', 2, StringSplitOptions.None);
             if (parts.Length != 2)
+            {
                 continue;
+            }
 
-            var key = parts[0].Trim();
-            var value = parts[1].Trim();
+            string key = parts[0].Trim();
+            string value = parts[1].Trim();
 
             // Remove quotes if present
             if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
                 (value.StartsWith("'") && value.EndsWith("'")))
+            {
                 value = value[1..^1];
+            }
 
             // Only set if not already set (system env vars take precedence)
             if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(key)))
+            {
                 Environment.SetEnvironmentVariable(key, value);
+            }
         }
     }
 
     private static string? FindSolutionRoot(string startDirectory)
     {
-        var current = new DirectoryInfo(startDirectory);
+        DirectoryInfo? current = new(startDirectory);
 
         while (current != null)
         {
             // Look for .sln file or docker-compose.yml as indicators of solution root
             if (current.GetFiles("*.sln").Length > 0 ||
                 current.GetFiles("docker-compose.yml").Length > 0)
+            {
                 return current.FullName;
+            }
 
             current = current.Parent;
         }
@@ -161,7 +176,8 @@ internal class Program
 
     private static async Task<int> RunSeedCommand(IHost host, string[] flags)
     {
-        var forceReseed = flags.Contains("--force");
+        bool forceReseed = flags.Contains("--force");
+        bool resync = flags.Contains("--resync");
 
         using IServiceScope scope = host.Services.CreateScope();
         DataSeederOrchestrator orchestrator = scope.ServiceProvider.GetRequiredService<DataSeederOrchestrator>();
@@ -174,7 +190,17 @@ internal class Program
         Console.ResetColor();
         Console.WriteLine();
 
-        if (forceReseed)
+        if (resync)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("⚠ WARNING: RESYNC mode - deleting all data and resetting seed history!");
+            Console.WriteLine("           All IDs will restart from 1");
+            Console.ResetColor();
+            Console.WriteLine();
+
+            await orchestrator.ResyncDatabaseAsync();
+        }
+        else if (forceReseed)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("⚠ Force mode enabled - all seeders will be re-executed");
@@ -182,7 +208,7 @@ internal class Program
             Console.WriteLine();
         }
 
-        await orchestrator.SeedAllAsync(forceReseed);
+        await orchestrator.SeedAllAsync(forceReseed || resync);
 
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.Green;
@@ -221,7 +247,7 @@ internal class Program
         foreach (IGrouping<string, SeedHistory> group in grouped)
         {
             SeedHistory latest = group.First();
-            var status = latest.Success ? "✓" : "✗";
+            string status = latest.Success ? "✓" : "✗";
             ConsoleColor color = latest.Success ? ConsoleColor.Green : ConsoleColor.Red;
 
             Console.ForegroundColor = color;
@@ -255,7 +281,7 @@ internal class Program
     private static async Task<int> ListAvailableSeeders(IHost host)
     {
         using IServiceScope scope = host.Services.CreateScope();
-        var seeders = scope.ServiceProvider.GetServices<IDataSeeder>()
+        List<IDataSeeder> seeders = scope.ServiceProvider.GetServices<IDataSeeder>()
             .OrderBy(s => s.Name, StringComparer.Ordinal)
             .ToList();
 
@@ -274,13 +300,13 @@ internal class Program
 
         DataSeederOrchestrator orchestrator = scope.ServiceProvider.GetRequiredService<DataSeederOrchestrator>();
         List<SeedHistory> history = await orchestrator.GetHistoryAsync();
-        var executedNames = history.Where(h => h.Success).Select(h => h.SeederName).ToHashSet();
+        HashSet<string> executedNames = history.Where(h => h.Success).Select(h => h.SeederName).ToHashSet();
 
-        var index = 1;
+        int index = 1;
         foreach (IDataSeeder seeder in seeders)
         {
-            var executed = executedNames.Contains(seeder.Name);
-            var statusIcon = executed ? "✓" : "○";
+            bool executed = executedNames.Contains(seeder.Name);
+            string statusIcon = executed ? "✓" : "○";
             ConsoleColor statusColor = executed ? ConsoleColor.Green : ConsoleColor.Yellow;
 
             Console.ForegroundColor = statusColor;
@@ -302,5 +328,155 @@ internal class Program
         Console.WriteLine();
 
         return 0;
+    }
+
+    private static int CreateNewSeeder(string? seederName)
+    {
+        if (string.IsNullOrWhiteSpace(seederName))
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("❌ Seeder name is required");
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine("Usage: FAM.Cli create-seeder <SeederName>");
+            Console.WriteLine("Example: FAM.Cli create-seeder MyCustomSeeder");
+            Console.WriteLine();
+            return 1;
+        }
+
+        try
+        {
+            // Get timestamp for seeder ordering
+            string timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string className = $"{seederName}Seeder";
+            string fileName = $"{timestamp}_{className}.cs";
+
+            // Find the Seeders directory
+            string currentDir = Directory.GetCurrentDirectory();
+            string? seedersDir = FindSeedersDirectory(currentDir);
+
+            if (seedersDir == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("❌ Could not find Seeders directory");
+                Console.ResetColor();
+                return 1;
+            }
+
+            string filePath = Path.Combine(seedersDir, fileName);
+
+            if (File.Exists(filePath))
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"⚠ File already exists: {fileName}");
+                Console.ResetColor();
+                return 1;
+            }
+
+            // Generate seeder template
+            string template = GenerateSeederTemplate(className, timestamp, seederName);
+
+            File.WriteAllText(filePath, template);
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("✅ Seeder created successfully!");
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine($"📁 File: {filePath}");
+            Console.WriteLine($"📝 Class: {className}");
+            Console.WriteLine();
+            Console.WriteLine("Next steps:");
+            Console.WriteLine("  1. Add your seed logic to the SeedAsync method");
+            Console.WriteLine("  2. Register the seeder in ServiceCollectionExtensions.PostgreSQL.cs");
+            Console.WriteLine("  3. Run 'make seed' to execute the seeder");
+            Console.WriteLine();
+
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"❌ Error creating seeder: {ex.Message}");
+            Console.ResetColor();
+            return 1;
+        }
+    }
+
+    private static string? FindSeedersDirectory(string startDirectory)
+    {
+        DirectoryInfo? current = new(startDirectory);
+
+        while (current != null)
+        {
+            string seedersDir = Path.Combine(current.FullName, "src", "FAM.Infrastructure", "Seeders");
+            if (Directory.Exists(seedersDir))
+            {
+                return seedersDir;
+            }
+
+            current = current.Parent;
+        }
+
+        return null;
+    }
+
+    private static string GenerateSeederTemplate(string className, string timestamp, string seederName)
+    {
+        return $@"using FAM.Infrastructure.Common.Seeding;
+using FAM.Infrastructure.Providers.PostgreSQL;
+
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+namespace FAM.Infrastructure.Seeders;
+
+/// <summary>
+/// Seeder for {seederName}
+/// TODO: Add your seeder description here
+/// </summary>
+public sealed class {className} : BaseDataSeeder
+{{
+    private readonly PostgreSqlDbContext _dbContext;
+
+    public {className}(PostgreSqlDbContext dbContext, ILogger<{className}> logger)
+        : base(logger)
+    {{
+        _dbContext = dbContext;
+    }}
+
+    public override string Name => ""{timestamp}_{className}"";
+
+    public override async Task SeedAsync(CancellationToken cancellationToken = default)
+    {{
+        LogInfo(""Starting {seederName} seeding..."");
+
+        try
+        {{
+            // TODO: Add your seed logic here
+            // Example:
+            // var hasExistingData = await _dbContext.Set<YourEntity>()
+            //     .AnyAsync(cancellationToken);
+            //
+            // if (hasExistingData)
+            // {{
+            //     LogInfo(""Data already exists, skipping seed"");
+            //     return;
+            // }}
+            //
+            // var entities = new[] {{ /* create entities */ }};
+            // await _dbContext.Set<YourEntity>().AddRangeAsync(entities, cancellationToken);
+            // await _dbContext.SaveChangesAsync(cancellationToken);
+
+            LogInfo(""{seederName} seeding completed successfully"");
+        }}
+        catch (Exception ex)
+        {{
+            LogError(""Error during {seederName} seeding"", ex);
+            throw;
+        }}
+    }}
+}}
+";
     }
 }

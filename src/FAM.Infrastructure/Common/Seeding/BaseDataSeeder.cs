@@ -36,8 +36,12 @@ public abstract class BaseDataSeeder : IDataSeeder
     protected void LogError(string message, Exception? ex = null)
     {
         if (ex != null)
+        {
             Logger.LogError(ex, "[{SeederName}] {Message}", Name, message);
+        }
         else
+        {
             Logger.LogError("[{SeederName}] {Message}", Name, message);
+        }
     }
 }

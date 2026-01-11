@@ -11,10 +11,10 @@ public class SerialNumberTests
     public void Create_WithValidData_ShouldCreateSerialNumber()
     {
         // Arrange
-        var value = "SN123456789";
+        string value = "SN123456789";
 
         // Act
-        var serialNumber = SerialNumber.Create(value);
+        SerialNumber serialNumber = SerialNumber.Create(value);
 
         // Assert
         serialNumber.Should().NotBeNull();
@@ -25,7 +25,7 @@ public class SerialNumberTests
     public void Create_WithEmptyString_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "";
+        string value = "";
 
         // Act
         Action act = () => SerialNumber.Create(value);
@@ -39,7 +39,7 @@ public class SerialNumberTests
     public void Create_WithWhitespace_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "   ";
+        string value = "   ";
 
         // Act
         Action act = () => SerialNumber.Create(value);
@@ -53,7 +53,7 @@ public class SerialNumberTests
     public void Create_WithTooLongValue_ShouldThrowDomainException()
     {
         // Arrange
-        var value = new string('A', 101);
+        string value = new('A', 101);
 
         // Act
         Action act = () => SerialNumber.Create(value);
@@ -67,7 +67,7 @@ public class SerialNumberTests
     public void ImplicitOperator_ShouldConvertToString()
     {
         // Arrange
-        var serialNumber = SerialNumber.Create("SN123");
+        SerialNumber serialNumber = SerialNumber.Create("SN123");
 
         // Act
         string value = serialNumber;
@@ -80,10 +80,10 @@ public class SerialNumberTests
     public void ExplicitOperator_ShouldConvertFromString()
     {
         // Arrange
-        var value = "SN123";
+        string value = "SN123";
 
         // Act
-        var serialNumber = (SerialNumber)value;
+        SerialNumber serialNumber = (SerialNumber)value;
 
         // Assert
         serialNumber.Value.Should().Be(value);
@@ -93,10 +93,10 @@ public class SerialNumberTests
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var serialNumber = SerialNumber.Create("SN123");
+        SerialNumber serialNumber = SerialNumber.Create("SN123");
 
         // Act
-        var result = serialNumber.ToString();
+        string result = serialNumber.ToString();
 
         // Assert
         result.Should().Be("SN123");

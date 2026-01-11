@@ -19,8 +19,8 @@ public class CorrelationIdMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         // Lấy Correlation ID từ header hoặc tạo mới
-        var correlationId = context.Request.Headers[CorrelationIdHeaderName].FirstOrDefault()
-                            ?? Guid.NewGuid().ToString("N");
+        string correlationId = context.Request.Headers[CorrelationIdHeaderName].FirstOrDefault()
+                               ?? Guid.NewGuid().ToString("N");
 
         // Thêm Correlation ID vào Response header để client có thể trace
         context.Response.Headers[CorrelationIdHeaderName] = correlationId;

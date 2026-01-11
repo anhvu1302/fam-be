@@ -66,7 +66,7 @@ public sealed class BrevoEmailProvider : IEmailProvider, IDisposable
     {
         try
         {
-            var request = new BrevoSendEmailRequest
+            BrevoSendEmailRequest request = new()
             {
                 Sender = new BrevoEmailAddress
                 {
@@ -90,7 +90,7 @@ public sealed class BrevoEmailProvider : IEmailProvider, IDisposable
                 new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull },
                 cancellationToken);
 
-            var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+            string responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {

@@ -31,7 +31,7 @@ public class UpdateUserThemeCommandHandlerTests
     public async Task Handle_WithNewTheme_ShouldCreateTheme()
     {
         // Arrange
-        var userId = 1L;
+        long userId = 1L;
         _mockUserRepository
             .Setup(x => x.ExistsAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
@@ -40,7 +40,7 @@ public class UpdateUserThemeCommandHandlerTests
             .Setup(x => x.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserTheme?)null);
 
-        var command = new UpdateUserThemeCommand(
+        UpdateUserThemeCommand command = new(
             userId, "Dark", "#FF5733", 0.8m, 12, true, true, false);
 
         // Act
@@ -65,8 +65,8 @@ public class UpdateUserThemeCommandHandlerTests
     public async Task Handle_WithExistingTheme_ShouldUpdateTheme()
     {
         // Arrange
-        var userId = 1L;
-        var existingTheme = UserTheme.CreateDefault(userId);
+        long userId = 1L;
+        UserTheme existingTheme = UserTheme.CreateDefault(userId);
 
         _mockUserRepository
             .Setup(x => x.ExistsAsync(userId, It.IsAny<CancellationToken>()))
@@ -76,7 +76,7 @@ public class UpdateUserThemeCommandHandlerTests
             .Setup(x => x.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingTheme);
 
-        var command = new UpdateUserThemeCommand(
+        UpdateUserThemeCommand command = new(
             userId, "BlueJelly", "#3B82F6", 0.7m, 16, true, false, true);
 
         // Act
@@ -100,12 +100,12 @@ public class UpdateUserThemeCommandHandlerTests
     public async Task Handle_WithNonExistentUser_ShouldThrowDomainException()
     {
         // Arrange
-        var userId = 999L;
+        long userId = 999L;
         _mockUserRepository
             .Setup(x => x.ExistsAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
-        var command = new UpdateUserThemeCommand(
+        UpdateUserThemeCommand command = new(
             userId, "Dark", null, 0.5m, 8, false, false, false);
 
         // Act & Assert

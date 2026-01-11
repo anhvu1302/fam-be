@@ -25,7 +25,9 @@ public sealed class Rating : ValueObject
     public static Rating Create(int value)
     {
         if (value < 1 || value > 5)
+        {
             throw new DomainException(ErrorCodes.VO_RATING_OUT_OF_RANGE);
+        }
 
         return new Rating(value);
     }
@@ -35,7 +37,7 @@ public sealed class Rating : ValueObject
     /// </summary>
     public static Rating Create(decimal value)
     {
-        var roundedValue = (int)Math.Round(value);
+        int roundedValue = (int)Math.Round(value);
         return Create(roundedValue);
     }
 
@@ -115,7 +117,7 @@ public sealed class Rating : ValueObject
     /// </summary>
     public Rating AverageWith(Rating other)
     {
-        var average = (Value + other.Value) / 2.0m;
+        decimal average = (Value + other.Value) / 2.0m;
         return Create(average);
     }
 

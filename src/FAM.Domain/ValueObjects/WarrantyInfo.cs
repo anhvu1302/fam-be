@@ -39,7 +39,9 @@ public sealed class WarrantyInfo : ValueObject
         string? provider = null)
     {
         if (durationMonths <= 0)
+        {
             throw new DomainException(ErrorCodes.VO_WARRANTY_DURATION_INVALID);
+        }
 
         DateTime? endDate = startDate?.AddMonths(durationMonths);
         return new WarrantyInfo(startDate, endDate, durationMonths, terms, provider);
@@ -52,9 +54,11 @@ public sealed class WarrantyInfo : ValueObject
         string? provider = null)
     {
         if (endDate < startDate)
+        {
             throw new DomainException(ErrorCodes.VO_DATE_INVALID);
+        }
 
-        var months = (endDate.Year - startDate.Year) * 12 + endDate.Month - startDate.Month;
+        int months = (endDate.Year - startDate.Year) * 12 + endDate.Month - startDate.Month;
         return new WarrantyInfo(startDate, endDate, months, terms, provider);
     }
 
@@ -70,8 +74,12 @@ public sealed class WarrantyInfo : ValueObject
 
     public int? DaysRemaining()
     {
-        if (!EndDate.HasValue) return null;
-        var days = (EndDate.Value - DateTime.UtcNow).Days;
+        if (!EndDate.HasValue)
+        {
+            return null;
+        }
+
+        int days = (EndDate.Value - DateTime.UtcNow).Days;
         return days >= 0 ? days : 0;
     }
 

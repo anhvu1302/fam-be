@@ -43,7 +43,7 @@ public class SettingsController : BaseApiController
     public async Task<ActionResult<List<PublicSettingDto>>> GetPublicSettings(
         CancellationToken cancellationToken = default)
     {
-        var query = new GetPublicSettingsQuery();
+        GetPublicSettingsQuery query = new();
         List<PublicSettingDto> settings = await _mediator.Send(query, cancellationToken);
         return OkResponse(settings);
     }
@@ -62,7 +62,7 @@ public class SettingsController : BaseApiController
         [FromQuery] QueryRequest queryRequest,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetSystemSettingsQuery(queryRequest);
+        GetSystemSettingsQuery query = new(queryRequest);
         PageResult<SystemSettingDto> result = await _mediator.Send(query, cancellationToken);
         return OkResponse(result);
     }
@@ -77,10 +77,13 @@ public class SettingsController : BaseApiController
     public async Task<ActionResult<SystemSettingDto>> GetSettingById(long id,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetSystemSettingByIdQuery(id);
+        GetSystemSettingByIdQuery query = new(id);
         SystemSettingDto? setting = await _mediator.Send(query, cancellationToken);
         if (setting == null)
+        {
             throw new NotFoundException(ErrorCodes.SETTING_NOT_FOUND, "SystemSetting", id);
+        }
+
         return OkResponse(setting);
     }
 
@@ -95,7 +98,7 @@ public class SettingsController : BaseApiController
         [FromBody] CreateSystemSettingCommand command,
         CancellationToken cancellationToken = default)
     {
-        var id = await _mediator.Send(command, cancellationToken);
+        long id = await _mediator.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetSettingById), new { id }, id);
     }
 
@@ -126,7 +129,7 @@ public class SettingsController : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteSetting(long id, CancellationToken cancellationToken = default)
     {
-        var command = new DeleteSystemSettingCommand(id);
+        DeleteSystemSettingCommand command = new(id);
         await _mediator.Send(command, cancellationToken);
         return NoContent();
     }

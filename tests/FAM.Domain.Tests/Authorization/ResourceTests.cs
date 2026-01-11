@@ -12,16 +12,16 @@ public class ResourceTests
     public void Create_WithValidData_ShouldCreateResource()
     {
         // Arrange
-        var type = "asset";
+        string type = "asset";
         OrgNode node = CreateTestOrgNode();
-        var name = "Test Resource";
+        string name = "Test Resource";
 
         // Act
-        var resource = Resource.Create(type, node, name);
+        Resource resource = Resource.Create(type, node, name);
 
         // Assert
         resource.Should().NotBeNull();
-        var typeValue = resource.Type;
+        string typeValue = resource.Type;
         typeValue.Should().Be("asset");
         resource.NodeId.Should().Be(node.Id);
         resource.Node.Should().Be(node);
@@ -32,9 +32,9 @@ public class ResourceTests
     public void Create_WithEmptyType_ShouldThrowDomainException()
     {
         // Arrange
-        var type = "";
+        string type = "";
         OrgNode node = CreateTestOrgNode();
-        var name = "Test Resource";
+        string name = "Test Resource";
 
         // Act
         Action act = () => Resource.Create(type, node, name);
@@ -48,9 +48,9 @@ public class ResourceTests
     public void Create_WithEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var type = "asset";
+        string type = "asset";
         OrgNode node = CreateTestOrgNode();
-        var name = "";
+        string name = "";
 
         // Act
         Action act = () => Resource.Create(type, node, name);
@@ -64,8 +64,8 @@ public class ResourceTests
     public void Update_WithValidName_ShouldUpdateResource()
     {
         // Arrange
-        var resource = Resource.Create("asset", CreateTestOrgNode(), "Original Name");
-        var newName = "Updated Name";
+        Resource resource = Resource.Create("asset", CreateTestOrgNode(), "Original Name");
+        string newName = "Updated Name";
 
         // Act
         resource.Update(newName);
@@ -78,8 +78,8 @@ public class ResourceTests
     public void Update_WithEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var resource = Resource.Create("asset", CreateTestOrgNode(), "Original Name");
-        var newName = "";
+        Resource resource = Resource.Create("asset", CreateTestOrgNode(), "Original Name");
+        string newName = "";
 
         // Act
         Action act = () => resource.Update(newName);
@@ -91,7 +91,7 @@ public class ResourceTests
 
     private static OrgNode CreateTestOrgNode()
     {
-        var details = CompanyDetails.Create();
+        CompanyDetails details = CompanyDetails.Create();
         return OrgNode.CreateCompany("Test Company", details);
     }
 }

@@ -22,7 +22,7 @@ public sealed class InMemoryEmailQueue : IEmailQueue
 
         // Bounded channel with configurable capacity
         // When full, oldest messages will be dropped (for resilience)
-        var options = new BoundedChannelOptions(capacity)
+        BoundedChannelOptions options = new(capacity)
         {
             FullMode = BoundedChannelFullMode.DropOldest,
             SingleReader = false,
@@ -36,7 +36,10 @@ public sealed class InMemoryEmailQueue : IEmailQueue
 
     public async ValueTask EnqueueAsync(EmailMessage message, CancellationToken cancellationToken = default)
     {
-        if (message == null) throw new ArgumentNullException(nameof(message));
+        if (message == null)
+        {
+            throw new ArgumentNullException(nameof(message));
+        }
 
         await _queue.Writer.WriteAsync(message, cancellationToken);
         Interlocked.Increment(ref _count);

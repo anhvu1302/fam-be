@@ -1,4 +1,5 @@
 using FAM.Domain.Conditions;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

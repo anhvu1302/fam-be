@@ -27,7 +27,7 @@ public class CreateEmailTemplateCommandHandlerTests
     public async Task Handle_WithValidCommand_ShouldCreateTemplate()
     {
         // Arrange
-        var command = new CreateEmailTemplateCommand
+        CreateEmailTemplateCommand command = new()
         {
             Code = "TEST_EMAIL",
             Name = "Test Email",
@@ -50,7 +50,7 @@ public class CreateEmailTemplateCommandHandlerTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _handler.Handle(command, default);
+        long result = await _handler.Handle(command, default);
 
         // Assert
         Assert.Equal(1, result);
@@ -62,7 +62,7 @@ public class CreateEmailTemplateCommandHandlerTests
     public async Task Handle_WithDuplicateCode_ShouldThrowConflictException()
     {
         // Arrange
-        var command = new CreateEmailTemplateCommand
+        CreateEmailTemplateCommand command = new()
         {
             Code = "EXISTING_EMAIL",
             Name = "Test Email",
@@ -86,7 +86,7 @@ public class CreateEmailTemplateCommandHandlerTests
     public async Task Handle_WithAllOptionalParameters_ShouldCreateTemplate()
     {
         // Arrange
-        var command = new CreateEmailTemplateCommand
+        CreateEmailTemplateCommand command = new()
         {
             Code = "TEST_EMAIL",
             Name = "Test Email",
@@ -111,7 +111,7 @@ public class CreateEmailTemplateCommandHandlerTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _handler.Handle(command, default);
+        long result = await _handler.Handle(command, default);
 
         // Assert
         Assert.Equal(1, result);
@@ -127,7 +127,7 @@ public class CreateEmailTemplateCommandHandlerTests
     public async Task Handle_ShouldConvertCodeToUppercase()
     {
         // Arrange
-        var command = new CreateEmailTemplateCommand
+        CreateEmailTemplateCommand command = new()
         {
             Code = "test_email",
             Name = "Test Email",
@@ -148,7 +148,7 @@ public class CreateEmailTemplateCommandHandlerTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _handler.Handle(command, default);
+        long result = await _handler.Handle(command, default);
 
         // Assert
         _repositoryMock.Verify(x => x.AddAsync(It.Is<EmailTemplate>(t =>

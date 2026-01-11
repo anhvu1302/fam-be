@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 
 using FAM.Domain.Abstractions;
 using FAM.Domain.Authorization;
+using FAM.Infrastructure.Common.Abstractions;
 using FAM.Infrastructure.Repositories;
 
 using Microsoft.EntityFrameworkCore;
@@ -12,33 +13,34 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 /// <summary>
 /// PostgreSQL implementation of IRoleRepository
 /// Uses Pragmatic Architecture - directly works with Domain entities
+/// Follows Clean Architecture by depending on IDbContext
 /// </summary>
 public class RoleRepository : BaseRepository<Role>, IRoleRepository
 {
-    public RoleRepository(PostgreSqlDbContext context) : base(context)
+    public RoleRepository(IDbContext context) : base(context)
     {
     }
 
     public async Task<Role?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await Context.Roles.FindAsync(new object[] { id }, cancellationToken);
+        return await DbSet.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public async Task<IEnumerable<Role>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await Context.Roles.ToListAsync(cancellationToken);
+        return await DbSet.ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Role>> FindAsync(Expression<Func<Role, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
         // Apply predicate at database level - no need for in-memory filtering
-        return await Context.Roles.Where(predicate).ToListAsync(cancellationToken);
+        return await DbSet.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(Role entity, CancellationToken cancellationToken = default)
     {
-        await Context.Roles.AddAsync(entity, cancellationToken);
+        await DbSet.AddAsync(entity, cancellationToken);
     }
 
     public void Update(Role entity)
@@ -52,31 +54,31 @@ public class RoleRepository : BaseRepository<Role>, IRoleRepository
         }
         else
         {
-            Context.Roles.Attach(entity);
+            DbSet.Attach(entity);
             Context.Entry(entity).State = EntityState.Modified;
         }
     }
 
     public void Delete(Role entity)
     {
-        Context.Roles.Remove(entity);
+        DbSet.Remove(entity);
     }
 
     public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await Context.Roles.AnyAsync(r => r.Id == id, cancellationToken);
+        return await DbSet.AnyAsync(r => r.Id == id, cancellationToken);
     }
 
     public async Task<Role?> GetByCodeAsync(string code, CancellationToken cancellationToken = default)
     {
-        return await Context.Roles
+        return await DbSet
             .FirstOrDefaultAsync(r => r.Code == code, cancellationToken);
     }
 
     public async Task<IEnumerable<Role>> GetByRankGreaterThanAsync(int rank,
         CancellationToken cancellationToken = default)
     {
-        return await Context.Roles
+        return await DbSet
             .Where(r => r.Rank > rank)
             .OrderBy(r => r.Rank)
             .ToListAsync(cancellationToken);
@@ -85,8 +87,12 @@ public class RoleRepository : BaseRepository<Role>, IRoleRepository
     public async Task<bool> ExistsByCodeAsync(string code, long? excludeRoleId = null,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<Role> query = Context.Roles.Where(r => r.Code == code);
-        if (excludeRoleId.HasValue) query = query.Where(r => r.Id != excludeRoleId.Value);
+        IQueryable<Role> query = DbSet.Where(r => r.Code == code);
+        if (excludeRoleId.HasValue)
+        {
+            query = query.Where(r => r.Id != excludeRoleId.Value);
+        }
+
         return await query.AnyAsync(cancellationToken);
     }
 
@@ -99,16 +105,18 @@ public class RoleRepository : BaseRepository<Role>, IRoleRepository
         CancellationToken cancellationToken = default)
     {
         // Build base query
-        IQueryable<Role> countQuery = Context.Roles.AsQueryable();
-        IQueryable<Role> dataQuery = Context.Roles.AsQueryable();
+        IQueryable<Role> countQuery = DbSet.AsQueryable();
+        IQueryable<Role> dataQuery = DbSet.AsQueryable();
 
         // Apply includes if provided
         if (includes != null && includes.Any())
+        {
             foreach (Expression<Func<Role, object>> include in includes)
             {
-                var propertyPath = GetPropertyName(include.Body);
+                string propertyPath = GetPropertyName(include.Body);
                 dataQuery = dataQuery.Include(propertyPath);
             }
+        }
 
         // Apply filter at database level
         if (filter != null)
@@ -118,7 +126,7 @@ public class RoleRepository : BaseRepository<Role>, IRoleRepository
         }
 
         // Get total count
-        var total = await countQuery.LongCountAsync(cancellationToken);
+        long total = await countQuery.LongCountAsync(cancellationToken);
 
         // Apply sorting
         dataQuery = ApplySort(dataQuery, sort, GetSortExpression, r => r.Rank);

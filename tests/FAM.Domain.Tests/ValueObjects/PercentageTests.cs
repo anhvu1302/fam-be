@@ -11,10 +11,10 @@ public class PercentageTests
     public void Create_WithValidPercentage_ShouldCreatePercentage()
     {
         // Arrange
-        var value = 25.5m;
+        decimal value = 25.5m;
 
         // Act
-        var percentage = Percentage.Create(value);
+        Percentage percentage = Percentage.Create(value);
 
         // Assert
         percentage.Value.Should().Be(25.5m);
@@ -24,10 +24,10 @@ public class PercentageTests
     public void Create_WithZeroPercentage_ShouldCreatePercentage()
     {
         // Arrange
-        var value = 0m;
+        decimal value = 0m;
 
         // Act
-        var percentage = Percentage.Create(value);
+        Percentage percentage = Percentage.Create(value);
 
         // Assert
         percentage.Value.Should().Be(0m);
@@ -38,10 +38,10 @@ public class PercentageTests
     public void Create_WithFullPercentage_ShouldCreatePercentage()
     {
         // Arrange
-        var value = 100m;
+        decimal value = 100m;
 
         // Act
-        var percentage = Percentage.Create(value);
+        Percentage percentage = Percentage.Create(value);
 
         // Assert
         percentage.Value.Should().Be(100m);
@@ -52,10 +52,10 @@ public class PercentageTests
     public void Create_WithDecimalPlaces_ShouldRoundToTwoDecimalPlaces()
     {
         // Arrange
-        var value = 25.123m;
+        decimal value = 25.123m;
 
         // Act
-        var percentage = Percentage.Create(value);
+        Percentage percentage = Percentage.Create(value);
 
         // Assert
         percentage.Value.Should().Be(25.12m);
@@ -65,7 +65,7 @@ public class PercentageTests
     public void Create_WithNegativeValue_ShouldThrowDomainException()
     {
         // Arrange
-        var negativeValue = -5m;
+        decimal negativeValue = -5m;
 
         // Act
         Action act = () => Percentage.Create(negativeValue);
@@ -79,7 +79,7 @@ public class PercentageTests
     public void Create_WithValueOver100_ShouldThrowDomainException()
     {
         // Arrange
-        var over100Value = 150m;
+        decimal over100Value = 150m;
 
         // Act
         Action act = () => Percentage.Create(over100Value);
@@ -93,10 +93,10 @@ public class PercentageTests
     public void FromDecimal_WithValidDecimal_ShouldCreatePercentage()
     {
         // Arrange
-        var decimalValue = 0.25m; // 25%
+        decimal decimalValue = 0.25m; // 25%
 
         // Act
-        var percentage = Percentage.FromDecimal(decimalValue);
+        Percentage percentage = Percentage.FromDecimal(decimalValue);
 
         // Assert
         percentage.Value.Should().Be(25m);
@@ -106,10 +106,10 @@ public class PercentageTests
     public void FromDecimal_WithZero_ShouldCreateZeroPercentage()
     {
         // Arrange
-        var decimalValue = 0m;
+        decimal decimalValue = 0m;
 
         // Act
-        var percentage = Percentage.FromDecimal(decimalValue);
+        Percentage percentage = Percentage.FromDecimal(decimalValue);
 
         // Assert
         percentage.Value.Should().Be(0m);
@@ -119,10 +119,10 @@ public class PercentageTests
     public void FromDecimal_WithOne_ShouldCreateFullPercentage()
     {
         // Arrange
-        var decimalValue = 1m;
+        decimal decimalValue = 1m;
 
         // Act
-        var percentage = Percentage.FromDecimal(decimalValue);
+        Percentage percentage = Percentage.FromDecimal(decimalValue);
 
         // Assert
         percentage.Value.Should().Be(100m);
@@ -132,10 +132,10 @@ public class PercentageTests
     public void ToDecimal_ShouldReturnCorrectDecimalValue()
     {
         // Arrange
-        var percentage = Percentage.Create(25m);
+        Percentage percentage = Percentage.Create(25m);
 
         // Act
-        var decimalValue = percentage.ToDecimal();
+        decimal decimalValue = percentage.ToDecimal();
 
         // Assert
         decimalValue.Should().Be(0.25m);
@@ -145,11 +145,11 @@ public class PercentageTests
     public void ToFraction_ShouldReturnSameAsToDecimal()
     {
         // Arrange
-        var percentage = Percentage.Create(75m);
+        Percentage percentage = Percentage.Create(75m);
 
         // Act
-        var fraction = percentage.ToFraction();
-        var decimalValue = percentage.ToDecimal();
+        decimal fraction = percentage.ToFraction();
+        decimal decimalValue = percentage.ToDecimal();
 
         // Assert
         fraction.Should().Be(decimalValue);
@@ -160,8 +160,8 @@ public class PercentageTests
     public void Add_WithValidPercentages_ShouldReturnCorrectSum()
     {
         // Arrange
-        var percentage1 = Percentage.Create(25m);
-        var percentage2 = Percentage.Create(30m);
+        Percentage percentage1 = Percentage.Create(25m);
+        Percentage percentage2 = Percentage.Create(30m);
 
         // Act
         Percentage result = percentage1.Add(percentage2);
@@ -174,8 +174,8 @@ public class PercentageTests
     public void Add_WithResultOver100_ShouldThrowDomainException()
     {
         // Arrange
-        var percentage1 = Percentage.Create(75m);
-        var percentage2 = Percentage.Create(30m);
+        Percentage percentage1 = Percentage.Create(75m);
+        Percentage percentage2 = Percentage.Create(30m);
 
         // Act
         Action act = () => percentage1.Add(percentage2);
@@ -189,8 +189,8 @@ public class PercentageTests
     public void Subtract_WithValidPercentages_ShouldReturnCorrectDifference()
     {
         // Arrange
-        var percentage1 = Percentage.Create(75m);
-        var percentage2 = Percentage.Create(25m);
+        Percentage percentage1 = Percentage.Create(75m);
+        Percentage percentage2 = Percentage.Create(25m);
 
         // Act
         Percentage result = percentage1.Subtract(percentage2);
@@ -203,8 +203,8 @@ public class PercentageTests
     public void Subtract_WithNegativeResult_ShouldThrowDomainException()
     {
         // Arrange
-        var percentage1 = Percentage.Create(25m);
-        var percentage2 = Percentage.Create(75m);
+        Percentage percentage1 = Percentage.Create(25m);
+        Percentage percentage2 = Percentage.Create(75m);
 
         // Act
         Action act = () => percentage1.Subtract(percentage2);
@@ -218,8 +218,8 @@ public class PercentageTests
     public void Multiply_WithPositiveFactor_ShouldReturnCorrectProduct()
     {
         // Arrange
-        var percentage = Percentage.Create(50m);
-        var factor = 0.5m;
+        Percentage percentage = Percentage.Create(50m);
+        decimal factor = 0.5m;
 
         // Act
         Percentage result = percentage.Multiply(factor);
@@ -232,8 +232,8 @@ public class PercentageTests
     public void Multiply_WithFactorMakingResultOver100_ShouldThrowDomainException()
     {
         // Arrange
-        var percentage = Percentage.Create(50m);
-        var factor = 3m;
+        Percentage percentage = Percentage.Create(50m);
+        decimal factor = 3m;
 
         // Act
         Action act = () => percentage.Multiply(factor);
@@ -247,10 +247,10 @@ public class PercentageTests
     public void IsZero_WithZeroPercentage_ShouldReturnTrue()
     {
         // Arrange
-        var percentage = Percentage.Create(0m);
+        Percentage percentage = Percentage.Create(0m);
 
         // Act
-        var isZero = percentage.IsZero();
+        bool isZero = percentage.IsZero();
 
         // Assert
         isZero.Should().BeTrue();
@@ -260,10 +260,10 @@ public class PercentageTests
     public void IsZero_WithNonZeroPercentage_ShouldReturnFalse()
     {
         // Arrange
-        var percentage = Percentage.Create(10m);
+        Percentage percentage = Percentage.Create(10m);
 
         // Act
-        var isZero = percentage.IsZero();
+        bool isZero = percentage.IsZero();
 
         // Assert
         isZero.Should().BeFalse();
@@ -273,10 +273,10 @@ public class PercentageTests
     public void IsFull_With100Percentage_ShouldReturnTrue()
     {
         // Arrange
-        var percentage = Percentage.Create(100m);
+        Percentage percentage = Percentage.Create(100m);
 
         // Act
-        var isFull = percentage.IsFull();
+        bool isFull = percentage.IsFull();
 
         // Assert
         isFull.Should().BeTrue();
@@ -286,10 +286,10 @@ public class PercentageTests
     public void IsFull_WithNon100Percentage_ShouldReturnFalse()
     {
         // Arrange
-        var percentage = Percentage.Create(90m);
+        Percentage percentage = Percentage.Create(90m);
 
         // Act
-        var isFull = percentage.IsFull();
+        bool isFull = percentage.IsFull();
 
         // Assert
         isFull.Should().BeFalse();
@@ -299,7 +299,7 @@ public class PercentageTests
     public void ImplicitOperator_ToDecimal_ShouldReturnValue()
     {
         // Arrange
-        var percentage = Percentage.Create(25m);
+        Percentage percentage = Percentage.Create(25m);
 
         // Act
         decimal decimalValue = percentage;
@@ -312,10 +312,10 @@ public class PercentageTests
     public void ExplicitOperator_FromDecimal_ShouldCreatePercentage()
     {
         // Arrange
-        var decimalValue = 75m;
+        decimal decimalValue = 75m;
 
         // Act
-        var percentage = (Percentage)decimalValue;
+        Percentage percentage = (Percentage)decimalValue;
 
         // Assert
         percentage.Value.Should().Be(75m);
@@ -325,10 +325,10 @@ public class PercentageTests
     public void ToString_ShouldReturnFormattedString()
     {
         // Arrange
-        var percentage = Percentage.Create(25.5m);
+        Percentage percentage = Percentage.Create(25.5m);
 
         // Act
-        var result = percentage.ToString();
+        string result = percentage.ToString();
 
         // Assert
         result.Should().Be("25.5%");
@@ -338,8 +338,8 @@ public class PercentageTests
     public void Equality_WithSameValues_ShouldBeEqual()
     {
         // Arrange
-        var percentage1 = Percentage.Create(25m);
-        var percentage2 = Percentage.Create(25m);
+        Percentage percentage1 = Percentage.Create(25m);
+        Percentage percentage2 = Percentage.Create(25m);
 
         // Act & Assert
         percentage1.Should().Be(percentage2);
@@ -350,8 +350,8 @@ public class PercentageTests
     public void Equality_WithDifferentValues_ShouldNotBeEqual()
     {
         // Arrange
-        var percentage1 = Percentage.Create(25m);
-        var percentage2 = Percentage.Create(30m);
+        Percentage percentage1 = Percentage.Create(25m);
+        Percentage percentage2 = Percentage.Create(30m);
 
         // Act & Assert
         percentage1.Should().NotBe(percentage2);
@@ -361,8 +361,8 @@ public class PercentageTests
     public void Equality_WithRoundedValues_ShouldBeEqual()
     {
         // Arrange
-        var percentage1 = Percentage.Create(25.123m); // rounds to 25.12
-        var percentage2 = Percentage.Create(25.12m);
+        Percentage percentage1 = Percentage.Create(25.123m); // rounds to 25.12
+        Percentage percentage2 = Percentage.Create(25.12m);
 
         // Act & Assert
         percentage1.Should().Be(percentage2);

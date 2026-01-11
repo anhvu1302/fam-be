@@ -60,7 +60,7 @@ public class MenusController : BaseApiController
         [FromQuery] int maxDepth = 3,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetMenuTreeQuery(maxDepth);
+        GetMenuTreeQuery query = new(maxDepth);
         IEnumerable<MenuItemResponse> menus = await _mediator.Send(query, cancellationToken);
         return OkResponse(menus);
     }
@@ -89,17 +89,17 @@ public class MenusController : BaseApiController
         CancellationToken cancellationToken = default)
     {
         // Get user permissions and roles from claims
-        var permissions = User.Claims
+        List<string> permissions = User.Claims
             .Where(c => c.Type == "permission")
             .Select(c => c.Value)
             .ToList();
 
-        var roles = User.Claims
+        List<string> roles = User.Claims
             .Where(c => c.Type == ClaimTypes.Role)
             .Select(c => c.Value)
             .ToList();
 
-        var query = new GetVisibleMenuTreeQuery(permissions, roles, maxDepth);
+        GetVisibleMenuTreeQuery query = new(permissions, roles, maxDepth);
         IEnumerable<MenuItemResponse> menus = await _mediator.Send(query, cancellationToken);
         return OkResponse(menus);
     }
@@ -131,7 +131,7 @@ public class MenusController : BaseApiController
     public async Task<ActionResult<IEnumerable<MenuItemFlatResponse>>> GetAllMenus(
         CancellationToken cancellationToken = default)
     {
-        var query = new GetAllMenusQuery();
+        GetAllMenusQuery query = new();
         IEnumerable<MenuItemFlatResponse> menus = await _mediator.Send(query, cancellationToken);
         return OkResponse(menus);
     }
@@ -161,10 +161,13 @@ public class MenusController : BaseApiController
     public async Task<ActionResult<MenuItemResponse>> GetMenuById(long id,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetMenuByIdQuery(id);
+        GetMenuByIdQuery query = new(id);
         MenuItemResponse? menu = await _mediator.Send(query, cancellationToken);
         if (menu == null)
+        {
             throw new NotFoundException(ErrorCodes.MENU_NOT_FOUND, "MenuItem", id);
+        }
+
         return OkResponse(menu);
     }
 
@@ -193,10 +196,13 @@ public class MenusController : BaseApiController
     public async Task<ActionResult<MenuItemResponse>> GetMenuByCode(string code,
         CancellationToken cancellationToken = default)
     {
-        var query = new GetMenuByCodeQuery(code);
+        GetMenuByCodeQuery query = new(code);
         MenuItemResponse? menu = await _mediator.Send(query, cancellationToken);
         if (menu == null)
+        {
             throw new NotFoundException(ErrorCodes.MENU_NOT_FOUND, "MenuItem", code);
+        }
+
         return OkResponse(menu);
     }
 
@@ -242,7 +248,7 @@ public class MenusController : BaseApiController
         [FromBody] CreateMenuItemRequest request,
         CancellationToken cancellationToken = default)
     {
-        var command = new CreateMenuCommand(
+        CreateMenuCommand command = new(
             request.Code,
             request.Name,
             request.Description,
@@ -290,7 +296,7 @@ public class MenusController : BaseApiController
         [FromBody] UpdateMenuItemRequest request,
         CancellationToken cancellationToken = default)
     {
-        var command = new UpdateMenuCommand(
+        UpdateMenuCommand command = new(
             id,
             request.Name,
             request.Description,
@@ -338,7 +344,7 @@ public class MenusController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteMenu(long id, CancellationToken cancellationToken = default)
     {
-        var command = new DeleteMenuCommand(id);
+        DeleteMenuCommand command = new(id);
         await _mediator.Send(command, cancellationToken);
         return NoContent();
     }
@@ -378,7 +384,7 @@ public class MenusController : BaseApiController
         [FromBody] UpdateMenuSortOrdersRequest request,
         CancellationToken cancellationToken = default)
     {
-        var command = new UpdateMenuSortOrdersCommand(request.SortOrders);
+        UpdateMenuSortOrdersCommand command = new(request.SortOrders);
         await _mediator.Send(command, cancellationToken);
         return NoContent();
     }
@@ -419,7 +425,7 @@ public class MenusController : BaseApiController
         [FromQuery] int sortOrder = 0,
         CancellationToken cancellationToken = default)
     {
-        var command = new MoveMenuCommand(id, parentId, sortOrder);
+        MoveMenuCommand command = new(id, parentId, sortOrder);
         MenuItemResponse menu = await _mediator.Send(command, cancellationToken);
         return OkResponse(menu);
     }

@@ -44,8 +44,8 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_WithValidRefreshToken_ShouldReturnNewTokens()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
         UserDevice device = user.GetOrCreateDevice(
@@ -57,12 +57,12 @@ public class RefreshTokenCommandHandlerTests
             "Hanoi, Vietnam"
         );
 
-        var oldRefreshToken = "old-refresh-token";
+        string oldRefreshToken = "old-refresh-token";
         DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(oldRefreshToken, refreshTokenExpiry, "192.168.1.1");
 
-        var newAccessToken = "new-access-token";
-        var newRefreshToken = "new-refresh-token";
+        string newAccessToken = "new-access-token";
+        string newRefreshToken = "new-refresh-token";
 
         _mockUserDeviceRepository
             .Setup(x => x.FindByRefreshTokenAsync(oldRefreshToken, It.IsAny<CancellationToken>()))
@@ -72,7 +72,7 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var mockSigningKey = SigningKey.Create("test-kid", "test-public-key", "test-private-key", "RS256");
+        SigningKey mockSigningKey = SigningKey.Create("test-kid", "test-public-key", "test-private-key", "RS256");
 
         _mockSigningKeyService
             .Setup(x => x.GetOrCreateActiveKeyAsync(It.IsAny<CancellationToken>()))
@@ -87,7 +87,7 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GenerateRefreshToken())
             .Returns(newRefreshToken);
 
-        var command = new RefreshTokenCommand
+        RefreshTokenCommand command = new()
         {
             RefreshToken = oldRefreshToken,
             IpAddress = "192.168.1.1",
@@ -116,13 +116,13 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_WithInvalidRefreshToken_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var invalidRefreshToken = "invalid-token";
+        string invalidRefreshToken = "invalid-token";
 
         _mockUserDeviceRepository
             .Setup(x => x.FindByRefreshTokenAsync(invalidRefreshToken, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserDevice?)null);
 
-        var command = new RefreshTokenCommand
+        RefreshTokenCommand command = new()
         {
             RefreshToken = invalidRefreshToken,
             IpAddress = "192.168.1.1",
@@ -140,8 +140,8 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_WithExpiredRefreshToken_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
         UserDevice device = user.GetOrCreateDevice(
@@ -153,7 +153,7 @@ public class RefreshTokenCommandHandlerTests
             "Hanoi, Vietnam"
         );
 
-        var expiredRefreshToken = "expired-refresh-token";
+        string expiredRefreshToken = "expired-refresh-token";
         DateTime expiredDate = DateTime.UtcNow.AddDays(-1); // Expired yesterday
         device.UpdateRefreshToken(expiredRefreshToken, expiredDate, "192.168.1.1");
 
@@ -161,7 +161,7 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.FindByRefreshTokenAsync(expiredRefreshToken, It.IsAny<CancellationToken>()))
             .ReturnsAsync(device);
 
-        var command = new RefreshTokenCommand
+        RefreshTokenCommand command = new()
         {
             RefreshToken = expiredRefreshToken,
             IpAddress = "192.168.1.1",
@@ -179,8 +179,8 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_WithInactiveDevice_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
         UserDevice device = user.GetOrCreateDevice(
@@ -192,7 +192,7 @@ public class RefreshTokenCommandHandlerTests
             "Hanoi, Vietnam"
         );
 
-        var refreshToken = "valid-refresh-token";
+        string refreshToken = "valid-refresh-token";
         DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
         device.Deactivate(); // Deactivate the device
@@ -201,7 +201,7 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.FindByRefreshTokenAsync(refreshToken, It.IsAny<CancellationToken>()))
             .ReturnsAsync(device);
 
-        var command = new RefreshTokenCommand
+        RefreshTokenCommand command = new()
         {
             RefreshToken = refreshToken,
             IpAddress = "192.168.1.1",
@@ -219,8 +219,8 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_WithInactiveUser_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
         user.Deactivate(); // Deactivate the user
 
@@ -233,7 +233,7 @@ public class RefreshTokenCommandHandlerTests
             "Hanoi, Vietnam"
         );
 
-        var refreshToken = "valid-refresh-token";
+        string refreshToken = "valid-refresh-token";
         DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
 
@@ -245,7 +245,7 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new RefreshTokenCommand
+        RefreshTokenCommand command = new()
         {
             RefreshToken = refreshToken,
             IpAddress = "192.168.1.1",
@@ -263,12 +263,15 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_WithLockedUser_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
         // Lock the user by recording failed attempts
-        for (var i = 0; i < 5; i++) user.RecordFailedLogin();
+        for (int i = 0; i < 5; i++)
+        {
+            user.RecordFailedLogin();
+        }
 
         UserDevice device = user.GetOrCreateDevice(
             "device-123",
@@ -279,7 +282,7 @@ public class RefreshTokenCommandHandlerTests
             "Hanoi, Vietnam"
         );
 
-        var refreshToken = "valid-refresh-token";
+        string refreshToken = "valid-refresh-token";
         DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
 
@@ -291,7 +294,7 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new RefreshTokenCommand
+        RefreshTokenCommand command = new()
         {
             RefreshToken = refreshToken,
             IpAddress = "192.168.1.1",
@@ -309,8 +312,8 @@ public class RefreshTokenCommandHandlerTests
     public async Task Handle_WithNonExistentUser_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
         UserDevice device = user.GetOrCreateDevice(
@@ -322,7 +325,7 @@ public class RefreshTokenCommandHandlerTests
             "Hanoi, Vietnam"
         );
 
-        var refreshToken = "valid-refresh-token";
+        string refreshToken = "valid-refresh-token";
         DateTime refreshTokenExpiry = DateTime.UtcNow.AddDays(30);
         device.UpdateRefreshToken(refreshToken, refreshTokenExpiry, "192.168.1.1");
 
@@ -334,7 +337,7 @@ public class RefreshTokenCommandHandlerTests
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
-        var command = new RefreshTokenCommand
+        RefreshTokenCommand command = new()
         {
             RefreshToken = refreshToken,
             IpAddress = "192.168.1.1",

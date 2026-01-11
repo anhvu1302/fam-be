@@ -24,10 +24,14 @@ public sealed class Money : ValueObject
     public static Money Create(decimal amount, string currency)
     {
         if (amount < 0)
+        {
             throw new DomainException(ErrorCodes.VO_MONEY_NEGATIVE);
+        }
 
         if (string.IsNullOrWhiteSpace(currency))
+        {
             throw new DomainException(ErrorCodes.VO_MONEY_CURRENCY_EMPTY);
+        }
 
         return new Money(amount, currency.ToUpperInvariant());
     }
@@ -40,7 +44,9 @@ public sealed class Money : ValueObject
     public Money Add(Money other)
     {
         if (Currency != other.Currency)
+        {
             throw new InvalidOperationException($"Cannot add {other.Currency} to {Currency}");
+        }
 
         return new Money(Amount + other.Amount, Currency);
     }
@@ -48,7 +54,9 @@ public sealed class Money : ValueObject
     public Money Subtract(Money other)
     {
         if (Currency != other.Currency)
+        {
             throw new InvalidOperationException($"Cannot subtract {other.Currency} from {Currency}");
+        }
 
         return new Money(Amount - other.Amount, Currency);
     }
@@ -61,7 +69,9 @@ public sealed class Money : ValueObject
     public Money Divide(decimal divisor)
     {
         if (divisor == 0)
+        {
             throw new DivideByZeroException();
+        }
 
         return new Money(Amount / divisor, Currency);
     }

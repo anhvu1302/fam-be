@@ -21,7 +21,9 @@ public static class CorsConfigurationExtensions
                     .WithExposedHeaders("Content-Disposition");
 
                 if (corsSettings.AllowCredentials)
+                {
                     policy.AllowCredentials();
+                }
             });
         });
 
@@ -36,7 +38,7 @@ public static class CorsConfigurationExtensions
     /// </summary>
     private static CorsSettings LoadCorsSettings(IConfiguration configuration)
     {
-        var settings = new CorsSettings();
+        CorsSettings settings = new();
 
         // Từ appsettings.json
         IConfigurationSection corsSection = configuration.GetSection("Cors");
@@ -49,29 +51,44 @@ public static class CorsConfigurationExtensions
         }
 
         // Override từ Environment Variables (Production)
-        var envOrigins = Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGINS");
+        string? envOrigins = Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGINS");
         if (!string.IsNullOrEmpty(envOrigins))
+        {
             settings.AllowedOrigins = envOrigins.Split(';', StringSplitOptions.RemoveEmptyEntries);
+        }
 
-        var envMethods = Environment.GetEnvironmentVariable("CORS_ALLOWED_METHODS");
+        string? envMethods = Environment.GetEnvironmentVariable("CORS_ALLOWED_METHODS");
         if (!string.IsNullOrEmpty(envMethods))
+        {
             settings.AllowedMethods = envMethods.Split(';', StringSplitOptions.RemoveEmptyEntries);
+        }
 
-        var envHeaders = Environment.GetEnvironmentVariable("CORS_ALLOWED_HEADERS");
+        string? envHeaders = Environment.GetEnvironmentVariable("CORS_ALLOWED_HEADERS");
         if (!string.IsNullOrEmpty(envHeaders))
+        {
             settings.AllowedHeaders = envHeaders.Split(';', StringSplitOptions.RemoveEmptyEntries);
+        }
 
-        if (bool.TryParse(Environment.GetEnvironmentVariable("CORS_ALLOW_CREDENTIALS"), out var allowCreds))
+        if (bool.TryParse(Environment.GetEnvironmentVariable("CORS_ALLOW_CREDENTIALS"), out bool allowCreds))
+        {
             settings.AllowCredentials = allowCreds;
+        }
 
         // Validate
-        if (!settings.AllowedOrigins.Any()) settings.AllowedOrigins = new[] { "http://localhost:8001" };
+        if (!settings.AllowedOrigins.Any())
+        {
+            settings.AllowedOrigins = new[] { "http://localhost:8001" };
+        }
 
         if (!settings.AllowedMethods.Any())
+        {
             settings.AllowedMethods = new[] { "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" };
+        }
 
         if (!settings.AllowedHeaders.Any())
+        {
             settings.AllowedHeaders = new[] { "Content-Type", "Authorization", "X-Requested-With" };
+        }
 
         return settings;
     }

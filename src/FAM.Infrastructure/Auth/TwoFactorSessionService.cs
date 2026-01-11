@@ -29,11 +29,11 @@ public class TwoFactorSessionService : ITwoFactorSessionService
         CancellationToken cancellationToken = default)
     {
         // Generate a random session token (simpler than JWT for single-use tokens)
-        var token = Guid.NewGuid().ToString("N");
-        var cacheKey = $"{CacheKeyPrefix}{token}";
+        string token = Guid.NewGuid().ToString("N");
+        string cacheKey = $"{CacheKeyPrefix}{token}";
 
         // Store in cache with expiration (Redis for persistence, In-Memory for development)
-        var expiration = TimeSpan.FromMinutes(expirationMinutes);
+        TimeSpan expiration = TimeSpan.FromMinutes(expirationMinutes);
         await _cache.SetAsync(cacheKey, userId.ToString(), expiration, cancellationToken);
 
         _logger.LogInformation("Created 2FA session token for user {UserId} with {ExpirationMinutes} minute expiration",
@@ -53,10 +53,10 @@ public class TwoFactorSessionService : ITwoFactorSessionService
             return 0;
         }
 
-        var cacheKey = $"{CacheKeyPrefix}{token}";
-        var userIdStr = await _cache.GetAsync(cacheKey, cancellationToken);
+        string cacheKey = $"{CacheKeyPrefix}{token}";
+        string? userIdStr = await _cache.GetAsync(cacheKey, cancellationToken);
 
-        if (!string.IsNullOrEmpty(userIdStr) && long.TryParse(userIdStr, out var userId))
+        if (!string.IsNullOrEmpty(userIdStr) && long.TryParse(userIdStr, out long userId))
         {
             _logger.LogInformation("Validated 2FA session token for user {UserId}", userId);
             return userId;
@@ -72,9 +72,11 @@ public class TwoFactorSessionService : ITwoFactorSessionService
     public async Task RevokeSessionAsync(string token, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(token))
+        {
             return;
+        }
 
-        var cacheKey = $"{CacheKeyPrefix}{token}";
+        string cacheKey = $"{CacheKeyPrefix}{token}";
         await _cache.DeleteAsync(cacheKey, cancellationToken);
         _logger.LogInformation("Revoked 2FA session token");
     }

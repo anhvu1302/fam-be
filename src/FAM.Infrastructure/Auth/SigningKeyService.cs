@@ -31,7 +31,10 @@ public class SigningKeyService : ISigningKeyService
     {
         SigningKey? activeKey = await _repository.GetActiveKeyAsync(cancellationToken);
 
-        if (activeKey != null && activeKey.CanSign()) return activeKey;
+        if (activeKey != null && activeKey.CanSign())
+        {
+            return activeKey;
+        }
 
         return await GenerateKeyAsync(cancellationToken: cancellationToken);
     }
@@ -45,22 +48,26 @@ public class SigningKeyService : ISigningKeyService
         CancellationToken cancellationToken = default)
     {
         // Validate algorithm
-        var validAlgorithms = new[] { "RS256", "RS384", "RS512" };
+        string[] validAlgorithms = new[] { "RS256", "RS384", "RS512" };
         if (!validAlgorithms.Contains(algorithm))
+        {
             throw new DomainException(ErrorCodes.KEY_INVALID_ALGORITHM);
+        }
 
         // Validate key size
-        var validKeySizes = new[] { 2048, 3072, 4096 };
+        int[] validKeySizes = new[] { 2048, 3072, 4096 };
         if (!validKeySizes.Contains(keySize))
+        {
             throw new DomainException(ErrorCodes.KEY_INVALID_SIZE);
+        }
 
         // Generate RSA key pair
-        using var rsa = RSA.Create(keySize);
-        var publicKey = rsa.ExportRSAPublicKeyPem();
-        var privateKey = rsa.ExportRSAPrivateKeyPem();
-        var keyId = GenerateKeyId();
+        using RSA rsa = RSA.Create(keySize);
+        string publicKey = rsa.ExportRSAPublicKeyPem();
+        string privateKey = rsa.ExportRSAPrivateKeyPem();
+        string keyId = GenerateKeyId();
 
-        var signingKey = SigningKey.Create(
+        SigningKey signingKey = SigningKey.Create(
             keyId,
             publicKey,
             privateKey,
@@ -96,7 +103,10 @@ public class SigningKeyService : ISigningKeyService
     public async Task ActivateKeyAsync(long keyId, CancellationToken cancellationToken = default)
     {
         SigningKey? key = await _repository.GetByIdAsync(keyId, cancellationToken);
-        if (key == null) throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
+        if (key == null)
+        {
+            throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
+        }
 
         key.Activate();
         _repository.Update(key);
@@ -110,7 +120,10 @@ public class SigningKeyService : ISigningKeyService
     public async Task DeactivateKeyAsync(long keyId, CancellationToken cancellationToken = default)
     {
         SigningKey? key = await _repository.GetByIdAsync(keyId, cancellationToken);
-        if (key == null) throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
+        if (key == null)
+        {
+            throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
+        }
 
         key.Deactivate();
         _repository.Update(key);
@@ -120,7 +133,10 @@ public class SigningKeyService : ISigningKeyService
     public async Task RevokeKeyAsync(long keyId, string? reason = null, CancellationToken cancellationToken = default)
     {
         SigningKey? key = await _repository.GetByIdAsync(keyId, cancellationToken);
-        if (key == null) throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
+        if (key == null)
+        {
+            throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
+        }
 
         key.Revoke(reason);
         _repository.Update(key);
@@ -153,9 +169,14 @@ public class SigningKeyService : ISigningKeyService
         if (oldKey != null)
         {
             if (revokeOldKey)
+            {
                 oldKey.Revoke(revocationReason ?? "Key rotation");
+            }
             else
+            {
                 oldKey.Deactivate();
+            }
+
             _repository.Update(oldKey);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
@@ -183,9 +204,15 @@ public class SigningKeyService : ISigningKeyService
     public async Task DeleteKeyAsync(long keyId, CancellationToken cancellationToken = default)
     {
         SigningKey? key = await _repository.GetByIdAsync(keyId, cancellationToken);
-        if (key == null) throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
+        if (key == null)
+        {
+            throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", keyId);
+        }
 
-        if (!key.IsRevoked) throw new DomainException(ErrorCodes.KEY_MUST_REVOKE_FIRST);
+        if (!key.IsRevoked)
+        {
+            throw new DomainException(ErrorCodes.KEY_MUST_REVOKE_FIRST);
+        }
 
         _repository.Delete(key);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -203,10 +230,10 @@ public class SigningKeyService : ISigningKeyService
     private static string GenerateKeyId()
     {
         // Generate a unique key ID using timestamp and random bytes
-        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        var randomBytes = new byte[8];
+        long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        byte[] randomBytes = new byte[8];
         RandomNumberGenerator.Fill(randomBytes);
-        var randomPart = Convert.ToHexString(randomBytes).ToLowerInvariant();
+        string randomPart = Convert.ToHexString(randomBytes).ToLowerInvariant();
         return $"key_{timestamp}_{randomPart}";
     }
 

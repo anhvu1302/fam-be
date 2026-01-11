@@ -36,38 +36,54 @@ public static class EmailServiceExtensions
             configuration.GetSection(EmailProviderOptions.SectionName).Bind(options);
 
             // Override with environment variables if present
-            var envProvider = Environment.GetEnvironmentVariable("EMAIL_PROVIDER");
+            string? envProvider = Environment.GetEnvironmentVariable("EMAIL_PROVIDER");
             if (!string.IsNullOrEmpty(envProvider))
+            {
                 options.Provider = envProvider;
+            }
 
-            var envFromEmail = Environment.GetEnvironmentVariable("EMAIL_FROM");
+            string? envFromEmail = Environment.GetEnvironmentVariable("EMAIL_FROM");
             if (!string.IsNullOrEmpty(envFromEmail))
+            {
                 options.FromEmail = envFromEmail;
+            }
 
-            var envFromName = Environment.GetEnvironmentVariable("EMAIL_FROM_NAME");
+            string? envFromName = Environment.GetEnvironmentVariable("EMAIL_FROM_NAME");
             if (!string.IsNullOrEmpty(envFromName))
+            {
                 options.FromName = envFromName;
+            }
 
             // SMTP settings
-            var smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST");
+            string? smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST");
             if (!string.IsNullOrEmpty(smtpHost))
+            {
                 options.Smtp.Host = smtpHost;
+            }
 
-            var smtpPort = Environment.GetEnvironmentVariable("SMTP_PORT");
-            if (!string.IsNullOrEmpty(smtpPort) && int.TryParse(smtpPort, out var port))
+            string? smtpPort = Environment.GetEnvironmentVariable("SMTP_PORT");
+            if (!string.IsNullOrEmpty(smtpPort) && int.TryParse(smtpPort, out int port))
+            {
                 options.Smtp.Port = port;
+            }
 
-            var smtpUsername = Environment.GetEnvironmentVariable("SMTP_USERNAME");
+            string? smtpUsername = Environment.GetEnvironmentVariable("SMTP_USERNAME");
             if (!string.IsNullOrEmpty(smtpUsername))
+            {
                 options.Smtp.Username = smtpUsername;
+            }
 
-            var smtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
+            string? smtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
             if (!string.IsNullOrEmpty(smtpPassword))
+            {
                 options.Smtp.Password = smtpPassword;
+            }
 
-            var smtpEnableSsl = Environment.GetEnvironmentVariable("SMTP_ENABLE_SSL");
-            if (!string.IsNullOrEmpty(smtpEnableSsl) && bool.TryParse(smtpEnableSsl, out var enableSsl))
+            string? smtpEnableSsl = Environment.GetEnvironmentVariable("SMTP_ENABLE_SSL");
+            if (!string.IsNullOrEmpty(smtpEnableSsl) && bool.TryParse(smtpEnableSsl, out bool enableSsl))
+            {
                 options.Smtp.EnableSsl = enableSsl;
+            }
         });
 
         // Register cache provider for email queue
@@ -96,9 +112,9 @@ public static class EmailServiceExtensions
         services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 
         // Get provider from config or env
-        var providerName = Environment.GetEnvironmentVariable("EMAIL_PROVIDER")
-                           ?? configuration.GetValue<string>($"{EmailProviderOptions.SectionName}:Provider")
-                           ?? "Smtp";
+        string providerName = Environment.GetEnvironmentVariable("EMAIL_PROVIDER")
+                              ?? configuration.GetValue<string>($"{EmailProviderOptions.SectionName}:Provider")
+                              ?? "Smtp";
 
         switch (providerName.ToLowerInvariant())
         {

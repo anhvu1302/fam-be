@@ -41,16 +41,16 @@ public class RequestLoggingMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var stopwatch = Stopwatch.StartNew();
+        Stopwatch stopwatch = Stopwatch.StartNew();
         HttpRequest request = context.Request;
 
         // Lấy thông tin cơ bản
-        var method = request.Method;
-        var path = request.Path.Value ?? "/";
-        var queryString = request.QueryString.HasValue ? request.QueryString.Value : null;
-        var userAgent = request.Headers.UserAgent.ToString();
-        var clientIp = context.Items["RealClientIp"]?.ToString() ?? context.Connection.RemoteIpAddress?.ToString();
-        var userId = context.User.FindFirst("sub")?.Value ?? context.User.FindFirst("userId")?.Value;
+        string method = request.Method;
+        string path = request.Path.Value ?? "/";
+        string? queryString = request.QueryString.HasValue ? request.QueryString.Value : null;
+        string userAgent = request.Headers.UserAgent.ToString();
+        string? clientIp = context.Items["RealClientIp"]?.ToString() ?? context.Connection.RemoteIpAddress?.ToString();
+        string? userId = context.User.FindFirst("sub")?.Value ?? context.User.FindFirst("userId")?.Value;
 
         // Push thêm context vào Serilog
         using (LogContext.PushProperty("ClientIp", clientIp))
@@ -61,17 +61,23 @@ public class RequestLoggingMiddleware
         {
             // Log request body (nếu không phải upload và là POST/PUT/PATCH)
             string? requestBody = null;
-            if (ShouldLogRequestBody(request)) requestBody = await ReadAndMaskRequestBodyAsync(request);
+            if (ShouldLogRequestBody(request))
+            {
+                requestBody = await ReadAndMaskRequestBodyAsync(request);
+            }
 
             _logger.LogInformation(
                 "HTTP {Method} {Path}{QueryString} started - IP: {ClientIp}, User: {UserId}",
                 method, path, queryString, clientIp, userId ?? "anonymous");
 
-            if (!string.IsNullOrEmpty(requestBody)) _logger.LogDebug("Request Body: {RequestBody}", requestBody);
+            if (!string.IsNullOrEmpty(requestBody))
+            {
+                _logger.LogDebug("Request Body: {RequestBody}", requestBody);
+            }
 
             // Capture response
             Stream originalBodyStream = context.Response.Body;
-            using var responseBody = new MemoryStream();
+            using MemoryStream responseBody = new();
             context.Response.Body = responseBody;
 
             try
@@ -81,8 +87,8 @@ public class RequestLoggingMiddleware
             finally
             {
                 stopwatch.Stop();
-                var statusCode = context.Response.StatusCode;
-                var elapsedMs = stopwatch.ElapsedMilliseconds;
+                int statusCode = context.Response.StatusCode;
+                long elapsedMs = stopwatch.ElapsedMilliseconds;
 
                 // Log response
                 using (LogContext.PushProperty("StatusCode", statusCode))
@@ -101,7 +107,7 @@ public class RequestLoggingMiddleware
                     if (statusCode >= 400 && responseBody.Length > 0 && responseBody.Length < 4096)
                     {
                         responseBody.Seek(0, SeekOrigin.Begin);
-                        var responseText = await new StreamReader(responseBody).ReadToEndAsync();
+                        string responseText = await new StreamReader(responseBody).ReadToEndAsync();
                         _logger.LogDebug("Response Body: {ResponseBody}", responseText);
                     }
                 }
@@ -117,15 +123,21 @@ public class RequestLoggingMiddleware
     {
         // Không log body cho các request không có body
         if (request.Method is "GET" or "DELETE" or "HEAD" or "OPTIONS")
+        {
             return false;
+        }
 
         // Không log body cho upload files
         if (ExcludeBodyPaths.Any(p => request.Path.StartsWithSegments(p, StringComparison.OrdinalIgnoreCase)))
+        {
             return false;
+        }
 
         // Không log body quá lớn (> 10KB)
         if (request.ContentLength > 10 * 1024)
+        {
             return false;
+        }
 
         return true;
     }
@@ -136,17 +148,19 @@ public class RequestLoggingMiddleware
         {
             request.EnableBuffering();
 
-            using var reader = new StreamReader(
+            using StreamReader reader = new(
                 request.Body,
                 Encoding.UTF8,
                 false,
                 leaveOpen: true);
 
-            var body = await reader.ReadToEndAsync();
+            string body = await reader.ReadToEndAsync();
             request.Body.Position = 0;
 
             if (string.IsNullOrWhiteSpace(body))
+            {
                 return null;
+            }
 
             return MaskSensitiveData(body);
         }
@@ -159,10 +173,10 @@ public class RequestLoggingMiddleware
     private static string MaskSensitiveData(string json)
     {
         // Simple regex-based masking cho các field nhạy cảm
-        foreach (var field in SensitiveFields)
+        foreach (string field in SensitiveFields)
         {
             // Match: "fieldName": "value" hoặc "fieldName":"value"
-            var pattern = $@"(""{field}""\s*:\s*"")[^""]*("")";
+            string pattern = $@"(""{field}""\s*:\s*"")[^""]*("")";
             json = Regex.Replace(
                 json,
                 pattern,

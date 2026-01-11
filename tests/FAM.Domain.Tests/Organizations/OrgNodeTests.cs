@@ -11,11 +11,11 @@ public class OrgNodeTests
     public void CreateCompany_WithValidData_ShouldCreateCompanyNode()
     {
         // Arrange
-        var name = "Test Company";
-        var details = CompanyDetails.Create("1234567890", "example.com");
+        string name = "Test Company";
+        CompanyDetails details = CompanyDetails.Create("1234567890", "example.com");
 
         // Act
-        var node = OrgNode.CreateCompany(name, details);
+        OrgNode node = OrgNode.CreateCompany(name, details);
 
         // Assert
         node.Should().NotBeNull();
@@ -30,8 +30,8 @@ public class OrgNodeTests
     public void CreateCompany_WithEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var name = "";
-        var details = CompanyDetails.Create();
+        string name = "";
+        CompanyDetails details = CompanyDetails.Create();
 
         // Act
         Action act = () => OrgNode.CreateCompany(name, details);
@@ -45,13 +45,13 @@ public class OrgNodeTests
     public void CreateDepartment_WithValidData_ShouldCreateDepartmentNode()
     {
         // Arrange
-        var companyDetails = CompanyDetails.Create();
-        var company = OrgNode.CreateCompany("Test Company", companyDetails);
-        var name = "IT Department";
-        var departmentDetails = DepartmentDetails.Create("CC001", 10);
+        CompanyDetails companyDetails = CompanyDetails.Create();
+        OrgNode company = OrgNode.CreateCompany("Test Company", companyDetails);
+        string name = "IT Department";
+        DepartmentDetails departmentDetails = DepartmentDetails.Create("CC001", 10);
 
         // Act
-        var node = OrgNode.CreateDepartment(name, departmentDetails, company);
+        OrgNode node = OrgNode.CreateDepartment(name, departmentDetails, company);
 
         // Assert
         node.Should().NotBeNull();
@@ -67,10 +67,10 @@ public class OrgNodeTests
     public void CreateDepartment_WithEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var companyDetails = CompanyDetails.Create();
-        var company = OrgNode.CreateCompany("Test Company", companyDetails);
-        var name = "";
-        var departmentDetails = DepartmentDetails.Create();
+        CompanyDetails companyDetails = CompanyDetails.Create();
+        OrgNode company = OrgNode.CreateCompany("Test Company", companyDetails);
+        string name = "";
+        DepartmentDetails departmentDetails = DepartmentDetails.Create();
 
         // Act
         Action act = () => OrgNode.CreateDepartment(name, departmentDetails, company);
@@ -84,12 +84,12 @@ public class OrgNodeTests
     public void CreateDepartment_WithNonCompanyParent_ShouldThrowDomainException()
     {
         // Arrange
-        var companyDetails = CompanyDetails.Create();
-        var company = OrgNode.CreateCompany("Test Company", companyDetails);
-        var departmentDetails1 = DepartmentDetails.Create();
-        var department = OrgNode.CreateDepartment("IT Department", departmentDetails1, company);
-        var name = "Sub Department";
-        var departmentDetails2 = DepartmentDetails.Create();
+        CompanyDetails companyDetails = CompanyDetails.Create();
+        OrgNode company = OrgNode.CreateCompany("Test Company", companyDetails);
+        DepartmentDetails departmentDetails1 = DepartmentDetails.Create();
+        OrgNode department = OrgNode.CreateDepartment("IT Department", departmentDetails1, company);
+        string name = "Sub Department";
+        DepartmentDetails departmentDetails2 = DepartmentDetails.Create();
 
         // Act
         Action act = () => OrgNode.CreateDepartment(name, departmentDetails2, department);
@@ -103,9 +103,9 @@ public class OrgNodeTests
     public void UpdateName_WithValidName_ShouldUpdateName()
     {
         // Arrange
-        var details = CompanyDetails.Create();
-        var node = OrgNode.CreateCompany("Original Name", details);
-        var newName = "Updated Name";
+        CompanyDetails details = CompanyDetails.Create();
+        OrgNode node = OrgNode.CreateCompany("Original Name", details);
+        string newName = "Updated Name";
 
         // Act
         node.UpdateName(newName);
@@ -118,9 +118,9 @@ public class OrgNodeTests
     public void UpdateName_WithEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var details = CompanyDetails.Create();
-        var node = OrgNode.CreateCompany("Original Name", details);
-        var newName = "";
+        CompanyDetails details = CompanyDetails.Create();
+        OrgNode node = OrgNode.CreateCompany("Original Name", details);
+        string newName = "";
 
         // Act
         Action act = () => node.UpdateName(newName);

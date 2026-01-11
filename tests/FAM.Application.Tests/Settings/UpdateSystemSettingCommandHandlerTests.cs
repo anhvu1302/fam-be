@@ -25,8 +25,8 @@ public class UpdateSystemSettingCommandHandlerTests
     public async Task Handle_WithValidCommand_ShouldUpdateSetting()
     {
         // Arrange
-        var setting = SystemSetting.Create("test_key", "Original Name");
-        var command = new UpdateSystemSettingCommand
+        SystemSetting setting = SystemSetting.Create("test_key", "Original Name");
+        UpdateSystemSettingCommand command = new()
         {
             Id = 1,
             DisplayName = "Updated Name",
@@ -53,7 +53,7 @@ public class UpdateSystemSettingCommandHandlerTests
     public async Task Handle_WithNonExistentSetting_ShouldThrowNotFoundException()
     {
         // Arrange
-        var command = new UpdateSystemSettingCommand
+        UpdateSystemSettingCommand command = new()
         {
             Id = 999,
             DisplayName = "Updated Name"
@@ -74,8 +74,8 @@ public class UpdateSystemSettingCommandHandlerTests
     public async Task Handle_WithValueUpdate_ShouldSetNewValue()
     {
         // Arrange
-        var setting = SystemSetting.Create("test_key", "Test Setting");
-        var command = new UpdateSystemSettingCommand
+        SystemSetting setting = SystemSetting.Create("test_key", "Test Setting");
+        UpdateSystemSettingCommand command = new()
         {
             Id = 1,
             DisplayName = "Test Setting",
@@ -97,8 +97,8 @@ public class UpdateSystemSettingCommandHandlerTests
     public async Task Handle_WithVisibilityChange_ShouldUpdateVisibility()
     {
         // Arrange
-        var setting = SystemSetting.Create("test_key", "Test Setting");
-        var command = new UpdateSystemSettingCommand
+        SystemSetting setting = SystemSetting.Create("test_key", "Test Setting");
+        UpdateSystemSettingCommand command = new()
         {
             Id = 1,
             DisplayName = "Test Setting",
@@ -120,8 +120,8 @@ public class UpdateSystemSettingCommandHandlerTests
     public async Task Handle_WithEditabilityChange_ShouldUpdateEditability()
     {
         // Arrange
-        var setting = SystemSetting.Create("test_key", "Test Setting");
-        var command = new UpdateSystemSettingCommand
+        SystemSetting setting = SystemSetting.Create("test_key", "Test Setting");
+        UpdateSystemSettingCommand command = new()
         {
             Id = 1,
             DisplayName = "Test Setting",
@@ -143,8 +143,8 @@ public class UpdateSystemSettingCommandHandlerTests
     public async Task Handle_WithValidationRulesAndOptions_ShouldUpdateBoth()
     {
         // Arrange
-        var setting = SystemSetting.Create("test_key", "Test Setting");
-        var command = new UpdateSystemSettingCommand
+        SystemSetting setting = SystemSetting.Create("test_key", "Test Setting");
+        UpdateSystemSettingCommand command = new()
         {
             Id = 1,
             DisplayName = "Test Setting",

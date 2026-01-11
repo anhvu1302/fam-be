@@ -61,7 +61,7 @@ public class EmailService : IEmailService
         }
 
         // Replace placeholders
-        var placeholders = new Dictionary<string, string>
+        Dictionary<string, string> placeholders = new()
         {
             { "userName", userName },
             { "otpCode", otpCode },
@@ -70,8 +70,8 @@ public class EmailService : IEmailService
             { "currentYear", DateTime.UtcNow.Year.ToString() }
         };
 
-        var subject = ReplacePlaceholders(template.Subject, placeholders);
-        var body = ReplacePlaceholders(template.HtmlBody, placeholders);
+        string subject = ReplacePlaceholders(template.Subject, placeholders);
+        string body = ReplacePlaceholders(template.HtmlBody, placeholders);
 
         await SendEmailAsync(toEmail, subject, body, cancellationToken);
     }
@@ -88,10 +88,10 @@ public class EmailService : IEmailService
         }
 
         // Build reset link
-        var resetLink = $"{resetUrl}?token={Uri.EscapeDataString(resetToken)}&email={Uri.EscapeDataString(toEmail)}";
+        string resetLink = $"{resetUrl}?token={Uri.EscapeDataString(resetToken)}&email={Uri.EscapeDataString(toEmail)}";
 
         // Replace placeholders
-        var placeholders = new Dictionary<string, string>
+        Dictionary<string, string> placeholders = new()
         {
             { "userName", userName },
             { "resetLink", resetLink },
@@ -101,8 +101,8 @@ public class EmailService : IEmailService
             { "currentYear", DateTime.UtcNow.Year.ToString() }
         };
 
-        var subject = ReplacePlaceholders(template.Subject, placeholders);
-        var body = ReplacePlaceholders(template.HtmlBody, placeholders);
+        string subject = ReplacePlaceholders(template.Subject, placeholders);
+        string body = ReplacePlaceholders(template.HtmlBody, placeholders);
 
         await SendEmailAsync(toEmail, subject, body, cancellationToken);
     }
@@ -121,7 +121,7 @@ public class EmailService : IEmailService
         }
 
         // Replace placeholders
-        var placeholders = new Dictionary<string, string>
+        Dictionary<string, string> placeholders = new()
         {
             { "userName", userName },
             { "changeTime", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss") },
@@ -129,8 +129,8 @@ public class EmailService : IEmailService
             { "currentYear", DateTime.UtcNow.Year.ToString() }
         };
 
-        var subject = ReplacePlaceholders(template.Subject, placeholders);
-        var body = ReplacePlaceholders(template.HtmlBody, placeholders);
+        string subject = ReplacePlaceholders(template.Subject, placeholders);
+        string body = ReplacePlaceholders(template.HtmlBody, placeholders);
 
         await SendEmailAsync(toEmail, subject, body, cancellationToken);
     }
@@ -149,14 +149,14 @@ public class EmailService : IEmailService
                 return; // Skip actual sending in development
             }
 
-            using var smtpClient = new SmtpClient(_smtpHost, _smtpPort)
+            using SmtpClient smtpClient = new(_smtpHost, _smtpPort)
             {
                 Credentials = new NetworkCredential(_smtpUser, _smtpPassword),
                 EnableSsl = _enableSsl,
                 DeliveryMethod = SmtpDeliveryMethod.Network
             };
 
-            using var mailMessage = new MailMessage
+            using MailMessage mailMessage = new()
             {
                 From = new MailAddress(_fromEmail, _fromName),
                 Subject = subject,
@@ -183,9 +183,9 @@ public class EmailService : IEmailService
     /// </summary>
     private static string ReplacePlaceholders(string template, Dictionary<string, string> placeholders)
     {
-        var result = template;
+        string result = template;
 
-        foreach (var (key, value) in placeholders)
+        foreach ((string key, string value) in placeholders)
         {
             // Replace {{key}} format
             result = result.Replace($"{{{{{key}}}}}", value);

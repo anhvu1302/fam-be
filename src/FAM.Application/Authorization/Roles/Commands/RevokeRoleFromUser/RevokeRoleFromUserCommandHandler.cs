@@ -21,8 +21,10 @@ public sealed class RevokeRoleFromUserCommandHandler : IRequestHandler<RevokeRol
             request.UserId, request.NodeId, request.RoleId, cancellationToken);
 
         if (userNodeRole == null)
+        {
             throw new NotFoundException(ErrorCodes.ROLE_ASSIGNMENT_NOT_FOUND,
                 $"Role assignment not found for User {request.UserId}, Node {request.NodeId}, Role {request.RoleId}");
+        }
 
         _unitOfWork.UserNodeRoles.Delete(userNodeRole);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

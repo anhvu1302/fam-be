@@ -26,16 +26,24 @@ public abstract class BaseEntity<TId> where TId : IEquatable<TId>
     public override bool Equals(object? obj)
     {
         if (obj is not BaseEntity<TId> other)
+        {
             return false;
+        }
 
         if (ReferenceEquals(this, other))
+        {
             return true;
+        }
 
         if (GetType() != other.GetType())
+        {
             return false;
+        }
 
         if (IsTransient() || other.IsTransient())
+        {
             return false;
+        }
 
         return Id.Equals(other.Id);
     }
@@ -48,10 +56,14 @@ public abstract class BaseEntity<TId> where TId : IEquatable<TId>
     public static bool operator ==(BaseEntity<TId>? a, BaseEntity<TId>? b)
     {
         if (a is null && b is null)
+        {
             return true;
+        }
 
         if (a is null || b is null)
+        {
             return false;
+        }
 
         return a.Equals(b);
     }

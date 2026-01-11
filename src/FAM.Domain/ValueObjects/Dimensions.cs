@@ -28,17 +28,25 @@ public sealed class Dimensions : ValueObject
     public static Dimensions Create(decimal length, decimal width, decimal height, string unit = "cm")
     {
         if (length <= 0)
+        {
             throw new DomainException(ErrorCodes.VO_DIMENSION_INVALID);
+        }
 
         if (width <= 0)
+        {
             throw new DomainException(ErrorCodes.VO_DIMENSION_INVALID);
+        }
 
         if (height <= 0)
+        {
             throw new DomainException(ErrorCodes.VO_DIMENSION_INVALID);
+        }
 
-        var validUnits = new[] { "cm", "m", "mm", "in", "ft" };
+        string[] validUnits = new[] { "cm", "m", "mm", "in", "ft" };
         if (!validUnits.Contains(unit.ToLowerInvariant()))
+        {
             throw new DomainException(ErrorCodes.VO_DIMENSION_UNIT_EMPTY);
+        }
 
         return new Dimensions(length, width, height, unit.ToLowerInvariant());
     }
@@ -46,20 +54,25 @@ public sealed class Dimensions : ValueObject
     public static Dimensions? Parse(string dimensionsString)
     {
         if (string.IsNullOrWhiteSpace(dimensionsString))
+        {
             return null;
+        }
 
         // Format: "L x W x H" or "L x W x H cm"
-        var parts = dimensionsString.Split(new[] { 'x', 'X', '*' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] parts = dimensionsString.Split(new[] { 'x', 'X', '*' }, StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length < 3)
+        {
             return null;
+        }
 
-        var lastPart = parts[2].Trim().Split(' ');
-        var heightStr = lastPart[0];
-        var unit = lastPart.Length > 1 ? lastPart[1] : "cm";
+        string[] lastPart = parts[2].Trim().Split(' ');
+        string heightStr = lastPart[0];
+        string unit = lastPart.Length > 1 ? lastPart[1] : "cm";
 
-        if (decimal.TryParse(parts[0].Trim(), out var length) &&
-            decimal.TryParse(parts[1].Trim(), out var width) &&
-            decimal.TryParse(heightStr, out var height))
+        if (decimal.TryParse(parts[0].Trim(), out decimal length) &&
+            decimal.TryParse(parts[1].Trim(), out decimal width) &&
+            decimal.TryParse(heightStr, out decimal height))
+        {
             try
             {
                 return Create(length, width, height, unit);
@@ -68,6 +81,7 @@ public sealed class Dimensions : ValueObject
             {
                 return null;
             }
+        }
 
         return null;
     }
@@ -79,7 +93,7 @@ public sealed class Dimensions : ValueObject
 
     public Dimensions ConvertTo(string targetUnit)
     {
-        var multiplier = GetConversionMultiplier(Unit, targetUnit);
+        decimal multiplier = GetConversionMultiplier(Unit, targetUnit);
         return new Dimensions(
             Length * multiplier,
             Width * multiplier,
@@ -91,7 +105,7 @@ public sealed class Dimensions : ValueObject
     private static decimal GetConversionMultiplier(string fromUnit, string toUnit)
     {
         // All conversions via cm as base
-        var toCm = fromUnit.ToLowerInvariant() switch
+        decimal toCm = fromUnit.ToLowerInvariant() switch
         {
             "mm" => 0.1m,
             "cm" => 1m,
@@ -101,7 +115,7 @@ public sealed class Dimensions : ValueObject
             _ => 1m
         };
 
-        var fromCm = toUnit.ToLowerInvariant() switch
+        decimal fromCm = toUnit.ToLowerInvariant() switch
         {
             "mm" => 10m,
             "cm" => 1m,

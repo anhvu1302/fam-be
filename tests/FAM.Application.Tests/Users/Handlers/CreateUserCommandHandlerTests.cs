@@ -29,7 +29,7 @@ public class CreateUserCommandHandlerTests
     public async Task Handle_WithValidCommand_ShouldReturnSuccessResult()
     {
         // Arrange
-        var command = new CreateUserCommand(
+        CreateUserCommand command = new(
             "testuser",
             "test@example.com",
             "SecurePass123!",
@@ -80,7 +80,7 @@ public class CreateUserCommandHandlerTests
     public async Task Handle_WithTakenUsername_ShouldReturnFailureResult()
     {
         // Arrange
-        var command = new CreateUserCommand(
+        CreateUserCommand command = new(
             "existinguser",
             "test@example.com",
             "SecurePass123!"
@@ -112,7 +112,7 @@ public class CreateUserCommandHandlerTests
     public async Task Handle_WithTakenEmail_ShouldReturnFailureResult()
     {
         // Arrange
-        var command = new CreateUserCommand(
+        CreateUserCommand command = new(
             "testuser",
             "existing@example.com",
             "SecurePass123!"

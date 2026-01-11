@@ -11,10 +11,10 @@ public class AssetCategoryTests
     public void Create_WithValidName_ShouldCreateCategory()
     {
         // Arrange
-        var name = "Office Equipment";
+        string name = "Office Equipment";
 
         // Act
-        var category = AssetCategory.Create(name);
+        AssetCategory category = AssetCategory.Create(name);
 
         // Assert
         category.Should().NotBeNull();
@@ -30,11 +30,11 @@ public class AssetCategoryTests
     public void Create_WithNameAndCode_ShouldCreateCategoryWithCode()
     {
         // Arrange
-        var name = "Office Equipment";
-        var code = "OE";
+        string name = "Office Equipment";
+        string code = "OE";
 
         // Act
-        var category = AssetCategory.Create(name, code);
+        AssetCategory category = AssetCategory.Create(name, code);
 
         // Assert
         category.Code.Should().Be("OE");
@@ -53,11 +53,11 @@ public class AssetCategoryTests
     public void Create_WithLowercaseCode_ShouldConvertToUppercase()
     {
         // Arrange
-        var name = "Office Equipment";
-        var code = "oe";
+        string name = "Office Equipment";
+        string code = "oe";
 
         // Act
-        var category = AssetCategory.Create(name, code);
+        AssetCategory category = AssetCategory.Create(name, code);
 
         // Assert
         category.Code.Should().Be("OE");
@@ -67,11 +67,11 @@ public class AssetCategoryTests
     public void UpdateBasicInfo_WithValidData_ShouldUpdateCategory()
     {
         // Arrange
-        var category = AssetCategory.Create("Old Name");
-        var newName = "New Name";
-        var newCode = "NN";
-        var newDescription = "New Description";
-        var newLongDescription = "New Long Description";
+        AssetCategory category = AssetCategory.Create("Old Name");
+        string newName = "New Name";
+        string newCode = "NN";
+        string newDescription = "New Description";
+        string newLongDescription = "New Long Description";
 
         // Act
         category.UpdateBasicInfo(newName, newCode, newDescription, newLongDescription);
@@ -87,7 +87,7 @@ public class AssetCategoryTests
     public void UpdateBasicInfo_WithNullOrEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => category.UpdateBasicInfo(null!, null, null, null));
@@ -99,7 +99,7 @@ public class AssetCategoryTests
     public void UpdateClassification_WithValidData_ShouldUpdateClassification()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act
         category.UpdateClassification("Functional", "Healthcare", "Medical");
@@ -114,7 +114,7 @@ public class AssetCategoryTests
     public void UpdateAccounting_WithValidData_ShouldUpdateAccounting()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act
         category.UpdateAccounting("GL123", "DEP456", "CC789");
@@ -129,7 +129,7 @@ public class AssetCategoryTests
     public void UpdateDepreciationDefaults_WithValidData_ShouldUpdateDefaults()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act
         category.UpdateDepreciationDefaults("Straight Line", 60, 10.5m);
@@ -144,7 +144,7 @@ public class AssetCategoryTests
     public void UpdateDepreciationDefaults_WithNegativeUsefulLife_ShouldThrowDomainException()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => category.UpdateDepreciationDefaults("Method", -1, 10));
@@ -154,7 +154,7 @@ public class AssetCategoryTests
     public void UpdateDepreciationDefaults_WithInvalidResidualValuePercentage_ShouldThrowDomainException()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => category.UpdateDepreciationDefaults("Method", 60, -1));
@@ -165,7 +165,7 @@ public class AssetCategoryTests
     public void UpdateProperties_WithValidData_ShouldUpdateProperties()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act
         category.UpdateProperties(false, false, false, true);
@@ -181,7 +181,7 @@ public class AssetCategoryTests
     public void UpdateValuation_WithValidData_ShouldUpdateValuation()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act
         category.UpdateValuation(1000.50m, "Fair Value");
@@ -195,7 +195,7 @@ public class AssetCategoryTests
     public void UpdateValuation_WithNegativeMinimumValue_ShouldThrowDomainException()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => category.UpdateValuation(-100, "Method"));
@@ -205,7 +205,7 @@ public class AssetCategoryTests
     public void UpdateCompliance_WithValidData_ShouldUpdateCompliance()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act
         category.UpdateCompliance(true, "ISO 9001", true, 12);
@@ -221,7 +221,7 @@ public class AssetCategoryTests
     public void UpdateCompliance_WithNegativeAuditInterval_ShouldThrowDomainException()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => category.UpdateCompliance(true, null, true, -1));
@@ -231,7 +231,7 @@ public class AssetCategoryTests
     public void UpdateDisplay_WithValidData_ShouldUpdateDisplay()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act
         category.UpdateDisplay("icon.png", "https://example.com/icon.png", "#FF0000", 5);
@@ -248,7 +248,7 @@ public class AssetCategoryTests
     public void UpdateDisplay_WithInvalidUrl_ShouldThrowDomainException()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => category.UpdateDisplay("icon", "invalid-url", null, 0));
@@ -258,7 +258,7 @@ public class AssetCategoryTests
     public void SetParent_WithValidData_ShouldSetParent()
     {
         // Arrange
-        var category = AssetCategory.Create("Child");
+        AssetCategory category = AssetCategory.Create("Child");
 
         // Act
         category.SetParent(1, 2, "1.2");
@@ -273,7 +273,7 @@ public class AssetCategoryTests
     public void UpdateSearchTags_WithValidData_ShouldUpdateTags()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act
         category.UpdateSearchTags("tag1,tag2", "keyword1 keyword2", "alias1,alias2");
@@ -288,7 +288,7 @@ public class AssetCategoryTests
     public void AddNotes_WithValidData_ShouldAddNotes()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act
         category.AddNotes("Internal notes");
@@ -301,7 +301,7 @@ public class AssetCategoryTests
     public void Activate_ShouldSetIsActiveToTrue()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
         category.Deactivate();
 
         // Act
@@ -315,7 +315,7 @@ public class AssetCategoryTests
     public void Deactivate_ShouldSetIsActiveToFalse()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act
         category.Deactivate();
@@ -328,7 +328,7 @@ public class AssetCategoryTests
     public void MarkAsSystemCategory_ShouldSetIsSystemCategoryToTrue()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act
         category.MarkAsSystemCategory();
@@ -341,7 +341,7 @@ public class AssetCategoryTests
     public void UpdateStatistics_WithValidData_ShouldUpdateStatistics()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act
         category.UpdateStatistics(10, 10000.50m);
@@ -355,7 +355,7 @@ public class AssetCategoryTests
     public void UpdateStatistics_WithNegativeAssetCount_ShouldThrowDomainException()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => category.UpdateStatistics(-1, 1000));
@@ -365,7 +365,7 @@ public class AssetCategoryTests
     public void UpdateStatistics_WithNegativeTotalValue_ShouldThrowDomainException()
     {
         // Arrange
-        var category = AssetCategory.Create("Test");
+        AssetCategory category = AssetCategory.Create("Test");
 
         // Act & Assert
         Assert.Throws<DomainException>(() => category.UpdateStatistics(10, -1000));
@@ -375,11 +375,11 @@ public class AssetCategoryTests
     public void IsHierarchical_WithParent_ShouldReturnTrue()
     {
         // Arrange
-        var category = AssetCategory.Create("Child");
+        AssetCategory category = AssetCategory.Create("Child");
         category.SetParent(1, 1, "1");
 
         // Act
-        var result = category.IsHierarchical();
+        bool result = category.IsHierarchical();
 
         // Assert
         result.Should().BeTrue();
@@ -389,10 +389,10 @@ public class AssetCategoryTests
     public void IsRoot_WithNoParent_ShouldReturnTrue()
     {
         // Arrange
-        var category = AssetCategory.Create("Root");
+        AssetCategory category = AssetCategory.Create("Root");
 
         // Act
-        var result = category.IsRoot();
+        bool result = category.IsRoot();
 
         // Assert
         result.Should().BeTrue();
@@ -402,10 +402,10 @@ public class AssetCategoryTests
     public void IsLeaf_WithNoChildren_ShouldReturnTrue()
     {
         // Arrange
-        var category = AssetCategory.Create("Leaf");
+        AssetCategory category = AssetCategory.Create("Leaf");
 
         // Act
-        var result = category.IsLeaf();
+        bool result = category.IsLeaf();
 
         // Assert
         result.Should().BeTrue();

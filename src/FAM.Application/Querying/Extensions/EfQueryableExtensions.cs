@@ -35,8 +35,8 @@ public static class EfQueryableExtensions
         query = SortBinder.ApplySort(query, request.Sort, fieldMap);
 
         // 3) Apply paging
-        var pageSize = Math.Min(request.PageSize, maxPageSize);
-        var skip = (request.Page - 1) * pageSize;
+        int pageSize = Math.Min(request.PageSize, maxPageSize);
+        int skip = (request.Page - 1) * pageSize;
         query = query.Skip(skip).Take(pageSize);
 
         return query;
@@ -52,7 +52,9 @@ public static class EfQueryableExtensions
         IFilterParser parser)
     {
         if (string.IsNullOrWhiteSpace(filter))
+        {
             return query;
+        }
 
         FilterNode ast = parser.Parse(filter);
         FilterValidator.Validate(ast, fieldMap);
@@ -80,8 +82,8 @@ public static class EfQueryableExtensions
         int pageSize,
         int maxPageSize = 100)
     {
-        var effectivePageSize = Math.Min(pageSize, maxPageSize);
-        var skip = (page - 1) * effectivePageSize;
+        int effectivePageSize = Math.Min(pageSize, maxPageSize);
+        int skip = (page - 1) * effectivePageSize;
         return query.Skip(skip).Take(effectivePageSize);
     }
 }

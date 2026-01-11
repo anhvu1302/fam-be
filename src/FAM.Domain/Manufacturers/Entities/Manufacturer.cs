@@ -116,9 +116,11 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
     public static Manufacturer Create(string name, string? website = null)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Manufacturer name is required");
+        }
 
-        var manufacturer = new Manufacturer
+        Manufacturer manufacturer = new()
         {
             Name = name,
             IsActive = true,
@@ -136,7 +138,9 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
         string? description)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Manufacturer name is required");
+        }
 
         Name = name;
         ShortName = shortName;
@@ -221,7 +225,9 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
         int? employeeCount)
     {
         if (employeeCount.HasValue && employeeCount.Value < 0)
+        {
             throw new DomainException("Employee count cannot be negative");
+        }
 
         IndustryType = industryType;
         BusinessType = businessType;
@@ -237,10 +243,14 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
         decimal? discountRate)
     {
         if (annualRevenue.HasValue && annualRevenue.Value < 0)
+        {
             throw new DomainException("Annual revenue cannot be negative");
+        }
 
         if (discountRate.HasValue && (discountRate.Value < 0 || discountRate.Value > 100))
+        {
             throw new DomainException("Discount rate must be between 0 and 100");
+        }
 
         AnnualRevenue = annualRevenue;
         RevenueCurrency = revenueCurrency;
@@ -267,7 +277,9 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
         string? slaDocumentUrl)
     {
         if (standardWarrantyMonths.HasValue && standardWarrantyMonths.Value < 0)
+        {
             throw new DomainException("Standard warranty months cannot be negative");
+        }
 
         WarrantyPolicy = warrantyPolicy;
         StandardWarrantyMonths = standardWarrantyMonths;
@@ -293,11 +305,19 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
         string? internalNotes)
     {
         if (qualityRating.HasValue && (qualityRating < 1 || qualityRating > 5))
+        {
             throw new DomainException("Rating must be between 1 and 5");
+        }
+
         if (serviceRating.HasValue && (serviceRating < 1 || serviceRating > 5))
+        {
             throw new DomainException("Rating must be between 1 and 5");
+        }
+
         if (priceRating.HasValue && (priceRating < 1 || priceRating > 5))
+        {
             throw new DomainException("Rating must be between 1 and 5");
+        }
 
         QualityRating = qualityRating;
         ServiceRating = serviceRating;
@@ -345,7 +365,7 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
 
     public decimal GetAverageRating()
     {
-        var ratings = new[] { QualityRating, ServiceRating, PriceRating }
+        List<decimal> ratings = new[] { QualityRating, ServiceRating, PriceRating }
             .Where(r => r.HasValue)
             .Select(r => r!.Value)
             .ToList();
@@ -374,9 +394,11 @@ public class Manufacturer : BaseEntity, IHasCreationTime, IHasCreator, IHasModif
     private string? ValidateUrl(string? url)
     {
         if (string.IsNullOrWhiteSpace(url))
+        {
             return null;
+        }
 
-        var urlVo = Url.Create(url);
+        Url urlVo = Url.Create(url);
         return urlVo.Value;
     }
 }

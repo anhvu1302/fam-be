@@ -11,16 +11,16 @@ public class DepartmentDetailsTests
     public void Create_WithValidData_ShouldCreateDepartmentDetails()
     {
         // Arrange
-        var costCenter = "CC001";
-        var headcount = 10;
-        var budgetYear = 1000000m;
+        string costCenter = "CC001";
+        int headcount = 10;
+        decimal budgetYear = 1000000m;
 
         // Act
-        var details = DepartmentDetails.Create(costCenter, headcount, budgetYear);
+        DepartmentDetails details = DepartmentDetails.Create(costCenter, headcount, budgetYear);
 
         // Assert
         details.Should().NotBeNull();
-        var costCenterValue = details.CostCenter!;
+        string costCenterValue = details.CostCenter!;
         costCenterValue.Should().Be("CC001");
         details.Headcount.Should().Be(headcount);
         details.BudgetYear.Should().Be(budgetYear);
@@ -30,7 +30,7 @@ public class DepartmentDetailsTests
     public void Create_WithNullValues_ShouldCreateDepartmentDetails()
     {
         // Act
-        var details = DepartmentDetails.Create();
+        DepartmentDetails details = DepartmentDetails.Create();
 
         // Assert
         details.Should().NotBeNull();
@@ -43,9 +43,9 @@ public class DepartmentDetailsTests
     public void Create_WithNegativeHeadcount_ShouldThrowDomainException()
     {
         // Arrange
-        var costCenter = "CC001";
-        var headcount = -1;
-        var budgetYear = 1000000m;
+        string costCenter = "CC001";
+        int headcount = -1;
+        decimal budgetYear = 1000000m;
 
         // Act
         Action act = () => DepartmentDetails.Create(costCenter, headcount, budgetYear);
@@ -59,9 +59,9 @@ public class DepartmentDetailsTests
     public void Create_WithNegativeBudgetYear_ShouldThrowDomainException()
     {
         // Arrange
-        var costCenter = "CC001";
-        var headcount = 10;
-        var budgetYear = -1000m;
+        string costCenter = "CC001";
+        int headcount = 10;
+        decimal budgetYear = -1000m;
 
         // Act
         Action act = () => DepartmentDetails.Create(costCenter, headcount, budgetYear);
@@ -75,16 +75,16 @@ public class DepartmentDetailsTests
     public void Update_WithValidData_ShouldUpdateDepartmentDetails()
     {
         // Arrange
-        var details = DepartmentDetails.Create();
-        var costCenter = "CC001";
-        var headcount = 10;
-        var budgetYear = 1000000m;
+        DepartmentDetails details = DepartmentDetails.Create();
+        string costCenter = "CC001";
+        int headcount = 10;
+        decimal budgetYear = 1000000m;
 
         // Act
         details.Update(costCenter, headcount, budgetYear);
 
         // Assert
-        var costCenterValue = details.CostCenter!;
+        string costCenterValue = details.CostCenter!;
         costCenterValue.Should().Be("CC001");
         details.Headcount.Should().Be(headcount);
         details.BudgetYear.Should().Be(budgetYear);
@@ -94,10 +94,10 @@ public class DepartmentDetailsTests
     public void Update_WithNegativeHeadcount_ShouldThrowDomainException()
     {
         // Arrange
-        var details = DepartmentDetails.Create();
-        var costCenter = "CC001";
-        var headcount = -1;
-        var budgetYear = 1000000m;
+        DepartmentDetails details = DepartmentDetails.Create();
+        string costCenter = "CC001";
+        int headcount = -1;
+        decimal budgetYear = 1000000m;
 
         // Act
         Action act = () => details.Update(costCenter, headcount, budgetYear);
@@ -111,10 +111,10 @@ public class DepartmentDetailsTests
     public void Update_WithNegativeBudgetYear_ShouldThrowDomainException()
     {
         // Arrange
-        var details = DepartmentDetails.Create();
-        var costCenter = "CC001";
-        var headcount = 10;
-        var budgetYear = -1000m;
+        DepartmentDetails details = DepartmentDetails.Create();
+        string costCenter = "CC001";
+        int headcount = 10;
+        decimal budgetYear = -1000m;
 
         // Act
         Action act = () => details.Update(costCenter, headcount, budgetYear);

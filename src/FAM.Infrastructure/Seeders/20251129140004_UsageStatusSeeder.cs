@@ -1,10 +1,11 @@
 using FAM.Domain.Statuses;
 using FAM.Infrastructure.Common.Seeding;
+using FAM.Infrastructure.Providers.PostgreSQL;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
+namespace FAM.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds initial usage statuses for assets
@@ -25,7 +26,7 @@ public class UsageStatusSeeder : BaseDataSeeder
     {
         LogInfo("Checking for existing usage statuses...");
 
-        var hasStatuses = await _dbContext.UsageStatuses.AnyAsync(s => !s.IsDeleted, cancellationToken);
+        bool hasStatuses = await _dbContext.UsageStatuses.AnyAsync(s => !s.IsDeleted, cancellationToken);
 
         if (hasStatuses)
         {
@@ -35,7 +36,7 @@ public class UsageStatusSeeder : BaseDataSeeder
 
         LogInfo("Seeding usage statuses...");
 
-        var statuses = new List<UsageStatus>
+        List<UsageStatus> statuses = new()
         {
             UsageStatus.Create("AVAILABLE", "Available", "Asset is available for assignment", "#4CAF50", 1),
             UsageStatus.Create("IN_USE", "In Use", "Asset is currently assigned to a user or department", "#2196F3", 2),

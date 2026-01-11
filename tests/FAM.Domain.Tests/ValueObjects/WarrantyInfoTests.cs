@@ -12,10 +12,10 @@ public class WarrantyInfoTests
     {
         // Arrange
         DateTime startDate = DateTime.UtcNow;
-        var durationMonths = 12;
+        int durationMonths = 12;
 
         // Act
-        var warrantyInfo = WarrantyInfo.Create(startDate, durationMonths);
+        WarrantyInfo warrantyInfo = WarrantyInfo.Create(startDate, durationMonths);
 
         // Assert
         warrantyInfo.Should().NotBeNull();
@@ -31,12 +31,12 @@ public class WarrantyInfoTests
     {
         // Arrange
         DateTime startDate = DateTime.UtcNow;
-        var durationMonths = 24;
-        var terms = "Full coverage";
-        var provider = "Manufacturer";
+        int durationMonths = 24;
+        string terms = "Full coverage";
+        string provider = "Manufacturer";
 
         // Act
-        var warrantyInfo = WarrantyInfo.Create(startDate, durationMonths, terms, provider);
+        WarrantyInfo warrantyInfo = WarrantyInfo.Create(startDate, durationMonths, terms, provider);
 
         // Assert
         warrantyInfo.Terms.Should().Be(terms);
@@ -48,7 +48,7 @@ public class WarrantyInfoTests
     {
         // Arrange
         DateTime startDate = DateTime.UtcNow;
-        var durationMonths = 0;
+        int durationMonths = 0;
 
         // Act
         Action act = () => WarrantyInfo.Create(startDate, durationMonths);
@@ -63,7 +63,7 @@ public class WarrantyInfoTests
     {
         // Arrange
         DateTime startDate = DateTime.UtcNow;
-        var durationMonths = -6;
+        int durationMonths = -6;
 
         // Act
         Action act = () => WarrantyInfo.Create(startDate, durationMonths);
@@ -77,11 +77,11 @@ public class WarrantyInfoTests
     public void CreateWithEndDate_WithValidData_ShouldCreateWarrantyInfo()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var endDate = new DateTime(2024, 1, 1);
+        DateTime startDate = new(2023, 1, 1);
+        DateTime endDate = new(2024, 1, 1);
 
         // Act
-        var warrantyInfo = WarrantyInfo.CreateWithEndDate(startDate, endDate);
+        WarrantyInfo warrantyInfo = WarrantyInfo.CreateWithEndDate(startDate, endDate);
 
         // Assert
         warrantyInfo.StartDate.Should().Be(startDate);
@@ -93,8 +93,8 @@ public class WarrantyInfoTests
     public void CreateWithEndDate_WithEndDateBeforeStartDate_ShouldThrowDomainException()
     {
         // Arrange
-        var startDate = new DateTime(2024, 1, 1);
-        var endDate = new DateTime(2023, 1, 1);
+        DateTime startDate = new(2024, 1, 1);
+        DateTime endDate = new(2023, 1, 1);
 
         // Act
         Action act = () => WarrantyInfo.CreateWithEndDate(startDate, endDate);
@@ -109,10 +109,10 @@ public class WarrantyInfoTests
     {
         // Arrange
         DateTime startDate = DateTime.UtcNow.AddMonths(-6);
-        var warrantyInfo = WarrantyInfo.Create(startDate, 12);
+        WarrantyInfo warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act
-        var result = warrantyInfo.IsActive();
+        bool result = warrantyInfo.IsActive();
 
         // Assert
         result.Should().BeTrue();
@@ -123,10 +123,10 @@ public class WarrantyInfoTests
     {
         // Arrange
         DateTime startDate = DateTime.UtcNow.AddMonths(-18);
-        var warrantyInfo = WarrantyInfo.Create(startDate, 12);
+        WarrantyInfo warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act
-        var result = warrantyInfo.IsActive();
+        bool result = warrantyInfo.IsActive();
 
         // Assert
         result.Should().BeFalse();
@@ -137,10 +137,10 @@ public class WarrantyInfoTests
     {
         // Arrange
         DateTime startDate = DateTime.UtcNow.AddMonths(-18);
-        var warrantyInfo = WarrantyInfo.Create(startDate, 12);
+        WarrantyInfo warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act
-        var result = warrantyInfo.IsExpired();
+        bool result = warrantyInfo.IsExpired();
 
         // Assert
         result.Should().BeTrue();
@@ -151,10 +151,10 @@ public class WarrantyInfoTests
     {
         // Arrange
         DateTime startDate = DateTime.UtcNow.AddMonths(-6);
-        var warrantyInfo = WarrantyInfo.Create(startDate, 12);
+        WarrantyInfo warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act
-        var result = warrantyInfo.IsExpired();
+        bool result = warrantyInfo.IsExpired();
 
         // Assert
         result.Should().BeFalse();
@@ -165,10 +165,10 @@ public class WarrantyInfoTests
     {
         // Arrange
         DateTime startDate = DateTime.UtcNow.AddMonths(-6);
-        var warrantyInfo = WarrantyInfo.Create(startDate, 12);
+        WarrantyInfo warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act
-        var result = warrantyInfo.DaysRemaining();
+        int? result = warrantyInfo.DaysRemaining();
 
         // Assert
         result.Should().BePositive();
@@ -179,10 +179,10 @@ public class WarrantyInfoTests
     {
         // Arrange
         DateTime startDate = DateTime.UtcNow.AddMonths(-18);
-        var warrantyInfo = WarrantyInfo.Create(startDate, 12);
+        WarrantyInfo warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act
-        var result = warrantyInfo.DaysRemaining();
+        int? result = warrantyInfo.DaysRemaining();
 
         // Assert
         result.Should().Be(0);
@@ -192,11 +192,11 @@ public class WarrantyInfoTests
     public void ToString_WithEndDate_ShouldReturnFormattedString()
     {
         // Arrange
-        var startDate = new DateTime(2023, 1, 1);
-        var warrantyInfo = WarrantyInfo.Create(startDate, 12);
+        DateTime startDate = new(2023, 1, 1);
+        WarrantyInfo warrantyInfo = WarrantyInfo.Create(startDate, 12);
 
         // Act
-        var result = warrantyInfo.ToString();
+        string result = warrantyInfo.ToString();
 
         // Assert
         result.Should().Be("Warranty until 2024-01-01");

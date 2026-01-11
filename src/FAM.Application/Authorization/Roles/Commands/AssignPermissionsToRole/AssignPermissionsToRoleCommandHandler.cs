@@ -19,28 +19,34 @@ public sealed class AssignPermissionsToRoleCommandHandler : IRequestHandler<Assi
     {
         Role? role = await _unitOfWork.Roles.GetByIdAsync(request.RoleId, cancellationToken);
         if (role == null)
+        {
             throw new NotFoundException(ErrorCodes.ROLE_NOT_FOUND, $"Role with ID {request.RoleId} not found");
+        }
 
         IEnumerable<RolePermission> existingRolePermissions =
             await _unitOfWork.RolePermissions.GetByRoleIdAsync(request.RoleId, cancellationToken);
-        var existingPermissionIds = existingRolePermissions.Select(rp => rp.PermissionId).ToHashSet();
+        HashSet<long> existingPermissionIds = existingRolePermissions.Select(rp => rp.PermissionId).ToHashSet();
 
-        var newPermissionIds = request.PermissionIds.Where(id => !existingPermissionIds.Contains(id)).ToList();
+        List<long> newPermissionIds = request.PermissionIds.Where(id => !existingPermissionIds.Contains(id)).ToList();
 
         if (!newPermissionIds.Any())
+        {
             return true;
+        }
 
-        foreach (var permissionId in newPermissionIds)
+        foreach (long permissionId in newPermissionIds)
         {
             Permission? permission = await _unitOfWork.Permissions.GetByIdAsync(permissionId, cancellationToken);
             if (permission == null)
+            {
                 throw new NotFoundException(ErrorCodes.PERMISSION_NOT_FOUND,
                     $"Permission with ID {permissionId} not found");
+            }
         }
 
-        foreach (var permissionId in newPermissionIds)
+        foreach (long permissionId in newPermissionIds)
         {
-            var rolePermission = RolePermission.Create(request.RoleId, permissionId, request.AssignedById);
+            RolePermission rolePermission = RolePermission.Create(request.RoleId, permissionId, request.AssignedById);
             await _unitOfWork.RolePermissions.AddAsync(rolePermission, cancellationToken);
         }
 

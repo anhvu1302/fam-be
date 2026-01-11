@@ -1,10 +1,11 @@
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.Common.Seeding;
+using FAM.Infrastructure.Providers.PostgreSQL;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
+namespace FAM.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds default role-permission assignments based on new role structure
@@ -55,24 +56,26 @@ public class RolePermissionSeeder : BaseDataSeeder
 
         // Get all permissions
         List<Permission> allPermissions = await _dbContext.Permissions.ToListAsync(cancellationToken);
-        var rolePermissions = new List<RolePermission>();
+        List<RolePermission> rolePermissions = new();
 
         // ==================== ADMIN - Full access to everything ====================
         if (adminRole != null)
         {
             LogInfo("Assigning ALL permissions to Admin role");
             foreach (Permission permission in allPermissions)
+            {
                 rolePermissions.Add(RolePermission.Create(adminRole.Id, permission.Id));
+            }
         }
 
         // ==================== FA WORKER - Search, create, approve/disapprove assets ====================
         if (faWorkerRole != null)
         {
             LogInfo("Assigning permissions to FA Worker role");
-            var workerPermissions = allPermissions.Where(p =>
+            List<Permission> workerPermissions = allPermissions.Where(p =>
             {
-                var resource = p.Resource;
-                var action = p.Action;
+                string resource = p.Resource;
+                string action = p.Action;
                 return
                     // Assets: view, search, create, approve, disapprove
                     (resource == Resources.Assets && (action == Actions.View ||
@@ -95,17 +98,19 @@ public class RolePermissionSeeder : BaseDataSeeder
             }).ToList();
 
             foreach (Permission permission in workerPermissions)
+            {
                 rolePermissions.Add(RolePermission.Create(faWorkerRole.Id, permission.Id));
+            }
         }
 
         // ==================== FA MANAGER - All FA Worker permissions + management ====================
         if (faManagerRole != null)
         {
             LogInfo("Assigning permissions to FA Manager role");
-            var managerPermissions = allPermissions.Where(p =>
+            List<Permission> managerPermissions = allPermissions.Where(p =>
             {
-                var resource = p.Resource;
-                var action = p.Action;
+                string resource = p.Resource;
+                string action = p.Action;
                 return
                     // Assets: all except delete
                     (resource == Resources.Assets && action != Actions.Delete) ||
@@ -138,17 +143,19 @@ public class RolePermissionSeeder : BaseDataSeeder
             }).ToList();
 
             foreach (Permission permission in managerPermissions)
+            {
                 rolePermissions.Add(RolePermission.Create(faManagerRole.Id, permission.Id));
+            }
         }
 
         // ==================== PIC - Only view managed assets ====================
         if (picRole != null)
         {
             LogInfo("Assigning permissions to PIC role");
-            var picPermissions = allPermissions.Where(p =>
+            List<Permission> picPermissions = allPermissions.Where(p =>
             {
-                var resource = p.Resource;
-                var action = p.Action;
+                string resource = p.Resource;
+                string action = p.Action;
                 return
                     // Assets: only view owned
                     (resource == Resources.Assets && action == Actions.ViewOwned) ||
@@ -159,17 +166,19 @@ public class RolePermissionSeeder : BaseDataSeeder
             }).ToList();
 
             foreach (Permission permission in picPermissions)
+            {
                 rolePermissions.Add(RolePermission.Create(picRole.Id, permission.Id));
+            }
         }
 
         // ==================== FIN STAFF - View reports, export Excel ====================
         if (finStaffRole != null)
         {
             LogInfo("Assigning permissions to Finance Staff role");
-            var finPermissions = allPermissions.Where(p =>
+            List<Permission> finPermissions = allPermissions.Where(p =>
             {
-                var resource = p.Resource;
-                var action = p.Action;
+                string resource = p.Resource;
+                string action = p.Action;
                 return
                     // Finance: view
                     (resource == Resources.Finance && action == Actions.View) ||
@@ -184,7 +193,9 @@ public class RolePermissionSeeder : BaseDataSeeder
             }).ToList();
 
             foreach (Permission permission in finPermissions)
+            {
                 rolePermissions.Add(RolePermission.Create(finStaffRole.Id, permission.Id));
+            }
         }
 
         // Convert domain entities to EF entities

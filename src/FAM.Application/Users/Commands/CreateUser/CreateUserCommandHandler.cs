@@ -22,15 +22,21 @@ public sealed class CreateUserCommandHandler
         CancellationToken cancellationToken)
     {
         // Check if username is taken
-        var isUsernameTaken = await _unitOfWork.Users.IsUsernameTakenAsync(request.Username);
-        if (isUsernameTaken) return Result<CreateUserResult>.Failure("Username is already taken", ErrorType.Conflict);
+        bool isUsernameTaken = await _unitOfWork.Users.IsUsernameTakenAsync(request.Username);
+        if (isUsernameTaken)
+        {
+            return Result<CreateUserResult>.Failure("Username is already taken", ErrorType.Conflict);
+        }
 
         // Check if email is taken
-        var isEmailTaken = await _unitOfWork.Users.IsEmailTakenAsync(request.Email);
-        if (isEmailTaken) return Result<CreateUserResult>.Failure("Email is already taken", ErrorType.Conflict);
+        bool isEmailTaken = await _unitOfWork.Users.IsEmailTakenAsync(request.Email);
+        if (isEmailTaken)
+        {
+            return Result<CreateUserResult>.Failure("Email is already taken", ErrorType.Conflict);
+        }
 
         // Create user (accepts plain password and hashes automatically)
-        var user = User.Create(
+        User user = User.Create(
             request.Username,
             request.Email,
             request.Password,
@@ -42,8 +48,8 @@ public sealed class CreateUserCommandHandler
         await _unitOfWork.Users.AddAsync(user, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        var dto = user.ToUserDto();
-        var result = new CreateUserResult(dto!);
+        UserDto? dto = user.ToUserDto();
+        CreateUserResult result = new(dto!);
 
         return Result<CreateUserResult>.Success(result);
     }

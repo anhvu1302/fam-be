@@ -11,10 +11,10 @@ public class DomainNameTests
     public void Create_WithValidData_ShouldCreateDomainName()
     {
         // Arrange
-        var value = "example.com";
+        string value = "example.com";
 
         // Act
-        var domainName = DomainName.Create(value);
+        DomainName domainName = DomainName.Create(value);
 
         // Assert
         domainName.Should().NotBeNull();
@@ -25,7 +25,7 @@ public class DomainNameTests
     public void Create_WithEmptyString_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "";
+        string value = "";
 
         // Act
         Action act = () => DomainName.Create(value);
@@ -39,7 +39,7 @@ public class DomainNameTests
     public void Create_WithTooLongValue_ShouldThrowDomainException()
     {
         // Arrange
-        var value = new string('a', 254) + ".com";
+        string value = new string('a', 254) + ".com";
 
         // Act
         Action act = () => DomainName.Create(value);
@@ -53,7 +53,7 @@ public class DomainNameTests
     public void Create_WithInvalidFormat_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "invalid..domain";
+        string value = "invalid..domain";
 
         // Act
         Action act = () => DomainName.Create(value);
@@ -67,10 +67,10 @@ public class DomainNameTests
     public void Create_WithUppercase_ShouldConvertToLowercase()
     {
         // Arrange
-        var value = "EXAMPLE.COM";
+        string value = "EXAMPLE.COM";
 
         // Act
-        var domainName = DomainName.Create(value);
+        DomainName domainName = DomainName.Create(value);
 
         // Assert
         domainName.Value.Should().Be("example.com");
@@ -80,10 +80,10 @@ public class DomainNameTests
     public void Create_WithValidSubdomain_ShouldCreateDomainName()
     {
         // Arrange
-        var value = "sub.example.com";
+        string value = "sub.example.com";
 
         // Act
-        var domainName = DomainName.Create(value);
+        DomainName domainName = DomainName.Create(value);
 
         // Assert
         domainName.Value.Should().Be("sub.example.com");
@@ -93,7 +93,7 @@ public class DomainNameTests
     public void ImplicitOperator_ShouldConvertToString()
     {
         // Arrange
-        var domainName = DomainName.Create("example.com");
+        DomainName domainName = DomainName.Create("example.com");
 
         // Act
         string value = domainName!;
@@ -106,10 +106,10 @@ public class DomainNameTests
     public void ExplicitOperator_ShouldConvertFromString()
     {
         // Arrange
-        var value = "example.com";
+        string value = "example.com";
 
         // Act
-        var domainName = (DomainName)value;
+        DomainName domainName = (DomainName)value;
 
         // Assert
         domainName.Value.Should().Be("example.com");
@@ -119,10 +119,10 @@ public class DomainNameTests
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var domainName = DomainName.Create("example.com");
+        DomainName domainName = DomainName.Create("example.com");
 
         // Act
-        var result = domainName.ToString();
+        string result = domainName.ToString();
 
         // Assert
         result.Should().Be("example.com");

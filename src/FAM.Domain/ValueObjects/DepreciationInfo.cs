@@ -32,13 +32,19 @@ public sealed class DepreciationInfo : ValueObject
     public static DepreciationInfo Create(string method, int usefulLifeMonths, decimal residualValue)
     {
         if (string.IsNullOrWhiteSpace(method))
+        {
             throw new DomainException(ErrorCodes.VO_DEPRECIATION_METHOD_EMPTY);
+        }
 
         if (usefulLifeMonths <= 0)
+        {
             throw new DomainException(ErrorCodes.VO_DEPRECIATION_LIFE_INVALID);
+        }
 
         if (residualValue < 0)
+        {
             throw new DomainException(ErrorCodes.VO_DEPRECIATION_RESIDUAL_INVALID);
+        }
 
         return new DepreciationInfo(method, usefulLifeMonths, residualValue, null);
     }
@@ -46,7 +52,9 @@ public sealed class DepreciationInfo : ValueObject
     public decimal CalculateMonthlyDepreciation(decimal purchaseCost)
     {
         if (Method.Equals("StraightLine", StringComparison.OrdinalIgnoreCase))
+        {
             return (purchaseCost - ResidualValue) / UsefulLifeMonths;
+        }
 
         // Implement other methods as needed
         return 0;
@@ -55,10 +63,12 @@ public sealed class DepreciationInfo : ValueObject
     public decimal CalculateCurrentBookValue(decimal purchaseCost, int elapsedMonths)
     {
         if (elapsedMonths <= 0)
+        {
             return purchaseCost;
+        }
 
-        var monthlyDepreciation = CalculateMonthlyDepreciation(purchaseCost);
-        var totalDepreciation = monthlyDepreciation * Math.Min(elapsedMonths, UsefulLifeMonths);
+        decimal monthlyDepreciation = CalculateMonthlyDepreciation(purchaseCost);
+        decimal totalDepreciation = monthlyDepreciation * Math.Min(elapsedMonths, UsefulLifeMonths);
 
         return Math.Max(purchaseCost - totalDepreciation, ResidualValue);
     }

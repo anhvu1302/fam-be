@@ -13,7 +13,9 @@ public static class IncludeParser
     public static HashSet<string> Parse(string? include)
     {
         if (string.IsNullOrWhiteSpace(include))
+        {
             return new HashSet<string>();
+        }
 
         return include.Split(',', StringSplitOptions.RemoveEmptyEntries)
             .Select(i => i.Trim().ToLowerInvariant())

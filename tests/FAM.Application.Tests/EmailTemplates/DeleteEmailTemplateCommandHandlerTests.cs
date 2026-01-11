@@ -25,11 +25,11 @@ public class DeleteEmailTemplateCommandHandlerTests
     public async Task Handle_WithValidTemplate_ShouldSoftDelete()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "TEST_EMAIL", "Test", "Subject",
             "<html>Body</html>", EmailTemplateCategory.Authentication);
 
-        var command = new DeleteEmailTemplateCommand(1);
+        DeleteEmailTemplateCommand command = new(1);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(command.Id, default))
             .ReturnsAsync(template);
@@ -47,7 +47,7 @@ public class DeleteEmailTemplateCommandHandlerTests
     public async Task Handle_WithNonExistentTemplate_ShouldThrowNotFoundException()
     {
         // Arrange
-        var command = new DeleteEmailTemplateCommand(999);
+        DeleteEmailTemplateCommand command = new(999);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(command.Id, default))
             .ReturnsAsync((EmailTemplate?)null);
@@ -64,12 +64,12 @@ public class DeleteEmailTemplateCommandHandlerTests
     public async Task Handle_WithSystemTemplate_ShouldThrowDomainException()
     {
         // Arrange
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             "SYSTEM_EMAIL", "System Template", "Subject",
             "<html>Body</html>", EmailTemplateCategory.System,
             isSystem: true);
 
-        var command = new DeleteEmailTemplateCommand(1);
+        DeleteEmailTemplateCommand command = new(1);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(command.Id, default))
             .ReturnsAsync(template);

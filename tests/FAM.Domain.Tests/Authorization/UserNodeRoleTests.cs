@@ -13,14 +13,14 @@ public class UserNodeRoleTests
     public void Create_WithValidData_ShouldCreateUserNodeRole()
     {
         // Arrange
-        var user = User.CreateWithPlainPassword("testuser", "test@example.com", "MySecurePass123!");
+        User user = User.CreateWithPlainPassword("testuser", "test@example.com", "MySecurePass123!");
         OrgNode node = CreateTestOrgNode();
-        var role = Role.Create("admin", "Administrator", 1);
+        Role role = Role.Create("admin", "Administrator", 1);
         DateTime startAt = DateTime.UtcNow;
         DateTime endAt = startAt.AddDays(30);
 
         // Act
-        var userNodeRole = UserNodeRole.Create(user, node, role, startAt, endAt);
+        UserNodeRole userNodeRole = UserNodeRole.Create(user, node, role, startAt, endAt);
 
         // Assert
         userNodeRole.Should().NotBeNull();
@@ -38,9 +38,9 @@ public class UserNodeRoleTests
     public void Create_WithEndDateBeforeStartDate_ShouldThrowDomainException()
     {
         // Arrange
-        var user = User.CreateWithPlainPassword("testuser", "test@example.com", "MySecurePass123!");
+        User user = User.CreateWithPlainPassword("testuser", "test@example.com", "MySecurePass123!");
         OrgNode node = CreateTestOrgNode();
-        var role = Role.Create("admin", "Administrator", 1);
+        Role role = Role.Create("admin", "Administrator", 1);
         DateTime startAt = DateTime.UtcNow;
         DateTime endAt = startAt.AddDays(-1);
 
@@ -56,7 +56,7 @@ public class UserNodeRoleTests
     public void UpdateDates_WithValidDates_ShouldUpdateDates()
     {
         // Arrange
-        var userNodeRole = UserNodeRole.Create(
+        UserNodeRole userNodeRole = UserNodeRole.Create(
             User.CreateWithPlainPassword("testuser", "test@example.com", "MySecurePass123!"),
             CreateTestOrgNode(),
             Role.Create("admin", "Administrator", 1));
@@ -75,7 +75,7 @@ public class UserNodeRoleTests
     public void UpdateDates_WithEndDateBeforeStartDate_ShouldThrowDomainException()
     {
         // Arrange
-        var userNodeRole = UserNodeRole.Create(
+        UserNodeRole userNodeRole = UserNodeRole.Create(
             User.CreateWithPlainPassword("testuser", "test@example.com", "MySecurePass123!"),
             CreateTestOrgNode(),
             Role.Create("admin", "Administrator", 1));
@@ -92,7 +92,7 @@ public class UserNodeRoleTests
 
     private static OrgNode CreateTestOrgNode()
     {
-        var details = CompanyDetails.Create();
+        CompanyDetails details = CompanyDetails.Create();
         return OrgNode.CreateCompany("Test Company", details);
     }
 }

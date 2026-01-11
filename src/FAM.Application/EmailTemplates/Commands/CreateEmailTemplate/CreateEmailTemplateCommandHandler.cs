@@ -18,11 +18,13 @@ public sealed class CreateEmailTemplateCommandHandler : IRequestHandler<CreateEm
     public async Task<long> Handle(CreateEmailTemplateCommand request, CancellationToken cancellationToken)
     {
         // Check if code already exists
-        var codeExists = await _unitOfWork.EmailTemplates.CodeExistsAsync(request.Code, null, cancellationToken);
+        bool codeExists = await _unitOfWork.EmailTemplates.CodeExistsAsync(request.Code, null, cancellationToken);
         if (codeExists)
+        {
             throw new ConflictException(ErrorCodes.EMAIL_TEMPLATE_CODE_EXISTS, "EmailTemplate", "Code");
+        }
 
-        var template = EmailTemplate.Create(
+        EmailTemplate template = EmailTemplate.Create(
             request.Code,
             request.Name,
             request.Subject,

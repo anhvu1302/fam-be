@@ -32,10 +32,12 @@ public class Resource : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public static Resource Create(string type, OrgNode node, string name)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Resource name cannot be empty");
+        }
 
         // Validate type
-        var resourceTypeVo = ResourceType.Create(type);
+        ResourceType resourceTypeVo = ResourceType.Create(type);
 
         return new Resource
         {
@@ -49,7 +51,9 @@ public class Resource : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public void Update(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Resource name cannot be empty");
+        }
 
         Name = name.Trim();
     }

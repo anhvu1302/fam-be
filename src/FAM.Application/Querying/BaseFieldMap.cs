@@ -27,22 +27,30 @@ public abstract class BaseFieldMap<TEntity> where TEntity : class
     public Expression<Func<TEntity, object>>[] ParseIncludes(string? includeString)
     {
         if (string.IsNullOrWhiteSpace(includeString))
+        {
             return Array.Empty<Expression<Func<TEntity, object>>>();
+        }
 
-        var includeNames = includeString
+        List<string> includeNames = includeString
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .Select(x => x.Trim())
             .Where(x => !string.IsNullOrEmpty(x))
             .ToList();
 
-        var expressions = new List<Expression<Func<TEntity, object>>>();
+        List<Expression<Func<TEntity, object>>> expressions = new();
 
-        foreach (var includeName in includeNames)
+        foreach (string includeName in includeNames)
+        {
             if (AllowedIncludes.TryGetValue(includeName, out Expression<Func<TEntity, object>>? expression))
+            {
                 expressions.Add(expression);
+            }
             else
+            {
                 throw new InvalidOperationException(
                     $"Include '{includeName}' is not allowed. Allowed includes: {string.Join(", ", AllowedIncludes.Keys)}");
+            }
+        }
 
         return expressions.ToArray();
     }

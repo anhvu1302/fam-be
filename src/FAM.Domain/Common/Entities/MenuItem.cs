@@ -151,9 +151,14 @@ public class MenuItem : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         string? requiredRoles = null)
     {
         if (string.IsNullOrWhiteSpace(code))
+        {
             throw new DomainException(ErrorCodes.VAL_REQUIRED, "Menu code is required");
+        }
+
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException(ErrorCodes.VAL_REQUIRED, "Menu name is required");
+        }
 
         return new MenuItem
         {
@@ -186,7 +191,9 @@ public class MenuItem : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         string? requiredRoles = null)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException(ErrorCodes.VAL_REQUIRED, "Menu name is required");
+        }
 
         Name = name.Trim();
         Description = description?.Trim();
@@ -203,11 +210,15 @@ public class MenuItem : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     public void SetParent(MenuItem? parent)
     {
         if (parent != null && parent.Id == Id)
+        {
             throw new DomainException(ErrorCodes.GEN_INVALID_OPERATION, "Menu item cannot be its own parent");
+        }
 
         // Check for circular reference
         if (parent != null && IsDescendantOf(parent))
+        {
             throw new DomainException(ErrorCodes.ORG_CIRCULAR_REFERENCE, "Circular reference detected");
+        }
 
         Parent = parent;
         ParentId = parent?.Id;
@@ -224,7 +235,10 @@ public class MenuItem : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
         while (current != null)
         {
             if (current.Id == potentialAncestor.Id)
+            {
                 return true;
+            }
+
             current = current.Parent;
         }
 
@@ -329,12 +343,19 @@ public class MenuItem : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
     /// </summary>
     public bool CanView(IEnumerable<string>? userPermissions, IEnumerable<string>? userRoles)
     {
-        if (!IsVisible) return false;
+        if (!IsVisible)
+        {
+            return false;
+        }
 
         // Check required permission
         if (!string.IsNullOrEmpty(RequiredPermission))
+        {
             if (userPermissions == null || !userPermissions.Contains(RequiredPermission))
+            {
                 return false;
+            }
+        }
 
         // Check required roles
         if (!string.IsNullOrEmpty(RequiredRoles))
@@ -342,7 +363,9 @@ public class MenuItem : BaseEntity, IHasCreationTime, IHasCreator, IHasModificat
             IEnumerable<string> requiredRoleList = RequiredRoles.Split(',', StringSplitOptions.RemoveEmptyEntries)
                 .Select(r => r.Trim());
             if (userRoles == null || !requiredRoleList.Any(r => userRoles.Contains(r)))
+            {
                 return false;
+            }
         }
 
         return true;

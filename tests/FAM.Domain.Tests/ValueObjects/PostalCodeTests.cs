@@ -11,10 +11,10 @@ public class PostalCodeTests
     public void Create_WithValidUSPostalCode_ShouldCreatePostalCode()
     {
         // Arrange
-        var value = "12345";
+        string value = "12345";
 
         // Act
-        var postalCode = PostalCode.Create(value);
+        PostalCode postalCode = PostalCode.Create(value);
 
         // Assert
         postalCode.Should().NotBeNull();
@@ -25,10 +25,10 @@ public class PostalCodeTests
     public void Create_WithValidVietnamesePostalCode_ShouldCreatePostalCode()
     {
         // Arrange
-        var value = "1234";
+        string value = "1234";
 
         // Act
-        var postalCode = PostalCode.Create(value);
+        PostalCode postalCode = PostalCode.Create(value);
 
         // Assert
         postalCode.Should().NotBeNull();
@@ -39,10 +39,10 @@ public class PostalCodeTests
     public void Create_WithValidCanadianPostalCode_ShouldCreatePostalCode()
     {
         // Arrange
-        var value = "K1A 1A1";
+        string value = "K1A 1A1";
 
         // Act
-        var postalCode = PostalCode.Create(value);
+        PostalCode postalCode = PostalCode.Create(value);
 
         // Assert
         postalCode.Should().NotBeNull();
@@ -53,10 +53,10 @@ public class PostalCodeTests
     public void Create_WithValidUKPostalCode_ShouldCreatePostalCode()
     {
         // Arrange
-        var value = "SW1A 1AA";
+        string value = "SW1A 1AA";
 
         // Act
-        var postalCode = PostalCode.Create(value);
+        PostalCode postalCode = PostalCode.Create(value);
 
         // Assert
         postalCode.Should().NotBeNull();
@@ -67,7 +67,7 @@ public class PostalCodeTests
     public void Create_WithEmptyString_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "";
+        string value = "";
 
         // Act
         Action act = () => PostalCode.Create(value);
@@ -81,7 +81,7 @@ public class PostalCodeTests
     public void Create_WithWhitespace_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "   ";
+        string value = "   ";
 
         // Act
         Action act = () => PostalCode.Create(value);
@@ -95,7 +95,7 @@ public class PostalCodeTests
     public void Create_WithInvalidFormat_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "INVALID";
+        string value = "INVALID";
 
         // Act
         Action act = () => PostalCode.Create(value);
@@ -109,10 +109,10 @@ public class PostalCodeTests
     public void Create_WithLowercase_ShouldConvertToUppercase()
     {
         // Arrange
-        var value = "k1a 1a1";
+        string value = "k1a 1a1";
 
         // Act
-        var postalCode = PostalCode.Create(value);
+        PostalCode postalCode = PostalCode.Create(value);
 
         // Assert
         postalCode.Value.Should().Be("K1A 1A1");
@@ -122,10 +122,10 @@ public class PostalCodeTests
     public void IsVietnamesePostalCode_WithVietnameseCode_ShouldReturnTrue()
     {
         // Arrange
-        var postalCode = PostalCode.Create("1234");
+        PostalCode postalCode = PostalCode.Create("1234");
 
         // Act
-        var result = postalCode.IsVietnamesePostalCode();
+        bool result = postalCode.IsVietnamesePostalCode();
 
         // Assert
         result.Should().BeTrue();
@@ -135,10 +135,10 @@ public class PostalCodeTests
     public void IsVietnamesePostalCode_WithNonVietnameseCode_ShouldReturnFalse()
     {
         // Arrange
-        var postalCode = PostalCode.Create("SW1A 1AA");
+        PostalCode postalCode = PostalCode.Create("SW1A 1AA");
 
         // Act
-        var result = postalCode.IsVietnamesePostalCode();
+        bool result = postalCode.IsVietnamesePostalCode();
 
         // Assert
         result.Should().BeFalse();
@@ -148,10 +148,10 @@ public class PostalCodeTests
     public void IsUSPostalCode_WithUSCode_ShouldReturnTrue()
     {
         // Arrange
-        var postalCode = PostalCode.Create("12345");
+        PostalCode postalCode = PostalCode.Create("12345");
 
         // Act
-        var result = postalCode.IsUSPostalCode();
+        bool result = postalCode.IsUSPostalCode();
 
         // Assert
         result.Should().BeTrue();
@@ -161,10 +161,10 @@ public class PostalCodeTests
     public void IsUSPostalCode_WithNonUSCode_ShouldReturnFalse()
     {
         // Arrange
-        var postalCode = PostalCode.Create("1234");
+        PostalCode postalCode = PostalCode.Create("1234");
 
         // Act
-        var result = postalCode.IsUSPostalCode();
+        bool result = postalCode.IsUSPostalCode();
 
         // Assert
         result.Should().BeFalse();
@@ -174,7 +174,7 @@ public class PostalCodeTests
     public void ImplicitOperator_ShouldConvertToString()
     {
         // Arrange
-        var postalCode = PostalCode.Create("12345");
+        PostalCode postalCode = PostalCode.Create("12345");
 
         // Act
         string value = postalCode;
@@ -187,10 +187,10 @@ public class PostalCodeTests
     public void ExplicitOperator_ShouldConvertFromString()
     {
         // Arrange
-        var value = "12345";
+        string value = "12345";
 
         // Act
-        var postalCode = (PostalCode)value;
+        PostalCode postalCode = (PostalCode)value;
 
         // Assert
         postalCode.Value.Should().Be("12345");
@@ -200,10 +200,10 @@ public class PostalCodeTests
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var postalCode = PostalCode.Create("12345");
+        PostalCode postalCode = PostalCode.Create("12345");
 
         // Act
-        var result = postalCode.ToString();
+        string result = postalCode.ToString();
 
         // Assert
         result.Should().Be("12345");

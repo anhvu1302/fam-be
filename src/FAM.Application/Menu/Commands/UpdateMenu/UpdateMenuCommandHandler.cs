@@ -29,17 +29,29 @@ public class UpdateMenuCommandHandler : IRequestHandler<UpdateMenuCommand, MenuI
     public async Task<MenuItemResponse> Handle(UpdateMenuCommand request, CancellationToken cancellationToken)
     {
         MenuItem? menu = await _repository.GetByIdAsync(request.Id, cancellationToken);
-        if (menu == null) throw new NotFoundException(ErrorCodes.MENU_NOT_FOUND, "MenuItem", request.Id);
+        if (menu == null)
+        {
+            throw new NotFoundException(ErrorCodes.MENU_NOT_FOUND, "MenuItem", request.Id);
+        }
 
         // Validate parent if changed
         if (request.ParentId.HasValue && request.ParentId != menu.ParentId)
         {
-            if (request.ParentId.Value == request.Id) throw new DomainException(ErrorCodes.MENU_CIRCULAR_REFERENCE);
+            if (request.ParentId.Value == request.Id)
+            {
+                throw new DomainException(ErrorCodes.MENU_CIRCULAR_REFERENCE);
+            }
 
             MenuItem? parent = await _repository.GetByIdAsync(request.ParentId.Value, cancellationToken);
-            if (parent == null) throw new DomainException(ErrorCodes.MENU_INVALID_PARENT);
+            if (parent == null)
+            {
+                throw new DomainException(ErrorCodes.MENU_INVALID_PARENT);
+            }
 
-            if (parent.Level >= MaxMenuDepth - 1) throw new DomainException(ErrorCodes.MENU_MAX_DEPTH_EXCEEDED);
+            if (parent.Level >= MaxMenuDepth - 1)
+            {
+                throw new DomainException(ErrorCodes.MENU_MAX_DEPTH_EXCEEDED);
+            }
 
             menu.SetParent(parent);
         }
@@ -56,27 +68,49 @@ public class UpdateMenuCommandHandler : IRequestHandler<UpdateMenuCommand, MenuI
             request.RequiredPermission,
             request.RequiredRoles);
 
-        if (request.SortOrder.HasValue) menu.SetSortOrder(request.SortOrder.Value);
+        if (request.SortOrder.HasValue)
+        {
+            menu.SetSortOrder(request.SortOrder.Value);
+        }
 
         if (request.IsVisible.HasValue)
         {
-            if (request.IsVisible.Value) menu.Show();
-            else menu.Hide();
+            if (request.IsVisible.Value)
+            {
+                menu.Show();
+            }
+            else
+            {
+                menu.Hide();
+            }
         }
 
         if (request.IsEnabled.HasValue)
         {
-            if (request.IsEnabled.Value) menu.Enable();
-            else menu.Disable();
+            if (request.IsEnabled.Value)
+            {
+                menu.Enable();
+            }
+            else
+            {
+                menu.Disable();
+            }
         }
 
         if (request.ExternalUrl != null || request.OpenInNewTab.HasValue)
+        {
             menu.SetExternalUrl(request.ExternalUrl, request.OpenInNewTab ?? menu.OpenInNewTab);
+        }
 
-        if (request.CssClass != null) menu.SetCssClass(request.CssClass);
+        if (request.CssClass != null)
+        {
+            menu.SetCssClass(request.CssClass);
+        }
 
         if (request.Badge != null || request.BadgeVariant != null)
+        {
             menu.SetBadge(request.Badge, request.BadgeVariant ?? menu.BadgeVariant);
+        }
 
         _repository.Update(menu);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

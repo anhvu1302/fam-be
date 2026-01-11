@@ -30,20 +30,28 @@ public class CreateMenuCommandHandler : IRequestHandler<CreateMenuCommand, MenuI
     {
         // Check if code already exists
         if (await _repository.CodeExistsAsync(request.Code, cancellationToken: cancellationToken))
+        {
             throw new DomainException(ErrorCodes.MENU_CODE_EXISTS);
+        }
 
         // Validate parent if provided
         MenuItem? parent = null;
         if (request.ParentId.HasValue)
         {
             parent = await _repository.GetByIdAsync(request.ParentId.Value, cancellationToken);
-            if (parent == null) throw new DomainException(ErrorCodes.MENU_INVALID_PARENT);
+            if (parent == null)
+            {
+                throw new DomainException(ErrorCodes.MENU_INVALID_PARENT);
+            }
 
             // Check max depth
-            if (parent.Level >= MaxMenuDepth - 1) throw new DomainException(ErrorCodes.MENU_MAX_DEPTH_EXCEEDED);
+            if (parent.Level >= MaxMenuDepth - 1)
+            {
+                throw new DomainException(ErrorCodes.MENU_MAX_DEPTH_EXCEEDED);
+            }
         }
 
-        var menu = MenuItem.Create(
+        MenuItem menu = MenuItem.Create(
             request.Code,
             request.Name,
             request.Description,
@@ -54,10 +62,15 @@ public class CreateMenuCommandHandler : IRequestHandler<CreateMenuCommand, MenuI
             request.RequiredPermission,
             request.RequiredRoles);
 
-        if (parent != null) menu.SetParent(parent);
+        if (parent != null)
+        {
+            menu.SetParent(parent);
+        }
 
         if (!string.IsNullOrEmpty(request.ExternalUrl))
+        {
             menu.SetExternalUrl(request.ExternalUrl, request.OpenInNewTab);
+        }
 
         await _repository.AddAsync(menu, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

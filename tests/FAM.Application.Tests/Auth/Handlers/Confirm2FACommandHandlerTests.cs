@@ -32,25 +32,25 @@ public class Confirm2FACommandHandlerTests
     public async Task Handle_WithValidCode_ShouldEnable2FAAndReturnBackupCodes()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
         // Generate a real secret and valid TOTP code
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
 
         // Set pending 2FA secret (simulating Enable2FA call)
         user.SetPendingTwoFactorSecret(base32Secret, 10);
 
-        var totp = new Totp(secretKey);
-        var validCode = totp.ComputeTotp();
+        Totp totp = new(secretKey);
+        string? validCode = totp.ComputeTotp();
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new Confirm2FACommand
+        Confirm2FACommand command = new()
         {
             UserId = user.Id,
             Secret = base32Secret,
@@ -80,23 +80,23 @@ public class Confirm2FACommandHandlerTests
     public async Task Handle_WithInvalidCode_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
 
         // Set pending 2FA secret (simulating Enable2FA call)
         user.SetPendingTwoFactorSecret(base32Secret, 10);
 
-        var invalidCode = "000000"; // Invalid code
+        string invalidCode = "000000"; // Invalid code
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new Confirm2FACommand
+        Confirm2FACommand command = new()
         {
             UserId = user.Id,
             Secret = base32Secret,
@@ -116,17 +116,17 @@ public class Confirm2FACommandHandlerTests
     public async Task Handle_WithNonExistentUser_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var nonExistentUserId = 99999L;
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
-        var totp = new Totp(secretKey);
-        var validCode = totp.ComputeTotp();
+        long nonExistentUserId = 99999L;
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
+        Totp totp = new(secretKey);
+        string? validCode = totp.ComputeTotp();
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(nonExistentUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
-        var command = new Confirm2FACommand
+        Confirm2FACommand command = new()
         {
             UserId = nonExistentUserId,
             Secret = base32Secret,
@@ -144,34 +144,34 @@ public class Confirm2FACommandHandlerTests
     public async Task Handle_BackupCodesShouldBeDifferent()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user1 = User.CreateWithPlainPassword("user1", "user1@example.com", plainPassword);
-        var user2 = User.CreateWithPlainPassword("user2", "user2@example.com", plainPassword);
+        string plainPassword = "SecurePass123!";
+        User user1 = User.CreateWithPlainPassword("user1", "user1@example.com", plainPassword);
+        User user2 = User.CreateWithPlainPassword("user2", "user2@example.com", plainPassword);
 
-        var secretKey1 = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret1 = Base32Encoding.ToString(secretKey1);
+        byte[]? secretKey1 = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret1 = Base32Encoding.ToString(secretKey1);
 
         // Set pending 2FA secret (simulating Enable2FA call)
         user1.SetPendingTwoFactorSecret(base32Secret1, 10);
 
-        var totp1 = new Totp(secretKey1);
-        var validCode1 = totp1.ComputeTotp();
+        Totp totp1 = new(secretKey1);
+        string? validCode1 = totp1.ComputeTotp();
 
-        var secretKey2 = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret2 = Base32Encoding.ToString(secretKey2);
+        byte[]? secretKey2 = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret2 = Base32Encoding.ToString(secretKey2);
 
         // Set pending 2FA secret for user2 (simulating Enable2FA call)
         user2.SetPendingTwoFactorSecret(base32Secret2, 10);
 
-        var totp2 = new Totp(secretKey2);
-        var validCode2 = totp2.ComputeTotp();
+        Totp totp2 = new(secretKey2);
+        string? validCode2 = totp2.ComputeTotp();
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user1.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user1);
 
-        var command1 = new Confirm2FACommand { UserId = user1.Id, Secret = base32Secret1, Code = validCode1 };
-        var command2 = new Confirm2FACommand { UserId = user2.Id, Secret = base32Secret2, Code = validCode2 };
+        Confirm2FACommand command1 = new() { UserId = user1.Id, Secret = base32Secret1, Code = validCode1 };
+        Confirm2FACommand command2 = new() { UserId = user2.Id, Secret = base32Secret2, Code = validCode2 };
 
         // Act
         Confirm2FAResponse result1 = await _handler.Handle(command1, CancellationToken.None);
@@ -190,24 +190,24 @@ public class Confirm2FACommandHandlerTests
     public async Task Handle_BackupCodesShouldFollowCorrectFormat()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
 
         // Set pending 2FA secret (simulating Enable2FA call)
         user.SetPendingTwoFactorSecret(base32Secret, 10);
 
-        var totp = new Totp(secretKey);
-        var validCode = totp.ComputeTotp();
+        Totp totp = new(secretKey);
+        string? validCode = totp.ComputeTotp();
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new Confirm2FACommand
+        Confirm2FACommand command = new()
         {
             UserId = user.Id,
             Secret = base32Secret,
@@ -218,8 +218,10 @@ public class Confirm2FACommandHandlerTests
         Confirm2FAResponse result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - Each backup code should match format: xxxxx-xxxxx
-        foreach (var code in result.BackupCodes)
+        foreach (string code in result.BackupCodes)
+        {
             code.Should().MatchRegex(@"^[0-9a-f]{5}-[0-9a-f]{5}$",
                 $"code '{code}' should match format xxxxx-xxxxx with hex characters");
+        }
     }
 }

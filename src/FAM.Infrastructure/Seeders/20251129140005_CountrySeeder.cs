@@ -1,10 +1,11 @@
 using FAM.Domain.Geography;
 using FAM.Infrastructure.Common.Seeding;
+using FAM.Infrastructure.Providers.PostgreSQL;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
+namespace FAM.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds initial countries data (Sorted A-Z)
@@ -25,7 +26,7 @@ public class CountrySeeder : BaseDataSeeder
     {
         LogInfo("Checking for existing countries...");
 
-        var hasCountries = await _dbContext.Countries.AnyAsync(cancellationToken);
+        bool hasCountries = await _dbContext.Countries.AnyAsync(cancellationToken);
 
         if (hasCountries)
         {
@@ -35,7 +36,7 @@ public class CountrySeeder : BaseDataSeeder
 
         LogInfo("Seeding countries...");
 
-        var countries = new List<Country>
+        List<Country> countries = new()
         {
             CreateCountry("AF", "AFG", "004", "Afghanistan", "Afghanistan", "Islamic Republic of Afghanistan",
                 "Asia", "Southern Asia", "Asia", 33.9391m, 67.7100m,
@@ -1058,7 +1059,7 @@ public class CountrySeeder : BaseDataSeeder
         bool isUnMember = true,
         bool isIndependent = true)
     {
-        var country = Country.Create(code, name, alpha3, numeric);
+        Country country = Country.Create(code, name, alpha3, numeric);
         country.UpdateBasicInfo(name, nativeName, officialName);
         country.UpdateRegionalInfo(region, subRegion, continent, lat, lng);
         country.UpdateCommunication(callingCode, tld);

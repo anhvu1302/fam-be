@@ -37,6 +37,7 @@ public sealed class
 
         Expression<Func<EmailTemplate, bool>>? filterExpression = null;
         if (!string.IsNullOrWhiteSpace(queryRequest.Filter))
+        {
             try
             {
                 FilterNode ast = _filterParser.Parse(queryRequest.Filter);
@@ -50,14 +51,15 @@ public sealed class
             {
                 throw new InvalidOperationException($"Invalid filter syntax: {ex.Message}", ex);
             }
+        }
 
-        var page = queryRequest.GetEffectivePage();
-        var pageSize = queryRequest.GetEffectivePageSize();
+        int page = queryRequest.GetEffectivePage();
+        int pageSize = queryRequest.GetEffectivePageSize();
 
         Expression<Func<EmailTemplate, object>>[] includes = fieldMap.ParseIncludes(queryRequest.Include);
         HashSet<string> includeSet = IncludeParser.Parse(queryRequest.Include);
 
-        (IEnumerable<EmailTemplate> templates, var totalCount) = await _emailTemplateRepository.GetPagedAsync(
+        (IEnumerable<EmailTemplate> templates, long totalCount) = await _emailTemplateRepository.GetPagedAsync(
             filterExpression,
             queryRequest.Sort,
             page,
@@ -65,7 +67,7 @@ public sealed class
             includes,
             cancellationToken);
 
-        var items = templates.Select(t => t.ToDto()).ToList();
+        List<EmailTemplateDto> items = templates.Select(t => t.ToDto()).ToList();
 
         return new PageResult<EmailTemplateDto>(
             items,

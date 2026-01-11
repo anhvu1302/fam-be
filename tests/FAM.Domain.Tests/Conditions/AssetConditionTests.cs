@@ -10,10 +10,10 @@ public class AssetConditionTests
     public void Create_WithValidName_ShouldCreateAssetCondition()
     {
         // Arrange
-        var name = "Good";
+        string name = "Good";
 
         // Act
-        var condition = AssetCondition.Create(name);
+        AssetCondition condition = AssetCondition.Create(name);
 
         // Assert
         condition.Should().NotBeNull();
@@ -24,11 +24,11 @@ public class AssetConditionTests
     public void Create_WithNameAndDescription_ShouldCreateAssetConditionWithDescription()
     {
         // Arrange
-        var name = "Excellent";
-        var description = "Asset is in excellent condition";
+        string name = "Excellent";
+        string description = "Asset is in excellent condition";
 
         // Act
-        var condition = AssetCondition.Create(name, description);
+        AssetCondition condition = AssetCondition.Create(name, description);
 
         // Assert
         condition.Name.Should().Be(name);
@@ -39,10 +39,10 @@ public class AssetConditionTests
     public void Create_WithNullDescription_ShouldCreateAssetConditionWithNullDescription()
     {
         // Arrange
-        var name = "Fair";
+        string name = "Fair";
 
         // Act
-        var condition = AssetCondition.Create(name, null);
+        AssetCondition condition = AssetCondition.Create(name, null);
 
         // Assert
         condition.Name.Should().Be(name);

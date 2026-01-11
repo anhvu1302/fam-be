@@ -81,10 +81,12 @@ public record MenuItemResponse(
         List<MenuItemResponse>? children = null;
 
         if (includeChildren && menu.Children.Any() && currentDepth < maxDepth)
+        {
             children = menu.Children
                 .OrderBy(c => c.SortOrder)
                 .Select(c => FromDomain(c, true, maxDepth, currentDepth + 1))
                 .ToList();
+        }
 
         return new MenuItemResponse(
             menu.Id,

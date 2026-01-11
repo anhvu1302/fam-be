@@ -86,7 +86,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public static User Create(string username, string email, string password,
         string? firstName = null, string? lastName = null, string? phoneNumber = null, string? phoneCountryCode = null)
     {
-        var user = new User
+        User user = new()
         {
             FirstName = firstName,
             LastName = lastName,
@@ -143,7 +143,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
         DateTime createdAt,
         DateTime updatedAt)
     {
-        var user = new User
+        User user = new()
         {
             Id = id,
             FullName = fullName,
@@ -167,7 +167,10 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
         user.SetUsername(username);
         user.SetEmail(email);
         user.Password = Password.FromHash(passwordHash, passwordSalt);
-        if (!string.IsNullOrWhiteSpace(phoneNumber)) user.SetPhoneNumber(phoneNumber, "VN");
+        if (!string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            user.SetPhoneNumber(phoneNumber, "VN");
+        }
 
         return user;
     }
@@ -175,13 +178,13 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     // ============ Getters & Setters ============
     public void SetUsername(string username)
     {
-        var usernameVo = Domain.ValueObjects.Username.Create(username);
+        Username usernameVo = Domain.ValueObjects.Username.Create(username);
         Username = usernameVo.Value;
     }
 
     public void SetEmail(string email)
     {
-        var emailVo = Domain.ValueObjects.Email.Create(email);
+        Email emailVo = Domain.ValueObjects.Email.Create(email);
         Email = emailVo.Value;
         IsEmailVerified = false;
         EmailVerifiedAt = null;
@@ -189,7 +192,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
 
     public void SetPassword(string password)
     {
-        var passwordVo = Password.Create(password);
+        Password passwordVo = Password.Create(password);
         Password = passwordVo;
     }
 
@@ -197,7 +200,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     {
         if (!string.IsNullOrWhiteSpace(phoneNumber))
         {
-            var phoneVo = Domain.ValueObjects.PhoneNumber.Create(phoneNumber, countryCode ?? "VN");
+            PhoneNumber phoneVo = Domain.ValueObjects.PhoneNumber.Create(phoneNumber, countryCode ?? "VN");
             PhoneNumber = phoneVo.Value;
             PhoneCountryCode = phoneVo.CountryCode;
             IsPhoneVerified = false;
@@ -225,13 +228,19 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public bool IsPasswordResetTokenValid(string token)
     {
         if (string.IsNullOrWhiteSpace(PasswordResetToken))
+        {
             return false;
+        }
 
         if (PasswordResetToken != token)
+        {
             return false;
+        }
 
         if (!PasswordResetTokenExpiresAt.HasValue)
+        {
             return false;
+        }
 
         return PasswordResetTokenExpiresAt.Value > DateTime.UtcNow;
     }
@@ -267,14 +276,16 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public void ChangePassword(string currentPassRaw, string newPassRaw)
     {
         if (!Password.Verify(currentPassRaw))
+        {
             throw new DomainException(ErrorCodes.AUTH_INVALID_OLD_PASSWORD, "Current password is incorrect");
+        }
 
         UpdatePassword(newPassRaw);
     }
 
     public void UpdatePassword(string newPlainPassword)
     {
-        var newPassVo = Password.Create(newPlainPassword);
+        Password newPassVo = Password.Create(newPlainPassword);
         Password = newPassVo;
         PasswordChangedAt = DateTime.UtcNow;
 
@@ -337,7 +348,9 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     {
         FailedLoginAttempts++;
         if (FailedLoginAttempts >= 5) // Lock account after 5 failed attempts
+        {
             LockoutEnd = DateTime.UtcNow.AddMinutes(15);
+        }
     }
 
     /// <summary>
@@ -359,7 +372,7 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
             return existingDevice;
         }
 
-        var newDevice = UserDevice.Create(
+        UserDevice newDevice = UserDevice.Create(
             Id,
             deviceId,
             deviceName,
@@ -403,13 +416,24 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
         bool? receiveMarketingEmails)
     {
         if (!string.IsNullOrWhiteSpace(preferredLanguage))
+        {
             PreferredLanguage = preferredLanguage;
+        }
+
         if (!string.IsNullOrWhiteSpace(timeZone))
+        {
             TimeZone = timeZone;
+        }
+
         if (receiveNotifications.HasValue)
+        {
             ReceiveNotifications = receiveNotifications.Value;
+        }
+
         if (receiveMarketingEmails.HasValue)
+        {
             ReceiveMarketingEmails = receiveMarketingEmails.Value;
+        }
     }
 
     public void Deactivate()
@@ -428,7 +452,10 @@ public class User : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     private void UpdateFullName()
     {
         FullName = $"{FirstName} {LastName}".Trim();
-        if (string.IsNullOrWhiteSpace(FullName)) FullName = Username;
+        if (string.IsNullOrWhiteSpace(FullName))
+        {
+            FullName = Username;
+        }
     }
 
     // ============ Domain Events ============

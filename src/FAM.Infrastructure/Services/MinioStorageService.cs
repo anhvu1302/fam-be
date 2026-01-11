@@ -45,7 +45,7 @@ public class MinioStorageService : IStorageService
         {
             await EnsureBucketExistsAsync(cancellationToken);
 
-            var objectName = GenerateObjectName(fileName, fileType);
+            string objectName = GenerateObjectName(fileName, fileType);
 
             PutObjectArgs? putObjectArgs = new PutObjectArgs()
                 .WithBucket(_settings.BucketName)
@@ -75,10 +75,10 @@ public class MinioStorageService : IStorageService
         {
             await EnsureBucketExistsAsync(cancellationToken);
 
-            var objectName = GenerateObjectName(fileName, fileType);
+            string objectName = GenerateObjectName(fileName, fileType);
 
             // MinIO SDK handles multipart internally, we create a unique upload ID
-            var uploadId = $"{objectName}_{Guid.NewGuid():N}";
+            string uploadId = $"{objectName}_{Guid.NewGuid():N}";
 
             return uploadId;
         }
@@ -100,7 +100,7 @@ public class MinioStorageService : IStorageService
         try
         {
             // For simplicity, we'll store each part as a temporary object
-            var tempObjectName = $"temp/{uploadId}/part-{partNumber}";
+            string tempObjectName = $"temp/{uploadId}/part-{partNumber}";
 
             PutObjectArgs? putObjectArgs = new PutObjectArgs()
                 .WithBucket(_settings.BucketName)
@@ -129,15 +129,15 @@ public class MinioStorageService : IStorageService
     {
         try
         {
-            var objectName = GenerateObjectName(fileName, fileType);
+            string objectName = GenerateObjectName(fileName, fileType);
 
             // Use GetObjectAsync and PutObjectAsync to merge parts
             // This is a simplified approach - for production, consider using MinIO's actual multipart APIs
-            using var memoryStream = new MemoryStream();
+            using MemoryStream memoryStream = new();
 
-            foreach (var partNumber in eTags.Keys.OrderBy(k => k))
+            foreach (int partNumber in eTags.Keys.OrderBy(k => k))
             {
-                var tempObjectName = $"temp/{uploadId}/part-{partNumber}";
+                string tempObjectName = $"temp/{uploadId}/part-{partNumber}";
 
                 GetObjectArgs? getArgs = new GetObjectArgs()
                     .WithBucket(_settings.BucketName)
@@ -158,9 +158,9 @@ public class MinioStorageService : IStorageService
             await _minioClient.PutObjectAsync(putArgs, cancellationToken);
 
             // Clean up temporary parts
-            foreach (var partNumber in eTags.Keys)
+            foreach (int partNumber in eTags.Keys)
             {
-                var tempObjectName = $"temp/{uploadId}/part-{partNumber}";
+                string tempObjectName = $"temp/{uploadId}/part-{partNumber}";
                 await DeleteFileAsync(tempObjectName, cancellationToken);
             }
 
@@ -182,14 +182,16 @@ public class MinioStorageService : IStorageService
         try
         {
             // Clean up all temporary parts
-            var prefix = $"temp/{uploadId}/";
+            string prefix = $"temp/{uploadId}/";
             ListObjectsArgs? listArgs = new ListObjectsArgs()
                 .WithBucket(_settings.BucketName)
                 .WithPrefix(prefix)
                 .WithRecursive(true);
 
             await foreach (Item? obj in _minioClient.ListObjectsEnumAsync(listArgs, cancellationToken))
+            {
                 await DeleteFileAsync(obj.Key, cancellationToken);
+            }
         }
         catch (Exception ex)
         {
@@ -209,7 +211,7 @@ public class MinioStorageService : IStorageService
                 .WithObject(filePath)
                 .WithExpiry(expiryInSeconds);
 
-            var url = await _minioClient.PresignedGetObjectAsync(args);
+            string? url = await _minioClient.PresignedGetObjectAsync(args);
 
             return url;
         }
@@ -230,14 +232,14 @@ public class MinioStorageService : IStorageService
         {
             await EnsureBucketExistsAsync();
 
-            var objectName = GenerateObjectName(fileName, fileType);
+            string objectName = GenerateObjectName(fileName, fileType);
 
             PresignedPutObjectArgs? args = new PresignedPutObjectArgs()
                 .WithBucket(_settings.BucketName)
                 .WithObject(objectName)
                 .WithExpiry(expiryInSeconds);
 
-            var url = await _minioClient.PresignedPutObjectAsync(args);
+            string? url = await _minioClient.PresignedPutObjectAsync(args);
 
             return url;
         }
@@ -322,14 +324,17 @@ public class MinioStorageService : IStorageService
             BucketExistsArgs? bucketExistsArgs = new BucketExistsArgs()
                 .WithBucket(_settings.BucketName);
 
-            var exists = await _minioClient.BucketExistsAsync(bucketExistsArgs, cancellationToken);
+            bool exists = await _minioClient.BucketExistsAsync(bucketExistsArgs, cancellationToken);
 
             if (!exists)
             {
                 MakeBucketArgs? makeBucketArgs = new MakeBucketArgs()
                     .WithBucket(_settings.BucketName);
 
-                if (!string.IsNullOrEmpty(_settings.Region)) makeBucketArgs.WithLocation(_settings.Region);
+                if (!string.IsNullOrEmpty(_settings.Region))
+                {
+                    makeBucketArgs.WithLocation(_settings.Region);
+                }
 
                 await _minioClient.MakeBucketAsync(makeBucketArgs, cancellationToken);
             }
@@ -343,13 +348,13 @@ public class MinioStorageService : IStorageService
 
     private static string GenerateObjectName(string fileName, FileType fileType)
     {
-        var extension = Path.GetExtension(fileName);
-        var fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
-        var sanitizedFileName = SanitizeFileName(fileNameWithoutExt);
-        var timestamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
-        var uniqueId = Guid.NewGuid().ToString("N")[..8];
+        string extension = Path.GetExtension(fileName);
+        string fileNameWithoutExt = Path.GetFileNameWithoutExtension(fileName);
+        string sanitizedFileName = SanitizeFileName(fileNameWithoutExt);
+        string timestamp = DateTime.UtcNow.ToString("yyyyMMdd-HHmmss");
+        string uniqueId = Guid.NewGuid().ToString("N")[..8];
 
-        var folder = fileType switch
+        string folder = fileType switch
         {
             FileType.Image => "images",
             FileType.Media => "media",
@@ -362,8 +367,8 @@ public class MinioStorageService : IStorageService
 
     private static string SanitizeFileName(string fileName)
     {
-        var invalidChars = Path.GetInvalidFileNameChars();
-        var sanitized = string.Join("_", fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries));
+        char[] invalidChars = Path.GetInvalidFileNameChars();
+        string sanitized = string.Join("_", fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries));
         return sanitized.Length > 50 ? sanitized[..50] : sanitized;
     }
 
@@ -382,7 +387,7 @@ public class MinioStorageService : IStorageService
                 .WithObject(objectKey)
                 .WithExpiry(expiryInSeconds);
 
-            var url = await _minioClient.PresignedPutObjectAsync(args);
+            string? url = await _minioClient.PresignedPutObjectAsync(args);
 
             _logger.LogDebug("Generated presigned PUT URL for {ObjectKey}, expires in {Seconds}s", objectKey,
                 expiryInSeconds);
@@ -446,9 +451,11 @@ public class MinioStorageService : IStorageService
     {
         try
         {
-            var keysList = objectKeys.ToList();
+            List<string> keysList = objectKeys.ToList();
             if (!keysList.Any())
+            {
                 return;
+            }
 
             // MinIO batch delete - returns list of errors
             RemoveObjectsArgs? removeObjectsArgs = new RemoveObjectsArgs()
@@ -458,7 +465,9 @@ public class MinioStorageService : IStorageService
             IList<DeleteError>? errors = await _minioClient.RemoveObjectsAsync(removeObjectsArgs, cancellationToken);
 
             if (errors?.Any() == true)
+            {
                 _logger.LogWarning("Errors during batch delete: {ErrorCount}", errors.Count);
+            }
         }
         catch (Exception ex)
         {

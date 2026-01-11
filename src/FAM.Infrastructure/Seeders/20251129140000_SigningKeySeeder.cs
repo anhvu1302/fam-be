@@ -2,11 +2,12 @@ using System.Security.Cryptography;
 
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.Common.Seeding;
+using FAM.Infrastructure.Providers.PostgreSQL;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
+namespace FAM.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds initial RSA signing key for JWT tokens
@@ -29,7 +30,7 @@ public class SigningKeySeeder : BaseDataSeeder
         LogInfo("Checking for existing signing keys...");
 
         // Check if an active signing key already exists
-        var hasActiveKey = await _dbContext.SigningKeys
+        bool hasActiveKey = await _dbContext.SigningKeys
             .AnyAsync(k => k.IsActive && !k.IsRevoked && !k.IsDeleted, cancellationToken);
 
         if (hasActiveKey)
@@ -41,12 +42,12 @@ public class SigningKeySeeder : BaseDataSeeder
         LogInfo("No active signing key found, generating new RSA key pair...");
 
         // Generate RSA key pair
-        using var rsa = RSA.Create(2048);
-        var publicKey = rsa.ExportRSAPublicKeyPem();
-        var privateKey = rsa.ExportRSAPrivateKeyPem();
-        var keyId = GenerateKeyId();
+        using RSA rsa = RSA.Create(2048);
+        string publicKey = rsa.ExportRSAPublicKeyPem();
+        string privateKey = rsa.ExportRSAPrivateKeyPem();
+        string keyId = GenerateKeyId();
 
-        var signingKey = SigningKey.Create(
+        SigningKey signingKey = SigningKey.Create(
             keyId,
             publicKey,
             privateKey,
@@ -64,10 +65,10 @@ public class SigningKeySeeder : BaseDataSeeder
 
     private static string GenerateKeyId()
     {
-        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        var randomBytes = new byte[8];
+        long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        byte[] randomBytes = new byte[8];
         RandomNumberGenerator.Fill(randomBytes);
-        var randomPart = Convert.ToHexString(randomBytes).ToLowerInvariant();
+        string randomPart = Convert.ToHexString(randomBytes).ToLowerInvariant();
         return $"key_{timestamp}_{randomPart}";
     }
 }

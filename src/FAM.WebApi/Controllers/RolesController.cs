@@ -68,14 +68,14 @@ public class RolesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetRoles([FromQuery] PaginationQueryParameters parameters)
     {
-        var query = new GetRolesQuery(parameters.ToQueryRequest());
+        GetRolesQuery query = new(parameters.ToQueryRequest());
         PageResult<RoleDto> result = await _mediator.Send(query);
 
         // Apply field selection if requested
-        var fields = parameters.GetFieldsArray();
+        string[]? fields = parameters.GetFieldsArray();
         if (fields != null && fields.Length > 0)
         {
-            var selectedResult = result.SelectFieldsToResponse(fields);
+            object selectedResult = result.SelectFieldsToResponse(fields);
             return OkResponse(selectedResult);
         }
 
@@ -104,11 +104,13 @@ public class RolesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<RoleWithPermissionsDto>> GetRoleById(long id)
     {
-        var query = new GetRoleByIdQuery(id);
+        GetRoleByIdQuery query = new(id);
         RoleWithPermissionsDto? result = await _mediator.Send(query);
 
         if (result == null)
+        {
             return NotFoundResponse($"Role with ID {id} not found", "ROLE_NOT_FOUND");
+        }
 
         return OkResponse(result);
     }
@@ -146,7 +148,7 @@ public class RolesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<long>> CreateRole([FromBody] CreateRoleRequest request)
     {
-        var command = new CreateRoleCommand
+        CreateRoleCommand command = new()
         {
             Code = request.Code,
             Name = request.Name,
@@ -155,7 +157,7 @@ public class RolesController : BaseApiController
             IsSystemRole = false // Only system can create system roles
         };
 
-        var roleId = await _mediator.Send(command);
+        long roleId = await _mediator.Send(command);
 
         return CreatedAtAction(nameof(GetRoleById), new { id = roleId }, roleId);
     }
@@ -193,7 +195,7 @@ public class RolesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> UpdateRole(long id, [FromBody] UpdateRoleRequest request)
     {
-        var command = new UpdateRoleCommand
+        UpdateRoleCommand command = new()
         {
             Id = id,
             Name = request.Name,
@@ -230,7 +232,7 @@ public class RolesController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> DeleteRole(long id)
     {
-        var command = new DeleteRoleCommand(id);
+        DeleteRoleCommand command = new(id);
         await _mediator.Send(command);
 
         return OkResponse("Role deleted successfully");
@@ -245,9 +247,9 @@ public class RolesController : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> AssignPermissions(long id, [FromBody] AssignPermissionsRequest request)
     {
-        var userId = GetCurrentUserId();
+        long userId = GetCurrentUserId();
 
-        var command = new AssignPermissionsToRoleCommand
+        AssignPermissionsToRoleCommand command = new()
         {
             RoleId = id,
             PermissionIds = request.PermissionIds,
@@ -267,7 +269,7 @@ public class RolesController : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> RevokePermissions(long id, [FromBody] AssignPermissionsRequest request)
     {
-        var command = new RevokePermissionsFromRoleCommand
+        RevokePermissionsFromRoleCommand command = new()
         {
             RoleId = id,
             PermissionIds = request.PermissionIds
@@ -288,9 +290,9 @@ public class RolesController : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<int>> AddUsersToRole(long id, [FromBody] AssignUsersToRoleRequest request)
     {
-        var currentUserId = GetCurrentUserId();
+        long currentUserId = GetCurrentUserId();
 
-        var command = new AssignUsersToRoleCommand
+        AssignUsersToRoleCommand command = new()
         {
             RoleId = id,
             NodeId = request.NodeId,
@@ -300,7 +302,7 @@ public class RolesController : BaseApiController
             AssignedById = currentUserId
         };
 
-        var addedCount = await _mediator.Send(command);
+        int addedCount = await _mediator.Send(command);
 
         return OkResponse(new { addedCount, message = $"Successfully added {addedCount} user(s) to role" });
     }
@@ -314,14 +316,14 @@ public class RolesController : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<int>> RemoveUsersFromRole(long id, [FromBody] RemoveUsersFromRoleRequest request)
     {
-        var command = new RemoveUsersFromRoleCommand
+        RemoveUsersFromRoleCommand command = new()
         {
             RoleId = id,
             NodeId = request.NodeId,
             UserIds = request.UserIds
         };
 
-        var removedCount = await _mediator.Send(command);
+        int removedCount = await _mediator.Send(command);
 
         return OkResponse(new { removedCount, message = $"Successfully removed {removedCount} user(s) from role" });
     }
@@ -335,9 +337,9 @@ public class RolesController : BaseApiController
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<long>> AssignRoleToUser([FromBody] AssignRoleToUserRequest request)
     {
-        var currentUserId = GetCurrentUserId();
+        long currentUserId = GetCurrentUserId();
 
-        var command = new AssignRoleToUserCommand
+        AssignRoleToUserCommand command = new()
         {
             UserId = request.UserId,
             NodeId = request.NodeId,
@@ -347,7 +349,7 @@ public class RolesController : BaseApiController
             AssignedById = currentUserId
         };
 
-        var assignmentId = await _mediator.Send(command);
+        bool assignmentId = await _mediator.Send(command);
 
         return CreatedAtAction(nameof(AssignRoleToUser), new { id = assignmentId }, assignmentId);
     }
@@ -360,7 +362,7 @@ public class RolesController : BaseApiController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> RevokeRoleFromUser(long userId, long nodeId, long roleId)
     {
-        var command = new RevokeRoleFromUserCommand(userId, nodeId, roleId);
+        RevokeRoleFromUserCommand command = new(userId, nodeId, roleId);
         await _mediator.Send(command);
 
         return NoContent();

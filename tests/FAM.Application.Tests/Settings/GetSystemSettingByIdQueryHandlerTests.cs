@@ -22,7 +22,7 @@ public class GetSystemSettingByIdQueryHandlerTests
     public async Task Handle_WithExistingSetting_ShouldReturnDto()
     {
         // Arrange
-        var setting = SystemSetting.Create(
+        SystemSetting setting = SystemSetting.Create(
             "test_key",
             "Test Setting",
             "test value",
@@ -34,7 +34,7 @@ public class GetSystemSettingByIdQueryHandlerTests
             false,
             false);
 
-        var query = new GetSystemSettingByIdQuery(1);
+        GetSystemSettingByIdQuery query = new(1);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(query.Id, default))
             .ReturnsAsync(setting);
@@ -58,7 +58,7 @@ public class GetSystemSettingByIdQueryHandlerTests
     public async Task Handle_WithNonExistentSetting_ShouldReturnNull()
     {
         // Arrange
-        var query = new GetSystemSettingByIdQuery(999);
+        GetSystemSettingByIdQuery query = new(999);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(query.Id, default))
             .ReturnsAsync((SystemSetting?)null);
@@ -74,13 +74,13 @@ public class GetSystemSettingByIdQueryHandlerTests
     public async Task Handle_WithSettingWithoutValue_ShouldReturnDefaultAsEffective()
     {
         // Arrange
-        var setting = SystemSetting.Create(
+        SystemSetting setting = SystemSetting.Create(
             "test_key",
             "Test Setting",
             null,
             "default value");
 
-        var query = new GetSystemSettingByIdQuery(1);
+        GetSystemSettingByIdQuery query = new(1);
 
         _repositoryMock.Setup(x => x.GetByIdAsync(query.Id, default))
             .ReturnsAsync(setting);

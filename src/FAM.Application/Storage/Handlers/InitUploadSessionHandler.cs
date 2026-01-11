@@ -48,23 +48,28 @@ public class InitUploadSessionHandler : IRequestHandler<InitUploadSessionCommand
                 request.IdempotencyKey,
                 cancellationToken);
 
-            if (existingSession != null) return await GenerateResponseFromSession(existingSession, cancellationToken);
+            if (existingSession != null)
+            {
+                return await GenerateResponseFromSession(existingSession, cancellationToken);
+            }
         }
 
         // Validate file
-        (var isValid, var errorMessage, FileType? fileType) = _fileValidator.ValidateFile(
+        (bool isValid, string? errorMessage, FileType? fileType) = _fileValidator.ValidateFile(
             request.FileName,
             request.FileSize);
 
         if (!isValid || !fileType.HasValue)
+        {
             throw new InvalidOperationException(errorMessage ?? "File validation failed");
+        }
 
         // Generate upload ID and temp key
-        var uploadId = Guid.NewGuid().ToString("N");
-        var tempKey = $"tmp/{uploadId}";
+        string uploadId = Guid.NewGuid().ToString("N");
+        string tempKey = $"tmp/{uploadId}";
 
         // Create session
-        var session = UploadSession.Create(
+        UploadSession session = UploadSession.Create(
             uploadId,
             tempKey,
             request.FileName,
@@ -86,7 +91,7 @@ public class InitUploadSessionHandler : IRequestHandler<InitUploadSessionCommand
         CancellationToken cancellationToken)
     {
         // Generate presigned PUT URL (1 hour expiry for upload)
-        var presignedUrl = await _storageService.GetPresignedPutUrlAsync(
+        string presignedUrl = await _storageService.GetPresignedPutUrlAsync(
             session.TempKey,
             session.ContentType,
             3600, // 1 hour

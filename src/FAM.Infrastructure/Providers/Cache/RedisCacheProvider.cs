@@ -46,7 +46,7 @@ public sealed class RedisCacheProvider : ICacheProvider
         try
         {
             When when = When.Always;
-            var keepTtl = false;
+            bool keepTtl = false;
             return await _db.StringSetAsync(key, value, expiration, keepTtl, when);
         }
         catch (Exception ex)

@@ -100,7 +100,9 @@ public class AssetCategory : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     public static AssetCategory Create(string name, string? code = null, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Category name is required");
+        }
 
         return new AssetCategory
         {
@@ -122,7 +124,9 @@ public class AssetCategory : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
         string? longDescription)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException("Category name is required");
+        }
 
         Name = name;
         Code = code?.ToUpperInvariant();
@@ -156,11 +160,15 @@ public class AssetCategory : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
         decimal? residualValuePercentage)
     {
         if (usefulLifeMonths.HasValue && usefulLifeMonths.Value < 0)
+        {
             throw new DomainException("Default useful life months cannot be negative");
+        }
 
         if (residualValuePercentage.HasValue &&
             (residualValuePercentage.Value < 0 || residualValuePercentage.Value > 100))
+        {
             throw new DomainException("Default residual value percentage must be between 0 and 100");
+        }
 
         DefaultDepreciationMethod = method;
         DefaultUsefulLifeMonths = usefulLifeMonths;
@@ -184,7 +192,9 @@ public class AssetCategory : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
         string? valuationMethod)
     {
         if (minCapitalizationValue.HasValue && minCapitalizationValue.Value < 0)
+        {
             throw new DomainException("Minimum capitalization value cannot be negative");
+        }
 
         MinimumCapitalizationValue = minCapitalizationValue;
         ValuationMethod = valuationMethod;
@@ -197,7 +207,9 @@ public class AssetCategory : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
         int? auditIntervalMonths)
     {
         if (auditIntervalMonths.HasValue && auditIntervalMonths.Value < 0)
+        {
             throw new DomainException("Audit interval months cannot be negative");
+        }
 
         RequiresCompliance = requiresCompliance;
         ComplianceStandards = complianceStandards;
@@ -257,10 +269,14 @@ public class AssetCategory : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     public void UpdateStatistics(int assetCount, decimal? totalValue)
     {
         if (assetCount < 0)
+        {
             throw new DomainException("Asset count cannot be negative");
+        }
 
         if (totalValue.HasValue && totalValue.Value < 0)
+        {
             throw new DomainException("Total value cannot be negative");
+        }
 
         AssetCount = assetCount;
         TotalValue = totalValue;
@@ -302,9 +318,11 @@ public class AssetCategory : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     private string? ValidateUrl(string? url)
     {
         if (string.IsNullOrWhiteSpace(url))
+        {
             return null;
+        }
 
-        var urlVo = Url.Create(url);
+        Url urlVo = Url.Create(url);
         return urlVo.Value;
     }
 }

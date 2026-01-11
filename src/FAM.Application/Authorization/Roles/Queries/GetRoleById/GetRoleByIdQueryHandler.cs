@@ -20,17 +20,20 @@ public sealed class GetRoleByIdQueryHandler : IRequestHandler<GetRoleByIdQuery, 
     {
         Role? role = await _unitOfWork.Roles.GetByIdAsync(request.Id, cancellationToken);
         if (role == null)
+        {
             return null;
+        }
 
         IEnumerable<RolePermission> rolePermissions =
             await _unitOfWork.RolePermissions.GetByRoleIdAsync(request.Id, cancellationToken);
-        var permissionIds = rolePermissions.Select(rp => rp.PermissionId).ToList();
+        List<long> permissionIds = rolePermissions.Select(rp => rp.PermissionId).ToList();
 
-        var permissions = new List<PermissionDto>();
-        foreach (var permissionId in permissionIds)
+        List<PermissionDto> permissions = new();
+        foreach (long permissionId in permissionIds)
         {
             Permission? permission = await _unitOfWork.Permissions.GetByIdAsync(permissionId, cancellationToken);
             if (permission != null)
+            {
                 permissions.Add(new PermissionDto(
                     permission.Id,
                     permission.Resource,
@@ -41,6 +44,7 @@ public sealed class GetRoleByIdQueryHandler : IRequestHandler<GetRoleByIdQuery, 
                     permission.UpdatedAt,
                     permission.DeletedAt
                 ));
+            }
         }
 
         return new RoleWithPermissionsDto

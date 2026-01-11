@@ -11,10 +11,10 @@ public class ManufacturerTests
     public void Create_WithValidName_ShouldCreateManufacturer()
     {
         // Arrange
-        var name = "Apple Inc.";
+        string name = "Apple Inc.";
 
         // Act
-        var manufacturer = Manufacturer.Create(name);
+        Manufacturer manufacturer = Manufacturer.Create(name);
 
         // Assert
         manufacturer.Name.Should().Be(name);
@@ -26,11 +26,11 @@ public class ManufacturerTests
     public void Create_WithValidNameAndWebsite_ShouldCreateManufacturer()
     {
         // Arrange
-        var name = "Apple Inc.";
-        var website = "https://www.apple.com";
+        string name = "Apple Inc.";
+        string website = "https://www.apple.com";
 
         // Act
-        var manufacturer = Manufacturer.Create(name, website);
+        Manufacturer manufacturer = Manufacturer.Create(name, website);
 
         // Assert
         manufacturer.Name.Should().Be(name);
@@ -56,7 +56,7 @@ public class ManufacturerTests
     public void Create_WithEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var emptyName = string.Empty;
+        string emptyName = string.Empty;
 
         // Act
         Action act = () => Manufacturer.Create(emptyName);
@@ -70,7 +70,7 @@ public class ManufacturerTests
     public void Create_WithWhitespaceName_ShouldThrowDomainException()
     {
         // Arrange
-        var whitespaceName = "   ";
+        string whitespaceName = "   ";
 
         // Act
         Action act = () => Manufacturer.Create(whitespaceName);
@@ -84,8 +84,8 @@ public class ManufacturerTests
     public void Create_WithInvalidWebsite_ShouldThrowDomainException()
     {
         // Arrange
-        var name = "Test Manufacturer";
-        var invalidWebsite = "not-a-website";
+        string name = "Test Manufacturer";
+        string invalidWebsite = "not-a-website";
 
         // Act
         Action act = () => Manufacturer.Create(name, invalidWebsite);
@@ -99,11 +99,11 @@ public class ManufacturerTests
     public void UpdateBasicInfo_WithValidData_ShouldUpdateManufacturer()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var newName = "Updated Manufacturer";
-        var shortName = "Updated";
-        var legalName = "Updated Manufacturer Inc.";
-        var description = "Updated description";
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        string newName = "Updated Manufacturer";
+        string shortName = "Updated";
+        string legalName = "Updated Manufacturer Inc.";
+        string description = "Updated description";
 
         // Act
         manufacturer.UpdateBasicInfo(newName, shortName, legalName, description);
@@ -119,7 +119,7 @@ public class ManufacturerTests
     public void UpdateBasicInfo_WithNullName_ShouldThrowDomainException()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
         string? nullName = null;
 
         // Act
@@ -134,10 +134,10 @@ public class ManufacturerTests
     public void UpdateBrand_WithValidLogoUrl_ShouldUpdateBrand()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var brandName = "Test Brand";
-        var logoUrl = "https://example.com/logo.png";
-        var tagline = "Test Tagline";
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        string brandName = "Test Brand";
+        string logoUrl = "https://example.com/logo.png";
+        string tagline = "Test Tagline";
 
         // Act
         manufacturer.UpdateBrand(brandName, logoUrl, tagline);
@@ -153,8 +153,8 @@ public class ManufacturerTests
     public void UpdateBrand_WithInvalidLogoUrl_ShouldThrowDomainException()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var invalidLogoUrl = "not-a-url";
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        string invalidLogoUrl = "not-a-url";
 
         // Act
         Action act = () => manufacturer.UpdateBrand("Brand", invalidLogoUrl, "Tagline");
@@ -168,11 +168,11 @@ public class ManufacturerTests
     public void UpdateContactInfo_WithValidWebsite_ShouldUpdateContactInfo()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var website = "https://www.example.com";
-        var email = "contact@example.com";
-        var phone = "+1-555-0123";
-        var fax = "+1-555-0124";
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        string website = "https://www.example.com";
+        string email = "contact@example.com";
+        string phone = "+1-555-0123";
+        string fax = "+1-555-0124";
 
         // Act
         manufacturer.UpdateContactInfo(website, email, phone, fax);
@@ -189,11 +189,11 @@ public class ManufacturerTests
     public void UpdateSupport_WithValidSupportWebsite_ShouldUpdateSupport()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var supportEmail = "support@example.com";
-        var supportPhone = "+1-555-0199";
-        var supportWebsite = "https://support.example.com";
-        var supportHours = "24/7";
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        string supportEmail = "support@example.com";
+        string supportPhone = "+1-555-0199";
+        string supportWebsite = "https://support.example.com";
+        string supportHours = "24/7";
 
         // Act
         manufacturer.UpdateSupport(supportEmail, supportPhone, supportWebsite, supportHours);
@@ -210,10 +210,10 @@ public class ManufacturerTests
     public void UpdateSocialMedia_WithValidUrls_ShouldUpdateSocialMedia()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var linkedIn = "https://linkedin.com/company/example";
-        var twitter = "@example";
-        var facebook = "https://facebook.com/example";
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        string linkedIn = "https://linkedin.com/company/example";
+        string twitter = "@example";
+        string facebook = "https://facebook.com/example";
 
         // Act
         manufacturer.UpdateSocialMedia(linkedIn, twitter, facebook);
@@ -230,8 +230,8 @@ public class ManufacturerTests
     public void UpdateBusinessInfo_WithNegativeEmployeeCount_ShouldThrowDomainException()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var negativeEmployeeCount = -10;
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        int negativeEmployeeCount = -10;
 
         // Act
         Action act = () => manufacturer.UpdateBusinessInfo("Tech", "Private", null, negativeEmployeeCount);
@@ -245,8 +245,8 @@ public class ManufacturerTests
     public void UpdateFinancialInfo_WithNegativeAnnualRevenue_ShouldThrowDomainException()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var negativeRevenue = -1000000m;
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        decimal negativeRevenue = -1000000m;
 
         // Act
         Action act = () => manufacturer.UpdateFinancialInfo(negativeRevenue, "USD", "Net 30", "USD", 10m);
@@ -260,8 +260,8 @@ public class ManufacturerTests
     public void UpdateFinancialInfo_WithDiscountRateOver100_ShouldThrowDomainException()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var discountRateOver100 = 150m;
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        decimal discountRateOver100 = 150m;
 
         // Act
         Action act = () => manufacturer.UpdateFinancialInfo(1000000m, "USD", "Net 30", "USD", discountRateOver100);
@@ -275,8 +275,8 @@ public class ManufacturerTests
     public void UpdateFinancialInfo_WithNegativeDiscountRate_ShouldThrowDomainException()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var negativeDiscountRate = -5m;
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        decimal negativeDiscountRate = -5m;
 
         // Act
         Action act = () => manufacturer.UpdateFinancialInfo(1000000m, "USD", "Net 30", "USD", negativeDiscountRate);
@@ -290,8 +290,8 @@ public class ManufacturerTests
     public void UpdateWarrantySupport_WithNegativeWarrantyMonths_ShouldThrowDomainException()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var negativeWarrantyMonths = -12;
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        int negativeWarrantyMonths = -12;
 
         // Act
         Action act = () =>
@@ -306,8 +306,8 @@ public class ManufacturerTests
     public void UpdateRatings_WithRatingBelow1_ShouldThrowDomainException()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var ratingBelow1 = 0.5m;
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        decimal ratingBelow1 = 0.5m;
 
         // Act
         Action act = () => manufacturer.UpdateRatings(ratingBelow1, 4m, 3m, "Good manufacturer");
@@ -321,8 +321,8 @@ public class ManufacturerTests
     public void UpdateRatings_WithRatingAbove5_ShouldThrowDomainException()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
-        var ratingAbove5 = 6m;
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
+        decimal ratingAbove5 = 6m;
 
         // Act
         Action act = () => manufacturer.UpdateRatings(4m, ratingAbove5, 3m, "Good manufacturer");
@@ -336,10 +336,10 @@ public class ManufacturerTests
     public void GetAverageRating_WithNoRatings_ShouldReturnZero()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
 
         // Act
-        var averageRating = manufacturer.GetAverageRating();
+        decimal averageRating = manufacturer.GetAverageRating();
 
         // Assert
         averageRating.Should().Be(0);
@@ -349,11 +349,11 @@ public class ManufacturerTests
     public void GetAverageRating_WithMultipleRatings_ShouldReturnCorrectAverage()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
         manufacturer.UpdateRatings(4m, 3m, 5m, "Good manufacturer");
 
         // Act
-        var averageRating = manufacturer.GetAverageRating();
+        decimal averageRating = manufacturer.GetAverageRating();
 
         // Assert
         averageRating.Should().Be(4m);
@@ -363,7 +363,7 @@ public class ManufacturerTests
     public void Activate_ShouldSetIsActiveToTrue()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
         manufacturer.Deactivate();
 
         // Act
@@ -377,7 +377,7 @@ public class ManufacturerTests
     public void Deactivate_ShouldSetIsActiveToFalse()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
 
         // Act
         manufacturer.Deactivate();
@@ -390,7 +390,7 @@ public class ManufacturerTests
     public void Approve_ShouldSetIsApprovedToTrue()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
         manufacturer.Reject();
 
         // Act
@@ -404,7 +404,7 @@ public class ManufacturerTests
     public void Reject_ShouldSetIsApprovedToFalse()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
 
         // Act
         manufacturer.Reject();
@@ -417,7 +417,7 @@ public class ManufacturerTests
     public void SetAsPreferred_ShouldSetIsPreferredToTrue()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
 
         // Act
         manufacturer.SetAsPreferred();
@@ -430,7 +430,7 @@ public class ManufacturerTests
     public void RemovePreferred_ShouldSetIsPreferredToFalse()
     {
         // Arrange
-        var manufacturer = Manufacturer.Create("Test Manufacturer");
+        Manufacturer manufacturer = Manufacturer.Create("Test Manufacturer");
         manufacturer.SetAsPreferred();
 
         // Act

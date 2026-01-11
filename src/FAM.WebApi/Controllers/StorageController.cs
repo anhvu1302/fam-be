@@ -75,10 +75,12 @@ public class StorageController : BaseApiController
         {
             // Get userId from claims
             Claim? userIdClaim = User.FindFirst("sub") ?? User.FindFirst("userId");
-            if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out var userId))
+            if (userIdClaim == null || !long.TryParse(userIdClaim.Value, out long userId))
+            {
                 return UnauthorizedResponse("User not authenticated", "USER_NOT_AUTHENTICATED");
+            }
 
-            var command = new InitUploadSessionCommand
+            InitUploadSessionCommand command = new()
             {
                 FileName = request.FileName,
                 ContentType = request.ContentType,
@@ -134,28 +136,33 @@ public class StorageController : BaseApiController
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UploadFile(IFormFile file)
     {
-        if (file == null || file.Length == 0) return BadRequestResponse("File is required", "FILE_REQUIRED");
+        if (file == null || file.Length == 0)
+        {
+            return BadRequestResponse("File is required", "FILE_REQUIRED");
+        }
 
         // Validate file and auto-detect type
-        (var isValid, var errorMessage, FileType? fileType) = _fileValidator.ValidateFile(
+        (bool isValid, string? errorMessage, FileType? fileType) = _fileValidator.ValidateFile(
             file.FileName,
             file.Length);
 
         if (!isValid || !fileType.HasValue)
+        {
             return BadRequestResponse(errorMessage ?? "File validation failed", "FILE_VALIDATION_FAILED");
+        }
 
         try
         {
             await using Stream stream = file.OpenReadStream();
 
-            var filePath = await _storageService.UploadFileAsync(
+            string filePath = await _storageService.UploadFileAsync(
                 stream,
                 file.FileName,
                 fileType.Value,
                 file.ContentType);
 
             // Generate presigned URL with 1 hour expiry
-            var url = await _storageService.GetPresignedUrlAsync(filePath, 3600);
+            string url = await _storageService.GetPresignedUrlAsync(filePath, 3600);
             DateTime expiresAt = DateTime.UtcNow.AddSeconds(3600);
 
             return OkResponse(new UploadFileResponse(filePath, url, expiresAt, file.Length),
@@ -203,16 +210,18 @@ public class StorageController : BaseApiController
         [FromBody] InitiateMultipartUploadRequest request)
     {
         // Validate file and auto-detect type
-        (var isValid, var errorMessage, FileType? fileType) = _fileValidator.ValidateFile(
+        (bool isValid, string? errorMessage, FileType? fileType) = _fileValidator.ValidateFile(
             request.FileName,
             request.TotalSize);
 
         if (!isValid || !fileType.HasValue)
+        {
             return BadRequestResponse(errorMessage ?? "File validation failed", "FILE_VALIDATION_FAILED");
+        }
 
         try
         {
-            var uploadId = await _storageService.InitiateMultipartUploadAsync(
+            string uploadId = await _storageService.InitiateMultipartUploadAsync(
                 request.FileName,
                 fileType.Value,
                 request.ContentType);
@@ -267,20 +276,28 @@ public class StorageController : BaseApiController
         [FromForm] int partNumber,
         [FromForm] string fileName)
     {
-        if (file == null || file.Length == 0) return BadRequestResponse("File is required", "FILE_REQUIRED");
+        if (file == null || file.Length == 0)
+        {
+            return BadRequestResponse("File is required", "FILE_REQUIRED");
+        }
 
-        if (partNumber < 1) return BadRequestResponse("Part number must be greater than 0", "INVALID_PART_NUMBER");
+        if (partNumber < 1)
+        {
+            return BadRequestResponse("Part number must be greater than 0", "INVALID_PART_NUMBER");
+        }
 
         // Detect file type from fileName
         FileType? fileType = _fileValidator.DetectFileType(fileName);
         if (!fileType.HasValue)
+        {
             return BadRequestResponse("Unable to determine file type from file name", "FILE_TYPE_DETECTION_FAILED");
+        }
 
         try
         {
             await using Stream stream = file.OpenReadStream();
 
-            var eTag = await _storageService.UploadPartAsync(
+            string eTag = await _storageService.UploadPartAsync(
                 uploadId,
                 fileName,
                 fileType.Value,
@@ -331,23 +348,27 @@ public class StorageController : BaseApiController
         [FromBody] CompleteMultipartUploadRequest request)
     {
         if (request.Parts == null || request.Parts.Count == 0)
+        {
             return BadRequestResponse("Parts are required", "PARTS_REQUIRED");
+        }
 
         // Detect file type from fileName
         FileType? fileType = _fileValidator.DetectFileType(request.FileName);
         if (!fileType.HasValue)
+        {
             return BadRequestResponse("Unable to determine file type from file name", "FILE_TYPE_DETECTION_FAILED");
+        }
 
         try
         {
-            var filePath = await _storageService.CompleteMultipartUploadAsync(
+            string filePath = await _storageService.CompleteMultipartUploadAsync(
                 request.UploadId,
                 request.FileName,
                 fileType.Value,
                 request.Parts);
 
             // Generate presigned URL with 1 hour expiry
-            var url = await _storageService.GetPresignedUrlAsync(filePath, 3600);
+            string url = await _storageService.GetPresignedUrlAsync(filePath, 3600);
             DateTime expiresAt = DateTime.UtcNow.AddSeconds(3600);
 
             FileInfo fileInfo = await _storageService.GetFileInfoAsync(filePath);
@@ -388,7 +409,9 @@ public class StorageController : BaseApiController
         // Detect file type from fileName
         FileType? fileType = _fileValidator.DetectFileType(request.FileName);
         if (!fileType.HasValue)
+        {
             return BadRequestResponse("Unable to determine file type from file name", "FILE_TYPE_DETECTION_FAILED");
+        }
 
         try
         {
@@ -439,10 +462,13 @@ public class StorageController : BaseApiController
     {
         try
         {
-            var exists = await _storageService.FileExistsAsync(request.FilePath);
-            if (!exists) return NotFoundResponse("File not found", "FILE_NOT_FOUND");
+            bool exists = await _storageService.FileExistsAsync(request.FilePath);
+            if (!exists)
+            {
+                return NotFoundResponse("File not found", "FILE_NOT_FOUND");
+            }
 
-            var url = await _storageService.GetPresignedUrlAsync(
+            string url = await _storageService.GetPresignedUrlAsync(
                 request.FilePath,
                 request.ExpiryInSeconds);
 
@@ -479,8 +505,11 @@ public class StorageController : BaseApiController
     {
         try
         {
-            var exists = await _storageService.FileExistsAsync(filePath);
-            if (!exists) return NotFoundResponse("File not found", "FILE_NOT_FOUND");
+            bool exists = await _storageService.FileExistsAsync(filePath);
+            if (!exists)
+            {
+                return NotFoundResponse("File not found", "FILE_NOT_FOUND");
+            }
 
             await _storageService.DeleteFileAsync(filePath);
 
@@ -515,8 +544,11 @@ public class StorageController : BaseApiController
     {
         try
         {
-            var exists = await _storageService.FileExistsAsync(filePath);
-            if (!exists) return NotFoundResponse("File not found", "FILE_NOT_FOUND");
+            bool exists = await _storageService.FileExistsAsync(filePath);
+            if (!exists)
+            {
+                return NotFoundResponse("File not found", "FILE_NOT_FOUND");
+            }
 
             FileInfo fileInfo = await _storageService.GetFileInfoAsync(filePath);
 

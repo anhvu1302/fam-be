@@ -1,10 +1,11 @@
 using FAM.Domain.Authorization;
 using FAM.Infrastructure.Common.Seeding;
+using FAM.Infrastructure.Providers.PostgreSQL;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
+namespace FAM.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds all system permissions from Permissions constants
@@ -36,10 +37,12 @@ public class PermissionSeeder : BaseDataSeeder
         // Get all predefined permissions from Domain
         IReadOnlyList<(string Resource, string Action, string Description)> allPermissions = Permissions.All;
 
-        var permissionEntities = new List<Permission>();
+        List<Permission> permissionEntities = new();
 
-        foreach (var (resource, action, description) in allPermissions)
+        foreach ((string resource, string action, string description) in allPermissions)
+        {
             permissionEntities.Add(Permission.Create(resource, action, description));
+        }
 
         await _dbContext.Permissions.AddRangeAsync(permissionEntities, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);

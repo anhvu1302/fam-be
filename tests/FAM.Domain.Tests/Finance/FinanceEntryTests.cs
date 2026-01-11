@@ -10,13 +10,13 @@ public class FinanceEntryTests
     public void Create_WithValidData_ShouldCreateFinanceEntry()
     {
         // Arrange
-        var assetId = 1L;
-        var period = new DateTime(2023, 10, 1);
-        var entryType = "depreciation";
-        var amount = 1000.50m;
+        long assetId = 1L;
+        DateTime period = new(2023, 10, 1);
+        string entryType = "depreciation";
+        decimal amount = 1000.50m;
 
         // Act
-        var entry = FinanceEntry.Create(assetId, period, entryType, amount);
+        FinanceEntry entry = FinanceEntry.Create(assetId, period, entryType, amount);
 
         // Assert
         entry.Should().NotBeNull();
@@ -31,15 +31,15 @@ public class FinanceEntryTests
     public void Create_WithAllParameters_ShouldCreateFinanceEntryWithAllFields()
     {
         // Arrange
-        var assetId = 2L;
-        var period = new DateTime(2023, 10, 1);
-        var entryType = "adjustment";
-        var amount = -500.00m;
-        var bookValueAfter = 5000.00m;
-        var createdBy = 1;
+        long assetId = 2L;
+        DateTime period = new(2023, 10, 1);
+        string entryType = "adjustment";
+        decimal amount = -500.00m;
+        decimal bookValueAfter = 5000.00m;
+        int createdBy = 1;
 
         // Act
-        var entry = FinanceEntry.Create(assetId, period, entryType, amount, bookValueAfter, createdBy);
+        FinanceEntry entry = FinanceEntry.Create(assetId, period, entryType, amount, bookValueAfter, createdBy);
 
         // Assert
         entry.AssetId.Should().Be(assetId);
@@ -54,13 +54,13 @@ public class FinanceEntryTests
     public void Create_WithZeroAmount_ShouldCreateFinanceEntry()
     {
         // Arrange
-        var assetId = 3L;
-        var period = new DateTime(2023, 10, 1);
-        var entryType = "writeoff";
-        var amount = 0m;
+        long assetId = 3L;
+        DateTime period = new(2023, 10, 1);
+        string entryType = "writeoff";
+        decimal amount = 0m;
 
         // Act
-        var entry = FinanceEntry.Create(assetId, period, entryType, amount);
+        FinanceEntry entry = FinanceEntry.Create(assetId, period, entryType, amount);
 
         // Assert
         entry.Amount.Should().Be(0m);
@@ -70,13 +70,13 @@ public class FinanceEntryTests
     public void Create_WithNegativeAmount_ShouldCreateFinanceEntry()
     {
         // Arrange
-        var assetId = 4L;
-        var period = new DateTime(2023, 10, 1);
-        var entryType = "adjustment";
-        var amount = -1000.00m;
+        long assetId = 4L;
+        DateTime period = new(2023, 10, 1);
+        string entryType = "adjustment";
+        decimal amount = -1000.00m;
 
         // Act
-        var entry = FinanceEntry.Create(assetId, period, entryType, amount);
+        FinanceEntry entry = FinanceEntry.Create(assetId, period, entryType, amount);
 
         // Assert
         entry.Amount.Should().Be(amount);
@@ -86,13 +86,13 @@ public class FinanceEntryTests
     public void Create_WithPositiveAmount_ShouldCreateFinanceEntry()
     {
         // Arrange
-        var assetId = 5L;
-        var period = new DateTime(2023, 10, 1);
-        var entryType = "depreciation";
-        var amount = 2500.75m;
+        long assetId = 5L;
+        DateTime period = new(2023, 10, 1);
+        string entryType = "depreciation";
+        decimal amount = 2500.75m;
 
         // Act
-        var entry = FinanceEntry.Create(assetId, period, entryType, amount);
+        FinanceEntry entry = FinanceEntry.Create(assetId, period, entryType, amount);
 
         // Assert
         entry.Amount.Should().Be(amount);
@@ -102,15 +102,15 @@ public class FinanceEntryTests
     public void Create_WithDifferentEntryTypes_ShouldCreateFinanceEntry()
     {
         // Arrange
-        var assetId = 6L;
-        var period = new DateTime(2023, 10, 1);
-        var amount = 1000.00m;
-        var entryTypes = new[] { "depreciation", "adjustment", "writeoff", "revaluation" };
+        long assetId = 6L;
+        DateTime period = new(2023, 10, 1);
+        decimal amount = 1000.00m;
+        string[] entryTypes = new[] { "depreciation", "adjustment", "writeoff", "revaluation" };
 
         // Act & Assert
-        foreach (var entryType in entryTypes)
+        foreach (string entryType in entryTypes)
         {
-            var entry = FinanceEntry.Create(assetId, period, entryType, amount);
+            FinanceEntry entry = FinanceEntry.Create(assetId, period, entryType, amount);
             entry.EntryType.Should().Be(entryType);
         }
     }
@@ -119,13 +119,13 @@ public class FinanceEntryTests
     public void Create_WithNullBookValueAfter_ShouldCreateFinanceEntryWithNullBookValue()
     {
         // Arrange
-        var assetId = 7L;
-        var period = new DateTime(2023, 10, 1);
-        var entryType = "depreciation";
-        var amount = 500.00m;
+        long assetId = 7L;
+        DateTime period = new(2023, 10, 1);
+        string entryType = "depreciation";
+        decimal amount = 500.00m;
 
         // Act
-        var entry = FinanceEntry.Create(assetId, period, entryType, amount, null);
+        FinanceEntry entry = FinanceEntry.Create(assetId, period, entryType, amount, null);
 
         // Assert
         entry.BookValueAfter.Should().BeNull();
@@ -135,13 +135,13 @@ public class FinanceEntryTests
     public void Create_WithNullCreatedBy_ShouldCreateFinanceEntryWithNullCreatedBy()
     {
         // Arrange
-        var assetId = 8L;
-        var period = new DateTime(2023, 10, 1);
-        var entryType = "adjustment";
-        var amount = 200.00m;
+        long assetId = 8L;
+        DateTime period = new(2023, 10, 1);
+        string entryType = "adjustment";
+        decimal amount = 200.00m;
 
         // Act
-        var entry = FinanceEntry.Create(assetId, period, entryType, amount, null, null);
+        FinanceEntry entry = FinanceEntry.Create(assetId, period, entryType, amount, null, null);
 
         // Assert
         entry.CreatedById.Should().BeNull();

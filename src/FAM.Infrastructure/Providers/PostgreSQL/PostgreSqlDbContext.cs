@@ -18,6 +18,7 @@ using FAM.Domain.Suppliers;
 using FAM.Domain.Types;
 using FAM.Domain.Users;
 using FAM.Domain.Users.Entities;
+using FAM.Infrastructure.Common.Abstractions;
 using FAM.Infrastructure.Common.Extensions;
 using FAM.Infrastructure.Common.Options;
 
@@ -28,8 +29,9 @@ namespace FAM.Infrastructure.Providers.PostgreSQL;
 
 /// <summary>
 /// PostgreSQL DbContext for EF Core
+/// Implements IDbContext for clean architecture compatibility
 /// </summary>
-public class PostgreSqlDbContext : DbContext
+public class PostgreSqlDbContext : DbContext, IDbContext
 {
     private readonly PostgreSqlOptions _options;
 
@@ -105,10 +107,14 @@ public class PostgreSqlDbContext : DbContext
             .UseSnakeCaseNamingConvention();
 
         if (_options.EnableDetailedErrors)
+        {
             optionsBuilder.EnableDetailedErrors();
+        }
 
         if (_options.EnableSensitiveDataLogging)
+        {
             optionsBuilder.EnableSensitiveDataLogging();
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -124,7 +130,9 @@ public class PostgreSqlDbContext : DbContext
                             (p.Name == "CreatedBy" || p.Name == "UpdatedBy" || p.Name == "DeletedBy"));
 
             foreach (PropertyInfo navProperty in auditNavProperties)
+            {
                 modelBuilder.Entity(entityType.ClrType).Ignore(navProperty.Name);
+            }
         }
 
         // Auto-load all entity configurations from this assembly

@@ -1,5 +1,6 @@
 using FAM.Domain.Common.Base;
 using FAM.Domain.Common.Interfaces;
+using FAM.Domain.ValueObjects;
 
 namespace FAM.Domain.Organizations;
 
@@ -27,12 +28,16 @@ public class DepartmentDetails : BaseEntity, IHasCreationTime, IHasCreator, IHas
     public static DepartmentDetails Create(string? costCenter = null, int? headcount = null, decimal? budgetYear = null)
     {
         if (headcount.HasValue && headcount.Value < 0)
+        {
             throw new DomainException("Headcount cannot be negative");
+        }
 
         if (budgetYear.HasValue && budgetYear.Value < 0)
+        {
             throw new DomainException("Budget year cannot be negative");
+        }
 
-        var departmentDetails = new DepartmentDetails
+        DepartmentDetails departmentDetails = new()
         {
             Headcount = headcount,
             BudgetYear = budgetYear
@@ -51,10 +56,14 @@ public class DepartmentDetails : BaseEntity, IHasCreationTime, IHasCreator, IHas
     public void Update(string? costCenter, int? headcount, decimal? budgetYear)
     {
         if (headcount.HasValue && headcount.Value < 0)
+        {
             throw new DomainException("Headcount cannot be negative");
+        }
 
         if (budgetYear.HasValue && budgetYear.Value < 0)
+        {
             throw new DomainException("Budget year cannot be negative");
+        }
 
         CostCenter = ValidateCostCenter(costCenter);
         Headcount = headcount;
@@ -79,9 +88,11 @@ public class DepartmentDetails : BaseEntity, IHasCreationTime, IHasCreator, IHas
     private string? ValidateCostCenter(string? costCenter)
     {
         if (string.IsNullOrWhiteSpace(costCenter))
+        {
             return null;
+        }
 
-        var costCenterVo = ValueObjects.CostCenter.Create(costCenter);
+        CostCenter costCenterVo = ValueObjects.CostCenter.Create(costCenter);
         return costCenterVo.Value;
     }
 }

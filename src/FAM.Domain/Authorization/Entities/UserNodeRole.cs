@@ -85,10 +85,14 @@ public class UserNodeRole
         DateTime now = DateTime.UtcNow;
 
         if (StartAt.HasValue && now < StartAt.Value)
+        {
             return false;
+        }
 
         if (EndAt.HasValue && now > EndAt.Value)
+        {
             return false;
+        }
 
         return true;
     }
@@ -96,8 +100,10 @@ public class UserNodeRole
     private static void ValidateDateRange(DateTime? startAt, DateTime? endAt)
     {
         if (endAt.HasValue && startAt.HasValue && endAt.Value <= startAt.Value)
+        {
             throw new DomainException(
                 ErrorCodes.ROLE_ASSIGNMENT_INVALID_DATE_RANGE,
                 "End date must be after start date");
+        }
     }
 }

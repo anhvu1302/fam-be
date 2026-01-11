@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 
 using FAM.Domain.Abstractions;
 using FAM.Domain.Users.Entities;
+using FAM.Infrastructure.Common.Abstractions;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -11,48 +12,50 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 /// <summary>
 /// PostgreSQL implementation of IUserThemeRepository
 /// Uses Pragmatic Architecture - directly works with Domain entities
+/// Follows Clean Architecture by depending on IDbContext
 /// </summary>
 public class UserThemeRepository : IUserThemeRepository
 {
-    private readonly PostgreSqlDbContext _context;
+    private readonly IDbContext _context;
+    protected DbSet<UserTheme> DbSet => _context.Set<UserTheme>();
 
-    public UserThemeRepository(PostgreSqlDbContext context)
+    public UserThemeRepository(IDbContext context)
     {
         _context = context;
     }
 
     public async Task<UserTheme?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _context.UserThemes.FindAsync(new object[] { id }, cancellationToken);
+        return await DbSet.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public async Task<UserTheme?> GetByUserIdAsync(long userId, CancellationToken cancellationToken = default)
     {
-        return await _context.UserThemes
+        return await DbSet
             .FirstOrDefaultAsync(ut => ut.UserId == userId && !ut.IsDeleted, cancellationToken);
     }
 
     public async Task<bool> ExistsByUserIdAsync(long userId, CancellationToken cancellationToken = default)
     {
-        return await _context.UserThemes
+        return await DbSet
             .AnyAsync(ut => ut.UserId == userId && !ut.IsDeleted, cancellationToken);
     }
 
     public async Task<IEnumerable<UserTheme>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.UserThemes.ToListAsync(cancellationToken);
+        return await DbSet.ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<UserTheme>> FindAsync(Expression<Func<UserTheme, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
         // Apply predicate at database level - no need for in-memory filtering
-        return await _context.UserThemes.Where(predicate).ToListAsync(cancellationToken);
+        return await DbSet.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(UserTheme entity, CancellationToken cancellationToken = default)
     {
-        await _context.UserThemes.AddAsync(entity, cancellationToken);
+        await DbSet.AddAsync(entity, cancellationToken);
     }
 
     public void Update(UserTheme entity)
@@ -66,18 +69,18 @@ public class UserThemeRepository : IUserThemeRepository
         }
         else
         {
-            _context.UserThemes.Attach(entity);
+            DbSet.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
         }
     }
 
     public void Delete(UserTheme entity)
     {
-        _context.UserThemes.Remove(entity);
+        DbSet.Remove(entity);
     }
 
     public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _context.UserThemes.AnyAsync(ut => ut.Id == id && !ut.IsDeleted, cancellationToken);
+        return await DbSet.AnyAsync(ut => ut.Id == id && !ut.IsDeleted, cancellationToken);
     }
 }

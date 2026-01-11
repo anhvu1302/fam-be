@@ -26,12 +26,16 @@ public sealed class Url : ValueObject
     public static Url Create(string url)
     {
         if (string.IsNullOrWhiteSpace(url))
+        {
             throw new DomainException(ErrorCodes.VO_URL_EMPTY);
+        }
 
         url = url.Trim();
 
         if (!IsValidUrl(url))
+        {
             throw new DomainException(ErrorCodes.VO_URL_INVALID);
+        }
 
         return new Url(url);
     }
@@ -42,11 +46,13 @@ public sealed class Url : ValueObject
     private static bool IsValidUrl(string url)
     {
         if (!url.Contains("://"))
+        {
             return false;
+        }
 
         try
         {
-            var uri = new Uri(url);
+            Uri uri = new(url);
             return uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps;
         }
         catch
@@ -62,7 +68,7 @@ public sealed class Url : ValueObject
     {
         try
         {
-            var uri = new Uri(Value);
+            Uri uri = new(Value);
             return uri.Host;
         }
         catch
@@ -78,7 +84,7 @@ public sealed class Url : ValueObject
     {
         try
         {
-            var uri = new Uri(Value);
+            Uri uri = new(Value);
             return uri.Scheme;
         }
         catch

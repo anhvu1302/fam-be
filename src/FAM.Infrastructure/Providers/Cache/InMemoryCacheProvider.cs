@@ -58,7 +58,7 @@ public sealed class InMemoryCacheProvider : ICacheProvider
 
     public async ValueTask<bool> ExistsAsync(string key, CancellationToken cancellationToken = default)
     {
-        var value = await GetAsync(key, cancellationToken);
+        string? value = await GetAsync(key, cancellationToken);
         return value != null;
     }
 
@@ -87,9 +87,12 @@ public sealed class InMemoryCacheProvider : ICacheProvider
     public async ValueTask<string?> ListLeftPopAsync(string key, CancellationToken cancellationToken = default)
     {
         List<string> list = await GetListAsync(key);
-        if (list.Count == 0) return null;
+        if (list.Count == 0)
+        {
+            return null;
+        }
 
-        var value = list[0];
+        string value = list[0];
         list.RemoveAt(0);
         await SetListAsync(key, list);
         return value;
@@ -108,21 +111,30 @@ public sealed class InMemoryCacheProvider : ICacheProvider
         CancellationToken cancellationToken = default)
     {
         List<string> list = await GetListAsync(key);
-        if (list.Count == 0) return Array.Empty<string>();
+        if (list.Count == 0)
+        {
+            return Array.Empty<string>();
+        }
 
-        var startIdx = (int)Math.Max(0, start);
-        var endIdx = stop == -1 ? list.Count - 1 : (int)Math.Min(list.Count - 1, stop);
+        int startIdx = (int)Math.Max(0, start);
+        int endIdx = stop == -1 ? list.Count - 1 : (int)Math.Min(list.Count - 1, stop);
 
-        if (startIdx >= list.Count) return Array.Empty<string>();
+        if (startIdx >= list.Count)
+        {
+            return Array.Empty<string>();
+        }
 
-        var count = endIdx - startIdx + 1;
+        int count = endIdx - startIdx + 1;
         return list.Skip(startIdx).Take(count).ToList();
     }
 
     private async ValueTask<List<string>> GetListAsync(string key)
     {
-        var json = await GetAsync(key);
-        if (string.IsNullOrEmpty(json)) return new List<string>();
+        string? json = await GetAsync(key);
+        if (string.IsNullOrEmpty(json))
+        {
+            return new List<string>();
+        }
 
         try
         {
@@ -136,7 +148,7 @@ public sealed class InMemoryCacheProvider : ICacheProvider
 
     private async ValueTask SetListAsync(string key, List<string> list)
     {
-        var json = JsonSerializer.Serialize(list);
+        string json = JsonSerializer.Serialize(list);
         await SetAsync(key, json);
     }
 
@@ -157,15 +169,19 @@ public sealed class InMemoryCacheProvider : ICacheProvider
         CancellationToken cancellationToken = default)
     {
         Dictionary<string, string> hash = await GetHashAsync(key);
-        return hash.TryGetValue(field, out var value) ? value : null;
+        return hash.TryGetValue(field, out string? value) ? value : null;
     }
 
     public async ValueTask<bool> HashDeleteAsync(string key, string field,
         CancellationToken cancellationToken = default)
     {
         Dictionary<string, string> hash = await GetHashAsync(key);
-        var removed = hash.Remove(field);
-        if (removed) await SetHashAsync(key, hash);
+        bool removed = hash.Remove(field);
+        if (removed)
+        {
+            await SetHashAsync(key, hash);
+        }
+
         return removed;
     }
 
@@ -177,8 +193,11 @@ public sealed class InMemoryCacheProvider : ICacheProvider
 
     private async ValueTask<Dictionary<string, string>> GetHashAsync(string key)
     {
-        var json = await GetAsync(key);
-        if (string.IsNullOrEmpty(json)) return new Dictionary<string, string>();
+        string? json = await GetAsync(key);
+        if (string.IsNullOrEmpty(json))
+        {
+            return new Dictionary<string, string>();
+        }
 
         try
         {
@@ -193,7 +212,7 @@ public sealed class InMemoryCacheProvider : ICacheProvider
 
     private async ValueTask SetHashAsync(string key, Dictionary<string, string> hash)
     {
-        var json = JsonSerializer.Serialize(hash);
+        string json = JsonSerializer.Serialize(hash);
         await SetAsync(key, json);
     }
 
@@ -201,16 +220,24 @@ public sealed class InMemoryCacheProvider : ICacheProvider
     public async ValueTask<bool> SetAddAsync(string key, string value, CancellationToken cancellationToken = default)
     {
         HashSet<string> set = await GetSetAsync(key);
-        var added = set.Add(value);
-        if (added) await SetSetAsync(key, set);
+        bool added = set.Add(value);
+        if (added)
+        {
+            await SetSetAsync(key, set);
+        }
+
         return added;
     }
 
     public async ValueTask<bool> SetRemoveAsync(string key, string value, CancellationToken cancellationToken = default)
     {
         HashSet<string> set = await GetSetAsync(key);
-        var removed = set.Remove(value);
-        if (removed) await SetSetAsync(key, set);
+        bool removed = set.Remove(value);
+        if (removed)
+        {
+            await SetSetAsync(key, set);
+        }
+
         return removed;
     }
 
@@ -230,8 +257,11 @@ public sealed class InMemoryCacheProvider : ICacheProvider
 
     private async ValueTask<HashSet<string>> GetSetAsync(string key)
     {
-        var json = await GetAsync(key);
-        if (string.IsNullOrEmpty(json)) return new HashSet<string>();
+        string? json = await GetAsync(key);
+        if (string.IsNullOrEmpty(json))
+        {
+            return new HashSet<string>();
+        }
 
         try
         {
@@ -246,7 +276,7 @@ public sealed class InMemoryCacheProvider : ICacheProvider
 
     private async ValueTask SetSetAsync(string key, HashSet<string> set)
     {
-        var json = JsonSerializer.Serialize(set.ToList());
+        string json = JsonSerializer.Serialize(set.ToList());
         await SetAsync(key, json);
     }
 }

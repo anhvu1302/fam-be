@@ -1,4 +1,5 @@
 using FAM.Domain.Categories;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

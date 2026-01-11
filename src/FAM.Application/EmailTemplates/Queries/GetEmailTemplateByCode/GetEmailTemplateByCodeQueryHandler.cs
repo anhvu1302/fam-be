@@ -20,7 +20,9 @@ public sealed class GetEmailTemplateByCodeQueryHandler : IRequestHandler<GetEmai
     {
         EmailTemplate? template = await _unitOfWork.EmailTemplates.GetByCodeAsync(request.Code, cancellationToken);
         if (template == null)
+        {
             return null;
+        }
 
         return template.ToDto();
     }

@@ -29,8 +29,8 @@ public class UpdateUserCommandHandlerTests
     public async Task Handle_WithValidCommand_ShouldReturnSuccessResult()
     {
         // Arrange
-        var userId = 1L;
-        var existingUser = User.CreateWithPlainPassword(
+        long userId = 1L;
+        User existingUser = User.CreateWithPlainPassword(
             "olduser",
             "old@example.com",
             "OldPass123!",
@@ -38,7 +38,7 @@ public class UpdateUserCommandHandlerTests
             "User"
         );
 
-        var command = new UpdateUserCommand(
+        UpdateUserCommand command = new(
             userId,
             "newuser",
             "new@example.com",
@@ -84,8 +84,8 @@ public class UpdateUserCommandHandlerTests
     public async Task Handle_WithNonExistentUser_ShouldReturnFailureResult()
     {
         // Arrange
-        var userId = 999L;
-        var command = new UpdateUserCommand(
+        long userId = 999L;
+        UpdateUserCommand command = new(
             userId,
             "newuser"
         );

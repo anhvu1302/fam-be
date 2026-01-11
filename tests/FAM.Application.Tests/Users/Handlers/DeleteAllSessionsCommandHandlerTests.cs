@@ -35,12 +35,12 @@ public class DeleteAllSessionsCommandHandlerTests
     public async Task Handle_WithoutExcludedDevice_ShouldDeactivateAllSessions()
     {
         // Arrange
-        var userId = 1L;
+        long userId = 1L;
         _mockUserDeviceRepository
             .Setup(x => x.DeactivateAllUserDevicesAsync(userId, null, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var command = new DeleteAllSessionsCommand(userId);
+        DeleteAllSessionsCommand command = new(userId);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);
@@ -56,11 +56,11 @@ public class DeleteAllSessionsCommandHandlerTests
     public async Task Handle_WithExcludedDevice_ShouldDeactivateAllExceptExcluded()
     {
         // Arrange
-        var userId = 1L;
-        var excludeDeviceId = "device123";
+        long userId = 1L;
+        string excludeDeviceId = "device123";
 
         // Create a real device using factory method
-        var device = UserDevice.Create(
+        UserDevice device = UserDevice.Create(
             userId,
             excludeDeviceId,
             "Test Device",
@@ -92,7 +92,7 @@ public class DeleteAllSessionsCommandHandlerTests
             .Setup(x => x.BlacklistUserTokensAsync(userId, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        var command = new DeleteAllSessionsCommand(userId, excludeDeviceId);
+        DeleteAllSessionsCommand command = new(userId, excludeDeviceId);
 
         // Act
         await _handler.Handle(command, CancellationToken.None);

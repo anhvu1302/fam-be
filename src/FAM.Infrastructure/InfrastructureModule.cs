@@ -22,22 +22,26 @@ public static class InfrastructureModule
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         // Get database provider - REQUIRED, no default
-        var providerStr = Environment.GetEnvironmentVariable("DB_PROVIDER");
+        string? providerStr = Environment.GetEnvironmentVariable("DB_PROVIDER");
         if (string.IsNullOrEmpty(providerStr))
+        {
             throw new InvalidOperationException(
                 "DB_PROVIDER environment variable is required. Valid value: 'PostgreSQL'");
+        }
 
         // Validate provider
         if (!Enum.TryParse<DatabaseProvider>(providerStr, true, out DatabaseProvider provider))
+        {
             throw new InvalidOperationException(
                 $"Invalid DB_PROVIDER value: '{providerStr}'. Valid value: 'PostgreSQL'");
+        }
 
         // Get database connection parameters
-        var dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
-        var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
-        var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "fam_db";
-        var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "";
-        var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "";
+        string dbHost = Environment.GetEnvironmentVariable("DB_HOST") ?? "localhost";
+        string dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "5432";
+        string dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "fam_db";
+        string dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "";
+        string dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "";
 
         // Build connection string based on provider
         string connectionString;
@@ -61,10 +65,10 @@ public static class InfrastructureModule
         // Register MinIO Client
         services.AddSingleton<IMinioClient>(sp =>
         {
-            var minioEndpoint = Environment.GetEnvironmentVariable("MINIO_ENDPOINT") ?? "localhost:9000";
-            var minioAccessKey = Environment.GetEnvironmentVariable("MINIO_ROOT_USER") ?? "minioadmin";
-            var minioSecretKey = Environment.GetEnvironmentVariable("MINIO_ROOT_PASSWORD") ?? "minioadmin";
-            var minioUseSsl = bool.Parse(Environment.GetEnvironmentVariable("MINIO_USE_SSL") ?? "false");
+            string minioEndpoint = Environment.GetEnvironmentVariable("MINIO_ENDPOINT") ?? "localhost:9000";
+            string minioAccessKey = Environment.GetEnvironmentVariable("MINIO_ROOT_USER") ?? "minioadmin";
+            string minioSecretKey = Environment.GetEnvironmentVariable("MINIO_ROOT_PASSWORD") ?? "minioadmin";
+            bool minioUseSsl = bool.Parse(Environment.GetEnvironmentVariable("MINIO_USE_SSL") ?? "false");
 
             return new MinioClient()
                 .WithEndpoint(minioEndpoint)

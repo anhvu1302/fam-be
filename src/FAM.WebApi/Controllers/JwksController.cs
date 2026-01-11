@@ -50,14 +50,16 @@ public class JwksController : BaseApiController
     public async Task<ActionResult<List<JwkDto>>> GetJwks(CancellationToken cancellationToken)
     {
         IEnumerable<SigningKey> keys = await _signingKeyRepository.GetAllAsync(cancellationToken);
-        var jwks = new List<JwkDto>();
+        List<JwkDto> jwks = new();
 
         foreach (SigningKey key in keys)
         {
             if (key.IsRevoked || key.IsExpired())
+            {
                 continue;
+            }
 
-            var rsa = RSA.Create();
+            RSA rsa = RSA.Create();
             rsa.ImportFromPem(key.PublicKey.AsSpan());
             RSAParameters rsaParams = rsa.ExportParameters(false);
 
@@ -136,7 +138,10 @@ public class JwksController : BaseApiController
     {
         SigningKey? key = await _signingKeyRepository.GetByIdAsync(id, cancellationToken);
         if (key == null)
+        {
             throw new NotFoundException(ErrorCodes.KEY_NOT_FOUND, "SigningKey", id);
+        }
+
         return OkResponse(key.ToSigningKeyResponse());
     }
 
@@ -171,7 +176,7 @@ public class JwksController : BaseApiController
             request.ActivateImmediately,
             cancellationToken);
 
-        var response = key.ToSigningKeyResponse();
+        SigningKeyResponse response = key.ToSigningKeyResponse();
 
         return CreatedAtAction(nameof(GetKeyById), new { id = key.Id }, response);
     }
@@ -208,7 +213,7 @@ public class JwksController : BaseApiController
             request.RevocationReason,
             cancellationToken);
 
-        var response = key.ToSigningKeyResponse();
+        SigningKeyResponse response = key.ToSigningKeyResponse();
 
         return OkResponse(response);
     }

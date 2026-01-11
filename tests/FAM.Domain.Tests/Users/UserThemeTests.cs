@@ -10,10 +10,10 @@ public class UserThemeTests
     public void CreateDefault_ShouldCreateThemeWithDefaultValues()
     {
         // Arrange
-        var userId = 1L;
+        long userId = 1L;
 
         // Act
-        var theme = UserTheme.CreateDefault(userId);
+        UserTheme theme = UserTheme.CreateDefault(userId);
 
         // Assert
         theme.Should().NotBeNull();
@@ -31,17 +31,17 @@ public class UserThemeTests
     public void Create_WithCustomValues_ShouldCreateThemeWithProvidedValues()
     {
         // Arrange
-        var userId = 1L;
-        var theme = "Dark";
-        var primaryColor = "#FF5733";
-        var transparency = 0.8m;
-        var borderRadius = 12;
-        var darkTheme = true;
-        var pinNavbar = true;
-        var compactMode = true;
+        long userId = 1L;
+        string theme = "Dark";
+        string primaryColor = "#FF5733";
+        decimal transparency = 0.8m;
+        int borderRadius = 12;
+        bool darkTheme = true;
+        bool pinNavbar = true;
+        bool compactMode = true;
 
         // Act
-        var userTheme = UserTheme.Create(
+        UserTheme userTheme = UserTheme.Create(
             userId,
             theme,
             primaryColor,
@@ -67,14 +67,14 @@ public class UserThemeTests
     public void UpdateTheme_ShouldUpdateAllThemeProperties()
     {
         // Arrange
-        var theme = UserTheme.CreateDefault(1L);
-        var newTheme = "BlueJelly";
-        var newPrimaryColor = "#3B82F6";
-        var newTransparency = 0.7m;
-        var newBorderRadius = 16;
-        var newDarkTheme = true;
-        var newPinNavbar = true;
-        var newCompactMode = false;
+        UserTheme theme = UserTheme.CreateDefault(1L);
+        string newTheme = "BlueJelly";
+        string newPrimaryColor = "#3B82F6";
+        decimal newTransparency = 0.7m;
+        int newBorderRadius = 16;
+        bool newDarkTheme = true;
+        bool newPinNavbar = true;
+        bool newCompactMode = false;
 
         // Act
         theme.UpdateTheme(
@@ -106,7 +106,7 @@ public class UserThemeTests
     public void Create_WithValidThemeName_ShouldSucceed(string themeName)
     {
         // Act
-        var theme = UserTheme.Create(1L, themeName);
+        UserTheme theme = UserTheme.Create(1L, themeName);
 
         // Assert
         theme.Theme.Should().Be(themeName);
@@ -119,7 +119,7 @@ public class UserThemeTests
     public void Create_WithValidTransparency_ShouldSucceed(decimal transparency)
     {
         // Act
-        var theme = UserTheme.Create(1L, "System", null, transparency);
+        UserTheme theme = UserTheme.Create(1L, "System", null, transparency);
 
         // Assert
         theme.Transparency.Should().Be(transparency);
@@ -133,7 +133,7 @@ public class UserThemeTests
     public void Create_WithValidBorderRadius_ShouldSucceed(int borderRadius)
     {
         // Act
-        var theme = UserTheme.Create(1L, "System", null, 0.5m, borderRadius);
+        UserTheme theme = UserTheme.Create(1L, "System", null, 0.5m, borderRadius);
 
         // Assert
         theme.BorderRadius.Should().Be(borderRadius);

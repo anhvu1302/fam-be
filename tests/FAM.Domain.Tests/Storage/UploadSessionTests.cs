@@ -3,8 +3,6 @@ using FAM.Domain.Storage;
 
 using FluentAssertions;
 
-using Xunit;
-
 namespace FAM.Domain.Tests.Storage;
 
 public class UploadSessionTests
@@ -13,18 +11,18 @@ public class UploadSessionTests
     public void Create_ShouldCreateUploadSessionWithCorrectProperties()
     {
         // Arrange
-        var uploadId = Guid.NewGuid().ToString("N");
-        var tempKey = $"tmp/{uploadId}";
-        var fileName = "test-file.pdf";
-        var fileType = FileType.Document;
-        var fileSize = 1024000L;
-        var contentType = "application/pdf";
-        var userId = 123;
-        var ttlHours = 24;
-        var idempotencyKey = "test-idempotency-key";
+        string uploadId = Guid.NewGuid().ToString("N");
+        string tempKey = $"tmp/{uploadId}";
+        string fileName = "test-file.pdf";
+        FileType fileType = FileType.Document;
+        long fileSize = 1024000L;
+        string contentType = "application/pdf";
+        int userId = 123;
+        int ttlHours = 24;
+        string idempotencyKey = "test-idempotency-key";
 
         // Act
-        var session = UploadSession.Create(
+        UploadSession session = UploadSession.Create(
             uploadId,
             tempKey,
             fileName,
@@ -56,8 +54,8 @@ public class UploadSessionTests
     public void MarkUploaded_ShouldUpdateStatusToUploaded()
     {
         // Arrange
-        var session = CreateTestSession();
-        var checksum = "abc123def456";
+        UploadSession session = CreateTestSession();
+        string checksum = "abc123def456";
 
         // Act
         session.MarkUploaded(checksum);
@@ -72,11 +70,11 @@ public class UploadSessionTests
     public void MarkUploaded_WhenNotPending_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var session = CreateTestSession();
+        UploadSession session = CreateTestSession();
         session.MarkUploaded();
 
         // Act
-        var act = () => session.MarkUploaded();
+        Action act = () => session.MarkUploaded();
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
@@ -87,11 +85,11 @@ public class UploadSessionTests
     public void Finalize_ShouldUpdateStatusToFinalized()
     {
         // Arrange
-        var session = CreateTestSession();
+        UploadSession session = CreateTestSession();
         session.MarkUploaded("checksum123");
-        var finalKey = "permanent/file-key";
-        var entityId = 456;
-        var entityType = "Asset";
+        string finalKey = "permanent/file-key";
+        int entityId = 456;
+        string entityType = "Asset";
 
         // Act
         session.Finalize(finalKey, entityId, entityType);
@@ -108,15 +106,15 @@ public class UploadSessionTests
     public void Finalize_WithChecksumMismatch_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var session = CreateTestSession();
+        UploadSession session = CreateTestSession();
         session.MarkUploaded("checksum123");
-        var finalKey = "permanent/file-key";
-        var entityId = 456;
-        var entityType = "Asset";
-        var wrongChecksum = "wrongchecksum";
+        string finalKey = "permanent/file-key";
+        int entityId = 456;
+        string entityType = "Asset";
+        string wrongChecksum = "wrongchecksum";
 
         // Act
-        var act = () => session.Finalize(finalKey, entityId, entityType, wrongChecksum);
+        Action act = () => session.Finalize(finalKey, entityId, entityType, wrongChecksum);
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
@@ -127,11 +125,11 @@ public class UploadSessionTests
     public void Finalize_WhenNotUploadedOrPending_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var session = CreateTestSession();
+        UploadSession session = CreateTestSession();
         session.MarkFailed("Test failure");
 
         // Act
-        var act = () => session.Finalize("key", 1, "Asset");
+        Action act = () => session.Finalize("key", 1, "Asset");
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
@@ -142,8 +140,8 @@ public class UploadSessionTests
     public void MarkFailed_ShouldUpdateStatusToFailed()
     {
         // Arrange
-        var session = CreateTestSession();
-        var reason = "Upload failed due to network error";
+        UploadSession session = CreateTestSession();
+        string reason = "Upload failed due to network error";
 
         // Act
         session.MarkFailed(reason);
@@ -157,12 +155,12 @@ public class UploadSessionTests
     public void MarkFailed_WhenFinalized_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var session = CreateTestSession();
+        UploadSession session = CreateTestSession();
         session.MarkUploaded();
         session.Finalize("key", 1, "Asset");
 
         // Act
-        var act = () => session.MarkFailed("reason");
+        Action act = () => session.MarkFailed("reason");
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
@@ -173,7 +171,7 @@ public class UploadSessionTests
     public void MarkExpired_ShouldUpdateStatusToExpired()
     {
         // Arrange
-        var session = CreateTestSession();
+        UploadSession session = CreateTestSession();
 
         // Act
         session.MarkExpired();
@@ -187,12 +185,12 @@ public class UploadSessionTests
     public void MarkExpired_WhenFinalized_ShouldThrowInvalidOperationException()
     {
         // Arrange
-        var session = CreateTestSession();
+        UploadSession session = CreateTestSession();
         session.MarkUploaded();
         session.Finalize("key", 1, "Asset");
 
         // Act
-        var act = () => session.MarkExpired();
+        Action act = () => session.MarkExpired();
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
@@ -203,7 +201,7 @@ public class UploadSessionTests
     public void MarkCleanedUp_ShouldUpdateStatusToCleanedUp()
     {
         // Arrange
-        var session = CreateTestSession();
+        UploadSession session = CreateTestSession();
 
         // Act
         session.MarkCleanedUp();
@@ -217,10 +215,10 @@ public class UploadSessionTests
     public void MarkCleanedUp_WhenFinalized_ShouldNotUpdateStatus()
     {
         // Arrange
-        var session = CreateTestSession();
+        UploadSession session = CreateTestSession();
         session.MarkUploaded();
         session.Finalize("key", 1, "Asset");
-        var originalStatus = session.Status;
+        UploadSessionStatus originalStatus = session.Status;
 
         // Act
         session.MarkCleanedUp();
@@ -236,8 +234,8 @@ public class UploadSessionTests
     public void CanBeCleanedUp_ShouldReturnCorrectValue(UploadSessionStatus status, bool expectedCanCleanup)
     {
         // Arrange
-        var session = CreateTestSession();
-        
+        UploadSession session = CreateTestSession();
+
         // Set status based on test case
         switch (status)
         {
@@ -254,7 +252,7 @@ public class UploadSessionTests
         }
 
         // Act
-        var canCleanup = session.CanBeCleanedUp();
+        bool canCleanup = session.CanBeCleanedUp();
 
         // Assert
         canCleanup.Should().Be(expectedCanCleanup);
@@ -264,8 +262,8 @@ public class UploadSessionTests
     public void SoftDelete_ShouldMarkAsDeleted()
     {
         // Arrange
-        var session = CreateTestSession();
-        var deletedById = 999L;
+        UploadSession session = CreateTestSession();
+        long deletedById = 999L;
 
         // Act
         session.SoftDelete(deletedById);
@@ -280,7 +278,7 @@ public class UploadSessionTests
     public void Restore_ShouldUnmarkAsDeleted()
     {
         // Arrange
-        var session = CreateTestSession();
+        UploadSession session = CreateTestSession();
         session.SoftDelete();
 
         // Act
@@ -294,7 +292,7 @@ public class UploadSessionTests
 
     private static UploadSession CreateTestSession()
     {
-        var uploadId = Guid.NewGuid().ToString("N");
+        string uploadId = Guid.NewGuid().ToString("N");
         return UploadSession.Create(
             uploadId,
             $"tmp/{uploadId}",

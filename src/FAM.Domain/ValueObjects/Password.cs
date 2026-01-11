@@ -30,14 +30,16 @@ public sealed class Password : ValueObject
     public static Password Create(string plainPassword)
     {
         if (string.IsNullOrWhiteSpace(plainPassword))
+        {
             throw new DomainException(ErrorCodes.VO_PASSWORD_EMPTY);
+        }
 
         // Validate password strength
         ValidatePasswordStrength(plainPassword);
 
         // Generate salt and hash
-        var salt = GenerateSalt();
-        var hash = HashPassword(plainPassword, salt);
+        string salt = GenerateSalt();
+        string hash = HashPassword(plainPassword, salt);
 
         return new Password(hash, salt);
     }
@@ -48,10 +50,14 @@ public sealed class Password : ValueObject
     public static Password FromHash(string hash, string salt)
     {
         if (string.IsNullOrWhiteSpace(hash))
+        {
             throw new DomainException(ErrorCodes.VO_PASSWORD_EMPTY);
+        }
 
         if (string.IsNullOrWhiteSpace(salt))
+        {
             throw new DomainException(ErrorCodes.VO_PASSWORD_EMPTY);
+        }
 
         return new Password(hash, salt);
     }
@@ -63,22 +69,34 @@ public sealed class Password : ValueObject
     private static void ValidatePasswordStrength(string password)
     {
         if (password.Length < DomainRules.Password.MinLength)
+        {
             throw new DomainException(ErrorCodes.VO_PASSWORD_TOO_SHORT, DomainRules.Password.MinLength);
+        }
 
         if (password.Length > DomainRules.Password.MaxLength)
+        {
             throw new DomainException(ErrorCodes.VO_PASSWORD_TOO_LONG, DomainRules.Password.MaxLength);
+        }
 
         if (!DomainRules.Password.HasUppercase(password))
+        {
             throw new DomainException(ErrorCodes.VO_PASSWORD_NO_UPPERCASE);
+        }
 
         if (!DomainRules.Password.HasLowercase(password))
+        {
             throw new DomainException(ErrorCodes.VO_PASSWORD_NO_LOWERCASE);
+        }
 
         if (!DomainRules.Password.HasDigit(password))
+        {
             throw new DomainException(ErrorCodes.VO_PASSWORD_NO_NUMBER);
+        }
 
         if (!DomainRules.Password.HasSpecialChar(password))
+        {
             throw new DomainException(ErrorCodes.VO_PASSWORD_NO_SPECIAL);
+        }
     }
 
     /// <summary>
@@ -86,7 +104,7 @@ public sealed class Password : ValueObject
     /// </summary>
     public bool Verify(string plainPassword)
     {
-        var computedHash = HashPassword(plainPassword, Salt);
+        string computedHash = HashPassword(plainPassword, Salt);
         return Hash == computedHash;
     }
 
@@ -105,10 +123,10 @@ public sealed class Password : ValueObject
     private static string HashPassword(string password, string salt)
     {
         // Simple hashing - in production, use PBKDF2, Argon2, or similar
-        using var sha256 = SHA256.Create();
-        var combined = password + salt;
-        var bytes = Encoding.UTF8.GetBytes(combined);
-        var hash = sha256.ComputeHash(bytes);
+        using SHA256 sha256 = SHA256.Create();
+        string combined = password + salt;
+        byte[] bytes = Encoding.UTF8.GetBytes(combined);
+        byte[] hash = sha256.ComputeHash(bytes);
         return Convert.ToBase64String(hash);
     }
 

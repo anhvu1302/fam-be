@@ -24,13 +24,13 @@ public class BackendOptions
     /// </summary>
     public string GetBaseUrl()
     {
-        var url = BaseUrl.TrimEnd('/');
+        string url = BaseUrl.TrimEnd('/');
 
         // If Port is specified and URL doesn't already have a port, add it
-        var schemeEndIndex = url.IndexOf("://", StringComparison.Ordinal);
+        int schemeEndIndex = url.IndexOf("://", StringComparison.Ordinal);
         if (Port.HasValue && schemeEndIndex >= 0 && !url.Substring(schemeEndIndex + 3).Contains(':'))
         {
-            var uri = new Uri(url);
+            Uri uri = new(url);
             return $"{uri.Scheme}://{uri.Host}:{Port.Value}";
         }
 
@@ -91,13 +91,13 @@ public class FrontendOptions
     /// </summary>
     private string GetBaseUrl()
     {
-        var url = BaseUrl.TrimEnd('/');
+        string url = BaseUrl.TrimEnd('/');
 
         // If Port is specified and URL doesn't already have a port, add it
-        var schemeEndIndex = url.IndexOf("://", StringComparison.Ordinal);
+        int schemeEndIndex = url.IndexOf("://", StringComparison.Ordinal);
         if (Port.HasValue && schemeEndIndex >= 0 && !url.Substring(schemeEndIndex + 3).Contains(':'))
         {
-            var uri = new Uri(url);
+            Uri uri = new(url);
             return $"{uri.Scheme}://{uri.Host}:{Port.Value}";
         }
 

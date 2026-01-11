@@ -19,16 +19,21 @@ public sealed class RevokePermissionsFromRoleCommandHandler : IRequestHandler<Re
     {
         Role? role = await _unitOfWork.Roles.GetByIdAsync(request.RoleId, cancellationToken);
         if (role == null)
+        {
             throw new NotFoundException(ErrorCodes.ROLE_NOT_FOUND, $"Role with ID {request.RoleId} not found");
+        }
 
         IEnumerable<RolePermission> existingRolePermissions =
             await _unitOfWork.RolePermissions.GetByRoleIdAsync(request.RoleId, cancellationToken);
 
-        foreach (var permissionId in request.PermissionIds)
+        foreach (long permissionId in request.PermissionIds)
         {
             RolePermission? rolePermission =
                 existingRolePermissions.FirstOrDefault(rp => rp.PermissionId == permissionId);
-            if (rolePermission != null) _unitOfWork.RolePermissions.Delete(rolePermission);
+            if (rolePermission != null)
+            {
+                _unitOfWork.RolePermissions.Delete(rolePermission);
+            }
         }
 
         await _unitOfWork.SaveChangesAsync(cancellationToken);

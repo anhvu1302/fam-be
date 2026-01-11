@@ -23,7 +23,7 @@ public class RequireDeviceIdMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         // Skip validation for public endpoints (login, refresh, etc.)
-        var path = context.Request.Path.Value?.ToLower() ?? string.Empty;
+        string path = context.Request.Path.Value?.ToLower() ?? string.Empty;
         if (IsPublicEndpoint(path))
         {
             await _next(context);
@@ -32,7 +32,7 @@ public class RequireDeviceIdMiddleware
 
         // Get endpoint metadata to check if [RequireDeviceId] is applied
         Endpoint? endpoint = context.GetEndpoint();
-        var requiresDeviceId = endpoint?.Metadata.GetMetadata<RequireDeviceIdAttribute>() != null;
+        bool requiresDeviceId = endpoint?.Metadata.GetMetadata<RequireDeviceIdAttribute>() != null;
 
         // If endpoint doesn't require device_id, skip validation
         if (!requiresDeviceId)
@@ -42,13 +42,16 @@ public class RequireDeviceIdMiddleware
         }
 
         // Check if request has Authorization header (authenticated request)
-        var authHeader = context.Request.Headers["Authorization"].ToString();
+        string authHeader = context.Request.Headers["Authorization"].ToString();
         if (!string.IsNullOrEmpty(authHeader))
         {
             // Check for deviceId in cookie or header
-            var deviceId = context.Request.Cookies["device_id"];
+            string? deviceId = context.Request.Cookies["device_id"];
 
-            if (string.IsNullOrEmpty(deviceId)) deviceId = context.Request.Headers["X-Device-Id"].ToString();
+            if (string.IsNullOrEmpty(deviceId))
+            {
+                deviceId = context.Request.Headers["X-Device-Id"].ToString();
+            }
 
             if (string.IsNullOrEmpty(deviceId))
             {
@@ -58,7 +61,7 @@ public class RequireDeviceIdMiddleware
                 context.Response.StatusCode = 400;
                 context.Response.ContentType = "application/json";
 
-                var errorResponse = new ApiErrorResponse(
+                ApiErrorResponse errorResponse = new(
                     false,
                     new List<ApiError>
                     {
@@ -69,7 +72,7 @@ public class RequireDeviceIdMiddleware
                     }
                 );
 
-                var json = JsonSerializer.Serialize(errorResponse,
+                string json = JsonSerializer.Serialize(errorResponse,
                     new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
                 await context.Response.WriteAsync(json);
                 return;
@@ -82,7 +85,7 @@ public class RequireDeviceIdMiddleware
     private static bool IsPublicEndpoint(string path)
     {
         // List of endpoints that don't require any device validation
-        var publicPaths = new[]
+        string[] publicPaths = new[]
         {
             "/api/auth/login",
             "/api/auth/verify-2fa",

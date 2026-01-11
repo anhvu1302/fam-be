@@ -34,9 +34,17 @@ public static class DomainRules
         /// </summary>
         public static bool IsValid(string username)
         {
-            if (string.IsNullOrWhiteSpace(username)) return false;
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return false;
+            }
+
             username = username.Trim();
-            if (username.Length < MinLength || username.Length > MaxLength) return false;
+            if (username.Length < MinLength || username.Length > MaxLength)
+            {
+                return false;
+            }
+
             return IsValidFormat(username);
         }
     }
@@ -97,8 +105,15 @@ public static class DomainRules
         /// </summary>
         public static bool IsValid(string password)
         {
-            if (string.IsNullOrWhiteSpace(password)) return false;
-            if (password.Length < MinLength || password.Length > MaxLength) return false;
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                return false;
+            }
+
+            if (password.Length < MinLength || password.Length > MaxLength)
+            {
+                return false;
+            }
 
             return HasUppercase(password)
                    && HasLowercase(password)
@@ -121,10 +136,14 @@ public static class DomainRules
         /// </summary>
         public static bool IsValidFormat(string email)
         {
-            if (string.IsNullOrWhiteSpace(email)) return false;
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return false;
+            }
+
             try
             {
-                var addr = new MailAddress(email);
+                MailAddress addr = new(email);
                 return addr.Address == email;
             }
             catch
@@ -150,8 +169,12 @@ public static class DomainRules
         /// </summary>
         public static bool IsValidLength(string phoneDigits)
         {
-            if (string.IsNullOrWhiteSpace(phoneDigits)) return false;
-            var length = phoneDigits.Length;
+            if (string.IsNullOrWhiteSpace(phoneDigits))
+            {
+                return false;
+            }
+
+            int length = phoneDigits.Length;
             return length >= MinLength && length <= MaxLength;
         }
     }

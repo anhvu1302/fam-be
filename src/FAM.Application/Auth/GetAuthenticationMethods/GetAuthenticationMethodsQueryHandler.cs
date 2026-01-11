@@ -34,13 +34,16 @@ public class
         User? user = await _unitOfWork.Users.GetByIdAsync(request.UserId, cancellationToken);
 
         if (user == null)
+        {
             throw new KeyNotFoundException($"User with ID {request.UserId} not found");
+        }
 
         // Parse recovery codes để đếm
-        var remainingRecoveryCodes = 0;
-        var recoveryCodesConfigured = false;
+        int remainingRecoveryCodes = 0;
+        bool recoveryCodesConfigured = false;
 
         if (!string.IsNullOrWhiteSpace(user.TwoFactorBackupCodes))
+        {
             try
             {
                 List<string>? codes = JsonSerializer.Deserialize<List<string>>(user.TwoFactorBackupCodes);
@@ -54,11 +57,12 @@ public class
             {
                 _logger.LogWarning(ex, "Failed to parse recovery codes for user {UserId}", request.UserId);
             }
+        }
 
         // Mask email để hiển thị
-        var maskedEmail = MaskEmail(user.Email);
+        string maskedEmail = MaskEmail(user.Email);
 
-        var response = new AuthenticationMethodsResponse
+        AuthenticationMethodsResponse response = new()
         {
             EmailAuthenticationEnabled = user.IsEmailVerified,
             MaskedEmail = maskedEmail,
@@ -71,6 +75,7 @@ public class
 
         // Thêm email OTP method nếu email đã verified
         if (user.IsEmailVerified)
+        {
             response.AvailableMethods.Add(new AuthenticationMethodInfo
             {
                 MethodType = "email_otp",
@@ -79,9 +84,11 @@ public class
                 IsPrimary = !user.TwoFactorEnabled, // Email là primary nếu chưa bật 2FA
                 AdditionalInfo = $"Send code to {maskedEmail}"
             });
+        }
 
         // Thêm authenticator app method nếu đã bật 2FA
         if (user.TwoFactorEnabled)
+        {
             response.AvailableMethods.Add(new AuthenticationMethodInfo
             {
                 MethodType = "authenticator_app",
@@ -92,9 +99,11 @@ public class
                     ? $"Enabled since {user.TwoFactorSetupDate.Value:yyyy-MM-dd}"
                     : "Enabled"
             });
+        }
 
         // Thêm recovery code method nếu có recovery codes
         if (recoveryCodesConfigured)
+        {
             response.AvailableMethods.Add(new AuthenticationMethodInfo
             {
                 MethodType = "recovery_code",
@@ -103,6 +112,7 @@ public class
                 IsPrimary = false,
                 AdditionalInfo = $"{remainingRecoveryCodes} codes remaining"
             });
+        }
 
         return response;
     }
@@ -113,20 +123,26 @@ public class
     private static string MaskEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
+        {
             return string.Empty;
+        }
 
-        var parts = email.Split('@');
+        string[] parts = email.Split('@');
         if (parts.Length != 2)
+        {
             return email;
+        }
 
-        var localPart = parts[0];
-        var domain = parts[1];
+        string localPart = parts[0];
+        string domain = parts[1];
 
         if (localPart.Length <= 2)
+        {
             return $"{localPart[0]}***@{domain}";
+        }
 
-        var visibleChars = Math.Min(2, localPart.Length / 2);
-        var maskedPart = localPart.Substring(0, visibleChars) + "***";
+        int visibleChars = Math.Min(2, localPart.Length / 2);
+        string maskedPart = localPart.Substring(0, visibleChars) + "***";
 
         return $"{maskedPart}@{domain}";
     }

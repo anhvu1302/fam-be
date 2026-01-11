@@ -16,39 +16,51 @@ public static class ModelBuilderExtensions
         foreach (IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
         {
             if (entity.IsOwned())
+            {
                 continue;
+            }
 
             // table name
-            var tableName = entity.GetTableName();
+            string? tableName = entity.GetTableName();
             if (!string.IsNullOrEmpty(tableName))
+            {
                 entity.SetTableName(ToSnakeCase(tableName));
+            }
 
             // columns
             foreach (IMutableProperty property in entity.GetProperties())
+            {
                 property.SetColumnName(ToSnakeCase(property.Name));
+            }
 
             // keys
             foreach (IMutableKey key in entity.GetKeys())
             {
-                var keyName = key.GetName();
+                string? keyName = key.GetName();
                 if (!string.IsNullOrEmpty(keyName))
+                {
                     key.SetName(ToSnakeCase(keyName));
+                }
             }
 
             // foreign keys
             foreach (IMutableForeignKey fk in entity.GetForeignKeys())
             {
-                var fkName = fk.GetConstraintName();
+                string? fkName = fk.GetConstraintName();
                 if (!string.IsNullOrEmpty(fkName))
+                {
                     fk.SetConstraintName(ToSnakeCase(fkName));
+                }
             }
 
             // indexes
             foreach (IMutableIndex index in entity.GetIndexes())
             {
-                var indexName = index.GetDatabaseName();
+                string? indexName = index.GetDatabaseName();
                 if (!string.IsNullOrEmpty(indexName))
+                {
                     index.SetDatabaseName(ToSnakeCase(indexName));
+                }
             }
         }
     }
@@ -56,16 +68,21 @@ public static class ModelBuilderExtensions
     private static string ToSnakeCase(string name)
     {
         if (string.IsNullOrEmpty(name))
-            return name;
-
-        var sb = new StringBuilder();
-        for (var i = 0; i < name.Length; i++)
         {
-            var c = name[i];
+            return name;
+        }
+
+        StringBuilder sb = new();
+        for (int i = 0; i < name.Length; i++)
+        {
+            char c = name[i];
             if (char.IsUpper(c))
             {
                 if (i > 0 && name[i - 1] != '_' && !char.IsUpper(name[i - 1]))
+                {
                     sb.Append('_');
+                }
+
                 sb.Append(char.ToLowerInvariant(c));
             }
             else

@@ -11,10 +11,10 @@ public class SupplierTests
     public void Create_WithValidName_ShouldCreateSupplier()
     {
         // Arrange
-        var name = "Test Supplier";
+        string name = "Test Supplier";
 
         // Act
-        var supplier = Supplier.Create(name);
+        Supplier supplier = Supplier.Create(name);
 
         // Assert
         supplier.Should().NotBeNull();
@@ -42,7 +42,7 @@ public class SupplierTests
     public void Create_WithEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var name = string.Empty;
+        string name = string.Empty;
 
         // Act
         Action act = () => Supplier.Create(name);
@@ -56,7 +56,7 @@ public class SupplierTests
     public void Create_WithWhitespaceName_ShouldThrowDomainException()
     {
         // Arrange
-        var name = "   ";
+        string name = "   ";
 
         // Act
         Action act = () => Supplier.Create(name);
@@ -70,12 +70,12 @@ public class SupplierTests
     public void UpdateBasicInfo_WithValidData_ShouldUpdateSupplier()
     {
         // Arrange
-        var supplier = Supplier.Create("Original Name");
-        var newName = "Updated Name";
-        var legalName = "Updated Legal Name";
-        var shortName = "Updated Short";
-        var description = "Updated Description";
-        var supplierCode = "SUP001";
+        Supplier supplier = Supplier.Create("Original Name");
+        string newName = "Updated Name";
+        string legalName = "Updated Legal Name";
+        string shortName = "Updated Short";
+        string description = "Updated Description";
+        string supplierCode = "SUP001";
 
         // Act
         supplier.UpdateBasicInfo(newName, legalName, shortName, description, supplierCode);
@@ -92,7 +92,7 @@ public class SupplierTests
     public void UpdateBasicInfo_WithNullName_ShouldThrowDomainException()
     {
         // Arrange
-        var supplier = Supplier.Create("Original Name");
+        Supplier supplier = Supplier.Create("Original Name");
         string? newName = null;
 
         // Act
@@ -107,8 +107,8 @@ public class SupplierTests
     public void UpdateBasicInfo_WithEmptyName_ShouldThrowDomainException()
     {
         // Arrange
-        var supplier = Supplier.Create("Original Name");
-        var newName = string.Empty;
+        Supplier supplier = Supplier.Create("Original Name");
+        string newName = string.Empty;
 
         // Act
         Action act = () => supplier.UpdateBasicInfo(newName, null, null, null, null);
@@ -122,7 +122,7 @@ public class SupplierTests
     public void UpdateBusinessInfo_WithNegativeEmployeeCount_ShouldThrowDomainException()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         int? employeeCount = -1;
 
         // Act
@@ -137,7 +137,7 @@ public class SupplierTests
     public void UpdateBusinessInfo_WithValidEmployeeCount_ShouldUpdateSupplier()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         int? employeeCount = 100;
 
         // Act
@@ -151,7 +151,7 @@ public class SupplierTests
     public void UpdatePerformanceMetrics_WithOnTimeDeliveryPercentageBelowZero_ShouldThrowDomainException()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         int? onTimeDeliveryPercentage = -1;
 
         // Act
@@ -166,7 +166,7 @@ public class SupplierTests
     public void UpdatePerformanceMetrics_WithOnTimeDeliveryPercentageAbove100_ShouldThrowDomainException()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         int? onTimeDeliveryPercentage = 101;
 
         // Act
@@ -181,7 +181,7 @@ public class SupplierTests
     public void UpdatePerformanceMetrics_WithDefectRateBelowZero_ShouldThrowDomainException()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         int? defectRate = -1;
 
         // Act
@@ -196,7 +196,7 @@ public class SupplierTests
     public void UpdatePerformanceMetrics_WithDefectRateAbove100_ShouldThrowDomainException()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         int? defectRate = 101;
 
         // Act
@@ -211,7 +211,7 @@ public class SupplierTests
     public void UpdatePerformanceMetrics_WithValidPercentages_ShouldUpdateSupplier()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         int? onTimeDeliveryPercentage = 95;
         int? defectRate = 2;
 
@@ -227,12 +227,12 @@ public class SupplierTests
     public void UpdateContactInfo_WithValidData_ShouldUpdateSupplier()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
-        var website = "https://example.com";
-        var email = "contact@example.com";
-        var phone = "1234567890"; // PhoneNumber.Value contains only digits
-        var fax = "1234567891";
-        var mobile = "1234567892";
+        Supplier supplier = Supplier.Create("Test Supplier");
+        string website = "https://example.com";
+        string email = "contact@example.com";
+        string phone = "1234567890"; // PhoneNumber.Value contains only digits
+        string fax = "1234567891";
+        string mobile = "1234567892";
 
         // Act
         supplier.UpdateContactInfo(website, email, phone, fax, mobile);
@@ -254,8 +254,8 @@ public class SupplierTests
     public void UpdateContactInfo_WithInvalidWebsite_ShouldThrowDomainException()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
-        var invalidWebsite = "not-a-url";
+        Supplier supplier = Supplier.Create("Test Supplier");
+        string invalidWebsite = "not-a-url";
 
         // Act
         Action act = () => supplier.UpdateContactInfo(invalidWebsite, null, null, null, null);
@@ -268,8 +268,8 @@ public class SupplierTests
     public void UpdateContactInfo_WithInvalidEmail_ShouldThrowDomainException()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
-        var invalidEmail = "not-an-email";
+        Supplier supplier = Supplier.Create("Test Supplier");
+        string invalidEmail = "not-an-email";
 
         // Act
         Action act = () => supplier.UpdateContactInfo(null, invalidEmail, null, null, null);
@@ -282,10 +282,10 @@ public class SupplierTests
     public void UpdateFinancialTerms_WithValidData_ShouldUpdateSupplier()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
-        var paymentTerms = "Net 30";
-        var paymentMethods = "Wire,Check";
-        var currency = "USD";
+        Supplier supplier = Supplier.Create("Test Supplier");
+        string paymentTerms = "Net 30";
+        string paymentMethods = "Wire,Check";
+        string currency = "USD";
         decimal? creditLimit = 50000;
         decimal? discountRate = 5.5m;
 
@@ -306,7 +306,7 @@ public class SupplierTests
     public void UpdateFinancialTerms_WithInvalidDiscountRate_ShouldThrowDomainException()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         decimal? discountRate = 150m; // Over 100%
 
         // Act
@@ -320,8 +320,8 @@ public class SupplierTests
     public void Approve_WithApprovedBy_ShouldSetApprovedStatus()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
-        var approvedBy = "Admin User";
+        Supplier supplier = Supplier.Create("Test Supplier");
+        string approvedBy = "Admin User";
 
         // Act
         supplier.Approve(approvedBy);
@@ -337,7 +337,7 @@ public class SupplierTests
     public void Reject_ShouldSetRejectedStatus()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
 
         // Act
         supplier.Reject();
@@ -351,7 +351,7 @@ public class SupplierTests
     public void Block_ShouldSetBlockedStatus()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
 
         // Act
         supplier.Block();
@@ -365,7 +365,7 @@ public class SupplierTests
     public void SetAsPreferred_ShouldSetPreferredStatus()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
 
         // Act
         supplier.SetAsPreferred();
@@ -379,7 +379,7 @@ public class SupplierTests
     public void RemovePreferred_ShouldRemovePreferredStatus()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         supplier.SetAsPreferred();
 
         // Act
@@ -394,12 +394,12 @@ public class SupplierTests
     public void GetAverageRating_WithMultipleRatings_ShouldReturnCorrectAverage()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         // Note: Rating properties are read-only, so we can't set them directly in tests
         // This test would need to be updated when rating update methods are available
 
         // Act
-        var average = supplier.GetAverageRating();
+        decimal average = supplier.GetAverageRating();
 
         // Assert
         average.Should().Be(0); // No ratings set, should return 0
@@ -409,10 +409,10 @@ public class SupplierTests
     public void GetAverageRating_WithNoRatings_ShouldReturnZero()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
 
         // Act
-        var average = supplier.GetAverageRating();
+        decimal average = supplier.GetAverageRating();
 
         // Assert
         average.Should().Be(0);
@@ -422,12 +422,12 @@ public class SupplierTests
     public void IsContractExpiring_WithExpiringContract_ShouldReturnTrue()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         // Note: ContractEndDate is read-only, so we can't set it directly in tests
         // This test would need to be updated when contract update methods are available
 
         // Act
-        var isExpiring = supplier.IsContractExpiring(30);
+        bool isExpiring = supplier.IsContractExpiring(30);
 
         // Assert
         isExpiring.Should().BeFalse(); // No contract set, should return false
@@ -437,12 +437,12 @@ public class SupplierTests
     public void IsContractExpiring_WithNonExpiringContract_ShouldReturnFalse()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         // Note: ContractEndDate is read-only, so we can't set it directly in tests
         // This test would need to be updated when contract update methods are available
 
         // Act
-        var isExpiring = supplier.IsContractExpiring(30);
+        bool isExpiring = supplier.IsContractExpiring(30);
 
         // Assert
         isExpiring.Should().BeFalse(); // No contract set, should return false
@@ -452,12 +452,12 @@ public class SupplierTests
     public void IsContractExpired_WithExpiredContract_ShouldReturnTrue()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         // Note: ContractEndDate is read-only, so we can't set it directly in tests
         // This test would need to be updated when contract update methods are available
 
         // Act
-        var isExpired = supplier.IsContractExpired();
+        bool isExpired = supplier.IsContractExpired();
 
         // Assert
         isExpired.Should().BeFalse(); // No contract set, should return false
@@ -467,12 +467,12 @@ public class SupplierTests
     public void IsContractExpiring_WithExpiredContract_ShouldReturnFalse()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         // Note: ContractEndDate is read-only, so we can't set it directly in tests
         // This test would need to be updated when contract update methods are available
 
         // Act
-        var isExpiring = supplier.IsContractExpiring(30);
+        bool isExpiring = supplier.IsContractExpiring(30);
 
         // Assert
         isExpiring.Should().BeFalse(); // No contract set, should return false
@@ -482,7 +482,7 @@ public class SupplierTests
     public void Activate_ShouldSetIsActiveToTrue()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
         supplier.Deactivate();
 
         // Act
@@ -496,7 +496,7 @@ public class SupplierTests
     public void Deactivate_ShouldSetIsActiveToFalse()
     {
         // Arrange
-        var supplier = Supplier.Create("Test Supplier");
+        Supplier supplier = Supplier.Create("Test Supplier");
 
         // Act
         supplier.Deactivate();

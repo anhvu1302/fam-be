@@ -68,7 +68,7 @@ public class FileValidatorTests
     public void ValidateFile_ValidImageSize_ReturnsSuccess(string fileName, long fileSize)
     {
         // Act
-        (var isValid, var errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
+        (bool isValid, string? errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
 
         // Assert
         Assert.True(isValid);
@@ -80,11 +80,11 @@ public class FileValidatorTests
     public void ValidateFile_ImageTooLarge_ReturnsError()
     {
         // Arrange
-        var fileName = "large-image.jpg";
-        var fileSize = 6 * 1024 * 1024; // 6 MB
+        string fileName = "large-image.jpg";
+        int fileSize = 6 * 1024 * 1024; // 6 MB
 
         // Act
-        (var isValid, var errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
+        (bool isValid, string? errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
 
         // Assert
         Assert.False(isValid);
@@ -98,11 +98,11 @@ public class FileValidatorTests
     public void ValidateFile_UnsupportedExtension_ReturnsError()
     {
         // Arrange
-        var fileName = "malware.exe";
-        var fileSize = 1024;
+        string fileName = "malware.exe";
+        int fileSize = 1024;
 
         // Act
-        (var isValid, var errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
+        (bool isValid, string? errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
 
         // Assert
         Assert.False(isValid);
@@ -116,11 +116,11 @@ public class FileValidatorTests
     public void ValidateFile_EmptyFile_ReturnsError()
     {
         // Arrange
-        var fileName = "empty.jpg";
-        var fileSize = 0;
+        string fileName = "empty.jpg";
+        int fileSize = 0;
 
         // Act
-        (var isValid, var errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
+        (bool isValid, string? errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
 
         // Assert
         Assert.False(isValid);
@@ -132,11 +132,11 @@ public class FileValidatorTests
     public void ValidateFile_NegativeSize_ReturnsError()
     {
         // Arrange
-        var fileName = "test.jpg";
-        var fileSize = -100;
+        string fileName = "test.jpg";
+        int fileSize = -100;
 
         // Act
-        (var isValid, var errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
+        (bool isValid, string? errorMessage, FileType? fileType) = _validator.ValidateFile(fileName, fileSize);
 
         // Assert
         Assert.False(isValid);
@@ -150,7 +150,7 @@ public class FileValidatorTests
     public void GetMaxFileSize_ReturnsCorrectSize(FileType fileType, long expectedSize)
     {
         // Act
-        var result = _validator.GetMaxFileSize(fileType);
+        long result = _validator.GetMaxFileSize(fileType);
 
         // Assert
         Assert.Equal(expectedSize, result);
@@ -166,7 +166,7 @@ public class FileValidatorTests
     public void IsExtensionAllowed_ChecksCorrectly(string fileName, FileType fileType, bool expected)
     {
         // Act
-        var result = _validator.IsExtensionAllowed(fileName, fileType);
+        bool result = _validator.IsExtensionAllowed(fileName, fileType);
 
         // Assert
         Assert.Equal(expected, result);
@@ -181,7 +181,7 @@ public class FileValidatorTests
     public void IsSizeAllowed_ChecksCorrectly(FileType fileType, long fileSize, bool expected)
     {
         // Act
-        var result = _validator.IsSizeAllowed(fileSize, fileType);
+        bool result = _validator.IsSizeAllowed(fileSize, fileType);
 
         // Assert
         Assert.Equal(expected, result);
@@ -191,7 +191,7 @@ public class FileValidatorTests
     public void GetAllowedExtensions_Image_ReturnsCorrectExtensions()
     {
         // Act
-        var extensions = _validator.GetAllowedExtensions(FileType.Image);
+        string[] extensions = _validator.GetAllowedExtensions(FileType.Image);
 
         // Assert
         Assert.NotEmpty(extensions);
@@ -204,7 +204,7 @@ public class FileValidatorTests
     public void GetAllowedExtensions_Media_ReturnsCorrectExtensions()
     {
         // Act
-        var extensions = _validator.GetAllowedExtensions(FileType.Media);
+        string[] extensions = _validator.GetAllowedExtensions(FileType.Media);
 
         // Assert
         Assert.NotEmpty(extensions);
@@ -216,7 +216,7 @@ public class FileValidatorTests
     public void GetAllowedExtensions_Document_ReturnsCorrectExtensions()
     {
         // Act
-        var extensions = _validator.GetAllowedExtensions(FileType.Document);
+        string[] extensions = _validator.GetAllowedExtensions(FileType.Document);
 
         // Assert
         Assert.NotEmpty(extensions);

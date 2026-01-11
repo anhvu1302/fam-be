@@ -24,7 +24,9 @@ public sealed class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, 
         User? user = await _userRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (user == null)
+        {
             return null;
+        }
 
         HashSet<string> includeSet = IncludeParser.Parse(request.Include);
         return user.ToUserDto(includeSet);

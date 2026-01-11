@@ -19,9 +19,11 @@ public sealed class CreateRoleCommandHandler : IRequestHandler<CreateRoleCommand
     {
         Role? existingRole = await _unitOfWork.Roles.GetByCodeAsync(request.Code, cancellationToken);
         if (existingRole != null)
+        {
             throw new ConflictException(ErrorCodes.ROLE_CODE_EXISTS, $"Role with code '{request.Code}' already exists");
+        }
 
-        var role = Role.Create(
+        Role role = Role.Create(
             request.Code,
             request.Name,
             request.Rank,

@@ -1,10 +1,11 @@
 using FAM.Domain.Users;
 using FAM.Infrastructure.Common.Seeding;
+using FAM.Infrastructure.Providers.PostgreSQL;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace FAM.Infrastructure.Providers.PostgreSQL.Seeders;
+namespace FAM.Infrastructure.Seeders;
 
 /// <summary>
 /// Seeds initial users data for PostgreSQL
@@ -32,10 +33,10 @@ public class AdminUserSeeder : BaseDataSeeder
             return;
         }
 
-        var admin = User.Create(
+        User admin = User.Create(
             "admin",
             "admin@gmail.com",
-            "RlI1JkKTEVI6+RhcU/dLzeKshHhDwe3NpWd6Z3BIFtY=",
+            "Admin@123",
             "System",
             "Administrator",
             "0901234567",
@@ -50,7 +51,7 @@ public class AdminUserSeeder : BaseDataSeeder
             null
         );
 
-        var users = new List<User> { admin };
+        List<User> users = new() { admin };
 
         await _dbContext.Users.AddRangeAsync(users, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);

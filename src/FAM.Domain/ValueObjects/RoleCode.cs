@@ -28,15 +28,21 @@ public sealed class RoleCode : ValueObject
     public static RoleCode Create(string roleCode)
     {
         if (string.IsNullOrWhiteSpace(roleCode))
+        {
             throw new DomainException(ErrorCodes.VO_ROLE_CODE_EMPTY);
+        }
 
         roleCode = roleCode.Trim().ToUpperInvariant();
 
         if (roleCode.Length > 20)
+        {
             throw new DomainException(ErrorCodes.VO_ROLE_CODE_TOO_LONG);
+        }
 
         if (!Regex.IsMatch(roleCode, @"^[A-Z0-9_]+$"))
+        {
             throw new DomainException(ErrorCodes.VO_ROLE_CODE_INVALID);
+        }
 
         return new RoleCode(roleCode);
     }

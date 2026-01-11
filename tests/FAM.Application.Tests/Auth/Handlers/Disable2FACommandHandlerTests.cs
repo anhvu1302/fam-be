@@ -31,27 +31,27 @@ public class Disable2FACommandHandlerTests
     public async Task Handle_WithValidPassword_ShouldDisable2FA()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
         // Enable 2FA first
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
         user.EnableTwoFactor(base32Secret, "[\"code1\",\"code2\"]");
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new Disable2FACommand
+        Disable2FACommand command = new()
         {
             UserId = user.Id,
             Password = plainPassword
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        bool result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().BeTrue();
@@ -67,20 +67,20 @@ public class Disable2FACommandHandlerTests
     public async Task Handle_WithIncorrectPassword_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var wrongPassword = "WrongPassword123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        string wrongPassword = "WrongPassword123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
 
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
         user.EnableTwoFactor(base32Secret, "[\"code1\",\"code2\"]");
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new Disable2FACommand
+        Disable2FACommand command = new()
         {
             UserId = user.Id,
             Password = wrongPassword
@@ -99,13 +99,13 @@ public class Disable2FACommandHandlerTests
     public async Task Handle_WithNonExistentUser_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var nonExistentUserId = 99999L;
+        long nonExistentUserId = 99999L;
 
         _mockUserRepository
             .Setup(x => x.GetByIdAsync(nonExistentUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
-        var command = new Disable2FACommand
+        Disable2FACommand command = new()
         {
             UserId = nonExistentUserId,
             Password = "SomePassword123!"
@@ -122,8 +122,8 @@ public class Disable2FACommandHandlerTests
     public async Task Handle_WhenUserHasNo2FAEnabled_ShouldStillSucceed()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
         // User has no 2FA enabled
 
@@ -131,14 +131,14 @@ public class Disable2FACommandHandlerTests
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
-        var command = new Disable2FACommand
+        Disable2FACommand command = new()
         {
             UserId = user.Id,
             Password = plainPassword
         };
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        bool result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert - Should still succeed (idempotent operation)
         result.Should().BeTrue();

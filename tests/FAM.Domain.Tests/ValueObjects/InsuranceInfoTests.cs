@@ -11,11 +11,11 @@ public class InsuranceInfoTests
     public void Create_WithValidData_ShouldCreateInsuranceInfo()
     {
         // Arrange
-        var policyNumber = "POL-123456";
-        var insuredValue = 100000.00m;
+        string policyNumber = "POL-123456";
+        decimal insuredValue = 100000.00m;
 
         // Act
-        var insuranceInfo = InsuranceInfo.Create(policyNumber, insuredValue);
+        InsuranceInfo insuranceInfo = InsuranceInfo.Create(policyNumber, insuredValue);
 
         // Assert
         insuranceInfo.Should().NotBeNull();
@@ -30,12 +30,12 @@ public class InsuranceInfoTests
     public void Create_WithExpiryDate_ShouldCreateInsuranceInfo()
     {
         // Arrange
-        var policyNumber = "POL-123456";
-        var insuredValue = 100000.00m;
+        string policyNumber = "POL-123456";
+        decimal insuredValue = 100000.00m;
         DateTime expiryDate = DateTime.UtcNow.AddYears(1);
 
         // Act
-        var insuranceInfo = InsuranceInfo.Create(policyNumber, insuredValue, expiryDate);
+        InsuranceInfo insuranceInfo = InsuranceInfo.Create(policyNumber, insuredValue, expiryDate);
 
         // Assert
         insuranceInfo.ExpiryDate.Should().Be(expiryDate);
@@ -45,8 +45,8 @@ public class InsuranceInfoTests
     public void Create_WithEmptyPolicyNumber_ShouldThrowDomainException()
     {
         // Arrange
-        var policyNumber = "";
-        var insuredValue = 100000.00m;
+        string policyNumber = "";
+        decimal insuredValue = 100000.00m;
 
         // Act
         Action act = () => InsuranceInfo.Create(policyNumber, insuredValue);
@@ -60,8 +60,8 @@ public class InsuranceInfoTests
     public void Create_WithWhitespacePolicyNumber_ShouldThrowDomainException()
     {
         // Arrange
-        var policyNumber = "   ";
-        var insuredValue = 100000.00m;
+        string policyNumber = "   ";
+        decimal insuredValue = 100000.00m;
 
         // Act
         Action act = () => InsuranceInfo.Create(policyNumber, insuredValue);
@@ -75,8 +75,8 @@ public class InsuranceInfoTests
     public void Create_WithZeroInsuredValue_ShouldThrowDomainException()
     {
         // Arrange
-        var policyNumber = "POL-123456";
-        var insuredValue = 0m;
+        string policyNumber = "POL-123456";
+        decimal insuredValue = 0m;
 
         // Act
         Action act = () => InsuranceInfo.Create(policyNumber, insuredValue);
@@ -90,8 +90,8 @@ public class InsuranceInfoTests
     public void Create_WithNegativeInsuredValue_ShouldThrowDomainException()
     {
         // Arrange
-        var policyNumber = "POL-123456";
-        var insuredValue = -1000m;
+        string policyNumber = "POL-123456";
+        decimal insuredValue = -1000m;
 
         // Act
         Action act = () => InsuranceInfo.Create(policyNumber, insuredValue);
@@ -105,10 +105,10 @@ public class InsuranceInfoTests
     public void IsActive_WithFutureExpiryDate_ShouldReturnTrue()
     {
         // Arrange
-        var insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m, DateTime.UtcNow.AddDays(30));
+        InsuranceInfo insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m, DateTime.UtcNow.AddDays(30));
 
         // Act
-        var result = insuranceInfo.IsActive();
+        bool result = insuranceInfo.IsActive();
 
         // Assert
         result.Should().BeTrue();
@@ -118,10 +118,10 @@ public class InsuranceInfoTests
     public void IsActive_WithPastExpiryDate_ShouldReturnFalse()
     {
         // Arrange
-        var insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m, DateTime.UtcNow.AddDays(-1));
+        InsuranceInfo insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m, DateTime.UtcNow.AddDays(-1));
 
         // Act
-        var result = insuranceInfo.IsActive();
+        bool result = insuranceInfo.IsActive();
 
         // Assert
         result.Should().BeFalse();
@@ -131,10 +131,10 @@ public class InsuranceInfoTests
     public void IsActive_WithNoExpiryDate_ShouldReturnFalse()
     {
         // Arrange
-        var insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m);
+        InsuranceInfo insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m);
 
         // Act
-        var result = insuranceInfo.IsActive();
+        bool result = insuranceInfo.IsActive();
 
         // Assert
         result.Should().BeFalse();
@@ -144,10 +144,10 @@ public class InsuranceInfoTests
     public void IsExpired_WithPastExpiryDate_ShouldReturnTrue()
     {
         // Arrange
-        var insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m, DateTime.UtcNow.AddDays(-1));
+        InsuranceInfo insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m, DateTime.UtcNow.AddDays(-1));
 
         // Act
-        var result = insuranceInfo.IsExpired();
+        bool result = insuranceInfo.IsExpired();
 
         // Assert
         result.Should().BeTrue();
@@ -157,10 +157,10 @@ public class InsuranceInfoTests
     public void IsExpired_WithFutureExpiryDate_ShouldReturnFalse()
     {
         // Arrange
-        var insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m, DateTime.UtcNow.AddDays(30));
+        InsuranceInfo insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m, DateTime.UtcNow.AddDays(30));
 
         // Act
-        var result = insuranceInfo.IsExpired();
+        bool result = insuranceInfo.IsExpired();
 
         // Assert
         result.Should().BeFalse();
@@ -170,10 +170,10 @@ public class InsuranceInfoTests
     public void IsExpiringSoon_WithExpiryWithinThreshold_ShouldReturnTrue()
     {
         // Arrange
-        var insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m, DateTime.UtcNow.AddDays(15));
+        InsuranceInfo insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m, DateTime.UtcNow.AddDays(15));
 
         // Act
-        var result = insuranceInfo.IsExpiringSoon(30);
+        bool result = insuranceInfo.IsExpiringSoon(30);
 
         // Assert
         result.Should().BeTrue();
@@ -183,10 +183,10 @@ public class InsuranceInfoTests
     public void IsExpiringSoon_WithExpiryOutsideThreshold_ShouldReturnFalse()
     {
         // Arrange
-        var insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m, DateTime.UtcNow.AddDays(60));
+        InsuranceInfo insuranceInfo = InsuranceInfo.Create("POL-123456", 100000m, DateTime.UtcNow.AddDays(60));
 
         // Act
-        var result = insuranceInfo.IsExpiringSoon(30);
+        bool result = insuranceInfo.IsExpiringSoon(30);
 
         // Assert
         result.Should().BeFalse();
@@ -196,10 +196,10 @@ public class InsuranceInfoTests
     public void ToString_ShouldReturnFormattedString()
     {
         // Arrange
-        var insuranceInfo = InsuranceInfo.Create("POL-123456", 100000.50m);
+        InsuranceInfo insuranceInfo = InsuranceInfo.Create("POL-123456", 100000.50m);
 
         // Act
-        var result = insuranceInfo.ToString();
+        string result = insuranceInfo.ToString();
 
         // Assert
         result.Should().Be("Policy POL-123456, Insured: 100,000.50");

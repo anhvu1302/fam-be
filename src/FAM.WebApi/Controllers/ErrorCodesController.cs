@@ -28,11 +28,14 @@ public class ErrorCodesController : BaseApiController
     public IActionResult GetAllErrorCodes()
     {
         // Only allow in Development environment
-        if (!_environment.IsDevelopment()) return Forbid("This API is only available in Development environment");
+        if (!_environment.IsDevelopment())
+        {
+            return Forbid("This API is only available in Development environment");
+        }
 
         IReadOnlyDictionary<string, string> errorCodesDict = ErrorMessages.GetAllErrorCodes();
 
-        var errorCodesList = errorCodesDict
+        List<ErrorCodeResponse> errorCodesList = errorCodesDict
             .Select(kvp => new ErrorCodeResponse
             {
                 Code = kvp.Key,
@@ -41,7 +44,7 @@ public class ErrorCodesController : BaseApiController
             .OrderBy(x => x.Code)
             .ToList();
 
-        var response = new ErrorCodesListResponse
+        ErrorCodesListResponse response = new()
         {
             ErrorCodes = errorCodesList,
             TotalCount = errorCodesList.Count

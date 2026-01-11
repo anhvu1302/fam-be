@@ -71,16 +71,18 @@ public sealed class DisableTwoFactorWithBackupCommandHandler : IRequestHandler<D
         }
 
         // Verify backup code and remove it if valid
-        var codeFound = false;
+        bool codeFound = false;
         string? matchedHash = null;
 
-        foreach (var hashedCode in hashedBackupCodes)
+        foreach (string hashedCode in hashedBackupCodes)
+        {
             if (BCrypt.Net.BCrypt.Verify(request.BackupCode, hashedCode))
             {
                 codeFound = true;
                 matchedHash = hashedCode;
                 break;
             }
+        }
 
         if (!codeFound)
         {
@@ -94,11 +96,15 @@ public sealed class DisableTwoFactorWithBackupCommandHandler : IRequestHandler<D
         // If no more backup codes left, disable 2FA completely
         // Otherwise, save the remaining codes
         if (hashedBackupCodes.Count == 0)
+        {
             user.DisableTwoFactor();
+        }
         else
-            // Still have backup codes - update but keep 2FA disabled for now
-            // User needs to re-enable 2FA to get security back
+        // Still have backup codes - update but keep 2FA disabled for now
+        // User needs to re-enable 2FA to get security back
+        {
             user.DisableTwoFactor();
+        }
 
         _unitOfWork.Users.Update(user);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

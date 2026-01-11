@@ -29,7 +29,7 @@ public class CompanyDetails : BaseEntity, IHasCreationTime, IHasCreator, IHasMod
     public static CompanyDetails Create(string? taxCode = null, string? domain = null, string? address = null,
         DateTime? establishedOn = null)
     {
-        var companyDetails = new CompanyDetails
+        CompanyDetails companyDetails = new()
         {
             Address = address != null ? Address.Create(address, "Unknown", "VN") : null,
             EstablishedOn = establishedOn
@@ -73,18 +73,22 @@ public class CompanyDetails : BaseEntity, IHasCreationTime, IHasCreator, IHasMod
     private string? ValidateTaxCode(string? taxCode)
     {
         if (string.IsNullOrWhiteSpace(taxCode))
+        {
             return null;
+        }
 
-        var taxCodeVo = ValueObjects.TaxCode.Create(taxCode);
+        TaxCode taxCodeVo = ValueObjects.TaxCode.Create(taxCode);
         return taxCodeVo.Value;
     }
 
     private string? ValidateDomainName(string? domain)
     {
         if (string.IsNullOrWhiteSpace(domain))
+        {
             return null;
+        }
 
-        var domainVo = DomainName.Create(domain);
+        DomainName domainVo = DomainName.Create(domain);
         return domainVo.Value;
     }
 }

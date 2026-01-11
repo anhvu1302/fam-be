@@ -19,7 +19,7 @@ public class GetMenuTreeQueryHandler : IRequestHandler<GetMenuTreeQuery, IEnumer
     public async Task<IEnumerable<MenuItemResponse>> Handle(GetMenuTreeQuery request,
         CancellationToken cancellationToken)
     {
-        var maxDepth = Math.Min(request.MaxDepth, MaxMenuDepth);
+        int maxDepth = Math.Min(request.MaxDepth, MaxMenuDepth);
         IReadOnlyList<MenuItem> menus = await _repository.GetMenuTreeAsync(maxDepth, cancellationToken);
         return menus.Select(m => MenuItemResponse.FromDomain(m, true, maxDepth));
     }

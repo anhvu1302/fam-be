@@ -26,15 +26,21 @@ public sealed class CountryCode : ValueObject
     public static CountryCode Create(string countryCode)
     {
         if (string.IsNullOrWhiteSpace(countryCode))
+        {
             throw new DomainException(ErrorCodes.VO_COUNTRY_CODE_EMPTY);
+        }
 
         countryCode = countryCode.Trim().ToUpperInvariant();
 
         if (countryCode.Length != 2)
+        {
             throw new DomainException(ErrorCodes.VO_COUNTRY_CODE_INVALID);
+        }
 
         if (!IsValidCountryCode(countryCode))
+        {
             throw new DomainException(ErrorCodes.VO_COUNTRY_CODE_INVALID);
+        }
 
         return new CountryCode(countryCode);
     }
@@ -45,7 +51,7 @@ public sealed class CountryCode : ValueObject
     private static bool IsValidCountryCode(string code)
     {
         // ISO 3166-1 alpha-2 country codes
-        var validCodes = new HashSet<string>
+        HashSet<string> validCodes = new()
         {
             "AF", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ",
             "BS", "BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BR", "BN",
@@ -73,7 +79,7 @@ public sealed class CountryCode : ValueObject
     /// </summary>
     public bool IsAsian()
     {
-        var asianCodes = new[]
+        string[] asianCodes = new[]
         {
             "VN", "CN", "JP", "KR", "SG", "TH", "MY", "ID", "PH", "TW", "HK", "MO", "KP", "MM", "KH", "LA", "BN", "TL"
         };
@@ -85,7 +91,7 @@ public sealed class CountryCode : ValueObject
     /// </summary>
     public bool IsEuropean()
     {
-        var europeanCodes = new[]
+        string[] europeanCodes = new[]
         {
             "GB", "DE", "FR", "IT", "ES", "NL", "BE", "AT", "CH", "SE", "NO", "DK", "FI", "PL", "CZ", "SK", "HU", "RO",
             "BG", "HR", "SI", "EE", "LV", "LT", "MT", "CY", "LU", "IE", "IS", "FO", "GI", "PT", "GR", "TR", "RU", "UA",
@@ -99,7 +105,7 @@ public sealed class CountryCode : ValueObject
     /// </summary>
     public bool IsAmerican()
     {
-        var americanCodes = new[]
+        string[] americanCodes = new[]
         {
             "US", "CA", "MX", "BR", "AR", "CL", "CO", "PE", "VE", "EC", "UY", "PY", "BO", "GY", "SR", "FK", "GS", "AQ",
             "BV", "HM", "IO", "TF", "UM"

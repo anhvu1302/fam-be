@@ -11,10 +11,10 @@ public class CostCenterTests
     public void Create_WithValidData_ShouldCreateCostCenter()
     {
         // Arrange
-        var value = "CC-001";
+        string value = "CC-001";
 
         // Act
-        var costCenter = CostCenter.Create(value);
+        CostCenter costCenter = CostCenter.Create(value);
 
         // Assert
         costCenter.Should().NotBeNull();
@@ -25,7 +25,7 @@ public class CostCenterTests
     public void Create_WithEmptyString_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "";
+        string value = "";
 
         // Act
         Action act = () => CostCenter.Create(value);
@@ -39,7 +39,7 @@ public class CostCenterTests
     public void Create_WithTooLongValue_ShouldThrowDomainException()
     {
         // Arrange
-        var value = new string('A', 31);
+        string value = new('A', 31);
 
         // Act
         Action act = () => CostCenter.Create(value);
@@ -53,10 +53,10 @@ public class CostCenterTests
     public void Create_WithLowercase_ShouldNotConvertToUppercase()
     {
         // Arrange
-        var value = "cc-001";
+        string value = "cc-001";
 
         // Act
-        var costCenter = CostCenter.Create(value);
+        CostCenter costCenter = CostCenter.Create(value);
 
         // Assert
         costCenter.Value.Should().Be("cc-001");
@@ -66,7 +66,7 @@ public class CostCenterTests
     public void ImplicitOperator_ShouldConvertToString()
     {
         // Arrange
-        var costCenter = CostCenter.Create("CC-001");
+        CostCenter costCenter = CostCenter.Create("CC-001");
 
         // Act
         string value = costCenter!;
@@ -79,10 +79,10 @@ public class CostCenterTests
     public void ExplicitOperator_ShouldConvertFromString()
     {
         // Arrange
-        var value = "CC-001";
+        string value = "CC-001";
 
         // Act
-        var costCenter = (CostCenter)value;
+        CostCenter costCenter = (CostCenter)value;
 
         // Assert
         costCenter.Value.Should().Be("CC-001");
@@ -92,10 +92,10 @@ public class CostCenterTests
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var costCenter = CostCenter.Create("CC-001");
+        CostCenter costCenter = CostCenter.Create("CC-001");
 
         // Act
-        var result = costCenter.ToString();
+        string result = costCenter.ToString();
 
         // Assert
         result.Should().Be("CC-001");

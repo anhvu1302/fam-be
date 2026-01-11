@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 
 using FAM.Domain.Abstractions;
 using FAM.Domain.Common.Entities;
+using FAM.Infrastructure.Common.Abstractions;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -11,25 +12,27 @@ namespace FAM.Infrastructure.Providers.PostgreSQL.Repositories;
 /// <summary>
 /// PostgreSQL repository for SystemSetting
 /// Uses Pragmatic Architecture - directly works with Domain entities
+/// Follows Clean Architecture by depending on IDbContext
 /// </summary>
 public class SystemSettingRepository : ISystemSettingRepository
 {
-    private readonly PostgreSqlDbContext _context;
+    private readonly IDbContext _context;
+    protected DbSet<SystemSetting> DbSet => _context.Set<SystemSetting>();
 
-    public SystemSettingRepository(PostgreSqlDbContext context)
+    public SystemSettingRepository(IDbContext context)
     {
         _context = context;
     }
 
     public async Task<SystemSetting?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _context.SystemSettings
+        return await DbSet
             .FirstOrDefaultAsync(s => s.Id == id && !s.IsDeleted, cancellationToken);
     }
 
     public async Task<IEnumerable<SystemSetting>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.SystemSettings
+        return await DbSet
             .Where(s => !s.IsDeleted)
             .OrderBy(s => s.Group)
             .ThenBy(s => s.SortOrder)
@@ -41,12 +44,12 @@ public class SystemSettingRepository : ISystemSettingRepository
         CancellationToken cancellationToken = default)
     {
         // Apply predicate at database level - no need for in-memory filtering
-        return await _context.SystemSettings.Where(predicate).ToListAsync(cancellationToken);
+        return await DbSet.Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(SystemSetting entity, CancellationToken cancellationToken = default)
     {
-        await _context.SystemSettings.AddAsync(entity, cancellationToken);
+        await DbSet.AddAsync(entity, cancellationToken);
     }
 
     public void Update(SystemSetting entity)
@@ -60,14 +63,14 @@ public class SystemSettingRepository : ISystemSettingRepository
         }
         else
         {
-            _context.SystemSettings.Attach(entity);
+            DbSet.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
         }
     }
 
     public void Delete(SystemSetting entity)
     {
-        SystemSetting? trackedEntity = _context.SystemSettings.Local.FirstOrDefault(s => s.Id == entity.Id);
+        SystemSetting? trackedEntity = DbSet.Local.FirstOrDefault(s => s.Id == entity.Id);
         if (trackedEntity != null)
         {
             trackedEntity.IsDeleted = true;
@@ -77,18 +80,18 @@ public class SystemSettingRepository : ISystemSettingRepository
 
     public async Task<bool> ExistsAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _context.SystemSettings.AnyAsync(s => s.Id == id && !s.IsDeleted, cancellationToken);
+        return await DbSet.AnyAsync(s => s.Id == id && !s.IsDeleted, cancellationToken);
     }
 
     public async Task<SystemSetting?> GetByKeyAsync(string key, CancellationToken cancellationToken = default)
     {
-        return await _context.SystemSettings
+        return await DbSet
             .FirstOrDefaultAsync(s => s.Key == key.ToLowerInvariant() && !s.IsDeleted, cancellationToken);
     }
 
     public async Task<IReadOnlyList<SystemSetting>> GetAllSettingsAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.SystemSettings
+        return await DbSet
             .Where(s => !s.IsDeleted)
             .OrderBy(s => s.Group)
             .ThenBy(s => s.SortOrder)
@@ -98,7 +101,7 @@ public class SystemSettingRepository : ISystemSettingRepository
     public async Task<IReadOnlyList<SystemSetting>> GetByGroupAsync(string group,
         CancellationToken cancellationToken = default)
     {
-        return await _context.SystemSettings
+        return await DbSet
             .Where(s => s.Group == group.ToLowerInvariant() && !s.IsDeleted)
             .OrderBy(s => s.SortOrder)
             .ToListAsync(cancellationToken);
@@ -107,7 +110,7 @@ public class SystemSettingRepository : ISystemSettingRepository
     public async Task<IReadOnlyList<SystemSetting>> GetVisibleSettingsAsync(
         CancellationToken cancellationToken = default)
     {
-        return await _context.SystemSettings
+        return await DbSet
             .Where(s => s.IsVisible && !s.IsDeleted)
             .OrderBy(s => s.Group)
             .ThenBy(s => s.SortOrder)
@@ -116,7 +119,7 @@ public class SystemSettingRepository : ISystemSettingRepository
 
     public async Task<IReadOnlyList<string>> GetGroupsAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.SystemSettings
+        return await DbSet
             .Where(s => !s.IsDeleted)
             .Select(s => s.Group)
             .Distinct()
@@ -128,16 +131,19 @@ public class SystemSettingRepository : ISystemSettingRepository
         CancellationToken cancellationToken = default)
     {
         IQueryable<SystemSetting> query =
-            _context.SystemSettings.Where(s => s.Key == key.ToLowerInvariant() && !s.IsDeleted);
+            DbSet.Where(s => s.Key == key.ToLowerInvariant() && !s.IsDeleted);
         if (excludeId.HasValue)
+        {
             query = query.Where(s => s.Id != excludeId.Value);
+        }
+
         return await query.AnyAsync(cancellationToken);
     }
 
     public async Task UpdateValueAsync(string key, string? value, long? updatedById = null,
         CancellationToken cancellationToken = default)
     {
-        await _context.SystemSettings
+        await DbSet
             .Where(s => s.Key == key.ToLowerInvariant() && !s.IsDeleted)
             .ExecuteUpdateAsync(s => s
                     .SetProperty(x => x.Value, value)
@@ -150,6 +156,8 @@ public class SystemSettingRepository : ISystemSettingRepository
         CancellationToken cancellationToken = default)
     {
         foreach (KeyValuePair<string, string?> kvp in keyValues)
+        {
             await UpdateValueAsync(kvp.Key, kvp.Value, updatedById, cancellationToken);
+        }
     }
 }

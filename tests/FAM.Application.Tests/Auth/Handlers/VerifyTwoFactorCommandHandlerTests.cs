@@ -73,27 +73,27 @@ public class VerifyTwoFactorCommandHandlerTests
     public async Task Handle_WithValidCode_ShouldReturnTokensAndUserInfo()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
         // Manually set Id since User.Create doesn't set it (normally set by EF Core)
         typeof(User).GetProperty("Id")!.SetValue(user, 1L);
 
         // Enable 2FA with a real secret
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
         user.EnableTwoFactor(base32Secret, "[\"code1\",\"code2\"]");
 
         // Generate valid TOTP code
-        var totp = new Totp(secretKey);
-        var validCode = totp.ComputeTotp();
+        Totp totp = new(secretKey);
+        string? validCode = totp.ComputeTotp();
 
-        var twoFactorSessionToken = "session-token-123";
-        var accessToken = "access-token-123";
-        var refreshToken = "refresh-token-123";
-        var deviceId = "device-123";
+        string twoFactorSessionToken = "session-token-123";
+        string accessToken = "access-token-123";
+        string refreshToken = "refresh-token-123";
+        string deviceId = "device-123";
 
-        var mockSigningKey = SigningKey.Create("test-kid", "test-public-key", "test-private-key", "RS256");
+        SigningKey mockSigningKey = SigningKey.Create("test-kid", "test-public-key", "test-private-key", "RS256");
 
         _mockJwtService
             .Setup(x => x.GetUserIdFromToken(twoFactorSessionToken))
@@ -120,7 +120,7 @@ public class VerifyTwoFactorCommandHandlerTests
             .Setup(x => x.GetByDeviceIdAsync(deviceId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserDevice?)null); // New device
 
-        var command = new VerifyTwoFactorCommand
+        VerifyTwoFactorCommand command = new()
         {
             TwoFactorSessionToken = twoFactorSessionToken,
             TwoFactorCode = validCode,
@@ -158,19 +158,19 @@ public class VerifyTwoFactorCommandHandlerTests
     public async Task Handle_WithExistingDevice_ShouldUpdateDevice()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
         SetUserId(user, 2L);
 
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
         user.EnableTwoFactor(base32Secret, "[\"code1\",\"code2\"]");
 
-        var totp = new Totp(secretKey);
-        var validCode = totp.ComputeTotp();
+        Totp totp = new(secretKey);
+        string? validCode = totp.ComputeTotp();
 
-        var deviceId = "device-123";
+        string deviceId = "device-123";
         UserDevice existingDevice = user.GetOrCreateDevice(
             deviceId,
             "Existing Device",
@@ -180,11 +180,11 @@ public class VerifyTwoFactorCommandHandlerTests
             "Hanoi, Vietnam"
         );
 
-        var twoFactorSessionToken = "session-token-123";
-        var accessToken = "access-token-123";
-        var refreshToken = "refresh-token-123";
+        string twoFactorSessionToken = "session-token-123";
+        string accessToken = "access-token-123";
+        string refreshToken = "refresh-token-123";
 
-        var mockSigningKey = SigningKey.Create("test-kid", "test-public-key", "test-private-key", "RS256");
+        SigningKey mockSigningKey = SigningKey.Create("test-kid", "test-public-key", "test-private-key", "RS256");
 
         _mockTwoFactorSessionService
             .Setup(x => x.ValidateAndGetUserIdAsync(twoFactorSessionToken, It.IsAny<CancellationToken>()))
@@ -204,7 +204,7 @@ public class VerifyTwoFactorCommandHandlerTests
         _mockUserDeviceRepository.Setup(x => x.GetByDeviceIdAsync(deviceId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(existingDevice);
 
-        var command = new VerifyTwoFactorCommand
+        VerifyTwoFactorCommand command = new()
         {
             TwoFactorSessionToken = twoFactorSessionToken,
             TwoFactorCode = validCode,
@@ -231,22 +231,22 @@ public class VerifyTwoFactorCommandHandlerTests
     public async Task Handle_WithRememberMe_ShouldSetLongerRefreshTokenExpiry()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
         SetUserId(user, 3L);
 
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
         user.EnableTwoFactor(base32Secret, "[\"code1\",\"code2\"]");
 
-        var totp = new Totp(secretKey);
-        var validCode = totp.ComputeTotp();
+        Totp totp = new(secretKey);
+        string? validCode = totp.ComputeTotp();
 
-        var twoFactorSessionToken = "session-token-123";
-        var deviceId = "device-123";
+        string twoFactorSessionToken = "session-token-123";
+        string deviceId = "device-123";
 
-        var mockSigningKey = SigningKey.Create("test-kid", "test-public-key", "test-private-key", "RS256");
+        SigningKey mockSigningKey = SigningKey.Create("test-kid", "test-public-key", "test-private-key", "RS256");
 
         _mockTwoFactorSessionService
             .Setup(x => x.ValidateAndGetUserIdAsync(twoFactorSessionToken, It.IsAny<CancellationToken>()))
@@ -266,7 +266,7 @@ public class VerifyTwoFactorCommandHandlerTests
         _mockUserDeviceRepository.Setup(x => x.GetByDeviceIdAsync(deviceId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((UserDevice?)null);
 
-        var command = new VerifyTwoFactorCommand
+        VerifyTwoFactorCommand command = new()
         {
             TwoFactorSessionToken = twoFactorSessionToken,
             TwoFactorCode = validCode,
@@ -291,22 +291,22 @@ public class VerifyTwoFactorCommandHandlerTests
     public async Task Handle_WithInvalidCode_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
         SetUserId(user, 4L);
 
-        var secretKey = KeyGeneration.GenerateRandomKey(32);
-        var base32Secret = Base32Encoding.ToString(secretKey);
+        byte[]? secretKey = KeyGeneration.GenerateRandomKey(32);
+        string? base32Secret = Base32Encoding.ToString(secretKey);
         user.EnableTwoFactor(base32Secret, "[\"code1\",\"code2\"]");
 
-        var invalidCode = "000000"; // Invalid code
-        var twoFactorSessionToken = "session-token-123";
+        string invalidCode = "000000"; // Invalid code
+        string twoFactorSessionToken = "session-token-123";
 
         _mockJwtService.Setup(x => x.GetUserIdFromToken(twoFactorSessionToken)).Returns(user.Id);
         _mockUserRepository.Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>())).ReturnsAsync(user);
 
-        var command = new VerifyTwoFactorCommand
+        VerifyTwoFactorCommand command = new()
         {
             TwoFactorSessionToken = twoFactorSessionToken,
             TwoFactorCode = invalidCode,
@@ -326,13 +326,13 @@ public class VerifyTwoFactorCommandHandlerTests
     public async Task Handle_WithInvalidSessionToken_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var invalidSessionToken = "invalid-session-token";
+        string invalidSessionToken = "invalid-session-token";
 
         _mockJwtService
             .Setup(x => x.GetUserIdFromToken(invalidSessionToken))
             .Throws<UnauthorizedException>();
 
-        var command = new VerifyTwoFactorCommand
+        VerifyTwoFactorCommand command = new()
         {
             TwoFactorSessionToken = invalidSessionToken,
             TwoFactorCode = "123456",
@@ -352,18 +352,18 @@ public class VerifyTwoFactorCommandHandlerTests
     public async Task Handle_WithUser2FANotEnabled_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var plainPassword = "SecurePass123!";
-        var user = User.CreateWithPlainPassword(
+        string plainPassword = "SecurePass123!";
+        User user = User.CreateWithPlainPassword(
             "testuser", "test@example.com", plainPassword);
         SetUserId(user, 5L);
         // User has no 2FA enabled
 
-        var twoFactorSessionToken = "session-token-123";
+        string twoFactorSessionToken = "session-token-123";
 
         _mockJwtService.Setup(x => x.GetUserIdFromToken(twoFactorSessionToken)).Returns(user.Id);
         _mockUserRepository.Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>())).ReturnsAsync(user);
 
-        var command = new VerifyTwoFactorCommand
+        VerifyTwoFactorCommand command = new()
         {
             TwoFactorSessionToken = twoFactorSessionToken,
             TwoFactorCode = "123456",
@@ -383,14 +383,14 @@ public class VerifyTwoFactorCommandHandlerTests
     public async Task Handle_WithNonExistentUser_ShouldThrowUnauthorizedException()
     {
         // Arrange
-        var twoFactorSessionToken = "session-token-123";
-        var nonExistentUserId = 99999L;
+        string twoFactorSessionToken = "session-token-123";
+        long nonExistentUserId = 99999L;
 
         _mockJwtService.Setup(x => x.GetUserIdFromToken(twoFactorSessionToken)).Returns(nonExistentUserId);
         _mockUserRepository.Setup(x => x.GetByIdAsync(nonExistentUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
-        var command = new VerifyTwoFactorCommand
+        VerifyTwoFactorCommand command = new()
         {
             TwoFactorSessionToken = twoFactorSessionToken,
             TwoFactorCode = "123456",

@@ -11,10 +11,10 @@ public class IPAddressTests
     public void Create_WithValidIPv4_ShouldCreateIPAddress()
     {
         // Arrange
-        var value = "192.168.1.1";
+        string value = "192.168.1.1";
 
         // Act
-        var ipAddress = IPAddress.Create(value);
+        IPAddress ipAddress = IPAddress.Create(value);
 
         // Assert
         ipAddress.Should().NotBeNull();
@@ -26,10 +26,10 @@ public class IPAddressTests
     public void Create_WithValidIPv6_ShouldCreateIPAddress()
     {
         // Arrange
-        var value = "2001:0db8:85a3:0000:0000:8a2e:0370:7334";
+        string value = "2001:0db8:85a3:0000:0000:8a2e:0370:7334";
 
         // Act
-        var ipAddress = IPAddress.Create(value);
+        IPAddress ipAddress = IPAddress.Create(value);
 
         // Assert
         ipAddress.Should().NotBeNull();
@@ -41,7 +41,7 @@ public class IPAddressTests
     public void Create_WithEmptyString_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "";
+        string value = "";
 
         // Act
         Action act = () => IPAddress.Create(value);
@@ -55,7 +55,7 @@ public class IPAddressTests
     public void Create_WithWhitespace_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "   ";
+        string value = "   ";
 
         // Act
         Action act = () => IPAddress.Create(value);
@@ -69,7 +69,7 @@ public class IPAddressTests
     public void Create_WithInvalidFormat_ShouldThrowDomainException()
     {
         // Arrange
-        var value = "999.999.999.999";
+        string value = "999.999.999.999";
 
         // Act
         Action act = () => IPAddress.Create(value);
@@ -83,10 +83,10 @@ public class IPAddressTests
     public void IsPrivate_WithPrivateIPv4_ShouldReturnTrue()
     {
         // Arrange
-        var ipAddress = IPAddress.Create("192.168.1.1");
+        IPAddress ipAddress = IPAddress.Create("192.168.1.1");
 
         // Act
-        var result = ipAddress.IsPrivate();
+        bool result = ipAddress.IsPrivate();
 
         // Assert
         result.Should().BeTrue();
@@ -96,10 +96,10 @@ public class IPAddressTests
     public void IsPrivate_WithPublicIPv4_ShouldReturnFalse()
     {
         // Arrange
-        var ipAddress = IPAddress.Create("8.8.8.8");
+        IPAddress ipAddress = IPAddress.Create("8.8.8.8");
 
         // Act
-        var result = ipAddress.IsPrivate();
+        bool result = ipAddress.IsPrivate();
 
         // Assert
         result.Should().BeFalse();
@@ -109,10 +109,10 @@ public class IPAddressTests
     public void IsPrivate_WithIPv6_ShouldReturnFalse()
     {
         // Arrange
-        var ipAddress = IPAddress.Create("2001:0db8:85a3::8a2e:0370:7334");
+        IPAddress ipAddress = IPAddress.Create("2001:0db8:85a3::8a2e:0370:7334");
 
         // Act
-        var result = ipAddress.IsPrivate();
+        bool result = ipAddress.IsPrivate();
 
         // Assert
         result.Should().BeFalse();
@@ -122,10 +122,10 @@ public class IPAddressTests
     public void IsLoopback_WithLoopbackIPv4_ShouldReturnTrue()
     {
         // Arrange
-        var ipAddress = IPAddress.Create("127.0.0.1");
+        IPAddress ipAddress = IPAddress.Create("127.0.0.1");
 
         // Act
-        var result = ipAddress.IsLoopback();
+        bool result = ipAddress.IsLoopback();
 
         // Assert
         result.Should().BeTrue();
@@ -135,10 +135,10 @@ public class IPAddressTests
     public void IsLoopback_WithLoopbackIPv6_ShouldReturnTrue()
     {
         // Arrange
-        var ipAddress = IPAddress.Create("::1");
+        IPAddress ipAddress = IPAddress.Create("::1");
 
         // Act
-        var result = ipAddress.IsLoopback();
+        bool result = ipAddress.IsLoopback();
 
         // Assert
         result.Should().BeTrue();
@@ -148,10 +148,10 @@ public class IPAddressTests
     public void IsLoopback_WithNonLoopback_ShouldReturnFalse()
     {
         // Arrange
-        var ipAddress = IPAddress.Create("192.168.1.1");
+        IPAddress ipAddress = IPAddress.Create("192.168.1.1");
 
         // Act
-        var result = ipAddress.IsLoopback();
+        bool result = ipAddress.IsLoopback();
 
         // Assert
         result.Should().BeFalse();
@@ -161,7 +161,7 @@ public class IPAddressTests
     public void ImplicitOperator_ShouldConvertToString()
     {
         // Arrange
-        var ipAddress = IPAddress.Create("192.168.1.1");
+        IPAddress ipAddress = IPAddress.Create("192.168.1.1");
 
         // Act
         string value = ipAddress;
@@ -174,10 +174,10 @@ public class IPAddressTests
     public void ToString_ShouldReturnValue()
     {
         // Arrange
-        var ipAddress = IPAddress.Create("192.168.1.1");
+        IPAddress ipAddress = IPAddress.Create("192.168.1.1");
 
         // Act
-        var result = ipAddress.ToString();
+        string result = ipAddress.ToString();
 
         // Assert
         result.Should().Be("192.168.1.1");

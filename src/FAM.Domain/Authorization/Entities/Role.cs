@@ -46,15 +46,19 @@ public class Role : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public static Role Create(string code, string name, int rank, string? description = null, bool isSystemRole = false)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException(ErrorCodes.ROLE_NAME_REQUIRED, "Role name cannot be empty");
+        }
 
         if (rank < 0)
+        {
             throw new DomainException(ErrorCodes.ROLE_INVALID_RANK, "Role rank must be non-negative");
+        }
 
         // Validate code
-        var roleCodeVo = RoleCode.Create(code);
+        RoleCode roleCodeVo = RoleCode.Create(code);
 
-        var role = new Role
+        Role role = new()
         {
             Code = roleCodeVo.Value,
             Name = name.Trim(),
@@ -73,13 +77,19 @@ public class Role : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public void Update(string name, int rank, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(name))
+        {
             throw new DomainException(ErrorCodes.ROLE_NAME_REQUIRED, "Role name cannot be empty");
+        }
 
         if (rank < 0)
+        {
             throw new DomainException(ErrorCodes.ROLE_INVALID_RANK, "Role rank must be non-negative");
+        }
 
         if (IsSystemRole)
+        {
             throw new DomainException(ErrorCodes.ROLE_SYSTEM_ROLE_CANNOT_UPDATE, "System roles cannot be updated");
+        }
 
         Name = name.Trim();
         Description = description?.Trim();
@@ -95,7 +105,9 @@ public class Role : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     public void ValidateCanDelete()
     {
         if (IsSystemRole)
+        {
             throw new DomainException(ErrorCodes.ROLE_SYSTEM_ROLE_CANNOT_DELETE, "System roles cannot be deleted");
+        }
     }
 
     /// <summary>
@@ -103,11 +115,13 @@ public class Role : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     /// </summary>
     public void AssignPermissions(IEnumerable<Permission> permissions)
     {
-        var permissionList = permissions.ToList();
+        List<Permission> permissionList = permissions.ToList();
         if (!permissionList.Any())
+        {
             throw new DomainException(ErrorCodes.ROLE_NO_PERMISSIONS_PROVIDED, "No permissions provided");
+        }
 
-        var permissionIds = permissionList.Select(p => p.Id).ToList();
+        List<long> permissionIds = permissionList.Select(p => p.Id).ToList();
         RaiseDomainEvent(new PermissionsAssignedToRole(Id, permissionIds));
     }
 
@@ -116,9 +130,11 @@ public class Role : BaseEntity, IHasCreationTime, IHasCreator, IHasModificationT
     /// </summary>
     public void RevokePermissions(IEnumerable<long> permissionIds)
     {
-        var idList = permissionIds.ToList();
+        List<long> idList = permissionIds.ToList();
         if (!idList.Any())
+        {
             throw new DomainException(ErrorCodes.ROLE_NO_PERMISSIONS_PROVIDED, "No permission IDs provided");
+        }
 
         RaiseDomainEvent(new PermissionsRevokedFromRole(Id, idList));
     }

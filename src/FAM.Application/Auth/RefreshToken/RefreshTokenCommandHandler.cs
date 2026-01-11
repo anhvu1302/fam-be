@@ -31,23 +31,41 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
         UserDevice? device =
             await _unitOfWork.UserDevices.FindByRefreshTokenAsync(request.RefreshToken, cancellationToken);
 
-        if (device == null) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_REFRESH_TOKEN);
+        if (device == null)
+        {
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_REFRESH_TOKEN);
+        }
 
-        if (!device.IsRefreshTokenValid()) throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_REFRESH_TOKEN);
+        if (!device.IsRefreshTokenValid())
+        {
+            throw new UnauthorizedException(ErrorCodes.AUTH_INVALID_REFRESH_TOKEN);
+        }
 
-        if (!device.IsActive) throw new UnauthorizedException(ErrorCodes.AUTH_UNAUTHORIZED);
+        if (!device.IsActive)
+        {
+            throw new UnauthorizedException(ErrorCodes.AUTH_UNAUTHORIZED);
+        }
 
         User? user = await _unitOfWork.Users.GetByIdAsync(device.UserId, cancellationToken);
 
-        if (user == null) throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
+        if (user == null)
+        {
+            throw new UnauthorizedException(ErrorCodes.USER_NOT_FOUND);
+        }
 
-        if (!user.IsActive) throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE);
+        if (!user.IsActive)
+        {
+            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_INACTIVE);
+        }
 
-        if (user.IsLockedOut()) throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_LOCKED);
+        if (user.IsLockedOut())
+        {
+            throw new UnauthorizedException(ErrorCodes.AUTH_ACCOUNT_LOCKED);
+        }
 
         SigningKey activeKey = await _signingKeyService.GetOrCreateActiveKeyAsync(cancellationToken);
-        var roles = new List<string>(); // TODO: Load user roles from UserNodeRoles
-        var accessToken = _jwtService.GenerateAccessTokenWithRsa(
+        List<string> roles = new(); // TODO: Load user roles from UserNodeRoles
+        string accessToken = _jwtService.GenerateAccessTokenWithRsa(
             user.Id,
             user.Username,
             user.Email,
@@ -56,11 +74,11 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
             activeKey.PrivateKey,
             activeKey.Algorithm);
 
-        var accessTokenJti = _jwtService.GetJtiFromToken(accessToken);
+        string? accessTokenJti = _jwtService.GetJtiFromToken(accessToken);
 
         // Calculate expiration times from config
         DateTime accessTokenExpiresAt = DateTime.UtcNow.AddMinutes(_jwtService.AccessTokenExpiryMinutes);
-        var newRefreshToken = _jwtService.GenerateRefreshToken();
+        string newRefreshToken = _jwtService.GenerateRefreshToken();
         DateTime refreshTokenExpiresAt = DateTime.UtcNow.AddDays(_jwtService.RefreshTokenExpiryDays);
 
         // Update device tokens directly (device is detached from FindByRefreshTokenAsync)

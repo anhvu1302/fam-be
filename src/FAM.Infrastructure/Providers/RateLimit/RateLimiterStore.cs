@@ -27,11 +27,14 @@ public sealed class RateLimiterStore : IRateLimiterStore
     {
         try
         {
-            var cacheKey = GetWindowKey(key, window);
+            string cacheKey = GetWindowKey(key, window);
 
             // Get current count
-            var countStr = await _cache.GetAsync(cacheKey, cancellationToken);
-            if (!int.TryParse(countStr, out var currentCount)) currentCount = 0;
+            string? countStr = await _cache.GetAsync(cacheKey, cancellationToken);
+            if (!int.TryParse(countStr, out int currentCount))
+            {
+                currentCount = 0;
+            }
 
             // Check if limit exceeded
             if (currentCount >= permitLimit)
@@ -42,7 +45,7 @@ public sealed class RateLimiterStore : IRateLimiterStore
             }
 
             // Increment counter
-            var newCount = currentCount + 1;
+            int newCount = currentCount + 1;
             await _cache.SetAsync(cacheKey, newCount.ToString(), window, cancellationToken);
 
             _logger.LogDebug("Rate limit check passed for key {Key}: {Current}/{Limit}", key, newCount, permitLimit);
@@ -61,15 +64,18 @@ public sealed class RateLimiterStore : IRateLimiterStore
         try
         {
             // Try to get count from multiple window sizes (sliding window approach)
-            var count = 0;
+            int count = 0;
             DateTimeOffset now = DateTimeOffset.UtcNow;
 
             // Check last 4 time windows (for potential sliding window support)
-            for (var i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
-                var windowKey = GetWindowKeyWithTimestamp(key, now.AddMinutes(-i));
-                var countStr = await _cache.GetAsync(windowKey, cancellationToken);
-                if (int.TryParse(countStr, out var windowCount)) count += windowCount;
+                string windowKey = GetWindowKeyWithTimestamp(key, now.AddMinutes(-i));
+                string? countStr = await _cache.GetAsync(windowKey, cancellationToken);
+                if (int.TryParse(countStr, out int windowCount))
+                {
+                    count += windowCount;
+                }
             }
 
             return count;
@@ -88,8 +94,8 @@ public sealed class RateLimiterStore : IRateLimiterStore
     {
         try
         {
-            var count = await GetCountAsync(key, cancellationToken);
-            var remaining = Math.Max(0, permitLimit - count);
+            int count = await GetCountAsync(key, cancellationToken);
+            int remaining = Math.Max(0, permitLimit - count);
             return remaining;
         }
         catch (Exception ex)
@@ -106,11 +112,14 @@ public sealed class RateLimiterStore : IRateLimiterStore
         try
         {
             // Get TTL from cache (how long until window resets)
-            var cacheKey = GetWindowKey(key, TimeSpan.FromMinutes(1));
+            string cacheKey = GetWindowKey(key, TimeSpan.FromMinutes(1));
 
             // Since ICacheProvider doesn't expose TTL directly, we'll use a separate TTL key
-            var ttlStr = await _cache.GetAsync(GetTtlKey(cacheKey), cancellationToken);
-            if (int.TryParse(ttlStr, out var ttl)) return Math.Max(1, ttl);
+            string? ttlStr = await _cache.GetAsync(GetTtlKey(cacheKey), cancellationToken);
+            if (int.TryParse(ttlStr, out int ttl))
+            {
+                return Math.Max(1, ttl);
+            }
 
             // Default to 60 seconds if TTL not found
             return 60;
@@ -126,7 +135,7 @@ public sealed class RateLimiterStore : IRateLimiterStore
     {
         try
         {
-            var cacheKey = GetWindowKey(key, TimeSpan.FromMinutes(1));
+            string cacheKey = GetWindowKey(key, TimeSpan.FromMinutes(1));
             await _cache.DeleteAsync(cacheKey, cancellationToken);
             await _cache.DeleteAsync(GetTtlKey(cacheKey), cancellationToken);
             return true;
@@ -141,17 +150,17 @@ public sealed class RateLimiterStore : IRateLimiterStore
     private static string GetWindowKey(string key, TimeSpan window)
     {
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        var totalSeconds = (long)now.TimeOfDay.TotalSeconds;
-        var windowSeconds = (long)window.TotalSeconds;
-        var windowStart = totalSeconds - totalSeconds % windowSeconds;
+        long totalSeconds = (long)now.TimeOfDay.TotalSeconds;
+        long windowSeconds = (long)window.TotalSeconds;
+        long windowStart = totalSeconds - totalSeconds % windowSeconds;
         return $"ratelimit:{key}:{windowStart}";
     }
 
     private static string GetWindowKeyWithTimestamp(string key, DateTimeOffset timestamp)
     {
-        var totalSeconds = (long)timestamp.TimeOfDay.TotalSeconds;
-        var windowSeconds = 60L; // 1 minute
-        var windowStart = totalSeconds - totalSeconds % windowSeconds;
+        long totalSeconds = (long)timestamp.TimeOfDay.TotalSeconds;
+        long windowSeconds = 60L; // 1 minute
+        long windowStart = totalSeconds - totalSeconds % windowSeconds;
         return $"ratelimit:{key}:{windowStart}";
     }
 

@@ -27,7 +27,7 @@ public class DataSeederOrchestrator
     {
         _logger.LogInformation("=== Starting Data Seeding ===");
 
-        var seeders = _serviceProvider.GetServices<IDataSeeder>()
+        List<IDataSeeder> seeders = _serviceProvider.GetServices<IDataSeeder>()
             .OrderBy(s => s.Name, StringComparer.Ordinal)
             .ToList();
 
@@ -41,7 +41,9 @@ public class DataSeederOrchestrator
         ISeedHistoryRepository? historyRepo = _serviceProvider.GetService<ISeedHistoryRepository>();
 
         if (historyRepo != null && !forceReseed)
+        {
             _logger.LogInformation("Seed tracking is enabled. Checking execution history...");
+        }
 
         _logger.LogInformation("Found {Count} seeder(s) to execute", seeders.Count);
 
@@ -50,7 +52,7 @@ public class DataSeederOrchestrator
             // Check if already executed
             if (historyRepo != null && !forceReseed)
             {
-                var alreadyExecuted = await historyRepo.HasBeenExecutedAsync(seeder.Name, cancellationToken);
+                bool alreadyExecuted = await historyRepo.HasBeenExecutedAsync(seeder.Name, cancellationToken);
                 if (alreadyExecuted)
                 {
                     _logger.LogInformation("⊘ Skipping: {SeederName} (already executed)", seeder.Name);
@@ -58,8 +60,8 @@ public class DataSeederOrchestrator
                 }
             }
 
-            var stopwatch = Stopwatch.StartNew();
-            var success = false;
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            bool success = false;
             string? errorMessage = null;
 
             try
@@ -79,6 +81,7 @@ public class DataSeederOrchestrator
 
                 // Record failure
                 if (historyRepo != null)
+                {
                     await historyRepo.RecordExecutionAsync(new SeedHistory
                     {
                         SeederName = seeder.Name,
@@ -87,12 +90,14 @@ public class DataSeederOrchestrator
                         ErrorMessage = errorMessage,
                         Duration = stopwatch.Elapsed
                     }, cancellationToken);
+                }
 
                 throw;
             }
 
             // Record success
             if (historyRepo != null && success)
+            {
                 await historyRepo.RecordExecutionAsync(new SeedHistory
                 {
                     SeederName = seeder.Name,
@@ -100,6 +105,7 @@ public class DataSeederOrchestrator
                     Success = true,
                     Duration = stopwatch.Elapsed
                 }, cancellationToken);
+            }
         }
 
         _logger.LogInformation("=== Data Seeding Completed Successfully ===");
@@ -118,5 +124,26 @@ public class DataSeederOrchestrator
         }
 
         return await historyRepo.GetAllHistoryAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Resync database: Clear all seed history and resync (IDs restart from 1)
+    /// This will re-execute all seeders
+    /// </summary>
+    public async Task ResyncDatabaseAsync(CancellationToken cancellationToken = default)
+    {
+        _logger.LogWarning("=== Starting Database Resync ===");
+
+        ISeedHistoryRepository? historyRepo = _serviceProvider.GetService<ISeedHistoryRepository>();
+        if (historyRepo != null)
+        {
+            _logger.LogInformation("Clearing seed history...");
+            // Clear all seed history
+            await historyRepo.ClearHistoryAsync(cancellationToken);
+            _logger.LogInformation("✓ Seed history cleared");
+        }
+
+        _logger.LogWarning("Note: Manual database cleanup may be required");
+        _logger.LogInformation("Resync setup complete - ready to seed");
     }
 }

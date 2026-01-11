@@ -124,9 +124,14 @@ public class SystemSetting : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
         bool isSensitive = false)
     {
         if (string.IsNullOrWhiteSpace(key))
+        {
             throw new DomainException(ErrorCodes.VAL_REQUIRED, "Setting key is required");
+        }
+
         if (string.IsNullOrWhiteSpace(displayName))
+        {
             throw new DomainException(ErrorCodes.VAL_REQUIRED, "Display name is required");
+        }
 
         return new SystemSetting
         {
@@ -169,9 +174,13 @@ public class SystemSetting : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     /// </summary>
     public bool GetBoolValue(bool defaultValue = false)
     {
-        var val = GetEffectiveValue();
-        if (string.IsNullOrEmpty(val)) return defaultValue;
-        return bool.TryParse(val, out var result) ? result : defaultValue;
+        string? val = GetEffectiveValue();
+        if (string.IsNullOrEmpty(val))
+        {
+            return defaultValue;
+        }
+
+        return bool.TryParse(val, out bool result) ? result : defaultValue;
     }
 
     /// <summary>
@@ -179,9 +188,13 @@ public class SystemSetting : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     /// </summary>
     public int GetIntValue(int defaultValue = 0)
     {
-        var val = GetEffectiveValue();
-        if (string.IsNullOrEmpty(val)) return defaultValue;
-        return int.TryParse(val, out var result) ? result : defaultValue;
+        string? val = GetEffectiveValue();
+        if (string.IsNullOrEmpty(val))
+        {
+            return defaultValue;
+        }
+
+        return int.TryParse(val, out int result) ? result : defaultValue;
     }
 
     /// <summary>
@@ -189,9 +202,13 @@ public class SystemSetting : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
     /// </summary>
     public decimal GetDecimalValue(decimal defaultValue = 0)
     {
-        var val = GetEffectiveValue();
-        if (string.IsNullOrEmpty(val)) return defaultValue;
-        return decimal.TryParse(val, out var result) ? result : defaultValue;
+        string? val = GetEffectiveValue();
+        if (string.IsNullOrEmpty(val))
+        {
+            return defaultValue;
+        }
+
+        return decimal.TryParse(val, out decimal result) ? result : defaultValue;
     }
 
     /// <summary>
@@ -204,12 +221,18 @@ public class SystemSetting : BaseEntity, IHasCreationTime, IHasCreator, IHasModi
         int? sortOrder = null)
     {
         if (string.IsNullOrWhiteSpace(displayName))
+        {
             throw new DomainException(ErrorCodes.VAL_REQUIRED, "Display name is required");
+        }
 
         DisplayName = displayName.Trim();
         Description = description?.Trim();
         DefaultValue = defaultValue;
-        if (sortOrder.HasValue) SortOrder = sortOrder.Value;
+        if (sortOrder.HasValue)
+        {
+            SortOrder = sortOrder.Value;
+        }
+
         UpdatedAt = DateTime.UtcNow;
     }
 

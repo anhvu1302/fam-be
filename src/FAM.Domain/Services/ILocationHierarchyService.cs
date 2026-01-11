@@ -20,28 +20,30 @@ public class LocationHierarchyService : ILocationHierarchyService
 {
     public string BuildFullPath(Location location, IEnumerable<Location> allLocations)
     {
-        var ancestors = GetAncestors(location, allLocations).Reverse().ToList();
+        List<Location> ancestors = GetAncestors(location, allLocations).Reverse().ToList();
         ancestors.Add(location);
         return string.Join(" > ", ancestors.Select(l => l.Name));
     }
 
     public string BuildPathIds(Location location, IEnumerable<Location> allLocations)
     {
-        var ancestors = GetAncestors(location, allLocations).Reverse().ToList();
+        List<Location> ancestors = GetAncestors(location, allLocations).Reverse().ToList();
         ancestors.Add(location);
         return string.Join("/", ancestors.Select(l => l.Id));
     }
 
     public IEnumerable<Location> GetAncestors(Location location, IEnumerable<Location> allLocations)
     {
-        var ancestors = new List<Location>();
+        List<Location> ancestors = new();
         Location current = location;
 
         while (current.ParentId.HasValue)
         {
             Location? parent = allLocations.FirstOrDefault(l => l.Id == current.ParentId.Value);
             if (parent == null)
+            {
                 break;
+            }
 
             ancestors.Add(parent);
             current = parent;
@@ -52,8 +54,8 @@ public class LocationHierarchyService : ILocationHierarchyService
 
     public IEnumerable<Location> GetDescendants(Location location, IEnumerable<Location> allLocations)
     {
-        var descendants = new List<Location>();
-        var queue = new Queue<Location>();
+        List<Location> descendants = new();
+        Queue<Location> queue = new();
         queue.Enqueue(location);
 
         while (queue.Count > 0)
@@ -85,13 +87,17 @@ public class LocationHierarchyService : ILocationHierarchyService
     public bool WouldCreateCycle(int locationId, int newParentId, IEnumerable<Location> allLocations)
     {
         if (locationId == newParentId)
+        {
             return true;
+        }
 
         Location? location = allLocations.FirstOrDefault(l => l.Id == locationId);
         Location? newParent = allLocations.FirstOrDefault(l => l.Id == newParentId);
 
         if (location == null || newParent == null)
+        {
             return false;
+        }
 
         return IsAncestorOf(location, newParent, allLocations);
     }
