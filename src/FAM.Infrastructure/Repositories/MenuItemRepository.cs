@@ -162,8 +162,6 @@ public class MenuItemRepository : IMenuItemRepository
         foreach (MenuItem menu in menus)
         {
             if (menu.CanView(permissions, roles))
-                // Note: Children filtering would need to be done at domain level
-                // since MenuItem.Children is read-only
             {
                 yield return menu;
             }

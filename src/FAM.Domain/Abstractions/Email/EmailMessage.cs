@@ -48,6 +48,10 @@ public sealed record EmailSendResult
     public static EmailSendResult Failed(string errorMessage, string? providerResponse = null)
     {
         return new EmailSendResult
-            { Success = false, ErrorMessage = errorMessage, ProviderResponse = providerResponse };
+        {
+            Success = false,
+            ErrorMessage = errorMessage,
+            ProviderResponse = providerResponse
+        };
     }
 }

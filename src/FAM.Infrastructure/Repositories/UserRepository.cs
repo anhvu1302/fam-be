@@ -179,8 +179,8 @@ public class UserRepository : BasePagedRepository<User>, IUserRepository
             dataQuery = dataQuery.OrderByDescending(u => u.CreatedAt);
         }
         else
-            // TODO: Implement dynamic sorting based on sort parameter if needed
         {
+            // TODO: Implement dynamic sorting based on sort parameter if needed
             dataQuery = dataQuery.OrderByDescending(u => u.CreatedAt);
         }
 
